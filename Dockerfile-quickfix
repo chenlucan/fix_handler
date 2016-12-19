@@ -1,0 +1,2 @@
+FROM centos:7
+RUN yum install -y gcc-c++ automake autoconf libtool libxml2 libxml2-devel
