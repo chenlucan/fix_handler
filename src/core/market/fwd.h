@@ -1,5 +1,5 @@
-#ifndef FH_CORE_MARKET_FWD_H
-#define FH_CORE_MARKET_FWD_H
+#ifndef CORE_MARKET_FWD_H_
+#define CORE_MARKET_FWD_H_
 
 namespace fh {
 namespace core {
@@ -8,7 +8,7 @@ namespace market {
 class MarketI;
 class MarketListenerI;
 
-} // market
-} // core
-} // fh
-#endif  // FH_CORE_MARKET_FWD_H
+}  // namespace market
+}  // namespace core
+}  // namespace fh
+#endif  // CORE_MARKET_FWD_H_

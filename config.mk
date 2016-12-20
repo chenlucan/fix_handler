@@ -24,6 +24,8 @@ PROTO_PATH       = src/pb
 PROTO_BUILD_PB_PATH = src/build/pb
 PROTO_BUILD_PATH = src/build
 
+LINT = /vendor/styleguide/cpplint/cpplint.py
+
 FLAG = -std=c++11
 
 RLS_DIR      = $(ROOT)/_build/src/rls

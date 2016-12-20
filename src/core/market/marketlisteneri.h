@@ -1,5 +1,5 @@
-#ifndef FH_CORE_MARKET_MARKETLISTENERI_H
-#define FH_CORE_MARKET_MARKETLISTENERI_H
+#ifndef CORE_MARKET_MARKETLISTENERI_H_
+#define CORE_MARKET_MARKETLISTENERI_H_
 
 #include "core/market/fwd.h"
 
@@ -8,11 +8,11 @@ namespace core {
 namespace market {
 
 class MarketListenerI {
-public:
-  MarketListenerI() {};
-  virtual ~MarketListenerI() {};
+ public:
+  MarketListenerI() {}
+  virtual ~MarketListenerI() {}
 
-public:
+ public:
   virtual void OnMarketDisconnect(core::market::MarketI* market) = 0;
   virtual void OnMarketReconnect(core::market::MarketI* market)  = 0;
   virtual void OnContractDefinition() = 0;  // (TODO) - add data definition
@@ -24,7 +24,7 @@ public:
   virtual void OnTrade() = 0;               // (TODO) - add data definition
 };
 
-} // market
-} // core
-} // fh
-#endif // FH_CORE_MARKET_MARKETLISTENERI_H
+}  // namespace market
+}  // namespace core
+}  // namespace fh
+#endif  // CORE_MARKET_MARKETLISTENERI_H_

@@ -1,10 +1,10 @@
-#ifndef FH_CORE_MARKET_MARKETI_H
-#define FH_CORE_MARKET_MARKETI_H
-
-#include "core/market/fwd.h"
+#ifndef CORE_MARKET_MARKETI_H_
+#define CORE_MARKET_MARKETI_H_
 
 #include <string>
 #include <vector>
+
+#include "core/market/fwd.h"
 
 namespace fh {
 namespace core {
@@ -13,9 +13,9 @@ namespace market {
 typedef std::vector<std::string> InstrumentVec;
 
 class MarketI {
-public:
-  MarketI(core::market::MarketListenerI *listener) {};
-  virtual ~MarketI() {};
+ public:
+  explicit MarketI(core::market::MarketListenerI *listener) {}
+  virtual ~MarketI() {}
 
   virtual void Initialize(InstrumentVec insts) = 0;
   virtual bool Start() = 0;
@@ -26,7 +26,7 @@ public:
   virtual void ReqDefinitions(InstrumentVec instruments)  = 0;
 };
 
-} // market
-} // core
-} // fh
-#endif // FH_CORE_MARKET_MARKETI_H
+}  // namespace market
+}  // namespace core
+}  // namespace fh
+#endif  // CORE_MARKET_MARKETI_H_
