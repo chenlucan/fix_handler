@@ -3,6 +3,7 @@
 
 #include "core/market/fwd.h"
 
+#include <string>
 #include <vector>
 
 namespace fh {
