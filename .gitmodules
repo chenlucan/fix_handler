@@ -1,3 +1,6 @@
 [submodule "quickfix"]
 	path = quickfix
 	url = git@github.com:quickfix/quickfix.git
+[submodule "vendor/styleguide"]
+	path = vendor/styleguide
+	url = git@github.com:google/styleguide.git
