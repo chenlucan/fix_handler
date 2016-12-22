@@ -4,3 +4,6 @@
 [submodule "vendor/styleguide"]
 	path = vendor/styleguide
 	url = git@github.com:google/styleguide.git
+[submodule "vendor/jsonxx"]
+	path = vendor/jsonxx
+	url = https://github.com/chenlucan/jsonxx.git
