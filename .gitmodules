@@ -7,3 +7,6 @@
 [submodule "vendor/jsonxx"]
 	path = vendor/jsonxx
 	url = https://github.com/chenlucan/jsonxx.git
+[submodule "vendor/sbe"]
+	path = vendor/sbe
+	url = https://github.com/real-logic/simple-binary-encoding.git
