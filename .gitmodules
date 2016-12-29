@@ -10,3 +10,6 @@
 [submodule "vendor/sbe"]
 	path = vendor/sbe
 	url = https://github.com/real-logic/simple-binary-encoding.git
+[submodule "vendor/quickfix"]
+	path = vendor/quickfix
+	url = git@github.com:quickfix/quickfix.git
