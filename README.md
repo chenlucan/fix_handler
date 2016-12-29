@@ -9,8 +9,4 @@ Use docker to build quickfix dynamic libs （用docker编译quickfix动态库）
     - ./bootstrap
     - ./configure --prefix=/quickfix/.
     - make
-    - make install 
- - move build libs into vendor/quickfix
-    - mv quickfix/lib/libquickfix.so.16 vendor/lib/.
-    - mv quickfix/lib/libquickfix.so.16.0.1 vendor/quickfix/lib/.
-    - sudo mv quickfix/share/* vendor/quickfix/share/.
+    - make install
