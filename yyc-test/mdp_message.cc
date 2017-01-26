@@ -1,55 +1,89 @@
 
 #include "mdp_message.h"
+#include "sbe_decoder.h"
+#include "utility.h"
 
 namespace rczg
 {
-    MdpMessage::MdpMessage() 
-    : packet_length(0), packet_seq_num(0), packet_sending_time(0), 
-      is_valid_packet(false), message_length(0), 
-      message_header(), message_body()
+    MdpMessage::MdpMessage(const char *buffer, std::uint16_t message_length, const size_t packet_length, 
+                           std::uint32_t packet_seq_num, std::uint64_t packet_sending_time)
+    : m_packet_length(packet_length), m_packet_seq_num(packet_seq_num), m_packet_sending_time(packet_sending_time), 
+      m_message_length(message_length), m_buffer(&buffer[0], &buffer[message_length]),
+      m_received_time(rczg::utility::Current_time_str())
     {
-        // noop
+        rczg::SBEDecoder decoder(m_buffer.data(), m_message_length);
+        auto sbe_message = decoder.Start_decode();
+        m_message_header = sbe_message.first;
+        m_message_body = sbe_message.second;
     }
     
     MdpMessage::MdpMessage(MdpMessage &&m)
-    : packet_length(m.packet_length), packet_seq_num(m.packet_seq_num), packet_sending_time(m.packet_sending_time), 
-      is_valid_packet(m.is_valid_packet), message_length(m.message_length), 
-      message_header(m.message_header), message_body(m.message_body)
+    : m_packet_length(m.m_packet_length), m_packet_seq_num(m.m_packet_seq_num), m_packet_sending_time(m.m_packet_sending_time), 
+      m_message_length(m.m_message_length), m_buffer(std::move(m.m_buffer)),    // must move sbe buffer, not copy
+      m_message_header(m.m_message_header), m_message_body(m.m_message_body),
+      m_received_time(std::move(m.m_received_time))
     {
         // noop
     }
-    
-    // copy the message out from socket buffer
-    std::pair<std::uint32_t, std::string> MdpMessage::Copy_out() const
+
+    size_t MdpMessage::packet_length() const
     {
-        // TODO create mdp message object from socket buffer
+        return m_packet_length;
+    }
+    
+    std::uint32_t MdpMessage::packet_seq_num() const
+    {
+        return m_packet_seq_num;
+    }
+    
+    std::uint64_t MdpMessage::packet_sending_time() const
+    {
+        return m_packet_sending_time;
+    }
+    
+    std::uint16_t MdpMessage::message_length() const
+    {
+        return m_message_length;
+    }
+    
+    std::shared_ptr<void> MdpMessage::message_header() const
+    {
+        return m_message_header;
+    }
+    
+    std::shared_ptr<void> MdpMessage::message_body() const
+    {
+        return m_message_body;
+    }
+    
+    std::string MdpMessage::received_time() const
+    {
+        return m_received_time;
+    }
+
+    // serialize to send
+    std::string MdpMessage::Serialize() const
+    {
+        // TODO serialize
         std::ostringstream ss;
 
-        ss << std::this_thread::get_id() << " -";
-        ss << " packet_len=" << std::setw(4) << packet_length;
-        ss << " seq=" << std::setw(6) << packet_seq_num;
-        ss << " time=" << std::setw(19) << packet_sending_time;
-        
-        if(is_valid_packet)
-        {
-            ss << " - message_len=" << std::setw(6) << message_length << " : ";
-        }
-        else
-        {
-            ss << " < discard" << std::endl;
-            return std::make_pair(packet_seq_num, ss.str());
-        }
+        ss << "[" << m_received_time << "]";
+        ss << " packet_len=" << std::setw(4) << m_packet_length;
+        ss << " seq=" << std::setw(6) << m_packet_seq_num;
+        ss << " time=" << std::setw(19) << m_packet_sending_time;
+        ss << " - message_len=" << std::setw(6) << m_message_length << " : ";
 
-        auto header = static_cast<mktdata::MessageHeader*>(message_header.get());
+
+        auto header = static_cast<mktdata::MessageHeader*>(m_message_header.get());
         std::uint16_t templateId = header->templateId();
 
-        void *mdp_message = message_body.get();
+        void *mdp_message = m_message_body.get();
         if(templateId == 30)    // SecurityStatus30
         {
             auto ss30 = static_cast<mktdata::SecurityStatus30*>(mdp_message);
             ss << "type=SecurityStatus30";
             ss << ", sbeSemanticType=" << ss30->sbeSemanticType();
-            //ss << ", transactTime=" << ss30->transactTime();
+            ss << ", transactTime=" << ss30->transactTime();
             //ss << ", securityTradingEvent=" << ss30->securityTradingEvent();
         }
         else if(templateId == 37)    // MDIncrementalRefreshVolume37
@@ -57,10 +91,26 @@ namespace rczg
             auto md37 = static_cast<mktdata::MDIncrementalRefreshVolume37*>(mdp_message);
             ss << "type=MDIncrementalRefreshVolume37";
             ss << ", sbeSemanticType=" << md37->sbeSemanticType();
-            //ss << ", transactTime=" << md37->transactTime();
+            ss << ", transactTime=" << md37->transactTime();
+        }
+        else if(templateId == 27)    // MDInstrumentDefinitionFuture27
+        {
+            auto md27 = static_cast<mktdata::MDInstrumentDefinitionFuture27*>(mdp_message);
+            ss << "type=MDInstrumentDefinitionFuture27";
+            ss << ", sbeSemanticType=" << md27->sbeSemanticType();
+            ss << ", totNumReports=" << md27->totNumReports();
+        }
+        else if(templateId == 38)    // SnapshotFullRefresh38
+        {
+            auto md38 = static_cast<mktdata::SnapshotFullRefresh38*>(mdp_message);
+            ss << "type=SnapshotFullRefresh38";
+            ss << ", sbeSemanticType=" << md38->sbeSemanticType();
+            ss << ", lastMsgSeqNumProcessed=" << md38->lastMsgSeqNumProcessed();
+            ss << ", totNumReports=" << md38->totNumReports();
+            ss << ", rptSeq=" << md38->rptSeq();
         }
         
-        return std::make_pair(packet_seq_num, ss.str());
+        return ss.str();
     }
     
     MdpMessage::~MdpMessage()

@@ -1,6 +1,6 @@
 
 #include "dat_processor.h"
-#include "sbe_decoder.h"
+#include "logger.h"
 
 namespace rczg
 {
@@ -26,7 +26,7 @@ namespace rczg
         if(status == std::numeric_limits<std::uint32_t>::max())
         {
             // should be discarded
-            //std::cout << "****** discard tcp: seq=" << packet_seq_num << std::endl;
+            rczg::Logger::Debug("****** discard tcp: seq=", packet_seq_num);
             return;
         }
         
@@ -43,7 +43,7 @@ namespace rczg
         if(status == std::numeric_limits<std::uint32_t>::max())
         {
             // should be discarded
-            //std::cout << "****** discard udp: seq=" << packet_seq_num << std::endl;
+            rczg::Logger::Debug("****** discard udp: seq=", packet_seq_num);
             return;
         }
         
@@ -76,19 +76,18 @@ namespace rczg
         char *current_position = data_begin + 4 + 8;
         while(current_position < data_end)  // TODO != or <
         {
-            rczg::MdpMessage mdp;
-            std::uint16_t message_length = this->Make_mdp_message(
-                    mdp, data_length, packet_seq_num, packet_sending_time, current_position);
+            std::uint16_t message_length = *((std::uint16_t *)current_position);
+            char *message = current_position + 2;
+            rczg::MdpMessage mdp(message, message_length, data_length, packet_seq_num, packet_sending_time);
             mdp_messages.push_back(std::move(mdp));
-            current_position = current_position + message_length;
+            current_position = current_position + message_length + 2;
         }
         
         this->Save_message(packet_seq_num, mdp_messages);
         
         auto finish = std::chrono::high_resolution_clock::now();
         auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count();
-        std::cout << "received: " << ns << "ns: " << std::this_thread::get_id();
-        std::cout << " - " << packet_seq_num << ", len=" << data_length << std::endl;
+        rczg::Logger::Info("received: ", ns, "ns, seq=", packet_seq_num, ", len=", data_length);
     }
 
     void DatProcessor::Start_tcp_replay(std::uint32_t begin, std::uint32_t end)
@@ -98,45 +97,9 @@ namespace rczg
                 std::bind(&rczg::DatProcessor::Process_replay_data, std::ref(*this), std::placeholders::_1, std::placeholders::_2),
                 begin, end);
         });
-        //std::cout << "start thread: " << begin << " - " << end << std::endl;
         t.detach();     // must make it unjoinable
     }
-    
-    std::uint16_t DatProcessor::Make_mdp_message(
-        rczg::MdpMessage &mdp, 
-        const size_t data_length, 
-        const std::uint32_t packet_seq_num,
-        const std::uint64_t packet_sending_time,
-        char *current_position)
-    {
-        std::uint16_t message_length = *((std::uint16_t *)current_position);
-        char *message = current_position + 2;
-        rczg::SBEDecoder decoder(message, message_length);
-        auto sbe_message = decoder.Start_decode();
-        
-        mdp.packet_length = data_length;
-        mdp.packet_seq_num = packet_seq_num;
-        mdp.packet_sending_time = packet_sending_time;
-        mdp.is_valid_packet = true;
-        mdp.message_length = message_length;
-        mdp.message_header = sbe_message.first;
-        mdp.message_body = sbe_message.second;
-        
-        return message_length + 2;
-    }
-    
-    void DatProcessor::Make_mdp_invalid_message(
-        rczg::MdpMessage &mdp, 
-        const size_t data_length, 
-        const std::uint32_t packet_seq_num,
-        const std::uint64_t packet_sending_time)
-    {
-        mdp.packet_length = data_length;
-        mdp.packet_seq_num = packet_seq_num;
-        mdp.packet_sending_time = packet_sending_time;
-        mdp.is_valid_packet = false;
-    }
-    
+
     void DatProcessor::Save_message(std::uint32_t packet_seq_num, std::vector<rczg::MdpMessage> &mdp_messages)
     {
         m_saver->Save_data(packet_seq_num, mdp_messages);

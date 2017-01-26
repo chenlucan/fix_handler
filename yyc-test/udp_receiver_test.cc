@@ -1,10 +1,11 @@
 
-#include "application.h"
 #include <stdio.h>
 #include <execinfo.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "application.h"
+#include "logger.h"
 
 void handler(int sig) 
 {
@@ -26,25 +27,32 @@ int main(int argc, char* argv[])
     
     try
     {
-        if (argc != 1)
+        if (argc != 2 || (strcmp(argv[1], "-s") != 0 && strcmp(argv[1], "-j") != 0))
         {
-            std::cerr << "Usage: udp_receiver_test \n";
-            std::cerr << "Ex:    udp_receiver_test \n";
-            
+            rczg::Logger::Error("Usage: udp_receiver_test -s|-j");
             return 1;
         }
 
-        rczg::Application a;
-        a.Start();
+        rczg::Logger::Set_level(rczg::Logger::Level::DEBUG);
+        rczg::Application a("360");
+        
+        if(strcmp(argv[1], "-s") == 0)
+        {
+            a.Start();
+        }
+        else
+        {
+            a.Join();
+        }
         
         std::cin.get();
     }
     catch (std::exception& e)
     {
-        std::cerr << "Exception: " << e.what() << "\n";
+        rczg::Logger::Error("Exception", e.what());
     }
 
     return 0;
 }
 
-// ./udp_receiver_test 
+// ./udp_receiver_test -s

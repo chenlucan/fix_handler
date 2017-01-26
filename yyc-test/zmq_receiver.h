@@ -11,7 +11,7 @@ namespace rczg
     {
         public:
             explicit ZmqReceiver(const char *url);
-            ~ZmqReceiver();
+            virtual ~ZmqReceiver();
             
         public:
             void Start_receive();

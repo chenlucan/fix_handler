@@ -21,16 +21,16 @@ ZMQ_TARGET = $(BIN_PATH)/zmq_receiver_test
 
 all: usender receiver sbe zmqrec
     
-usender: $(BIN_PATH)/udp_sender_test.o $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/utility.o
+usender: $(BIN_PATH)/udp_sender_test.o $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/utility.o $(BIN_PATH)/logger.o
 	$(COMPILER) $(LIBS_PATH) $(LIBS) $(FLAGS) -o $(SENDER_TARGET) $?
 
-receiver: $(BIN_PATH)/dat_processor.o $(BIN_PATH)/udp_receiver.o $(BIN_PATH)/udp_receiver_test.o $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/sbe_decoder.o $(BIN_PATH)/utility.o $(BIN_PATH)/mdp_message.o $(BIN_PATH)/dat_saver.o $(BIN_PATH)/tcp_receiver.o $(BIN_PATH)/dat_arbitrator.o $(BIN_PATH)/application.o $(BIN_PATH)/zmq_sender.o
+receiver: $(BIN_PATH)/dat_processor.o $(BIN_PATH)/udp_receiver.o $(BIN_PATH)/udp_receiver_test.o $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/sbe_decoder.o $(BIN_PATH)/utility.o $(BIN_PATH)/mdp_message.o $(BIN_PATH)/dat_saver.o $(BIN_PATH)/tcp_receiver.o $(BIN_PATH)/dat_arbitrator.o $(BIN_PATH)/application.o $(BIN_PATH)/zmq_sender.o $(BIN_PATH)/settings.o $(BIN_PATH)/logger.o
 	$(COMPILER) $(LIBS_PATH) $(LIBS) $(FLAGS) -o $(RECEIVER_TARGET) $?
 
-sbe: $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/sbe_decoder.o $(BIN_PATH)/sbe_test.o $(BIN_PATH)/utility.o
+sbe: $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/sbe_decoder.o $(BIN_PATH)/sbe_test.o $(BIN_PATH)/utility.o $(BIN_PATH)/logger.o
 	$(COMPILER) $(LIBS_PATH) $(LIBS) $(FLAGS) -o $(SBE_TARGET) $?
 
-zmqrec: $(BIN_PATH)/zmq_receiver.o $(BIN_PATH)/zmq_receiver_test.o 
+zmqrec: $(BIN_PATH)/zmq_receiver.o $(BIN_PATH)/zmq_receiver_test.o $(BIN_PATH)/logger.o $(BIN_PATH)/utility.o $(BIN_PATH)/sbe_encoder.o
 	$(COMPILER) $(LIBS_PATH) $(LIBS) $(FLAGS) -o $(ZMQ_TARGET) $?
 
 clean:

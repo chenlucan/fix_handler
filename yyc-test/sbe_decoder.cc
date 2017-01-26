@@ -27,6 +27,14 @@ namespace rczg
         {
             message = this->Decode_message<mktdata::MessageHeader, mktdata::MDIncrementalRefreshVolume37>(*header);
         }
+        else if(templateId == 27)    // MDInstrumentDefinitionFuture27
+        {
+            message = this->Decode_message<mktdata::MessageHeader, mktdata::MDInstrumentDefinitionFuture27>(*header);
+        }
+        else if(templateId == 38)    // SnapshotFullRefresh38
+        {
+            message = this->Decode_message<mktdata::MessageHeader, mktdata::SnapshotFullRefresh38>(*header);
+        }
         // TODO other messages
         
         return std::make_pair(header, message);

@@ -11,7 +11,7 @@ namespace rczg
     {
         public:
             explicit ZmqSender(const char *url);
-            ~ZmqSender();
+            virtual ~ZmqSender();
             
         public:
             void Send(const char *message, size_t length);

@@ -7,7 +7,8 @@ run zeromq receiver(receive message on port 5557):
     ./zmq_receiver_test
     
 run udp/tcp packet receiver(receive packet on port 30001-30007):
-    ./udp_receiver_test 
+    ./udp_receiver_test -s|-j
+    (s: pre-opening startup; j: later joiner startup)
     
 run udp packet sender:
     ./udp_sender_test <send_address> <send_port> <send_interval_ms> <lost_on>

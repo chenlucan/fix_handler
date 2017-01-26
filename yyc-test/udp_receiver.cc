@@ -1,16 +1,16 @@
 
 #include "udp_receiver.h"
+#include "logger.h"
 
 namespace rczg
 {
     
     UDPReceiver::UDPReceiver(
         const boost::asio::ip::address &listen_address,
-        const unsigned short listen_port,
-        const boost::asio::ip::address &multicast_address
+        const unsigned short listen_port
     ) : m_io_service(), m_socket(m_io_service)
     {
-        this->Initialize_socket(listen_address, listen_port, multicast_address);
+        this->Initialize_socket(listen_address, listen_port);
     }
 
     // receive data from udp feed, and process it with processor
@@ -26,13 +26,12 @@ namespace rczg
     {
         m_socket.cancel();
         m_io_service.stop();
-        std::cout << "(udp receiver stoped)" << std::endl;
+        rczg::Logger::Info("(udp receiver stoped)");
     }
     
     void UDPReceiver::Initialize_socket(
         const boost::asio::ip::address &listen_address,
-        const unsigned short listen_port,
-        const boost::asio::ip::address &multicast_address
+        const unsigned short listen_port
     )
     {
         // Initial the socket so that multiple may be bound to the same address.
@@ -40,9 +39,6 @@ namespace rczg
         m_socket.open(listen_endpoint.protocol());
         m_socket.set_option(boost::asio::ip::udp::socket::reuse_address(true));
         m_socket.bind(listen_endpoint);
-
-        // Join the multicast group.
-        m_socket.set_option(boost::asio::ip::multicast::join_group(multicast_address));
     }
 
     void UDPReceiver::Async_receive_from(std::function<void(char *, const size_t)> processor)

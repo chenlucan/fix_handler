@@ -4,9 +4,8 @@
 namespace rczg
 {
     
-    // start_sequence is received max sequence
-    DatArbitrator::DatArbitrator(std::uint32_t start_sequence)
-    : m_current_sequence(start_sequence), m_lost_sequences(), m_mutex()
+    DatArbitrator::DatArbitrator()
+    : m_current_sequence(0), m_lost_sequences(), m_mutex()
     {
         // noop
     }
@@ -14,6 +13,19 @@ namespace rczg
     DatArbitrator::~DatArbitrator()
     {
         // noop
+    }
+    
+    void DatArbitrator::Set_later_join(bool is_lj)
+    {
+        if(is_lj)
+        {
+            // use max value as initial value
+            m_current_sequence = std::numeric_limits<std::uint32_t>::max();
+        }
+        else
+        {
+            m_current_sequence = 0;
+        }
     }
 
     // check whether a packet from udp feed is valid
@@ -23,13 +35,28 @@ namespace rczg
     std::uint32_t DatArbitrator::Check_feed_packet(std::uint32_t packet_seq_num)
     {
         std::lock_guard<std::mutex> lock(m_mutex);
+        
+        if(m_current_sequence == std::numeric_limits<std::uint32_t>::max())
+        {
+            // later joiner's first packet is treated as normal packet
+            m_current_sequence = packet_seq_num;
+            return 0;
+        }
     
         if(packet_seq_num == m_current_sequence)
         {
             // discard the packet
             return std::numeric_limits<std::uint32_t>::max();
         }
-        else if(packet_seq_num < m_current_sequence)
+        
+        if(packet_seq_num == m_current_sequence + 1)
+        {
+            // normal packet
+            m_current_sequence = packet_seq_num;
+            return 0;
+        }
+
+        if(packet_seq_num < m_current_sequence)
         {
             auto index = m_lost_sequences.find(packet_seq_num);
             if(index == m_lost_sequences.end())
@@ -44,13 +71,7 @@ namespace rczg
                 return 0;
             }
         }
-        else if(packet_seq_num == m_current_sequence + 1)
-        {
-            // normal packet
-            m_current_sequence = packet_seq_num;
-            return 0;
-        }
-        else
+        else // packet_seq_num > m_current_sequence + 1
         {
             // gap detected
             std::uint32_t old_seq = m_current_sequence + 1;

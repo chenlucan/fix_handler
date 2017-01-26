@@ -1,6 +1,6 @@
 
 #include "utility.h"
-
+#include "logger.h"
 
 int main(int argc, char* argv[])
 {
@@ -8,8 +8,8 @@ int main(int argc, char* argv[])
     {
         if (argc != 5)
         {
-            std::cerr << "Usage: udp_sender_test <send_address> <send_port> <send_interval_ms> <lost_on>" << std::endl;
-            std::cerr << "Ex:    udp_sender_test 0.0.0.0 30001 500 13" << std::endl;
+            rczg::Logger::Error("Usage: udp_sender_test <send_address> <send_port> <send_interval_ms> <lost_on>");
+            rczg::Logger::Error("Ex:    udp_sender_test 0.0.0.0 30001 500 13");
             
             return 1;
         }
@@ -28,24 +28,22 @@ int main(int argc, char* argv[])
         {
             if(i % lost_on < 3) continue;
             
-            char buf[200];
-            std::uint16_t len = rczg::utility::make_packet(buf, i);
+            char buf[BUFFER_MAX_LENGTH];
+            std::uint16_t len = rczg::utility::Make_packet(buf, i);
             sock.send_to(boost::asio::buffer(buf, len), send_ep);
 
-            std::cout << "sent : seq=" << std::setw(6) << i;
-            std::cout << " len=" << std::setw(3) << len;
-            //std::cout << rczg::utility::Hex_str(buf, len) << std::endl;
-            std::cout << std::endl;
+            rczg::Logger::Info("sent : seq=", i, " len=", len);
+            rczg::Logger::Debug("    msg=", rczg::utility::Hex_str(buf, len));
             
             std::this_thread::sleep_for(std::chrono::milliseconds(send_interval_ms));
         }
     }
     catch (std::exception& e)
     {
-        std::cerr << "Exception: " << e.what() << "\n";
+        rczg::Logger::Error("Exception: ", e.what());
     }
     
     return 0;
 }
 
-// ./udp_sender_test 192.168.1.185 30001 500
+// ./udp_sender_test 192.168.1.185 30001 500 10

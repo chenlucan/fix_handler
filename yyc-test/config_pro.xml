@@ -3318,56 +3318,56 @@
     <connection id="360H1A">
       <type feed-type="H">Historical Replay</type>
       <protocol>TCP/IP</protocol>
-      <host-ip>192.168.1.185</host-ip>
-      <port>30007</port>
+      <host-ip>69.50.112.161</host-ip>
+      <port>9001</port>
       <feed>A</feed>
     </connection>
     <connection id="360IA">
       <type feed-type="I">Incremental</type>
       <protocol>UDP/IP</protocol>
-      <ip>192.168.1.185</ip>
-      <host-ip>192.168.1.185</host-ip>
-      <port>30001</port>
+      <ip>233.158.8.19</ip>
+      <host-ip>69.50.112.111</host-ip>
+      <port>14360</port>
       <feed>A</feed>
     </connection>
     <connection id="360IB">
       <type feed-type="I">Incremental</type>
       <protocol>UDP/IP</protocol>
-      <ip>192.168.1.185</ip>
-      <host-ip>192.168.1.185</host-ip>
-      <port>30002</port>
+      <ip>233.158.8.146</ip>
+      <host-ip>69.50.112.111</host-ip>
+      <port>15360</port>
       <feed>B</feed>
     </connection>
     <connection id="360NA">
       <type feed-type="N">Instrument Replay</type>
       <protocol>UDP/IP</protocol>
-      <ip>192.168.1.185</ip>
-      <host-ip>192.168.1.185</host-ip>
-      <port>30003</port>
+      <ip>233.158.8.103</ip>
+      <host-ip>69.50.112.68</host-ip>
+      <port>6360</port>
       <feed>A</feed>
     </connection>
     <connection id="360NB">
       <type feed-type="N">Instrument Replay</type>
       <protocol>UDP/IP</protocol>
-      <ip>192.168.1.185</ip>
-      <host-ip>192.168.1.185</host-ip>
-      <port>30004</port>
+      <ip>233.158.8.230</ip>
+      <host-ip>69.50.112.68</host-ip>
+      <port>7360</port>
       <feed>B</feed>
     </connection>
     <connection id="360SA">
       <type feed-type="S">Snapshot</type>
       <protocol>UDP/IP</protocol>
-      <ip>192.168.1.185</ip>
-      <host-ip>192.168.1.185</host-ip>
-      <port>30005</port>
+      <ip>233.158.8.61</ip>
+      <host-ip>69.50.112.123</host-ip>
+      <port>6360</port>
       <feed>A</feed>
     </connection>
     <connection id="360SB">
       <type feed-type="S">Snapshot</type>
       <protocol>UDP/IP</protocol>
-      <ip>192.168.1.185</ip>
-      <host-ip>192.168.1.185</host-ip>
-      <port>30006</port>
+      <ip>233.158.8.188</ip>
+      <host-ip>69.50.112.123</host-ip>
+      <port>7360</port>
       <feed>B</feed>
     </connection>
    </connections>

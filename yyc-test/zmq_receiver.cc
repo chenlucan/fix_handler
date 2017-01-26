@@ -1,5 +1,6 @@
 
 #include "zmq_receiver.h"
+#include "logger.h"
 
 namespace rczg
 {
@@ -35,7 +36,7 @@ namespace rczg
         auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count();
         start = finish;
 
-        std::cout << "received: " << ns << "ns, len=" << size << ", data=" << data << std::endl;
+        rczg::Logger::Trace("received:", ns, "ns, len=", size, ", data=", data);
     }
     
 }

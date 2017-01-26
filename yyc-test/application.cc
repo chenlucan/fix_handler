@@ -1,14 +1,16 @@
 
 #include "application.h"
+#include "settings.h"
+#include "logger.h"
 
 namespace rczg
 {
     
-    Application::Application()
+    Application::Application(const std::string &channel_id, const std::string &setting_file)
     : m_udp_incrementals(), m_udp_recoveries(), m_udp_definitions(),
       m_tcp_replayer(nullptr), m_sender(nullptr), m_arbitrator(nullptr), m_saver(nullptr), m_processor(nullptr)
     {
-        Initial_application();
+        Initial_application(channel_id, setting_file);
     }
     
     Application::~Application()
@@ -24,53 +26,53 @@ namespace rczg
         delete m_sender;
     }
     
-    void Application::Initial_application()
+    void Application::Initial_application(const std::string &channel_id, const std::string &setting_file)
     {
-        // TODO should initialized by config file (channel id="360")
-        rczg::UDPReceiver *incrementalA = new rczg::UDPReceiver(
-            boost::asio::ip::address::from_string("0.0.0.0"), 
-            30001, 
-            boost::asio::ip::address::from_string("239.255.0.1"));
-        rczg::UDPReceiver *incrementalB = new rczg::UDPReceiver(
-            boost::asio::ip::address::from_string("0.0.0.0"), 
-            30002, 
-            boost::asio::ip::address::from_string("239.255.0.1"));
-        rczg::UDPReceiver *recoveryA = new rczg::UDPReceiver(
-            boost::asio::ip::address::from_string("0.0.0.0"), 
-            30003, 
-            boost::asio::ip::address::from_string("239.255.0.1"));
-        rczg::UDPReceiver *recoveryB = new rczg::UDPReceiver(
-            boost::asio::ip::address::from_string("0.0.0.0"), 
-            30004, 
-            boost::asio::ip::address::from_string("239.255.0.1"));
-        rczg::UDPReceiver *definitionA = new rczg::UDPReceiver(
-            boost::asio::ip::address::from_string("0.0.0.0"), 
-            30005, 
-            boost::asio::ip::address::from_string("239.255.0.1"));
-        rczg::UDPReceiver *definitionB = new rczg::UDPReceiver(
-            boost::asio::ip::address::from_string("0.0.0.0"), 
-            30006, 
-            boost::asio::ip::address::from_string("239.255.0.1"));
-        rczg::TCPReceiver *tcp = new rczg::TCPReceiver(
-            boost::asio::ip::address::from_string("192.168.1.185"), 
-            30007);
-            
-        m_udp_incrementals.push_back(incrementalA);
-        m_udp_incrementals.push_back(incrementalB);
-        m_udp_recoveries.push_back(recoveryA);
-        m_udp_recoveries.push_back(recoveryB);
-        m_udp_definitions.push_back(definitionA);
-        m_udp_definitions.push_back(definitionB);
-        m_tcp_replayer = tcp;
-
+        rczg::Settings settings(setting_file);
+        rczg::setting::Channel channel = settings.Get_channel(channel_id);
+        std::vector<rczg::setting::Connection> connections = channel.connections;
+        
+        std::for_each(connections.cbegin(), connections.cend(), [this](const rczg::setting::Connection &c){
+            if(c.protocol == rczg::setting::Protocol::TCP)
+            {
+                // TCP replay
+                rczg::Logger::Info("TCP:", c.host_ip, ", ", c.port);
+                m_tcp_replayer = new rczg::TCPReceiver(c.host_ip, c.port);
+            }
+            else if(c.type == rczg::setting::FeedType::I)
+            {
+                // UDP Incremental
+                rczg::Logger::Info("UDP Incremental:", c.ip, ", ", c.port);
+                m_udp_incrementals.push_back(new rczg::UDPReceiver(c.ip, c.port));
+            }
+            else if(c.type == rczg::setting::FeedType::N)
+            {
+                // UDP Instrument Definition
+                rczg::Logger::Info("UDP Definition:", c.ip, ", ", c.port);
+                m_udp_definitions.push_back(new rczg::UDPReceiver(c.ip, c.port));
+            }
+            else if(c.type == rczg::setting::FeedType::S)
+            {
+                // UDP Market Recovery
+                rczg::Logger::Info("UDP Recovery:", c.ip, ", ", c.port);
+                m_udp_recoveries.push_back(new rczg::UDPReceiver(c.ip, c.port));
+            }
+        });
+        
         m_sender = new rczg::ZmqSender("tcp://*:5557");
-        m_arbitrator = new rczg::DatArbitrator(0);
+        m_arbitrator = new rczg::DatArbitrator();
         m_saver = new rczg::DatSaver(*m_sender);
         m_processor = new rczg::DatProcessor(*m_arbitrator, *m_saver, *m_tcp_replayer);
     }
     
     void Application::Start()
     {
+        rczg::Logger::Info("Start to listen ...");
+        
+        // must tell them this is weekly pre-opening startup
+        m_arbitrator->Set_later_join(false);
+        m_saver->Set_later_join(false);
+        
         // start udp incrementals
         std::for_each(m_udp_incrementals.begin(), m_udp_incrementals.end(), 
                       std::bind(&Application::Start_udp_feed, this, std::placeholders::_1));
@@ -80,6 +82,12 @@ namespace rczg
     
     void Application::Join()
     {
+        rczg::Logger::Info("Join to listen ...");
+        
+        // must tell them this is later joiner startup
+        m_arbitrator->Set_later_join(true);
+        m_saver->Set_later_join(true);
+        
         // start udp incrementals
         std::for_each(m_udp_incrementals.begin(), m_udp_incrementals.end(), 
                       std::bind(&Application::Start_udp_feed, this, std::placeholders::_1));
@@ -91,8 +99,6 @@ namespace rczg
                       std::bind(&Application::Start_udp_feed, this, std::placeholders::_1));
         // start message reader
         Start_read();
-                        
-        std::cin.get();
     }
     
     void Application::Stop_recoveries()

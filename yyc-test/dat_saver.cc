@@ -1,5 +1,6 @@
 
 #include "dat_saver.h"
+#include "logger.h"
 
 namespace rczg
 {
@@ -9,15 +10,33 @@ namespace rczg
         // noop
     }
 
+    void DatSaver::Set_later_join(bool is_lj)
+    {
+        if(is_lj)
+        {
+            // use max value as initial value
+            m_last_seq = std::numeric_limits<std::uint32_t>::max();
+        }
+        else
+        {
+            m_last_seq = 0;
+        }
+    }
+    
     // save mdp messages to memory
     void DatSaver::Save_data(std::uint32_t packet_seq_num, std::vector<rczg::MdpMessage> &mdp_messages)
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         
-        std::for_each(mdp_messages.cbegin(), mdp_messages.cend(), 
-                      [this](const rczg::MdpMessage &m){ m_datas.insert(m.Copy_out()); });
+        std::for_each(mdp_messages.begin(), mdp_messages.end(), 
+                      [this](rczg::MdpMessage &m){ m_datas.insert(std::move(m)); });
         
-        if(packet_seq_num < m_last_seq)
+        if(m_last_seq == std::numeric_limits<std::uint32_t>::max())
+        {
+            // later joiner's first packet is treated as first
+            m_last_seq = packet_seq_num;
+        }
+        else if(packet_seq_num < m_last_seq)
         {
             m_unreceived_seqs.erase(packet_seq_num);
         }
@@ -35,15 +54,16 @@ namespace rczg
     {
        while(true)
        {
-           std::string message;
-           bool has_message = Pick_next_message_to_serialize(message);
-           if(has_message)
+           auto message = Pick_next_message_to_serialize();
+           if(message != m_datas.end())
            {
                bool should_send_now = this->Convert_message(message);
                if(should_send_now)
                {
                    this->Send(message);
                }
+               
+               Remove_past_message(message);
            }
            else
            {
@@ -53,50 +73,52 @@ namespace rczg
     }
     
     // pick first message to serialize and remove it from memory
-    bool DatSaver::Pick_next_message_to_serialize(std::string &target_message)
+    std::multiset<rczg::MdpMessage>::iterator DatSaver::Pick_next_message_to_serialize()
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         
         if(m_datas.empty())
         {
             // no message
-            //std::cout << "no message." << std::endl;
-            return false;
+            return m_datas.end();
         }
         
-        std::pair<std::uint32_t, std::string> message = *m_datas.begin();
+        auto message = m_datas.begin();
         std::uint32_t first_unreceived = m_unreceived_seqs.empty() ? 0 : *m_unreceived_seqs.begin();
         
-        if(first_unreceived != 0 && message.first >= first_unreceived)
+        if(first_unreceived != 0 && message->packet_seq_num() >= first_unreceived)
         {
             // wait for next seq
-            //std::cout << "wait for " << first_unreceived << std::endl;
-            return false;
+            return m_datas.end();
         }
         
-        target_message = message.second;
-        m_datas.erase(m_datas.begin());
-        
-        return true;
+        return message;
     }
     
-    bool DatSaver::Convert_message(std::string &message)
+    bool DatSaver::Convert_message(std::multiset<rczg::MdpMessage>::iterator message)
     {
         // TODO convert the message
         return true;
     }
     
-    void DatSaver::Send(std::string &message)
+    void DatSaver::Send(std::multiset<rczg::MdpMessage>::iterator message)
     {
         static auto start = std::chrono::high_resolution_clock::now();
         
         // send to zeroqueue
-        m_sender->Send(message.data(), message.size());
+        auto s = message->Serialize();
+        m_sender->Send(s.data(), s.size());
 
         auto finish = std::chrono::high_resolution_clock::now();
         auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count();
-        std::cout << "send to zmq: " << ns << "ns : " << message << std::endl;
+        rczg::Logger::Info("send to zmq: ", ns, "ns, ", s);
         start = finish;
+    }
+    
+    void DatSaver::Remove_past_message(std::multiset<rczg::MdpMessage>::iterator message)
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        m_datas.erase(message);
     }
     
     DatSaver::~DatSaver()

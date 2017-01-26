@@ -25,17 +25,6 @@ namespace rczg
         private:
             void Process_data(char *buffer, const size_t data_length);
             void Start_tcp_replay(std::uint32_t begin, std::uint32_t end);
-            std::uint16_t Make_mdp_message(
-                rczg::MdpMessage &mdp, 
-                const size_t data_length, 
-                const std::uint32_t packet_seq_num,
-                const std::uint64_t packet_sending_time,
-                char *current_position);
-            void Make_mdp_invalid_message(
-                rczg::MdpMessage &mdp, 
-                const size_t data_length, 
-                const std::uint32_t packet_seq_num,
-                const std::uint64_t packet_sending_time);
             void Save_message(std::uint32_t packet_seq_num, std::vector<rczg::MdpMessage> &mdp_messages);
             
         private:

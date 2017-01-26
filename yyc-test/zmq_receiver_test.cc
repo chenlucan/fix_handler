@@ -1,5 +1,6 @@
 
 #include "zmq_receiver.h"
+#include "logger.h"
 
 int main(int argc, char* argv[])
 {
@@ -7,9 +8,7 @@ int main(int argc, char* argv[])
     {
         if (argc != 1)
         {
-            std::cerr << "Usage: zmq_receiver_test \n";
-            std::cerr << "Ex:    zmq_receiver_test \n";
-            
+            rczg::Logger::Error("Usage: zmq_receiver_test");
             return 1;
         }
         
@@ -18,7 +17,7 @@ int main(int argc, char* argv[])
     }
     catch (std::exception& e)
     {
-        std::cerr << "Exception: " << e.what() << "\n";
+        rczg::Logger::Error("Exception: ", e.what());
     }
 
     return 0;

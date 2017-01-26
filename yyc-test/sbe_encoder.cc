@@ -28,6 +28,18 @@ namespace rczg
             encodeHeaderLength = this->Encode_header<mktdata::MDIncrementalRefreshVolume37>(header);
             encodeMessageLength = this->Encode_message(header, message);
         }
+        else if(templateId == 27)    // MDInstrumentDefinitionFuture27
+        {
+            mktdata::MDInstrumentDefinitionFuture27 message;
+            encodeHeaderLength = this->Encode_header<mktdata::MDInstrumentDefinitionFuture27>(header);
+            encodeMessageLength = this->Encode_message(header, message);
+        }
+        else if(templateId == 38)    // SnapshotFullRefresh38
+        {
+            mktdata::SnapshotFullRefresh38 message;
+            encodeHeaderLength = this->Encode_header<mktdata::SnapshotFullRefresh38>(header);
+            encodeMessageLength = this->Encode_message(header, message);
+        }
         // TODO other messages
         
         m_encoded_length = encodeHeaderLength + encodeMessageLength;
@@ -90,6 +102,107 @@ namespace rczg
         message.securityTradingStatus(mktdata::SecurityTradingStatus::Close) // 4
                .haltReason(mktdata::HaltReason::InstrumentExpiration) // 4
                .securityTradingEvent(mktdata::SecurityTradingEvent::ResetStatistics); // 4
+
+        return message.encodedLength();
+    }
+    
+    std::size_t SBEEncoder::Encode_message(mktdata::MessageHeader &header, mktdata::MDInstrumentDefinitionFuture27 &message)
+    {
+        message.wrapForEncode(m_buffer, header.encodedLength(), sizeof(m_buffer));
+        message.matchEventIndicator()
+               .clear()
+               .lastTradeMsg(false)
+               .lastVolumeMsg(false)
+               .lastQuoteMsg(false)
+               .lastStatsMsg(false)
+               .lastImpliedMsg(false)
+               .recoveryMsg(false)
+               .reserved(true)
+               .endOfEvent(true);
+        message.totNumReports(10)
+               .securityUpdateAction(mktdata::SecurityUpdateAction::Delete)
+               .lastUpdateTime(rczg::utility::Current_time_ns())
+               .mDSecurityTradingStatus(mktdata::SecurityTradingStatus::Close)
+               .applID(12)
+               .marketSegmentID(13)
+               .underlyingProduct(14)
+               .putSecurityExchange("abcd")
+               .putSecurityGroup("efghjk")
+               .putAsset("A1234A")
+               .putSymbol("B123456789012345678B")
+               .securityID(3)
+               .putSecurityType("D1234D")
+               .putCFICode("E1234E")
+               .maturityMonthYear().year(2017).month(1).day(12).week(3);
+        message.putCurrency("JPY")
+               .putSettlCurrency("USA")
+               .matchAlgorithm('a')
+               .minTradeVol(100)
+               .maxTradeVol(200)
+               .minPriceIncrement().mantissa(700001);
+        message.displayFactor().mantissa(700002);
+        message.mainFraction(20)
+               .subFraction(30)
+               .priceDisplayFormat(40)
+               .putUnitOfMeasure("E1234567890123456789012345678E")
+               .unitOfMeasureQty().mantissa(700000);
+        message.tradingReferencePrice().mantissa(700003);
+        message.settlPriceType().clear().finalrc(true);
+        message.openInterestQty(50)
+               .clearedVolume(60)
+               .highLimitPrice().mantissa(700004);
+        message.lowLimitPrice().mantissa(700005);
+        message.maxPriceVariation().mantissa(700006);
+        message.decayStartDate(18302)
+               .originalContractSize(70)
+               .contractMultiplier(80)
+               .contractMultiplierUnit(90)
+               .flowScheduleType(100)
+               .minPriceIncrementAmount().mantissa(700007);
+        message.userDefinedInstrument('x')
+               .tradingReferenceDate(18305);
+               
+        mktdata::MDInstrumentDefinitionFuture27::NoEvents& noEvents = message.noEventsCount(1);
+        noEvents.next().eventType(mktdata::EventType::Activation).eventTime(18400);
+                      
+        mktdata::MDInstrumentDefinitionFuture27::NoMDFeedTypes& fs = message.noMDFeedTypesCount(2);
+        fs.next().putMDFeedType("MD1").marketDepth(12);
+        fs.next().putMDFeedType("MD2").marketDepth(13);
+                      
+        mktdata::MDInstrumentDefinitionFuture27::NoInstAttrib& is = message.noInstAttribCount(1);
+        is.next().instAttribValue()
+                 .clear()
+                 .electronicMatchEligible(true);
+        
+        mktdata::MDInstrumentDefinitionFuture27::NoLotTypeRules& ts = message.noLotTypeRulesCount(2);
+        ts.next().lotType(81).minLotSize().mantissa(20001);
+        ts.next().lotType(82).minLotSize().mantissa(20002);
+        
+        return message.encodedLength();
+    }
+    
+    std::size_t SBEEncoder::Encode_message(mktdata::MessageHeader &header, mktdata::SnapshotFullRefresh38 &message)
+    {
+        message.wrapForEncode(m_buffer, header.encodedLength(), sizeof(m_buffer));
+        message.lastMsgSeqNumProcessed(123)
+               .totNumReports(10)
+               .securityID(456)
+               .rptSeq(100)
+               .transactTime(rczg::utility::Current_time_ns())
+               .lastUpdateTime(rczg::utility::Current_time_ns())
+               .tradeDate(18300)
+               .mDSecurityTradingStatus(mktdata::SecurityTradingStatus::Close)
+               .highLimitPrice().mantissa(800001);
+        message.lowLimitPrice().mantissa(800002);
+        message.maxPriceVariation().mantissa(800003);
+        
+        mktdata::SnapshotFullRefresh38::NoMDEntries& entries = message.noMDEntriesCount(1);
+        mktdata::SnapshotFullRefresh38::NoMDEntries& n = entries.next();
+        n.mDEntryPx().mantissa(900001);
+        n.mDEntrySize(71).numberOfOrders(72).mDPriceLevel(73).tradingReferenceDate(18300);
+        n.openCloseSettlFlag(mktdata::OpenCloseSettlFlag::DailyOpenPrice);
+        n.settlPriceType().clear().finalrc(true);
+        n.mDEntryType(mktdata::MDEntryType::Bid);
 
         return message.encodedLength();
     }

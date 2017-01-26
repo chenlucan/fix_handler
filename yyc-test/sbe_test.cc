@@ -1,60 +1,97 @@
 
 #include "sbe_encoder.h"
 #include "sbe_decoder.h"
+#include "logger.h"
 
 void printSecurityStatus30(mktdata::SecurityStatus30 &message)
 {
-    std::cout << "message.type=SecurityStatus30" << std::endl;
-    std::cout << "message.sbeSemanticType=" << message.sbeSemanticType() << std::endl;
-    std::cout << "message.transactTime=" << message.transactTime() << std::endl;
-    std::cout << "message.securityGroup=" << message.getSecurityGroupAsString() << std::endl;
-    std::cout << "message.asset=" << message.getAssetAsString() << std::endl;
-    std::cout << "message.securityID=" << message.securityID() << std::endl;
-    std::cout << "message.tradeDate=" << message.tradeDate() << std::endl;
+    rczg::Logger::Info("message.type=SecurityStatus30");
+    rczg::Logger::Info("message.sbeSemanticType=", message.sbeSemanticType());
+    rczg::Logger::Info("message.transactTime=", message.transactTime());
+    rczg::Logger::Info("message.securityGroup=", message.getSecurityGroupAsString());
+    rczg::Logger::Info("message.asset=", message.getAssetAsString());
+    rczg::Logger::Info("message.securityID=", message.securityID());
+    rczg::Logger::Info("message.tradeDate=", message.tradeDate());
 
     mktdata::MatchEventIndicator& matchEventIndicator = message.matchEventIndicator();
-    std::cout << "message.matchEventIndicator.lastTradeMsg=" << matchEventIndicator.lastTradeMsg() << std::endl;
-    std::cout << "message.matchEventIndicator.lastVolumeMsg=" << matchEventIndicator.lastVolumeMsg() << std::endl;
-    std::cout << "message.matchEventIndicator.lastQuoteMsg=" << matchEventIndicator.lastQuoteMsg() << std::endl;
-    std::cout << "message.matchEventIndicator.lastStatsMsg=" << matchEventIndicator.lastStatsMsg() << std::endl;
-    std::cout << "message.matchEventIndicator.lastImpliedMsg=" << matchEventIndicator.lastImpliedMsg() << std::endl;
-    std::cout << "message.matchEventIndicator.recoveryMsg=" << matchEventIndicator.recoveryMsg() << std::endl;
-    std::cout << "message.matchEventIndicator.reserved=" << matchEventIndicator.reserved() << std::endl;
-    std::cout << "message.matchEventIndicator.endOfEvent=" << matchEventIndicator.endOfEvent() << std::endl;
+    rczg::Logger::Info("message.matchEventIndicator.lastTradeMsg=", matchEventIndicator.lastTradeMsg());
+    rczg::Logger::Info("message.matchEventIndicator.lastVolumeMsg=", matchEventIndicator.lastVolumeMsg());
+    rczg::Logger::Info("message.matchEventIndicator.lastQuoteMsg=", matchEventIndicator.lastQuoteMsg());
+    rczg::Logger::Info("message.matchEventIndicator.lastStatsMsg=", matchEventIndicator.lastStatsMsg());
+    rczg::Logger::Info("message.matchEventIndicator.lastImpliedMsg=", matchEventIndicator.lastImpliedMsg());
+    rczg::Logger::Info("message.matchEventIndicator.recoveryMsg=", matchEventIndicator.recoveryMsg());
+    rczg::Logger::Info("message.matchEventIndicator.reserved=", matchEventIndicator.reserved());
+    rczg::Logger::Info("message.matchEventIndicator.endOfEvent=", matchEventIndicator.endOfEvent());
     
-    std::cout << "message.securityTradingStatus=" << message.securityTradingStatus() << std::endl;
-    std::cout << "message.haltReason=" << message.haltReason() << std::endl;
-    std::cout << "message.securityTradingEvent=" << message.securityTradingEvent() << std::endl;
-    std::cout << std::endl;
+    rczg::Logger::Info("message.securityTradingStatus=", message.securityTradingStatus());
+    rczg::Logger::Info("message.haltReason=", message.haltReason());
+    rczg::Logger::Info("message.securityTradingEvent=", message.securityTradingEvent());
+    rczg::Logger::Info("");
 }
 
 void printMDIncrementalRefreshVolume37(mktdata::MDIncrementalRefreshVolume37 &message)
 {
-    std::cout << "message.type=MDIncrementalRefreshVolume37" << std::endl;
-    std::cout << "message.sbeSemanticType=" << message.sbeSemanticType() << std::endl;
-    std::cout << "message.transactTime=" << message.transactTime() << std::endl;
+    rczg::Logger::Info("message.type=MDIncrementalRefreshVolume37");
+    rczg::Logger::Info("message.sbeSemanticType=", message.sbeSemanticType());
+    rczg::Logger::Info("message.transactTime=", message.transactTime());
 
     mktdata::MatchEventIndicator& matchEventIndicator = message.matchEventIndicator();
-    std::cout << "message.matchEventIndicator.lastTradeMsg=" << matchEventIndicator.lastTradeMsg() << std::endl;
-    std::cout << "message.matchEventIndicator.lastVolumeMsg=" << matchEventIndicator.lastVolumeMsg() << std::endl;
-    std::cout << "message.matchEventIndicator.lastQuoteMsg=" << matchEventIndicator.lastQuoteMsg() << std::endl;
-    std::cout << "message.matchEventIndicator.lastStatsMsg=" << matchEventIndicator.lastStatsMsg() << std::endl;
-    std::cout << "message.matchEventIndicator.lastImpliedMsg=" << matchEventIndicator.lastImpliedMsg() << std::endl;
-    std::cout << "message.matchEventIndicator.recoveryMsg=" << matchEventIndicator.recoveryMsg() << std::endl;
-    std::cout << "message.matchEventIndicator.reserved=" << matchEventIndicator.reserved() << std::endl;
-    std::cout << "message.matchEventIndicator.endOfEvent=" << matchEventIndicator.endOfEvent() << std::endl;
+    rczg::Logger::Info("message.matchEventIndicator.lastTradeMsg=", matchEventIndicator.lastTradeMsg());
+    rczg::Logger::Info("message.matchEventIndicator.lastVolumeMsg=", matchEventIndicator.lastVolumeMsg());
+    rczg::Logger::Info("message.matchEventIndicator.lastQuoteMsg=", matchEventIndicator.lastQuoteMsg());
+    rczg::Logger::Info("message.matchEventIndicator.lastStatsMsg=", matchEventIndicator.lastStatsMsg());
+    rczg::Logger::Info("message.matchEventIndicator.lastImpliedMsg=", matchEventIndicator.lastImpliedMsg());
+    rczg::Logger::Info("message.matchEventIndicator.recoveryMsg=", matchEventIndicator.recoveryMsg());
+    rczg::Logger::Info("message.matchEventIndicator.reserved=", matchEventIndicator.reserved());
+    rczg::Logger::Info("message.matchEventIndicator.endOfEvent=", matchEventIndicator.endOfEvent());
     
     mktdata::MDIncrementalRefreshVolume37::NoMDEntries& noMDEntries = message.noMDEntries();
     while (noMDEntries.hasNext())
     {
         noMDEntries.next();
-        std::cout << "message.noMDEntries.mDEntrySize=" << (int)noMDEntries.mDEntrySize() << std::endl;
-        std::cout << "message.noMDEntries.securityID=" << (int)noMDEntries.securityID() << std::endl;
-        std::cout << "message.noMDEntries.rptSeq=" << (int)noMDEntries.rptSeq() << std::endl;
-        std::cout << "message.noMDEntries.mDUpdateAction=" << (int)noMDEntries.mDUpdateAction() << std::endl;
-        std::cout << "message.noMDEntries.mDEntryType=" << noMDEntries.mDEntryType()[0] << std::endl;
+        rczg::Logger::Info("message.noMDEntries.mDEntrySize=", (int)noMDEntries.mDEntrySize());
+        rczg::Logger::Info("message.noMDEntries.securityID=", (int)noMDEntries.securityID());
+        rczg::Logger::Info("message.noMDEntries.rptSeq=", (int)noMDEntries.rptSeq());
+        rczg::Logger::Info("message.noMDEntries.mDUpdateAction=", (int)noMDEntries.mDUpdateAction());
+        rczg::Logger::Info("message.noMDEntries.mDEntryType=", noMDEntries.mDEntryType()[0]);
     }
-    std::cout << std::endl;
+    rczg::Logger::Info("");
+}
+
+void printMDInstrumentDefinitionFuture27(mktdata::MDInstrumentDefinitionFuture27 &message)
+{
+    rczg::Logger::Info("message.type=MDInstrumentDefinitionFuture27");
+    rczg::Logger::Info("message.sbeSemanticType=", message.sbeSemanticType());
+
+    mktdata::MatchEventIndicator& matchEventIndicator = message.matchEventIndicator();
+    rczg::Logger::Info("message.matchEventIndicator.lastTradeMsg=", matchEventIndicator.lastTradeMsg());
+    rczg::Logger::Info("message.matchEventIndicator.lastVolumeMsg=", matchEventIndicator.lastVolumeMsg());
+    rczg::Logger::Info("message.matchEventIndicator.lastQuoteMsg=", matchEventIndicator.lastQuoteMsg());
+    rczg::Logger::Info("message.matchEventIndicator.lastStatsMsg=", matchEventIndicator.lastStatsMsg());
+    rczg::Logger::Info("message.matchEventIndicator.lastImpliedMsg=", matchEventIndicator.lastImpliedMsg());
+    rczg::Logger::Info("message.matchEventIndicator.recoveryMsg=", matchEventIndicator.recoveryMsg());
+    rczg::Logger::Info("message.matchEventIndicator.reserved=", matchEventIndicator.reserved());
+    rczg::Logger::Info("message.matchEventIndicator.endOfEvent=", matchEventIndicator.endOfEvent());
+        
+    rczg::Logger::Info("message.totNumReports=", message.totNumReports());
+    rczg::Logger::Info("message.securityUpdateAction=", message.securityUpdateAction());
+    rczg::Logger::Info("message.lastUpdateTime=", message.lastUpdateTime());
+
+    rczg::Logger::Info("");
+}
+
+void printSnapshotFullRefresh38(mktdata::SnapshotFullRefresh38 &message)
+{
+    rczg::Logger::Info("message.type=SnapshotFullRefresh38");
+    rczg::Logger::Info("message.sbeSemanticType=", message.sbeSemanticType());
+    rczg::Logger::Info("message.lastMsgSeqNumProcessed=", message.lastMsgSeqNumProcessed());
+    rczg::Logger::Info("message.totNumReports=", message.totNumReports());
+    rczg::Logger::Info("message.securityID=", message.securityID());
+    rczg::Logger::Info("message.rptSeq=", message.rptSeq());
+    rczg::Logger::Info("message.transactTime=", message.transactTime());
+    rczg::Logger::Info("message.lastUpdateTime=", message.lastUpdateTime());
+
+    rczg::Logger::Info("");
 }
 
 int main(int argc, char* argv[])
@@ -63,15 +100,15 @@ int main(int argc, char* argv[])
     {
         if (argc != 2)
         {
-            std::cerr << "Usage: sbe_test <template_id>\n";
-            std::cerr << "Ex:    sbe_test 30\n";
+            rczg::Logger::Error("Usage: sbe_test <template_id>");
+            rczg::Logger::Error("Ex:    sbe_test 30");
             
             return 1;
         }
 
         rczg::SBEEncoder encoder;
         encoder.Start_encode(boost::lexical_cast<std::uint16_t>(argv[1]));
-        std::cout << encoder.Encoded_hex_str() << std::endl;
+        rczg::Logger::Info(encoder.Encoded_hex_str());
         
         auto start = std::chrono::high_resolution_clock::now();
         
@@ -93,16 +130,26 @@ int main(int argc, char* argv[])
             auto md37 = static_cast<mktdata::MDIncrementalRefreshVolume37*>(message);
             printMDIncrementalRefreshVolume37(*md37);
         }
+        else if(templateId == 27)    // MDInstrumentDefinitionFuture27
+        {
+            auto md27 = static_cast<mktdata::MDInstrumentDefinitionFuture27*>(message);
+            printMDInstrumentDefinitionFuture27(*md27);
+        }
+        else if(templateId == 38)    // SnapshotFullRefresh38
+        {
+            auto md38 = static_cast<mktdata::SnapshotFullRefresh38*>(message);
+            printSnapshotFullRefresh38(*md38);
+        }
         
         auto finish = std::chrono::high_resolution_clock::now();
-        std::cout << std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count() << "ns" << std::endl;
+        rczg::Logger::Info(std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count(), "ns");
     }
     catch (std::exception& e)
     {
-        std::cerr << "Exception: " << e.what() << "\n";
+        rczg::Logger::Error("Exception: ", e.what());
     }
 
     return 0;
 }
 
-// ./sbe_test
+// ./sbe_test 30

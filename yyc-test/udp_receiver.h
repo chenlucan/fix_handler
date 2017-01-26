@@ -11,8 +11,7 @@ namespace rczg
         public:
             UDPReceiver(
                 const boost::asio::ip::address &listen_address,
-                const unsigned short listen_port,
-                const boost::asio::ip::address &multicast_address
+                const unsigned short listen_port
             );
 
             virtual ~UDPReceiver();
@@ -27,8 +26,7 @@ namespace rczg
         private:
             void Initialize_socket(
                 const boost::asio::ip::address &listen_address,
-                const unsigned short listen_port,
-                const boost::asio::ip::address &multicast_address
+                const unsigned short listen_port
             );
         
             void Async_receive_from(std::function<void(char *, const size_t)> processor);

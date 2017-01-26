@@ -14,7 +14,7 @@ namespace rczg
     class Application
     {
         public:
-            Application();
+            explicit Application(const std::string &channel_id, const std::string &setting_file = "config.xml");
             virtual ~Application();
             
         public:
@@ -22,7 +22,7 @@ namespace rczg
             void Join();
             
         private:
-            void Initial_application();
+            void Initial_application(const std::string &channel_id, const std::string &setting_file);
             void Start_udp_feed(rczg::UDPReceiver *udp);
             void Start_read();
             void Stop_recoveries();

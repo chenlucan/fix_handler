@@ -17,8 +17,8 @@ namespace rczg
         //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         for(std::uint32_t i = begin; i < end; ++i)
         {
-            char buffer[200];
-            std::size_t bytes_recieved = rczg::utility::make_packet(buffer, i);
+            char buffer[BUFFER_MAX_LENGTH];
+            std::size_t bytes_recieved = rczg::utility::Make_packet(buffer, i);
             processor(buffer, bytes_recieved);
         }
     }

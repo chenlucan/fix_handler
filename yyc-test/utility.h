@@ -11,6 +11,9 @@ namespace utility
     // get current time in nanoseconds since epoch
     std::uint64_t Current_time_ns();
     
+    // get current time in "yyyy-MM-dd HH:mm:ss.ssssss" format
+    std::string Current_time_str();
+    
     // translate each char in buffer to hex format for display
     // ex: "abc" -> "61 62 63 "
     std::string Hex_str(const char *buffer, std::size_t length);
@@ -19,10 +22,10 @@ namespace utility
     std::uint32_t Random_number(std::uint32_t min, std::uint32_t max);
     
     // make a mdp message for test
-    std::size_t make_message(char *position);
+    std::size_t Make_message(char *position);
     
     // make a mdp packet for test
-    std::size_t make_packet(char *buffer, std::uint32_t packet_seq_num);
+    std::size_t Make_packet(char *buffer, std::uint32_t packet_seq_num);
 }   
 }
 
