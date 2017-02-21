@@ -3,6 +3,7 @@
 #define __GLOBAL_H__
 
 #include <utility>
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <random>
@@ -13,6 +14,7 @@
 #include <thread>
 #include <mutex>
 #include <limits>
+#include <deque>
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
@@ -22,8 +24,10 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/iterator/counting_iterator.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/ini_parser.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/posix_time/posix_time_io.hpp>
+#include <boost/algorithm/string.hpp>
 
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \
             TypeName(const TypeName&); \

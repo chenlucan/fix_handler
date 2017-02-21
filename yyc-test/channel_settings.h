@@ -1,17 +1,17 @@
 
-#ifndef __SETTINGS_H__
-#define __SETTINGS_H__
+#ifndef __CHANNEL_SETTINGS_H__
+#define __CHANNEL_SETTINGS_H__
 
 #include "global.h"
 #include "channel.h"
 
 namespace rczg
 {
-    class Settings
+    class ChannelSettings
     {
         public:
-            explicit Settings(const std::string &file = "config.xml");
-            virtual ~Settings();
+            explicit ChannelSettings(const std::string &channel_setting_file = "config.xml");
+            virtual ~ChannelSettings();
             
         public:
             const rczg::setting::Channel Get_channel(const std::string &channel_id) const;
@@ -22,7 +22,7 @@ namespace rczg
             static const std::unordered_map<std::string, rczg::setting::Feed> FEEDS;
             
         private:
-            void Read_xml(const std::string &file);
+            void Read_channels(const std::string &channel_setting_file);
             std::vector<rczg::setting::Product> Read_channel_products(boost::property_tree::ptree::value_type &channel);
             std::vector<rczg::setting::Connection> Read_channel_connections(boost::property_tree::ptree::value_type &channel);
             template <typename T> 
@@ -32,8 +32,8 @@ namespace rczg
             std::unordered_map<std::string, rczg::setting::Channel> m_channels;
             
         private:
-            DISALLOW_COPY_AND_ASSIGN(Settings);
+            DISALLOW_COPY_AND_ASSIGN(ChannelSettings);
     };
 }
 
-#endif // __SETTINGS_H__    
+#endif // __CHANNEL_SETTINGS_H__

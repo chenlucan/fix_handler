@@ -1,97 +1,204 @@
 
 #include "sbe_encoder.h"
 #include "sbe_decoder.h"
+#include "time_measurer.h"
 #include "logger.h"
 
 void printSecurityStatus30(mktdata::SecurityStatus30 &message)
 {
-    rczg::Logger::Info("message.type=SecurityStatus30");
-    rczg::Logger::Info("message.sbeSemanticType=", message.sbeSemanticType());
-    rczg::Logger::Info("message.transactTime=", message.transactTime());
-    rczg::Logger::Info("message.securityGroup=", message.getSecurityGroupAsString());
-    rczg::Logger::Info("message.asset=", message.getAssetAsString());
-    rczg::Logger::Info("message.securityID=", message.securityID());
-    rczg::Logger::Info("message.tradeDate=", message.tradeDate());
+    LOG_INFO("message.type=SecurityStatus30");
+    LOG_INFO("message.sbeSemanticType=", message.sbeSemanticType());
+    LOG_INFO("message.transactTime=", message.transactTime());
+    LOG_INFO("message.securityGroup=", message.getSecurityGroupAsString());
+    LOG_INFO("message.asset=", message.getAssetAsString());
+    LOG_INFO("message.securityID=", message.securityID());
+    LOG_INFO("message.tradeDate=", message.tradeDate());
 
     mktdata::MatchEventIndicator& matchEventIndicator = message.matchEventIndicator();
-    rczg::Logger::Info("message.matchEventIndicator.lastTradeMsg=", matchEventIndicator.lastTradeMsg());
-    rczg::Logger::Info("message.matchEventIndicator.lastVolumeMsg=", matchEventIndicator.lastVolumeMsg());
-    rczg::Logger::Info("message.matchEventIndicator.lastQuoteMsg=", matchEventIndicator.lastQuoteMsg());
-    rczg::Logger::Info("message.matchEventIndicator.lastStatsMsg=", matchEventIndicator.lastStatsMsg());
-    rczg::Logger::Info("message.matchEventIndicator.lastImpliedMsg=", matchEventIndicator.lastImpliedMsg());
-    rczg::Logger::Info("message.matchEventIndicator.recoveryMsg=", matchEventIndicator.recoveryMsg());
-    rczg::Logger::Info("message.matchEventIndicator.reserved=", matchEventIndicator.reserved());
-    rczg::Logger::Info("message.matchEventIndicator.endOfEvent=", matchEventIndicator.endOfEvent());
+    LOG_INFO("message.matchEventIndicator.lastTradeMsg=", matchEventIndicator.lastTradeMsg());
+    LOG_INFO("message.matchEventIndicator.lastVolumeMsg=", matchEventIndicator.lastVolumeMsg());
+    LOG_INFO("message.matchEventIndicator.lastQuoteMsg=", matchEventIndicator.lastQuoteMsg());
+    LOG_INFO("message.matchEventIndicator.lastStatsMsg=", matchEventIndicator.lastStatsMsg());
+    LOG_INFO("message.matchEventIndicator.lastImpliedMsg=", matchEventIndicator.lastImpliedMsg());
+    LOG_INFO("message.matchEventIndicator.recoveryMsg=", matchEventIndicator.recoveryMsg());
+    LOG_INFO("message.matchEventIndicator.reserved=", matchEventIndicator.reserved());
+    LOG_INFO("message.matchEventIndicator.endOfEvent=", matchEventIndicator.endOfEvent());
     
-    rczg::Logger::Info("message.securityTradingStatus=", message.securityTradingStatus());
-    rczg::Logger::Info("message.haltReason=", message.haltReason());
-    rczg::Logger::Info("message.securityTradingEvent=", message.securityTradingEvent());
-    rczg::Logger::Info("");
+    LOG_INFO("message.securityTradingStatus=", message.securityTradingStatus());
+    LOG_INFO("message.haltReason=", message.haltReason());
+    LOG_INFO("message.securityTradingEvent=", message.securityTradingEvent());
+    LOG_INFO("");
+}
+
+void printMDIncrementalRefreshVolume32(mktdata::MDIncrementalRefreshBook32 &message)
+{
+    LOG_INFO("message.type=MDIncrementalRefreshBook32");
+    LOG_INFO("message.sbeSemanticType=", message.sbeSemanticType());
+    LOG_INFO("message.transactTime=", message.transactTime());
+
+    mktdata::MatchEventIndicator& matchEventIndicator = message.matchEventIndicator();
+    LOG_INFO("message.matchEventIndicator.lastTradeMsg=", matchEventIndicator.lastTradeMsg());
+    LOG_INFO("message.matchEventIndicator.lastVolumeMsg=", matchEventIndicator.lastVolumeMsg());
+    LOG_INFO("message.matchEventIndicator.lastQuoteMsg=", matchEventIndicator.lastQuoteMsg());
+    LOG_INFO("message.matchEventIndicator.lastStatsMsg=", matchEventIndicator.lastStatsMsg());
+    LOG_INFO("message.matchEventIndicator.lastImpliedMsg=", matchEventIndicator.lastImpliedMsg());
+    LOG_INFO("message.matchEventIndicator.recoveryMsg=", matchEventIndicator.recoveryMsg());
+    LOG_INFO("message.matchEventIndicator.reserved=", matchEventIndicator.reserved());
+    LOG_INFO("message.matchEventIndicator.endOfEvent=", matchEventIndicator.endOfEvent());
+
+    mktdata::MDIncrementalRefreshBook32::NoMDEntries& noMDEntries = message.noMDEntries();
+    while (noMDEntries.hasNext())
+    {
+        noMDEntries.next();
+        LOG_INFO("message.noMDEntries.mDEntryPx=", noMDEntries.mDEntryPx().mantissa());
+        LOG_INFO("message.noMDEntries.mDEntrySize=", (int)noMDEntries.mDEntrySize());
+        LOG_INFO("message.noMDEntries.securityID=", (int)noMDEntries.securityID());
+        LOG_INFO("message.noMDEntries.rptSeq=", (int)noMDEntries.rptSeq());
+        LOG_INFO("message.noMDEntries.numberOfOrders=", (int)noMDEntries.numberOfOrders());
+        LOG_INFO("message.noMDEntries.mDPriceLevel=", (int)noMDEntries.mDPriceLevel());
+        LOG_INFO("message.noMDEntries.mDUpdateAction=", (int)noMDEntries.mDUpdateAction());
+        LOG_INFO("message.noMDEntries.mDEntryType=", noMDEntries.mDEntryType());
+    }
+
+    mktdata::MDIncrementalRefreshBook32::NoOrderIDEntries& noOrderIDEntries = message.noOrderIDEntries();
+    while (noOrderIDEntries.hasNext())
+    {
+    	noOrderIDEntries.next();
+        LOG_INFO("message.noOrderIDEntries.orderID=", noOrderIDEntries.orderID());
+        LOG_INFO("message.noOrderIDEntries.mDOrderPriority=", (int)noOrderIDEntries.mDOrderPriority());
+        LOG_INFO("message.noOrderIDEntries.mDDisplayQty=", (int)noOrderIDEntries.mDDisplayQty());
+        LOG_INFO("message.noOrderIDEntries.referenceID=", (int)noOrderIDEntries.referenceID());
+        LOG_INFO("message.noOrderIDEntries.orderUpdateAction=", (int)noOrderIDEntries.orderUpdateAction());
+    }
+    LOG_INFO("");
 }
 
 void printMDIncrementalRefreshVolume37(mktdata::MDIncrementalRefreshVolume37 &message)
 {
-    rczg::Logger::Info("message.type=MDIncrementalRefreshVolume37");
-    rczg::Logger::Info("message.sbeSemanticType=", message.sbeSemanticType());
-    rczg::Logger::Info("message.transactTime=", message.transactTime());
+    LOG_INFO("message.type=MDIncrementalRefreshVolume37");
+    LOG_INFO("message.sbeSemanticType=", message.sbeSemanticType());
+    LOG_INFO("message.transactTime=", message.transactTime());
 
     mktdata::MatchEventIndicator& matchEventIndicator = message.matchEventIndicator();
-    rczg::Logger::Info("message.matchEventIndicator.lastTradeMsg=", matchEventIndicator.lastTradeMsg());
-    rczg::Logger::Info("message.matchEventIndicator.lastVolumeMsg=", matchEventIndicator.lastVolumeMsg());
-    rczg::Logger::Info("message.matchEventIndicator.lastQuoteMsg=", matchEventIndicator.lastQuoteMsg());
-    rczg::Logger::Info("message.matchEventIndicator.lastStatsMsg=", matchEventIndicator.lastStatsMsg());
-    rczg::Logger::Info("message.matchEventIndicator.lastImpliedMsg=", matchEventIndicator.lastImpliedMsg());
-    rczg::Logger::Info("message.matchEventIndicator.recoveryMsg=", matchEventIndicator.recoveryMsg());
-    rczg::Logger::Info("message.matchEventIndicator.reserved=", matchEventIndicator.reserved());
-    rczg::Logger::Info("message.matchEventIndicator.endOfEvent=", matchEventIndicator.endOfEvent());
+    LOG_INFO("message.matchEventIndicator.lastTradeMsg=", matchEventIndicator.lastTradeMsg());
+    LOG_INFO("message.matchEventIndicator.lastVolumeMsg=", matchEventIndicator.lastVolumeMsg());
+    LOG_INFO("message.matchEventIndicator.lastQuoteMsg=", matchEventIndicator.lastQuoteMsg());
+    LOG_INFO("message.matchEventIndicator.lastStatsMsg=", matchEventIndicator.lastStatsMsg());
+    LOG_INFO("message.matchEventIndicator.lastImpliedMsg=", matchEventIndicator.lastImpliedMsg());
+    LOG_INFO("message.matchEventIndicator.recoveryMsg=", matchEventIndicator.recoveryMsg());
+    LOG_INFO("message.matchEventIndicator.reserved=", matchEventIndicator.reserved());
+    LOG_INFO("message.matchEventIndicator.endOfEvent=", matchEventIndicator.endOfEvent());
     
     mktdata::MDIncrementalRefreshVolume37::NoMDEntries& noMDEntries = message.noMDEntries();
     while (noMDEntries.hasNext())
     {
         noMDEntries.next();
-        rczg::Logger::Info("message.noMDEntries.mDEntrySize=", (int)noMDEntries.mDEntrySize());
-        rczg::Logger::Info("message.noMDEntries.securityID=", (int)noMDEntries.securityID());
-        rczg::Logger::Info("message.noMDEntries.rptSeq=", (int)noMDEntries.rptSeq());
-        rczg::Logger::Info("message.noMDEntries.mDUpdateAction=", (int)noMDEntries.mDUpdateAction());
-        rczg::Logger::Info("message.noMDEntries.mDEntryType=", noMDEntries.mDEntryType()[0]);
+        LOG_INFO("message.noMDEntries.mDEntrySize=", (int)noMDEntries.mDEntrySize());
+        LOG_INFO("message.noMDEntries.securityID=", (int)noMDEntries.securityID());
+        LOG_INFO("message.noMDEntries.rptSeq=", (int)noMDEntries.rptSeq());
+        LOG_INFO("message.noMDEntries.mDUpdateAction=", (int)noMDEntries.mDUpdateAction());
+        LOG_INFO("message.noMDEntries.mDEntryType=", noMDEntries.mDEntryType()[0]);
     }
-    rczg::Logger::Info("");
+    LOG_INFO("");
 }
 
 void printMDInstrumentDefinitionFuture27(mktdata::MDInstrumentDefinitionFuture27 &message)
 {
-    rczg::Logger::Info("message.type=MDInstrumentDefinitionFuture27");
-    rczg::Logger::Info("message.sbeSemanticType=", message.sbeSemanticType());
+    LOG_INFO("message.type=MDInstrumentDefinitionFuture27");
+    LOG_INFO("message.sbeSemanticType=", message.sbeSemanticType());
 
     mktdata::MatchEventIndicator& matchEventIndicator = message.matchEventIndicator();
-    rczg::Logger::Info("message.matchEventIndicator.lastTradeMsg=", matchEventIndicator.lastTradeMsg());
-    rczg::Logger::Info("message.matchEventIndicator.lastVolumeMsg=", matchEventIndicator.lastVolumeMsg());
-    rczg::Logger::Info("message.matchEventIndicator.lastQuoteMsg=", matchEventIndicator.lastQuoteMsg());
-    rczg::Logger::Info("message.matchEventIndicator.lastStatsMsg=", matchEventIndicator.lastStatsMsg());
-    rczg::Logger::Info("message.matchEventIndicator.lastImpliedMsg=", matchEventIndicator.lastImpliedMsg());
-    rczg::Logger::Info("message.matchEventIndicator.recoveryMsg=", matchEventIndicator.recoveryMsg());
-    rczg::Logger::Info("message.matchEventIndicator.reserved=", matchEventIndicator.reserved());
-    rczg::Logger::Info("message.matchEventIndicator.endOfEvent=", matchEventIndicator.endOfEvent());
+    LOG_INFO("message.matchEventIndicator.lastTradeMsg=", matchEventIndicator.lastTradeMsg());
+    LOG_INFO("message.matchEventIndicator.lastVolumeMsg=", matchEventIndicator.lastVolumeMsg());
+    LOG_INFO("message.matchEventIndicator.lastQuoteMsg=", matchEventIndicator.lastQuoteMsg());
+    LOG_INFO("message.matchEventIndicator.lastStatsMsg=", matchEventIndicator.lastStatsMsg());
+    LOG_INFO("message.matchEventIndicator.lastImpliedMsg=", matchEventIndicator.lastImpliedMsg());
+    LOG_INFO("message.matchEventIndicator.recoveryMsg=", matchEventIndicator.recoveryMsg());
+    LOG_INFO("message.matchEventIndicator.reserved=", matchEventIndicator.reserved());
+    LOG_INFO("message.matchEventIndicator.endOfEvent=", matchEventIndicator.endOfEvent());
         
-    rczg::Logger::Info("message.totNumReports=", message.totNumReports());
-    rczg::Logger::Info("message.securityUpdateAction=", message.securityUpdateAction());
-    rczg::Logger::Info("message.lastUpdateTime=", message.lastUpdateTime());
+    LOG_INFO("message.totNumReports=", message.totNumReports());
+    LOG_INFO("message.securityUpdateAction=", message.securityUpdateAction());
+    LOG_INFO("message.lastUpdateTime=", message.lastUpdateTime());
+    LOG_INFO("message.tradingReferenceDate=", message.tradingReferenceDate());
 
-    rczg::Logger::Info("");
+    mktdata::MDInstrumentDefinitionFuture27::NoEvents& noEvents = message.noEvents();
+    while (noEvents.hasNext())
+    {
+    	noEvents.next();
+    	LOG_INFO("message.noEvents.eventType=", noEvents.eventType());
+    	LOG_INFO("message.noEvents.eventTime=", noEvents.eventTime());
+    }
+
+    mktdata::MDInstrumentDefinitionFuture27::NoMDFeedTypes& noMDFeedTypes = message.noMDFeedTypes();
+    LOG_INFO("message.noMDFeedTypes.count=", noMDFeedTypes.count());
+    while (noMDFeedTypes.hasNext())
+    {
+    	noMDFeedTypes.next();
+    	LOG_INFO("message.noMDFeedTypes.mdFeedType=", noMDFeedTypes.getMDFeedTypeAsString());
+    	LOG_INFO("message.noMDFeedTypes.marketDepth=", (int)noMDFeedTypes.marketDepth());
+    }
+
+    mktdata::MDInstrumentDefinitionFuture27::NoInstAttrib& is = message.noInstAttrib();
+    while (is.hasNext())
+    {
+    	is.next();
+      	LOG_INFO("message.NoInstAttrib.instAttribValue=", is.instAttribValue().electronicMatchEligible());
+    }
+
+    mktdata::MDInstrumentDefinitionFuture27::NoLotTypeRules& ts = message.noLotTypeRules();
+    while (ts.hasNext())
+    {
+    	ts.next();
+      	LOG_INFO("message.NoLotTypeRules.lotType=", ts.lotType());
+      	LOG_INFO("message.NoLotTypeRules.minLotSize.mantissa=", ts.minLotSize().mantissa());
+    }
+
+    LOG_INFO("");
 }
 
 void printSnapshotFullRefresh38(mktdata::SnapshotFullRefresh38 &message)
 {
-    rczg::Logger::Info("message.type=SnapshotFullRefresh38");
-    rczg::Logger::Info("message.sbeSemanticType=", message.sbeSemanticType());
-    rczg::Logger::Info("message.lastMsgSeqNumProcessed=", message.lastMsgSeqNumProcessed());
-    rczg::Logger::Info("message.totNumReports=", message.totNumReports());
-    rczg::Logger::Info("message.securityID=", message.securityID());
-    rczg::Logger::Info("message.rptSeq=", message.rptSeq());
-    rczg::Logger::Info("message.transactTime=", message.transactTime());
-    rczg::Logger::Info("message.lastUpdateTime=", message.lastUpdateTime());
+    LOG_INFO("message.type=SnapshotFullRefresh38");
+    LOG_INFO("message.sbeSemanticType=", message.sbeSemanticType());
+    LOG_INFO("message.lastMsgSeqNumProcessed=", message.lastMsgSeqNumProcessed());
+    LOG_INFO("message.totNumReports=", message.totNumReports());
+    LOG_INFO("message.securityID=", message.securityID());
+    LOG_INFO("message.rptSeq=", message.rptSeq());
+    LOG_INFO("message.transactTime=", message.transactTime());
+    LOG_INFO("message.lastUpdateTime=", message.lastUpdateTime());
 
-    rczg::Logger::Info("");
+    mktdata::SnapshotFullRefresh38::NoMDEntries& noMDEntries = message.noMDEntries();
+    while (noMDEntries.hasNext())
+    {
+        noMDEntries.next();
+        LOG_INFO("message.noMDEntries.mDEntryPx=", noMDEntries.mDEntryPx().mantissa());
+        LOG_INFO("message.noMDEntries.mDEntrySize=", (int)noMDEntries.mDEntrySize());
+        LOG_INFO("message.noMDEntries.numberOfOrders=", (int)noMDEntries.numberOfOrders());
+        LOG_INFO("message.noMDEntries.mDPriceLevel=", (int)noMDEntries.mDPriceLevel());
+        LOG_INFO("message.noMDEntries.tradingReferenceDate=", (int)noMDEntries.tradingReferenceDate());
+        LOG_INFO("message.noMDEntries.mDEntryType=", noMDEntries.mDEntryType());
+    }
+
+    LOG_INFO("");
+}
+
+void printAdminLogin15(mktdata::AdminLogin15 &message)
+{
+    LOG_INFO("message.type=AdminLogin15");
+    LOG_INFO("message.sbeSemanticType=", message.sbeSemanticType());
+    LOG_INFO("message.heartBtInt=", (int)message.heartBtInt());
+
+    LOG_INFO("");
+}
+
+void printAdminLogout16(mktdata::AdminLogout16 &message)
+{
+    LOG_INFO("message.type=AdminLogout16");
+    LOG_INFO("message.sbeSemanticType=", message.sbeSemanticType());
+    LOG_INFO("message.text=", message.text());
+
+    LOG_INFO("");
 }
 
 int main(int argc, char* argv[])
@@ -100,17 +207,17 @@ int main(int argc, char* argv[])
     {
         if (argc != 2)
         {
-            rczg::Logger::Error("Usage: sbe_test <template_id>");
-            rczg::Logger::Error("Ex:    sbe_test 30");
+            LOG_ERROR("Usage: sbe_test <template_id>");
+            LOG_ERROR("Ex:    sbe_test 30");
             
             return 1;
         }
 
         rczg::SBEEncoder encoder;
         encoder.Start_encode(boost::lexical_cast<std::uint16_t>(argv[1]));
-        rczg::Logger::Info(encoder.Encoded_hex_str());
+        LOG_INFO(encoder.Encoded_hex_str());
         
-        auto start = std::chrono::high_resolution_clock::now();
+        rczg::TimeMeasurer t;
         
         auto encoded = encoder.Encoded_buffer();
         rczg::SBEDecoder decoder(encoded.first, encoded.second);
@@ -124,6 +231,11 @@ int main(int argc, char* argv[])
         {
             auto ss30 = static_cast<mktdata::SecurityStatus30*>(message);
             printSecurityStatus30(*ss30);
+        }
+        else if(templateId == 32)    // MDIncrementalRefreshBook32
+        {
+            auto md32 = static_cast<mktdata::MDIncrementalRefreshBook32*>(message);
+            printMDIncrementalRefreshVolume32(*md32);
         }
         else if(templateId == 37)    // MDIncrementalRefreshVolume37
         {
@@ -140,13 +252,22 @@ int main(int argc, char* argv[])
             auto md38 = static_cast<mktdata::SnapshotFullRefresh38*>(message);
             printSnapshotFullRefresh38(*md38);
         }
+        else if(templateId == 15)    // AdminLogin15
+        {
+            auto md15 = static_cast<mktdata::AdminLogin15*>(message);
+            printAdminLogin15(*md15);
+        }
+        else if(templateId == 16)    // AdminLogout16
+        {
+            auto md16 = static_cast<mktdata::AdminLogout16*>(message);
+            printAdminLogout16(*md16);
+        }
         
-        auto finish = std::chrono::high_resolution_clock::now();
-        rczg::Logger::Info(std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count(), "ns");
+        LOG_INFO(t.Elapsed_nanoseconds(), "ns");
     }
     catch (std::exception& e)
     {
-        rczg::Logger::Error("Exception: ", e.what());
+        LOG_ERROR("Exception: ", e.what());
     }
 
     return 0;

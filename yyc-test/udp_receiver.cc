@@ -26,7 +26,7 @@ namespace rczg
     {
         m_socket.cancel();
         m_io_service.stop();
-        rczg::Logger::Info("(udp receiver stoped)");
+        LOG_DEBUG("(udp receiver stopped)");
     }
     
     void UDPReceiver::Initialize_socket(

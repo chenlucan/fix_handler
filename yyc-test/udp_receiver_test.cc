@@ -1,6 +1,8 @@
 
 #include <stdio.h>
+#ifdef __unix__
 #include <execinfo.h>
+#endif
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -9,6 +11,7 @@
 
 void handler(int sig) 
 {
+#ifdef __unix__
   void *array[10];
   size_t size;
 
@@ -19,6 +22,7 @@ void handler(int sig)
   fprintf(stderr, "Error: signal %d:\n", sig);
   backtrace_symbols_fd(array, size, STDERR_FILENO);
   exit(1);
+#endif
 }
 
 int main(int argc, char* argv[])
@@ -29,7 +33,7 @@ int main(int argc, char* argv[])
     {
         if (argc != 2 || (strcmp(argv[1], "-s") != 0 && strcmp(argv[1], "-j") != 0))
         {
-            rczg::Logger::Error("Usage: udp_receiver_test -s|-j");
+            LOG_ERROR("Usage: udp_receiver_test -s|-j");
             return 1;
         }
 
@@ -49,7 +53,7 @@ int main(int argc, char* argv[])
     }
     catch (std::exception& e)
     {
-        rczg::Logger::Error("Exception", e.what());
+        LOG_ERROR("Exception", e.what());
     }
 
     return 0;

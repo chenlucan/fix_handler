@@ -11,10 +11,12 @@ namespace rczg
     {
         public:
             explicit ZmqSender(const char *url);
+            explicit ZmqSender(const std::string &url);
             virtual ~ZmqSender();
             
         public:
             void Send(const char *message, size_t length);
+            void Send(const std::string &message);
             
         private:
             

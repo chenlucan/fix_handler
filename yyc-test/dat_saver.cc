@@ -1,11 +1,15 @@
 
 #include "dat_saver.h"
+#include "time_measurer.h"
 #include "logger.h"
 
 namespace rczg
 {
-    DatSaver::DatSaver(rczg::ZmqSender &sender) 
-    : m_last_seq(0), m_unreceived_seqs(), m_mutex(), m_datas(), m_sender(&sender)
+    DatSaver::DatSaver(const std::string &org_save_url, const std::string &book_save_url)
+    : m_last_seq(0), m_unreceived_seqs(), m_mutex(), m_datas(),
+	  m_org_sender(org_save_url), m_book_sender(book_save_url),
+	  m_definition_datas(nullptr), m_recovery_datas(nullptr), m_book_manager(),
+	  m_recovery_first_seq(0)
     {
         // noop
     }
@@ -24,7 +28,7 @@ namespace rczg
     }
     
     // save mdp messages to memory
-    void DatSaver::Save_data(std::uint32_t packet_seq_num, std::vector<rczg::MdpMessage> &mdp_messages)
+    void DatSaver::Insert_data(std::uint32_t packet_seq_num, std::vector<rczg::MdpMessage> &mdp_messages)
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         
@@ -49,18 +53,42 @@ namespace rczg
         }
     }
     
-    // process the messages in memory and serialize to zeroqueue
-    void DatSaver::Start_serialize()
+    // set received definition messages
+    void DatSaver::Set_definition_data(std::vector<rczg::MdpMessage> *definition_datas)
     {
-       while(true)
-       {
-           auto message = Pick_next_message_to_serialize();
+    	m_definition_datas = definition_datas;
+    	m_book_manager.Set_definition_data(definition_datas);
+    }
+
+    // set received recovery messages
+    void DatSaver::Set_recovery_data(std::vector<rczg::MdpMessage> *recovery_datas)
+    {
+    	m_recovery_datas = recovery_datas;
+    	m_book_manager.Set_recovery_data(recovery_datas);
+
+    	if(recovery_datas != nullptr && !recovery_datas->empty())
+    	{
+    		m_recovery_first_seq = recovery_datas->front().last_msg_seq_num_processed();
+    	}
+    }
+
+    // process the messages in memory and save to zeroqueue
+    void DatSaver::Start_save()
+    {
+    	// first, send definition messages if exist
+    	this->Send_definition_messages();
+    	// first, send recovery messages if exist
+    	this->Send_recovery_messages();
+
+        while(true)
+        {
+           auto message = Pick_next_message();
            if(message != m_datas.end())
            {
                bool should_send_now = this->Convert_message(message);
                if(should_send_now)
                {
-                   this->Send(message);
+                   this->Send_message(message->Serialize());
                }
                
                Remove_past_message(message);
@@ -73,7 +101,7 @@ namespace rczg
     }
     
     // pick first message to serialize and remove it from memory
-    std::multiset<rczg::MdpMessage>::iterator DatSaver::Pick_next_message_to_serialize()
+    std::multiset<rczg::MdpMessage>::iterator DatSaver::Pick_next_message()
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         
@@ -95,24 +123,63 @@ namespace rczg
         return message;
     }
     
+    void DatSaver::Send_definition_messages()
+    {
+    	if(m_definition_datas == nullptr)
+    	{
+    		return;
+    	}
+
+    	std::for_each(m_definition_datas->cbegin(), m_definition_datas->cend(),
+    			[this](const rczg::MdpMessage &m){ this->Send_message(m.Serialize()); });
+
+    	LOG_INFO("all definition message sent: ", m_definition_datas->size());
+    }
+
+    void DatSaver::Send_recovery_messages()
+    {
+    	if(m_recovery_datas == nullptr)
+		{
+			return;
+		}
+
+		std::for_each(m_recovery_datas->cbegin(), m_recovery_datas->cend(),
+				[this](const rczg::MdpMessage &m){ this->Send_message(m.Serialize()); });
+
+		LOG_INFO("all recovery message sent: ", m_recovery_datas->size());
+    }
+
     bool DatSaver::Convert_message(std::multiset<rczg::MdpMessage>::iterator message)
     {
-        // TODO convert the message
+    	if(message->packet_seq_num() <= m_recovery_first_seq)
+    	{
+    		// drop the message before first recovery's message's 369-LastMsgSeqNumProcessed
+    		LOG_INFO("drop message: seq=", message->packet_seq_num());
+    		return false;
+    	}
+
+        // convert the message to books and send to zeromq for book
+    	m_book_manager.Parse_to_send(*message, m_book_sender);
+
+    	// now send all received messages to zeromq for save to db
         return true;
     }
     
-    void DatSaver::Send(std::multiset<rczg::MdpMessage>::iterator message)
+    void DatSaver::Send_message(const std::string &serialized_message)
     {
-        static auto start = std::chrono::high_resolution_clock::now();
+    	static TimeMeasurer t;
         
         // send to zeroqueue
-        auto s = message->Serialize();
-        m_sender->Send(s.data(), s.size());
+        m_org_sender.Send(serialized_message);
 
-        auto finish = std::chrono::high_resolution_clock::now();
-        auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count();
-        rczg::Logger::Info("send to zmq: ", ns, "ns, ", s);
-        start = finish;
+		//     8 bytes : m_received_time
+		//		2 bytes : m_packet_length
+		//		4 bytes : m_packet_seq_num
+		//		8 bytes : m_packet_sending_time
+		//		2 bytes : m_message_length
+        std::uint32_t packet_seq_num = *(std::uint32_t *)(serialized_message.data() + 8 + 2);
+        std::uint16_t message_length = *(std::uint16_t *)(serialized_message.data() + 8 + 2 + 4 + 8);
+        LOG_INFO("sent to zmq: ", t.Elapsed_nanoseconds(), "ns, send size=", serialized_message.size(), " seq=", packet_seq_num, " message size=", message_length);
     }
     
     void DatSaver::Remove_past_message(std::multiset<rczg::MdpMessage>::iterator message)

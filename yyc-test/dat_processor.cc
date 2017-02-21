@@ -1,12 +1,13 @@
 
 #include "dat_processor.h"
+#include "time_measurer.h"
 #include "logger.h"
 
 namespace rczg
 {
     
-    DatProcessor::DatProcessor(rczg::DatArbitrator &arbitrator, rczg::DatSaver &saver, rczg::TCPReceiver &replayer)
-    : m_arbitrator(&arbitrator), m_saver(&saver), m_replayer(&replayer)
+    DatProcessor::DatProcessor(rczg::DatSaver &saver, rczg::DatReplayer &replayer)
+    : m_arbitrator(), m_saver(&saver), m_replayer(&replayer)
     {
         // noop
     }
@@ -16,17 +17,23 @@ namespace rczg
         // noop
     }
 
+    void DatProcessor::Set_later_join(bool is_lj)
+    {
+    	m_arbitrator.Set_later_join(is_lj);
+    	m_saver->Set_later_join(is_lj);
+    }
+
     // process tcp replay data to mdp messages and save it
     void DatProcessor::Process_replay_data(char *buffer, const size_t data_length)
     {
         // check if packet is valid by first 4 bytes(packet sqquence number)
         std::uint32_t packet_seq_num = *((std::uint32_t *)buffer);
-        std::uint32_t status = m_arbitrator->Check_replay_packet(packet_seq_num);
+        std::uint32_t status = m_arbitrator.Check_replay_packet(packet_seq_num);
 
         if(status == std::numeric_limits<std::uint32_t>::max())
         {
             // should be discarded
-            rczg::Logger::Debug("****** discard tcp: seq=", packet_seq_num);
+            LOG_DEBUG("****** discard tcp increment packet: seq=", packet_seq_num);
             return;
         }
         
@@ -38,12 +45,12 @@ namespace rczg
     {
         // check if packet is valid by first 4 bytes(packet sqquence number)
         std::uint32_t packet_seq_num = *((std::uint32_t *)buffer);
-        std::uint32_t status = m_arbitrator->Check_feed_packet(packet_seq_num);
+        std::uint32_t status = m_arbitrator.Check_feed_packet(packet_seq_num);
 
         if(status == std::numeric_limits<std::uint32_t>::max())
         {
             // should be discarded
-            rczg::Logger::Debug("****** discard udp: seq=", packet_seq_num);
+            LOG_DEBUG("****** discard udp increment packet: seq=", packet_seq_num);
             return;
         }
         
@@ -65,29 +72,14 @@ namespace rczg
     //   SBE data
     void DatProcessor::Process_data(char *buffer, const size_t data_length)
     {
-        auto start = std::chrono::high_resolution_clock::now();
+    	TimeMeasurer t;
         
-        char *data_begin = buffer;
-        char *data_end = data_begin + data_length;
-        std::uint32_t packet_seq_num = *((std::uint32_t *)data_begin);
-        std::uint64_t packet_sending_time = *((std::uint64_t *)(data_begin + 4));
+        // get messages from packet
         std::vector<rczg::MdpMessage> mdp_messages;
-        
-        char *current_position = data_begin + 4 + 8;
-        while(current_position < data_end)  // TODO != or <
-        {
-            std::uint16_t message_length = *((std::uint16_t *)current_position);
-            char *message = current_position + 2;
-            rczg::MdpMessage mdp(message, message_length, data_length, packet_seq_num, packet_sending_time);
-            mdp_messages.push_back(std::move(mdp));
-            current_position = current_position + message_length + 2;
-        }
-        
+        std::uint32_t packet_seq_num = rczg::utility::Pick_messages_from_packet(buffer, data_length, mdp_messages);
         this->Save_message(packet_seq_num, mdp_messages);
         
-        auto finish = std::chrono::high_resolution_clock::now();
-        auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count();
-        rczg::Logger::Info("received: ", ns, "ns, seq=", packet_seq_num, ", len=", data_length);
+        LOG_INFO("received increment packet: ", t.Elapsed_nanoseconds(), "ns, seq=", packet_seq_num, ", len=", data_length);
     }
 
     void DatProcessor::Start_tcp_replay(std::uint32_t begin, std::uint32_t end)
@@ -102,7 +94,7 @@ namespace rczg
 
     void DatProcessor::Save_message(std::uint32_t packet_seq_num, std::vector<rczg::MdpMessage> &mdp_messages)
     {
-        m_saver->Save_data(packet_seq_num, mdp_messages);
+        m_saver->Insert_data(packet_seq_num, mdp_messages);
     }
     
 }

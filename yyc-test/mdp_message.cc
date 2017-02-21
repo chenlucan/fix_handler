@@ -5,11 +5,14 @@
 
 namespace rczg
 {
+	// message type index with template id
+	const char *MdpMessage::MDP_MESSAGE_TYPES = "----X-------0--A5----------d-df-XXXXXXWR-dXXW";
+
     MdpMessage::MdpMessage(const char *buffer, std::uint16_t message_length, const size_t packet_length, 
                            std::uint32_t packet_seq_num, std::uint64_t packet_sending_time)
     : m_packet_length(packet_length), m_packet_seq_num(packet_seq_num), m_packet_sending_time(packet_sending_time), 
       m_message_length(message_length), m_buffer(&buffer[0], &buffer[message_length]),
-      m_received_time(rczg::utility::Current_time_str())
+      m_received_time(rczg::utility::Current_time_ns())
     {
         rczg::SBEDecoder decoder(m_buffer.data(), m_message_length);
         auto sbe_message = decoder.Start_decode();
@@ -21,7 +24,7 @@ namespace rczg
     : m_packet_length(m.m_packet_length), m_packet_seq_num(m.m_packet_seq_num), m_packet_sending_time(m.m_packet_sending_time), 
       m_message_length(m.m_message_length), m_buffer(std::move(m.m_buffer)),    // must move sbe buffer, not copy
       m_message_header(m.m_message_header), m_message_body(m.m_message_body),
-      m_received_time(std::move(m.m_received_time))
+      m_received_time(m.m_received_time)
     {
         // noop
     }
@@ -56,61 +59,50 @@ namespace rczg
         return m_message_body;
     }
     
-    std::string MdpMessage::received_time() const
+    std::uint64_t MdpMessage::received_time() const
     {
         return m_received_time;
+    }
+
+    std::uint16_t MdpMessage::template_id() const
+    {
+    	auto header = static_cast<mktdata::MessageHeader*>(m_message_header.get());
+    	return header->templateId();
+    }
+
+    char MdpMessage::message_type() const
+    {
+    	return MDP_MESSAGE_TYPES[this->template_id()];
+    }
+
+    // value of tag 369 if is recovery message(35=W)
+    std::uint32_t MdpMessage::last_msg_seq_num_processed() const
+    {
+    	// header is 8 bytes; body's first 4 bytes is tag 369-LastMsgSeqNumProcessed
+    	return *(std::uint32_t *)(m_buffer.data() + 8);
     }
 
     // serialize to send
     std::string MdpMessage::Serialize() const
     {
-        // TODO serialize
-        std::ostringstream ss;
+		//     8 bytes : m_received_time
+		//		2 bytes : m_packet_length
+		//		4 bytes : m_packet_seq_num
+		//		8 bytes : m_packet_sending_time
+		//		2 bytes : m_message_length
+		//		(m_message_length) bytes : m_buffer
+    	std::uint16_t length = 8 + 2 + 4 + 8 + 2 + m_message_length;
+    	std::vector<char> message;
+    	message.reserve(length);
+    	char *data = message.data();
+    	memcpy(data, (char *)&m_received_time, 8);
+    	memcpy(data + 8, (char *)&m_packet_length, 2);
+    	memcpy(data + 8 + 2, (char *)&m_packet_seq_num, 4);
+    	memcpy(data + 8 + 2 + 4, (char *)&m_packet_sending_time, 8);
+    	memcpy(data + 8 + 2 + 4 + 8, (char *)&m_message_length, 2);
+    	memcpy(data + 8 + 2 + 4 + 8 + 2, m_buffer.data(), m_message_length);
 
-        ss << "[" << m_received_time << "]";
-        ss << " packet_len=" << std::setw(4) << m_packet_length;
-        ss << " seq=" << std::setw(6) << m_packet_seq_num;
-        ss << " time=" << std::setw(19) << m_packet_sending_time;
-        ss << " - message_len=" << std::setw(6) << m_message_length << " : ";
-
-
-        auto header = static_cast<mktdata::MessageHeader*>(m_message_header.get());
-        std::uint16_t templateId = header->templateId();
-
-        void *mdp_message = m_message_body.get();
-        if(templateId == 30)    // SecurityStatus30
-        {
-            auto ss30 = static_cast<mktdata::SecurityStatus30*>(mdp_message);
-            ss << "type=SecurityStatus30";
-            ss << ", sbeSemanticType=" << ss30->sbeSemanticType();
-            ss << ", transactTime=" << ss30->transactTime();
-            //ss << ", securityTradingEvent=" << ss30->securityTradingEvent();
-        }
-        else if(templateId == 37)    // MDIncrementalRefreshVolume37
-        {
-            auto md37 = static_cast<mktdata::MDIncrementalRefreshVolume37*>(mdp_message);
-            ss << "type=MDIncrementalRefreshVolume37";
-            ss << ", sbeSemanticType=" << md37->sbeSemanticType();
-            ss << ", transactTime=" << md37->transactTime();
-        }
-        else if(templateId == 27)    // MDInstrumentDefinitionFuture27
-        {
-            auto md27 = static_cast<mktdata::MDInstrumentDefinitionFuture27*>(mdp_message);
-            ss << "type=MDInstrumentDefinitionFuture27";
-            ss << ", sbeSemanticType=" << md27->sbeSemanticType();
-            ss << ", totNumReports=" << md27->totNumReports();
-        }
-        else if(templateId == 38)    // SnapshotFullRefresh38
-        {
-            auto md38 = static_cast<mktdata::SnapshotFullRefresh38*>(mdp_message);
-            ss << "type=SnapshotFullRefresh38";
-            ss << ", sbeSemanticType=" << md38->sbeSemanticType();
-            ss << ", lastMsgSeqNumProcessed=" << md38->lastMsgSeqNumProcessed();
-            ss << ", totNumReports=" << md38->totNumReports();
-            ss << ", rptSeq=" << md38->rptSeq();
-        }
-        
-        return ss.str();
+        return std::string(data, length);
     }
     
     MdpMessage::~MdpMessage()

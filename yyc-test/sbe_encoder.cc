@@ -22,6 +22,12 @@ namespace rczg
             encodeHeaderLength = this->Encode_header<mktdata::SecurityStatus30>(header);
             encodeMessageLength = this->Encode_message(header, message);
         }
+        else if(templateId == 32)    // MDIncrementalRefreshBook32
+        {
+            mktdata::MDIncrementalRefreshBook32 message;
+            encodeHeaderLength = this->Encode_header<mktdata::MDIncrementalRefreshBook32>(header);
+            encodeMessageLength = this->Encode_message(header, message);
+        }
         else if(templateId == 37)    // MDIncrementalRefreshVolume37
         {
             mktdata::MDIncrementalRefreshVolume37 message;
@@ -40,6 +46,18 @@ namespace rczg
             encodeHeaderLength = this->Encode_header<mktdata::SnapshotFullRefresh38>(header);
             encodeMessageLength = this->Encode_message(header, message);
         }
+        else if(templateId == 15)    // AdminLogin15
+        {
+            mktdata::AdminLogin15 message;
+            encodeHeaderLength = this->Encode_header<mktdata::AdminLogin15>(header);
+            encodeMessageLength = this->Encode_message(header, message);
+        }
+        else if(templateId == 16)    // AdminLogout16
+        {
+            mktdata::AdminLogout16 message;
+            encodeHeaderLength = this->Encode_header<mktdata::AdminLogout16>(header);
+            encodeMessageLength = this->Encode_message(header, message);
+        }
         // TODO other messages
         
         m_encoded_length = encodeHeaderLength + encodeMessageLength;
@@ -55,6 +73,50 @@ namespace rczg
               .version(MessageType::sbeSchemaVersion());
 
         return header.encodedLength();
+    }
+
+    std::size_t SBEEncoder::Encode_message(mktdata::MessageHeader &header, mktdata::MDIncrementalRefreshBook32 &message)
+    {
+    	static int inc = 0;	// 用这个来让每次生成的数值递增
+    	inc += rczg::utility::Random_number(1, 3);
+
+    	message.wrapForEncode(m_buffer, header.encodedLength(), sizeof(m_buffer));
+        message.transactTime(rczg::utility::Current_time_ns());
+        message.matchEventIndicator()
+               .clear()
+               .lastTradeMsg(false)
+               .lastVolumeMsg(true)
+               .lastQuoteMsg(false)
+               .lastStatsMsg(true)
+               .lastImpliedMsg(false)
+               .recoveryMsg(true)
+               .reserved(false)
+               .endOfEvent(true);
+
+        mktdata::MDIncrementalRefreshBook32::NoMDEntries& entries = message.noMDEntriesCount(3);
+        {
+        auto n = entries.next();
+        n.mDEntryPx().mantissa(1000000 + (inc++));
+        n.mDEntrySize(10 + inc).securityID(3).rptSeq(73).numberOfOrders(100 + inc).mDPriceLevel(1)
+        		.mDUpdateAction(mktdata::MDUpdateAction::New).mDEntryType(mktdata::MDEntryTypeBook::Bid);
+        }
+        {
+        auto n = entries.next();
+        n.mDEntryPx().mantissa(1000000 + (inc++));
+        n.mDEntrySize(10 + inc).securityID(3).rptSeq(73).numberOfOrders(100 + inc).mDPriceLevel(1)
+        		.mDUpdateAction(mktdata::MDUpdateAction::Change).mDEntryType(mktdata::MDEntryTypeBook::Bid);
+        }
+        {
+        auto n = entries.next();
+        n.mDEntryPx().mantissa(1000000 + (inc++));
+        n.mDEntrySize(10 + inc).securityID(3).rptSeq(73).numberOfOrders(100 + inc).mDPriceLevel(1)
+        		.mDUpdateAction(mktdata::MDUpdateAction::Delete).mDEntryType(mktdata::MDEntryTypeBook::Bid);
+        }
+
+        mktdata::MDIncrementalRefreshBook32::NoOrderIDEntries& e = message.noOrderIDEntriesCount(1);
+        e.next().orderID(123).mDOrderPriority(456).mDDisplayQty(789).referenceID(120).orderUpdateAction(mktdata::OrderUpdateAction::New);
+
+        return message.encodedLength();
     }
 
     std::size_t SBEEncoder::Encode_message(mktdata::MessageHeader &header, mktdata::MDIncrementalRefreshVolume37 &message)
@@ -166,8 +228,8 @@ namespace rczg
         noEvents.next().eventType(mktdata::EventType::Activation).eventTime(18400);
                       
         mktdata::MDInstrumentDefinitionFuture27::NoMDFeedTypes& fs = message.noMDFeedTypesCount(2);
-        fs.next().putMDFeedType("MD1").marketDepth(12);
-        fs.next().putMDFeedType("MD2").marketDepth(13);
+        fs.next().putMDFeedType("GBX").marketDepth(10 + rczg::utility::Random_number(1, 5));
+        fs.next().putMDFeedType("GBI").marketDepth(10 + rczg::utility::Random_number(1, 5));
                       
         mktdata::MDInstrumentDefinitionFuture27::NoInstAttrib& is = message.noInstAttribCount(1);
         is.next().instAttribValue()
@@ -183,10 +245,13 @@ namespace rczg
     
     std::size_t SBEEncoder::Encode_message(mktdata::MessageHeader &header, mktdata::SnapshotFullRefresh38 &message)
     {
+    	static int inc = 0;	// 用这个来让每次生成的 lastMsgSeqNumProcessed 慢慢递增
+    	inc += rczg::utility::Random_number(0, 1);
+
         message.wrapForEncode(m_buffer, header.encodedLength(), sizeof(m_buffer));
-        message.lastMsgSeqNumProcessed(123)
-               .totNumReports(10)
-               .securityID(456)
+        message.lastMsgSeqNumProcessed(7 + inc)
+               .totNumReports(4)
+               .securityID(3)
                .rptSeq(100)
                .transactTime(rczg::utility::Current_time_ns())
                .lastUpdateTime(rczg::utility::Current_time_ns())
@@ -196,14 +261,38 @@ namespace rczg
         message.lowLimitPrice().mantissa(800002);
         message.maxPriceVariation().mantissa(800003);
         
-        mktdata::SnapshotFullRefresh38::NoMDEntries& entries = message.noMDEntriesCount(1);
+        mktdata::SnapshotFullRefresh38::NoMDEntries& entries = message.noMDEntriesCount(2);
+        {
         mktdata::SnapshotFullRefresh38::NoMDEntries& n = entries.next();
-        n.mDEntryPx().mantissa(900001);
-        n.mDEntrySize(71).numberOfOrders(72).mDPriceLevel(73).tradingReferenceDate(18300);
+        n.mDEntryPx().mantissa(9000000 + inc);
+        n.mDEntrySize(900 + inc).numberOfOrders(90 + inc).mDPriceLevel(1).tradingReferenceDate(18300);
         n.openCloseSettlFlag(mktdata::OpenCloseSettlFlag::DailyOpenPrice);
         n.settlPriceType().clear().finalrc(true);
         n.mDEntryType(mktdata::MDEntryType::Bid);
+        }
+        {
+        mktdata::SnapshotFullRefresh38::NoMDEntries& n = entries.next();
+        n.mDEntryPx().mantissa(7000000 + inc);
+        n.mDEntrySize(700 + inc).numberOfOrders(70 + inc).mDPriceLevel(3).tradingReferenceDate(18300);
+        n.openCloseSettlFlag(mktdata::OpenCloseSettlFlag::DailyOpenPrice);
+        n.settlPriceType().clear().finalrc(true);
+        n.mDEntryType(mktdata::MDEntryType::Bid);
+        }
+        return message.encodedLength();
+    }
 
+    std::size_t SBEEncoder::Encode_message(mktdata::MessageHeader &header, mktdata::AdminLogin15 &message)
+    {
+        message.wrapForEncode(m_buffer, header.encodedLength(), sizeof(m_buffer));
+        message.heartBtInt(3);
+
+        return message.encodedLength();
+    }
+
+    std::size_t SBEEncoder::Encode_message(mktdata::MessageHeader &header, mktdata::AdminLogout16 &message)
+    {
+        message.wrapForEncode(m_buffer, header.encodedLength(), sizeof(m_buffer));
+        message.putText("12345");
         return message.encodedLength();
     }
 

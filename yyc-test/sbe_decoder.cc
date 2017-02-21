@@ -19,23 +19,69 @@ namespace rczg
         std::uint16_t templateId = header->templateId();
         std::shared_ptr<void> message;
         
-        if(templateId == 30)    // SecurityStatus30
+        switch(templateId)
         {
-            message = this->Decode_message<mktdata::MessageHeader, mktdata::SecurityStatus30>(*header);
+        	case 4:	// ChannelReset4: X
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::ChannelReset4>(*header);
+                break;
+        	case 12:	// AdminHeartbeat12: 0
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::AdminHeartbeat12>(*header);
+                break;
+        	case 15:	// AdminLogin15: A
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::AdminLogin15>(*header);
+                break;
+        	case 16:	// AdminLogout16: 5
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::AdminLogout16>(*header);
+                break;
+        	case 27:	// MDInstrumentDefinitionFuture27: d
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::MDInstrumentDefinitionFuture27>(*header);
+                break;
+        	case 29:	// MDInstrumentDefinitionSpread29: d
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::MDInstrumentDefinitionSpread29>(*header);
+                break;
+        	case 30:	// SecurityStatus30: f
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::SecurityStatus30>(*header);
+                break;
+        	case 32:	// MDIncrementalRefreshBook32: X
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::MDIncrementalRefreshBook32>(*header);
+                break;
+        	case 33:	// MDIncrementalRefreshDailyStatistics33: X
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::MDIncrementalRefreshDailyStatistics33>(*header);
+                break;
+        	case 34:	// MDIncrementalRefreshLimitsBanding34: X
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::MDIncrementalRefreshLimitsBanding34>(*header);
+                break;
+        	case 35:	// MDIncrementalRefreshSessionStatistics35: X
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::MDIncrementalRefreshSessionStatistics35>(*header);
+                break;
+        	case 36:	// MDIncrementalRefreshTrade36: X
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::MDIncrementalRefreshTrade36>(*header);
+                break;
+        	case 37:	// MDIncrementalRefreshVolume37: X
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::MDIncrementalRefreshVolume37>(*header);
+                break;
+        	case 38:	// SnapshotFullRefresh38: W
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::SnapshotFullRefresh38>(*header);
+                break;
+        	case 39:	// QuoteRequest39: R
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::QuoteRequest39>(*header);
+                break;
+        	case 41:	// MDInstrumentDefinitionOption41: d
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::MDInstrumentDefinitionOption41>(*header);
+                break;
+        	case 42:	// MDIncrementalRefreshTradeSummary42: X
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::MDIncrementalRefreshTradeSummary42>(*header);
+                break;
+        	case 43:	// MDIncrementalRefreshOrderBook43: X
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::MDIncrementalRefreshOrderBook43>(*header);
+                break;
+        	case 44:	// SnapshotFullRefreshOrderBook44: W
+                message = this->Decode_message<mktdata::MessageHeader, mktdata::SnapshotFullRefreshOrderBook44>(*header);
+                break;
+        	default:
+        		// noop
+        		break;
         }
-        else if(templateId == 37)    // MDIncrementalRefreshVolume37
-        {
-            message = this->Decode_message<mktdata::MessageHeader, mktdata::MDIncrementalRefreshVolume37>(*header);
-        }
-        else if(templateId == 27)    // MDInstrumentDefinitionFuture27
-        {
-            message = this->Decode_message<mktdata::MessageHeader, mktdata::MDInstrumentDefinitionFuture27>(*header);
-        }
-        else if(templateId == 38)    // SnapshotFullRefresh38
-        {
-            message = this->Decode_message<mktdata::MessageHeader, mktdata::SnapshotFullRefresh38>(*header);
-        }
-        // TODO other messages
         
         return std::make_pair(header, message);
     }

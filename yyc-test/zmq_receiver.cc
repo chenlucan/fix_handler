@@ -1,6 +1,9 @@
 
 #include "zmq_receiver.h"
+#include "sbe_decoder.h"
+#include "time_measurer.h"
 #include "logger.h"
+#include "utility.h"
 
 namespace rczg
 {
@@ -8,6 +11,7 @@ namespace rczg
     ZmqReceiver::ZmqReceiver(const char *url) : m_context(1), m_receiver(m_context, ZMQ_PULL)
     {
         m_receiver.connect(url);
+        LOG_DEBUG("(zmq receiver started)");
     }
     
     ZmqReceiver::~ZmqReceiver()
@@ -27,16 +31,29 @@ namespace rczg
     
     void ZmqReceiver::Process_message(zmq::message_t &message)
     {
-        static auto start = std::chrono::high_resolution_clock::now();
+        static TimeMeasurer t;
 
         size_t size = message.size();
-        char *data = static_cast<char*>(message.data());
+        char *data = (char*)message.data();
 
-        auto finish = std::chrono::high_resolution_clock::now();
-        auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count();
-        start = finish;
+        if(size == 0)
+        {
+			LOG_TRACE("received: empty");
+		}
+		else
+		{
+			LOG_TRACE("received: id=", *(std::uint64_t *)data);
+			this->Save(data + sizeof(std::uint64_t), size - sizeof(std::uint64_t));
+		}
 
-        rczg::Logger::Trace("received:", ns, "ns, len=", size, ", data=", data);
+        LOG_TRACE("zmq received used: ", t.Elapsed_nanoseconds(), "ns");
     }
-    
+
 }
+
+
+
+
+
+
+

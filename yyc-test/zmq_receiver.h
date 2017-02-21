@@ -15,6 +15,7 @@ namespace rczg
             
         public:
             void Start_receive();
+            virtual void Save(char *data, size_t size) = 0;
             
         private:
             void Process_message(zmq::message_t &message);

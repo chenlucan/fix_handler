@@ -9,13 +9,25 @@ namespace rczg
     class TCPReceiver
     {
         public:
-            TCPReceiver(const boost::asio::ip::address &server_address, const unsigned short server_port);
+            explicit TCPReceiver(const boost::asio::ip::tcp::endpoint &endpoint);
             virtual ~TCPReceiver();
             
         public:
-            // request data([begin, end)) from tcp replay, and process it with processor
-            void Start_receive(std::function<void(char *, const size_t)> processor, std::uint32_t begin, std::uint32_t end);
-            
+            void Send(std::function<void(char *, const size_t)> processor, const std::string &message);
+            void Start_receive();
+            void Receive(std::function<void(char *, const size_t)> processor);
+            void Stop();
+
+        private:
+            void On_received(
+        			std::function<void(char *, const size_t)> processor,
+            		const boost::system::error_code &error, std::size_t bytes_transferred);
+
+        private:
+        	boost::asio::io_service m_io_service;
+        	boost::asio::ip::tcp::socket m_socket;
+            char m_buffer[BUFFER_MAX_LENGTH];
+
         private:
             DISALLOW_COPY_AND_ASSIGN(TCPReceiver);
     };

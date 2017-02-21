@@ -23,8 +23,11 @@ namespace rczg
             std::size_t Encode_header(mktdata::MessageHeader &header);
             std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::MDIncrementalRefreshVolume37 &message);
             std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::SecurityStatus30 &message);
+            std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::MDIncrementalRefreshBook32 &message);
             std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::MDInstrumentDefinitionFuture27 &message);
             std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::SnapshotFullRefresh38 &message);
+            std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::AdminLogin15 &message);
+            std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::AdminLogout16 &message);
             
         private:
             std::size_t m_encoded_length;

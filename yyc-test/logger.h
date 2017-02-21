@@ -5,6 +5,15 @@
 #include "global.h"
 #include "utility.h"
 
+
+#define __FL__ rczg::utility::Pad_Right(std::string(__FILE__)  + "(" + std::to_string(__LINE__) + ")", 30)
+#define LOG_TRACE(...) rczg::Logger::Trace("[", __FL__, "] ", __VA_ARGS__)
+#define LOG_DEBUG(...) rczg::Logger::Debug("[", __FL__, "] ", __VA_ARGS__)
+#define LOG_INFO(...) rczg::Logger::Info("[", __FL__, "] ", __VA_ARGS__)
+#define LOG_WARN(...) rczg::Logger::Warn("[", __FL__, "] ", __VA_ARGS__)
+#define LOG_ERROR(...) rczg::Logger::Error("[", __FL__, "] ", __VA_ARGS__)
+#define LOG_FATAL(...) rczg::Logger::Fatal("[", __FL__, "] ", __VA_ARGS__)
+
 namespace rczg
 {
     class Logger
@@ -16,7 +25,7 @@ namespace rczg
                 DEBUG, 
                 INFO, 
                 WARNING, 
-                ERROR, 
+                ERR,
                 FATAL
             };
 
@@ -53,7 +62,7 @@ namespace rczg
             template<typename T, typename... Params>
             static void Error(T first, Params... parameters)
             {
-                Logger::Write("ERROR", Logger::Level::ERROR, first, parameters...);
+                Logger::Write("ERROR", Logger::Level::ERR, first, parameters...);
             }
 
             template<typename T, typename... Params>
@@ -68,6 +77,7 @@ namespace rczg
             {
                 if(level >= Logger::m_level)
                 {
+                	std::lock_guard<std::mutex> lock(m_mutex);
                     std::cout << "[" << rczg::utility::Current_time_str() << "] ";
                     std::cout << "[" << std::hex << std::setfill('0') << std::setw(2) << std::this_thread::get_id() << "] " << std::dec;
                     std::cout << "[" << level_str << "] ";
@@ -89,6 +99,7 @@ namespace rczg
             
         private:
             static Level m_level;
+            static std::mutex m_mutex;
             
         private:
             Logger()

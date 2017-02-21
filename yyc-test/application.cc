@@ -1,16 +1,18 @@
 
 #include "application.h"
-#include "settings.h"
+#include "app_settings.h"
+#include "channel_settings.h"
 #include "logger.h"
 
 namespace rczg
 {
     
-    Application::Application(const std::string &channel_id, const std::string &setting_file)
+    Application::Application(const std::string &channel_id, const std::string &channel_setting_file, const std::string &app_setting_file)
     : m_udp_incrementals(), m_udp_recoveries(), m_udp_definitions(),
-      m_tcp_replayer(nullptr), m_sender(nullptr), m_arbitrator(nullptr), m_saver(nullptr), m_processor(nullptr)
+      m_tcp_replayer(nullptr),
+	  m_saver(nullptr), m_processor(nullptr), m_definition_saver(nullptr), m_recovery_saver(nullptr)
     {
-        Initial_application(channel_id, setting_file);
+        Initial_application(channel_id, channel_setting_file, app_setting_file);
     }
     
     Application::~Application()
@@ -22,96 +24,92 @@ namespace rczg
         delete m_tcp_replayer;
         delete m_processor;
         delete m_saver;
-        delete m_arbitrator;
-        delete m_sender;
+        delete m_definition_saver;
+        delete m_recovery_saver;
     }
     
-    void Application::Initial_application(const std::string &channel_id, const std::string &setting_file)
+    void Application::Initial_application(const std::string &channel_id, const std::string &channel_setting_file, const std::string &app_setting_file)
     {
-        rczg::Settings settings(setting_file);
-        rczg::setting::Channel channel = settings.Get_channel(channel_id);
+        rczg::ChannelSettings channel_settings(channel_setting_file);
+        rczg::setting::Channel channel = channel_settings.Get_channel(channel_id);
         std::vector<rczg::setting::Connection> connections = channel.connections;
+
+        rczg::AppSettings app_settings(app_setting_file);
+        std::pair<std::string, std::string> auth = app_settings.Get_auth();
+        std::pair<std::string, std::string> save_url = app_settings.Get_data_save_url();
         
-        std::for_each(connections.cbegin(), connections.cend(), [this](const rczg::setting::Connection &c){
+        std::for_each(connections.cbegin(), connections.cend(), [this, &channel_id, &auth](const rczg::setting::Connection &c){
             if(c.protocol == rczg::setting::Protocol::TCP)
             {
                 // TCP replay
-                rczg::Logger::Info("TCP:", c.host_ip, ", ", c.port);
-                m_tcp_replayer = new rczg::TCPReceiver(c.host_ip, c.port);
+                LOG_INFO("TCP:", c.host_ip, ", ", c.port, ", {", auth.first, ", ", auth.second, "}");
+                m_tcp_replayer = new rczg::DatReplayer(c.host_ip, c.port, auth.first, auth.second, channel_id);
             }
             else if(c.type == rczg::setting::FeedType::I)
             {
                 // UDP Incremental
-                rczg::Logger::Info("UDP Incremental:", c.ip, ", ", c.port);
+                LOG_INFO("UDP Incremental:", c.ip, ", ", c.port);
                 m_udp_incrementals.push_back(new rczg::UDPReceiver(c.ip, c.port));
             }
             else if(c.type == rczg::setting::FeedType::N)
             {
                 // UDP Instrument Definition
-                rczg::Logger::Info("UDP Definition:", c.ip, ", ", c.port);
+                LOG_INFO("UDP Definition:", c.ip, ", ", c.port);
                 m_udp_definitions.push_back(new rczg::UDPReceiver(c.ip, c.port));
             }
             else if(c.type == rczg::setting::FeedType::S)
             {
                 // UDP Market Recovery
-                rczg::Logger::Info("UDP Recovery:", c.ip, ", ", c.port);
+                LOG_INFO("UDP Recovery:", c.ip, ", ", c.port);
                 m_udp_recoveries.push_back(new rczg::UDPReceiver(c.ip, c.port));
             }
         });
         
-        m_sender = new rczg::ZmqSender("tcp://*:5557");
-        m_arbitrator = new rczg::DatArbitrator();
-        m_saver = new rczg::DatSaver(*m_sender);
-        m_processor = new rczg::DatProcessor(*m_arbitrator, *m_saver, *m_tcp_replayer);
+        m_saver = new rczg::DatSaver(save_url.first, save_url.second);
+        m_processor = new rczg::DatProcessor(*m_saver, *m_tcp_replayer);
+        m_definition_saver = new rczg::RecoverySaver(true);
+        m_recovery_saver = new rczg::RecoverySaver(false);
     }
     
     void Application::Start()
     {
-        rczg::Logger::Info("Start to listen ...");
+        LOG_INFO("Start to listen ...");
         
-        // must tell them this is weekly pre-opening startup
-        m_arbitrator->Set_later_join(false);
-        m_saver->Set_later_join(false);
+        // must tell processer this is weekly pre-opening startup
+        m_processor->Set_later_join(false);
         
         // start udp incrementals
         std::for_each(m_udp_incrementals.begin(), m_udp_incrementals.end(), 
-                      std::bind(&Application::Start_udp_feed, this, std::placeholders::_1));
-        // start message reader
-        Start_read();
+                      std::bind(&Application::Start_increment_feed, this, std::placeholders::_1));
+        // start message saver
+        Start_save();
     }
     
     void Application::Join()
     {
-        rczg::Logger::Info("Join to listen ...");
+        LOG_INFO("Join to listen ...");
         
-        // must tell them this is later joiner startup
-        m_arbitrator->Set_later_join(true);
-        m_saver->Set_later_join(true);
+        // must tell processer this is weekly pre-opening startup
+        m_processor->Set_later_join(true);
         
-        // start udp incrementals
-        std::for_each(m_udp_incrementals.begin(), m_udp_incrementals.end(), 
-                      std::bind(&Application::Start_udp_feed, this, std::placeholders::_1));
-        // start udp recoveries
-        std::for_each(m_udp_recoveries.begin(), m_udp_recoveries.end(), 
-                      std::bind(&Application::Start_udp_feed, this, std::placeholders::_1));
         // start udp definitions
         std::for_each(m_udp_definitions.begin(), m_udp_definitions.end(), 
-                      std::bind(&Application::Start_udp_feed, this, std::placeholders::_1));
-        // start message reader
-        Start_read();
+                      std::bind(&Application::Start_definition_feed, this, std::placeholders::_1));
     }
     
     void Application::Stop_recoveries()
     {
         std::for_each(m_udp_recoveries.begin(), m_udp_recoveries.end(), std::mem_fun(&rczg::UDPReceiver::Stop));
+        LOG_INFO("recovery udp listener stopped.");
     }
     
     void Application::Stop_definitions()
     {
-        std::for_each(m_udp_definitions.begin(), m_udp_definitions.end(), std::mem_fun(&rczg::UDPReceiver::Stop)); 
+        std::for_each(m_udp_definitions.begin(), m_udp_definitions.end(), std::mem_fun(&rczg::UDPReceiver::Stop));
+        LOG_INFO("definition udp listener stopped.");
     }
 
-    void Application::Start_udp_feed(rczg::UDPReceiver *udp)
+    void Application::Start_increment_feed(rczg::UDPReceiver *udp)
     {
         std::thread t([udp, this]{
             udp->Start_receive(
@@ -122,9 +120,60 @@ namespace rczg
         t.detach();
     }
     
-    void Application::Start_read()
+    void Application::Start_definition_feed(rczg::UDPReceiver *udp)
     {
-        std::thread t(&DatSaver::Start_serialize, m_saver);              
+        std::thread t([udp, this]{
+            udp->Start_receive(
+                std::bind(&rczg::RecoverySaver::Process_recovery_packet,
+                		  std::ref(*m_definition_saver),
+						  [this]{this->On_definition_end();},
+                          std::placeholders::_1, std::placeholders::_2)
+            );
+        });
+        t.detach();
+    }
+
+    void Application::Start_recovery_feed(rczg::UDPReceiver *udp)
+    {
+        std::thread t([udp, this]{
+            udp->Start_receive(
+                std::bind(&rczg::RecoverySaver::Process_recovery_packet,
+                		  std::ref(*m_recovery_saver),
+						  [this]{this->On_recovery_end();},
+                          std::placeholders::_1, std::placeholders::_2)
+            );
+        });
+        t.detach();
+    }
+
+    void Application::On_definition_end()
+    {
+    	LOG_INFO("definition all received.");
+    	this->Stop_definitions();
+
+		// start udp incrementals
+		std::for_each(m_udp_incrementals.begin(), m_udp_incrementals.end(),
+					  std::bind(&Application::Start_increment_feed, this, std::placeholders::_1));
+		// start udp recoveries
+		std::for_each(m_udp_recoveries.begin(), m_udp_recoveries.end(),
+					  std::bind(&Application::Start_recovery_feed, this, std::placeholders::_1));
+    }
+
+    void Application::On_recovery_end()
+    {
+    	LOG_INFO("recovery all received.");
+    	this->Stop_recoveries();
+
+    	// start message saver
+    	Start_save();
+    }
+
+    void Application::Start_save()
+    {
+    	m_saver->Set_definition_data(m_definition_saver->Get_data());
+    	m_saver->Set_recovery_data(m_recovery_saver->Get_data());
+
+        std::thread t(&DatSaver::Start_save, m_saver);
         t.detach();
     }
     

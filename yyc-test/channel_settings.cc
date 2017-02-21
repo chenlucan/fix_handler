@@ -1,10 +1,10 @@
 
-#include "settings.h"
+#include "channel_settings.h"
 
 namespace rczg
 {
     
-    const std::unordered_map<std::string, rczg::setting::FeedType> Settings::FEED_TYPES = 
+    const std::unordered_map<std::string, rczg::setting::FeedType> ChannelSettings::FEED_TYPES =
     {
         {"H", rczg::setting::FeedType::H},
         {"I", rczg::setting::FeedType::I},
@@ -12,37 +12,37 @@ namespace rczg
         {"S", rczg::setting::FeedType::S}
     };
     
-    const std::unordered_map<std::string, rczg::setting::Protocol> Settings::PROTOCOLS =
+    const std::unordered_map<std::string, rczg::setting::Protocol> ChannelSettings::PROTOCOLS =
     {
         {"TCP/IP", rczg::setting::Protocol::TCP},
         {"UDP/IP", rczg::setting::Protocol::UDP}
     };
     
-    const std::unordered_map<std::string, rczg::setting::Feed> Settings::FEEDS =
+    const std::unordered_map<std::string, rczg::setting::Feed> ChannelSettings::FEEDS =
     {
         {"A", rczg::setting::Feed::A},
         {"B", rczg::setting::Feed::B}
     };
 
-    Settings::Settings(const std::string &file)
+    ChannelSettings::ChannelSettings(const std::string &channel_setting_file)
     {
-        this->Read_xml(file);
+        this->Read_channels(channel_setting_file);
     }
     
-    Settings::~Settings()
+    ChannelSettings::~ChannelSettings()
     {
         // noop
     }
     
-    const rczg::setting::Channel Settings::Get_channel(const std::string &channel_id) const
+    const rczg::setting::Channel ChannelSettings::Get_channel(const std::string &channel_id) const
     {
         return m_channels.at(channel_id);
     }
     
-    void Settings::Read_xml(const std::string &file)
+    void ChannelSettings::Read_channels(const std::string &channel_setting_file)
     {
         boost::property_tree::ptree pt;
-        boost::property_tree::read_xml(file, pt, boost::property_tree::xml_parser::trim_whitespace);
+        boost::property_tree::read_xml(channel_setting_file, pt, boost::property_tree::xml_parser::trim_whitespace);
         
         for(boost::property_tree::ptree::value_type &channel : pt.get_child("configuration"))
         {
@@ -61,7 +61,7 @@ namespace rczg
         }   
     }
 
-    std::vector<rczg::setting::Product> Settings::Read_channel_products(boost::property_tree::ptree::value_type &channel)
+    std::vector<rczg::setting::Product> ChannelSettings::Read_channel_products(boost::property_tree::ptree::value_type &channel)
     {
         std::vector<rczg::setting::Product> products;
         for(boost::property_tree::ptree::value_type &p : channel.second.get_child("products"))
@@ -77,7 +77,7 @@ namespace rczg
         return products;
     }
     
-    std::vector<rczg::setting::Connection> Settings::Read_channel_connections(boost::property_tree::ptree::value_type &channel)
+    std::vector<rczg::setting::Connection> ChannelSettings::Read_channel_connections(boost::property_tree::ptree::value_type &channel)
     {
         std::vector<rczg::setting::Connection> connections;
         for(boost::property_tree::ptree::value_type &c : channel.second.get_child("connections"))
@@ -93,13 +93,13 @@ namespace rczg
 
             rczg::setting::Connection connection = { 
                 cid,
-                Settings::Convert(type, Settings::FEED_TYPES),
+				ChannelSettings::Convert(type, ChannelSettings::FEED_TYPES),
                 type_des,
-                Settings::Convert(protocol, Settings::PROTOCOLS),
+				ChannelSettings::Convert(protocol, ChannelSettings::PROTOCOLS),
                 boost::asio::ip::address::from_string(ip),
                 boost::asio::ip::address::from_string(host_ip),
                 port,
-                Settings::Convert(feed, Settings::FEEDS),
+				ChannelSettings::Convert(feed, ChannelSettings::FEEDS),
             };
 
             connections.push_back(connection);
@@ -108,7 +108,7 @@ namespace rczg
     }
     
     template <typename T> 
-    T Settings::Convert(const std::string &value, const std::unordered_map<std::string, T> &all_values)
+    T ChannelSettings::Convert(const std::string &value, const std::unordered_map<std::string, T> &all_values)
     {
         return all_values.at(value);
     }
