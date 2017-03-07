@@ -1,5 +1,25 @@
 package pb.ems;
 
+
+message Date{
+  optional uint32 year     = 1;
+  optional uint32 month    = 2;
+  optional uint32 day      = 3;
+}
+
+message Time{
+  optional uint32 hour     = 1;
+  optional uint32 minute   = 2;
+  optional uint32 second   = 3;
+  optional uint32 micros   = 4;
+}
+
+message Timestamp{
+  optional Date   date     = 1;
+  optional Time   time     = 2;    
+  optional sint32 timezone = 3;  
+}
+
 enum BuySell {
   BS_None  = 0;
   BS_Buy   = 1;
