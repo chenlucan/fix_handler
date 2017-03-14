@@ -2,6 +2,7 @@
 #include <chrono>
 #include <sstream>
 #include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 #include <quickfix/Session.h>
 #include "core/assist/utility.h"
 #include "core/assist/logger.h"
@@ -152,26 +153,27 @@ namespace utility
         return boost::posix_time::ptime(d, t + boost::posix_time::millisec(value.getMillisecond()));
     }
 
-    // 把标准类型的时间转换成 protobuf 类型
-    pb::ems::Timestamp Posix_time_to_pb(const boost::posix_time::ptime &datetime)
+    // 把字符串类型的时间（yyyyMMdd-HH:mi:ss.fff）转换成 protobuf 类型
+    void To_pb_time(pb::ems::Timestamp *ts, const std::string &datetime)
     {
-        pb::ems::Date d;
-        d.set_year(datetime.date().year());
-        d.set_month(datetime.date().month());
-        d.set_day(datetime.date().day());
+        if(datetime.length() != 21)
+        {
+            LOG_WARN("invalid datetime: ", datetime, ", length=", datetime.length());
+            return;
+        }
 
-        pb::ems::Time t;
-        t.set_hour(datetime.time_of_day().hours());
-        t.set_minute(datetime.time_of_day().minutes());
-        t.set_second(datetime.time_of_day().seconds());
-        t.set_micros(datetime.time_of_day().total_milliseconds() - datetime.time_of_day().total_seconds() * 1000);
+        pb::ems::Date *d = ts->mutable_date();
+        d->set_year(boost::lexical_cast<std::uint32_t>(datetime.data(), 4));
+        d->set_month(boost::lexical_cast<std::uint32_t>(datetime.data() + 4, 2));
+        d->set_day(boost::lexical_cast<std::uint32_t>(datetime.data() + 6, 2));
 
-        pb::ems::Timestamp ts;
-        ts.set_allocated_date(&d);
-        ts.set_allocated_time(&t);
-        ts.set_timezone(0);  // 时间都是 UTC
+        pb::ems::Time *t = ts->mutable_time();
+        t->set_hour(boost::lexical_cast<std::uint32_t>(datetime.data() + 9, 2));
+        t->set_minute(boost::lexical_cast<std::uint32_t>(datetime.data() + 12, 2));
+        t->set_second(boost::lexical_cast<std::uint32_t>(datetime.data() + 15, 2));
+        t->set_micros(boost::lexical_cast<std::uint32_t>(datetime.data() + 18, 3));
 
-        return ts;
+        ts->set_timezone(0);  // 时间都是 UTC
     }
 
     // 把 protobuf 的消息整理成可读字符串

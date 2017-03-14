@@ -62,8 +62,8 @@ namespace utility
     // 把 quickfix 的时间类型转换成标准类型
     boost::posix_time::ptime Fix_time_to_posix(const FIX::UtcTimeStamp &value);
 
-    // 把标准类型的时间转换成 protobuf 类型
-    pb::ems::Timestamp Posix_time_to_pb(const boost::posix_time::ptime &datetime);
+    // 把字符串类型的时间（yyyyMMdd-HH:mi:ss.fff）转换成 protobuf 类型
+    void To_pb_time(pb::ems::Timestamp *ts, const std::string &datetime);
 
     // 把 protobuf 的消息整理成可读字符串
     std::string Format_pb_message(const pb::ems::Order &order);
@@ -73,6 +73,7 @@ namespace utility
 
     // 把 protobuf 的时间格式整理成可读字符串
     std::string Format_pb_timestamp(const pb::ems::Timestamp &time);
+
 } // namespace utility
 } // namespace assist
 } // namespace core

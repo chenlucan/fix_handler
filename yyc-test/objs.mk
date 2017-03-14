@@ -20,9 +20,6 @@ $(BIN_PATH)/recovery_saver.o: $(SRC_PATH)/cme/market/recovery_saver.cc
 $(BIN_PATH)/book_manager.o: $(SRC_PATH)/cme/market/book_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
-$(BIN_PATH)/book_receiver.o: $(SRC_PATH)/cme/market/book_receiver.cc
-	$(COMPILE_COMMAND) -c -o $@ $<
-
 $(BIN_PATH)/book_state_controller.o: $(SRC_PATH)/cme/market/book_state_controller.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 

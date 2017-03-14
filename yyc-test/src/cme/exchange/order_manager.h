@@ -13,12 +13,12 @@
 #include <quickfix/fix42/ExecutionReport.h>
 #include <quickfix/fix42/BusinessMessageReject.h>
 #include <quickfix/fix42/OrderCancelReject.h>
-#include <quickfix/fix50sp2/OrderMassActionReport.h>
 #include <quickfix/fix42/OrderStatusRequest.h>
 #include <quickfix/fix42/OrderCancelRequest.h>
 #include <quickfix/fix42/OrderCancelReplaceRequest.h>
-#include <quickfix/fix50sp2/OrderMassStatusRequest.h>
-#include <quickfix/fix50sp2/OrderMassActionRequest.h>
+#include "cme/exchange/message/OrderMassActionReport.h"
+#include "cme/exchange/message/OrderMassStatusRequest.h"
+#include "cme/exchange/message/OrderMassActionRequest.h"
 #include "core/global.h"
 #include "cme/exchange/exchange_settings.h"
 #include "cme/exchange/order.h"
@@ -29,6 +29,18 @@ namespace cme
 {
 namespace exchange
 {
+    // cme 的有些 tag，quickfix 里面不支持，需要在这里单独定义
+    enum CmeFixField
+    {
+        ApplicationSystemName = 1603,
+        TradingSystemVersion = 1604,
+        ApplicationSystemVendor = 1605,
+        OrdStatusReqType = 5000,
+        MassCancelRequestType = 6115,
+        CtiCode = 9702,
+        CorrelationClOrdID = 9717
+    };
+
     class OrderManager: public FIX::Application, public FIX::MessageCracker
     {
         public:
@@ -48,6 +60,9 @@ namespace exchange
             bool sendOrderMassActionRequest(const fh::cme::exchange::MassOrder &mass_order);
 
         private:
+            void Mass_order_status();
+
+        private:
             void onCreate(const FIX::SessionID&);
             void onLogon(const FIX::SessionID& sessionID);
             void onLogout(const FIX::SessionID& sessionID);
@@ -60,7 +75,7 @@ namespace exchange
             void onMessage(const FIX42::Logout& message, const FIX::SessionID& sessionID);
             void onMessage(const FIX42::ResendRequest& message, const FIX::SessionID& sessionID);
             void onMessage(const FIX42::BusinessMessageReject& message, const FIX::SessionID& sessionID);
-            void onMessage(const FIX50SP2::OrderMassActionReport& message, const FIX::SessionID& sessionID);
+            void onMessage(const FIX42::Message& message, const FIX::SessionID& sessionID);
 
         private:
             void toAdmin(FIX::Message&, const FIX::SessionID&);
@@ -109,7 +124,7 @@ namespace exchange
                     char side,
                     const std::string &order_id,
                     const std::string &security_desc);
-            FIX50SP2::OrderMassStatusRequest createOrderMassStatusRequest50sp2(
+            cme::exchange::message::OrderMassStatusRequest createOrderMassStatusRequest42(
                     const std::string &mass_status_req_id,
                     std::uint8_t mass_status_req_type,
                     const std::string &market_segment_id,
@@ -118,7 +133,7 @@ namespace exchange
                     const std::string &symbol,
                     const std::string &security_desc,
                     char time_in_force);
-            FIX50SP2::OrderMassActionRequest createOrderMassActionRequest50sp2(
+            cme::exchange::message::OrderMassActionRequest createOrderMassActionRequest42(
                     const std::string &cl_order_id,
                     std::uint8_t mass_action_type,
                     std::uint8_t mass_action_scope,
@@ -141,7 +156,14 @@ namespace exchange
         private:
             fh::cme::exchange::SingleOrderReport processOrderResult(const FIX42::ExecutionReport& message) const;
             fh::cme::exchange::SingleOrderReport processOrderResult(const FIX42::OrderCancelReject& message) const;
-            fh::cme::exchange::MassOrderReport  processOrderResult(const FIX50SP2::OrderMassActionReport& message) const;
+            fh::cme::exchange::MassOrderReport  processOrderResult(const FIX42::Message& message) const;
+
+        private:
+            template <typename FIXFieldType, typename Type>
+            static void Try_pick_value(const FIX::Message &message, Type &target, const FIXFieldType &fft);
+            static void Try_pick_string(const FIX::Message &message, std::string &target, int tagnum);
+            template <typename IntType>
+            static void Try_pick_int(const FIX::Message &message, IntType &target, int num);
 
         private:
             std::function<void(const fh::cme::exchange::OrderReport&)> m_processor;

@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
             return 1;
         }
 
-        fh::core::assist::Logger::Set_level(fh::core::assist::Logger::Level::TRACE);
+        fh::core::assist::Logger::Set_level(fh::core::assist::Logger::Level::INFO);
         bool is_week_begin = (strcmp(argv[1], "-s") == 0);
         fh::cme::exchange::ExchangeApplication a(is_week_begin);
         a.Start();

@@ -64,7 +64,7 @@ zmqrec: $(BIN_PATH)/mdp_receiver.o $(BIN_PATH)/mdp_saver.o $(BIN_PATH)/zmq_recei
 eserver: $(BIN_PATH)/exchange_server_test.o $(BIN_PATH)/server_application.o $(BIN_PATH)/server_market.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(EXCHANGE_SERVER_TARGET) $?
 
-strategy: $(BIN_PATH)/strategy_test.o $(BIN_PATH)/book_receiver.o $(COMM_OBJS) 
+strategy: $(BIN_PATH)/strategy_test.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(STRATEGY_TARGET) $?
 
 eclient: $(BIN_PATH)/exchange_client_test.o $(BIN_PATH)/exchange_application.o $(BIN_PATH)/strategy_communicator.o \

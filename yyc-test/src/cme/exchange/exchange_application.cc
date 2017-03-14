@@ -72,9 +72,9 @@ namespace exchange
     void ExchangeApplication::On_from_globex(char *data, size_t size)
     {
         // 接受到交易所返回的信息后，转发给策略模块
-        LOG_INFO("send to stategy: ", std::string(data, size));
         m_strategy->Send(data, size);
     }
+
 } // namespace exchange
 } // namespace cme
 } // namespace fh

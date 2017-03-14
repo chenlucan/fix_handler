@@ -2,7 +2,9 @@
 #include <boost/algorithm/string.hpp>
 #include <quickfix/fix42/TestRequest.h>
 #include <quickfix/fix42/ExecutionReport.h>
+#include <quickfix/fix42/OrderCancelReject.h>
 #include "server_application.h"
+#include "cme/exchange/message/OrderMassActionReport.h"
 
 void Application::onLogon( const FIX::SessionID& sessionID )
 {
@@ -20,6 +22,11 @@ void Application::onLogon( const FIX::SessionID& sessionID )
 //    FIX42::SequenceReset reset(no);
 //    reset.set(f);
 //    FIX::Session::sendToTarget( reset, sessionID.getSenderCompID(), sessionID.getTargetCompID() );
+
+    // 测试发送 Order Mass Action Report
+    fh::cme::exchange::message::OrderMassActionReport report;
+    report.setField(FIX::FIELD::ClOrdID, "xyz");
+    FIX::Session::sendToTarget( report, sessionID.getSenderCompID(), sessionID.getTargetCompID() );
 }
 
 void Application::onLogout( const FIX::SessionID& sessionID ) {}
@@ -101,9 +108,22 @@ void Application::onMessage( const FIX42::OrderCancelReplaceRequest& message, co
     std::cout << "OrderCancelReplaceRequest: " << message << std::endl;
 }
 
-void Application::onMessage( const FIX42::OrderStatusRequest& message, const FIX::SessionID& )
+void Application::onMessage( const FIX42::OrderStatusRequest& message, const FIX::SessionID& session )
 {
     std::cout << "OrderStatusRequest: " << message << std::endl;
+
+    FIX42::OrderCancelReject ocr;
+    ocr.set(FIX::Account("yyc-back"));
+    ocr.set(FIX::ClOrdID("Client-order-1"));
+    //ocr.set(FIX::ExecID("fill-id-1"));
+    ocr.set(FIX::OrderID("server-order-1"));
+    ocr.set(FIX::OrdStatus('U'));
+    ocr.set(FIX::TransactTime(true));
+    //ocr.set(FIX::CancelRejResponseTo('2'));
+    //ocr.set(FIX::CorrelationClOrdID("Client-order-1"));
+    ocr.set(FIX::Text("something rejected"));
+
+    FIX::Session::sendToTarget( ocr, session.getSenderCompID(), session.getTargetCompID() );
 }
 
 //void Application::onMessage( const FIX42::Logon& message, const FIX::SessionID& )
@@ -159,6 +179,8 @@ void Application::updateOrder( const Order& order, char status )
   fixOrder.set( FIX::ClOrdID( order.getClientID() ) );
   fixOrder.set( FIX::OrderQty( order.getQuantity() ) );
 
+  fixOrder.set(FIX::Account("yyc-back"));
+
   if ( status == FIX::OrdStatus_FILLED ||
        status == FIX::OrdStatus_PARTIALLY_FILLED )
   {
@@ -190,6 +212,8 @@ void Application::rejectOrder
 
   fixOrder.set( clOrdID );
   fixOrder.set( FIX::Text( message ) );
+
+  fixOrder.set(FIX::Account("yyc-back"));
 
   try
   {

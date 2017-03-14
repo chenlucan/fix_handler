@@ -2,7 +2,6 @@
 #define __FH_CME_EXCHANGE_ORDER_H__
 
 #include <stdexcept>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include "core/global.h"
 
 namespace fh
@@ -82,6 +81,7 @@ namespace exchange
         std::string security_id;      // （8，9）
         std::string security_desc;      //  （8，9）
         char cancel_rej_response_to;       // （9）       1: Order Cancel Request   2: Order Cancel/Replace Request
+        char time_in_force;                    // （8-1,2,3,4,5）  0: Day  1: Good Till Cancel  3: Fill and Kill  6: Good Till Date
         std::uint64_t  cum_qty;               // （8）
         std::uint64_t  leaves_qty;               // （8-1,2,3,4,5）
         std::uint64_t  order_qty;               // （8-1,2,3,4,5）
@@ -90,7 +90,7 @@ namespace exchange
         std::uint64_t last_qty;                 // （8-3,6）
         std::uint32_t rej_reason;       // （8-2,5，9）
         std::string text;           // （8-2,5，9）
-        boost::posix_time::ptime transact_time;     // （8，9）
+        std::string transact_time;     // （8，9）
         std::string trade_date;         // （8-2,3,6）
     };
 
@@ -103,7 +103,7 @@ namespace exchange
         std::uint32_t total_affected_orders;
         std::uint32_t no_affected_orders;
         std::string orig_cl_order_ids;       // 将所有的 OrigCIOrdID 用 "^" 拼接起来
-        boost::posix_time::ptime transact_time;
+        std::string transact_time;
         std::string text;
     };
 

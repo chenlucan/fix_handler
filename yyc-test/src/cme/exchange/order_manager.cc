@@ -1,8 +1,10 @@
 
 #include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 #include "cme/exchange/order_manager.h"
 #include "core/assist/logger.h"
 #include "core/assist/utility.h"
+#include "core/assist/time_measurer.h"
 
 namespace fh
 {
@@ -59,6 +61,9 @@ namespace exchange
     void OrderManager::onLogon(const FIX::SessionID& sessionID)
     {
         LOG_DEBUG("on logon: ", sessionID);
+
+        // 登录成功后发送请求，查询所有订单状态
+        this->Mass_order_status();
     }
 
     void OrderManager::onLogout(const FIX::SessionID& sessionID)
@@ -84,7 +89,6 @@ namespace exchange
         else if( type == "2" )
         {
             // TODO CME 要求一次最大请求的消息数是 2500，大于这个数字的话需要分段请求
-            // 需要按照上述需求修改 quickfix
             this->appendResendRequestField(message, sessionID);
         }
 
@@ -120,22 +124,28 @@ namespace exchange
     {
         LOG_DEBUG("on ExecutionReport message: ", sessionID, " - ", fh::core::assist::utility::Format_fix_message(message));
 
+        fh::core::assist::TimeMeasurer t;
+
         fh::cme::exchange::OrderReport result;
         result.message_type = "8";
         result.single_report = this->processOrderResult(message);
-
         m_processor(result);
+
+        LOG_INFO("order result processed used: ", t.Elapsed_nanoseconds(), "ns");
     }
 
     void OrderManager::onMessage(const FIX42::OrderCancelReject& message, const FIX::SessionID& sessionID)
     {
         LOG_DEBUG("on OrderCancelReject message: ", sessionID, " - ", fh::core::assist::utility::Format_fix_message(message));
 
+        fh::core::assist::TimeMeasurer t;
+
         fh::cme::exchange::OrderReport result;
         result.message_type = "9";
         result.single_report = this->processOrderResult(message);
-
         m_processor(result);
+
+        LOG_INFO("order result processed used: ", t.Elapsed_nanoseconds(), "ns");
     }
 
     void OrderManager::onMessage(const FIX42::Heartbeat& message, const FIX::SessionID& sessionID)
@@ -172,15 +182,22 @@ namespace exchange
         // 收到这个消息说明发生了某些业务字段错误
     }
 
-    void OrderManager::onMessage(const FIX50SP2::OrderMassActionReport& message, const FIX::SessionID& sessionID)
+    void OrderManager::onMessage(const FIX42::Message & message, const FIX::SessionID& sessionID)
     {
-        LOG_DEBUG("on order mass action message: ", sessionID, " - ", fh::core::assist::utility::Format_fix_message(message));
+        LOG_DEBUG("on other message: ", sessionID, " - ", fh::core::assist::utility::Format_fix_message(message));
 
-        fh::cme::exchange::OrderReport result;
-        result.message_type = "BZ";
-        result.mass_report = this->processOrderResult(message);
+        if( message.getHeader().getField( FIX::FIELD::MsgType ) == "BZ")
+        {
+            fh::core::assist::TimeMeasurer t;
 
-        m_processor(result);
+            // 是 Order Mass Action Report 的场合需要返回到策略模块
+            fh::cme::exchange::OrderReport result;
+            result.message_type = "BZ";
+            result.mass_report = this->processOrderResult(message);
+            m_processor(result);
+
+            LOG_INFO("process Order Mass Action Report used: ", t.Elapsed_nanoseconds(), "ns");
+        }
     }
 
     void OrderManager::onMessage(const FIX42::ResendRequest& message, const FIX::SessionID& sessionID)
@@ -197,7 +214,7 @@ namespace exchange
         LOG_INFO("send Logout");
         FIX::Message logout = createLogout42(text);
 
-        LOG_INFO("message(xml): ", logout.toXML());
+        LOG_DEBUG("message(xml): ", logout.toXML());
         LOG_INFO("message(string): ", fh::core::assist::utility::Format_fix_message(logout.toString()));
 
         return FIX::Session::sendToTarget(logout);
@@ -218,7 +235,7 @@ namespace exchange
                 order.security_desc,
                 order.expire_date);
 
-        LOG_INFO("message(xml): ", fix_order.toXML());
+        LOG_DEBUG("message(xml): ", fix_order.toXML());
         LOG_INFO("message(string): ", fh::core::assist::utility::Format_fix_message(fix_order.toString()));
 
         return FIX::Session::sendToTarget(fix_order);
@@ -235,7 +252,7 @@ namespace exchange
                 order.order_id,
                 order.security_desc);
 
-        LOG_INFO("message(xml): ", cancel.toXML());
+        LOG_DEBUG("message(xml): ", cancel.toXML());
         LOG_INFO("message(string): ", fh::core::assist::utility::Format_fix_message(cancel.toString()));
 
         return FIX::Session::sendToTarget(cancel);
@@ -258,7 +275,7 @@ namespace exchange
                 order.security_desc,
                 order.expire_date);
 
-        LOG_INFO("message(xml): ", replace.toXML());
+        LOG_DEBUG("message(xml): ", replace.toXML());
         LOG_INFO("message(string): ", fh::core::assist::utility::Format_fix_message(replace.toString()));
 
         return FIX::Session::sendToTarget(replace);
@@ -274,7 +291,7 @@ namespace exchange
                 order.order_id,
                 order.security_desc);
 
-        LOG_INFO("message(xml): ", status.toXML());
+        LOG_DEBUG("message(xml): ", status.toXML());
         LOG_INFO("message(string): ", fh::core::assist::utility::Format_fix_message(status.toString()));
 
         return FIX::Session::sendToTarget(status);
@@ -283,7 +300,7 @@ namespace exchange
     bool OrderManager::sendOrderMassStatusRequest(const fh::cme::exchange::MassOrder &mass_order)
     {
         LOG_INFO("send OrderMassStatusRequest");
-        FIX::Message status = createOrderMassStatusRequest50sp2(
+        FIX::Message status = createOrderMassStatusRequest42(
                 mass_order.mass_status_req_id,
                 mass_order.mass_status_req_type,
                 mass_order.market_segment_id,
@@ -293,7 +310,7 @@ namespace exchange
                 mass_order.security_desc,
                 mass_order.time_in_force);
 
-        LOG_INFO("message(xml): ", status.toXML());
+        LOG_DEBUG("message(xml): ", status.toXML());
         LOG_INFO("message(string): ", fh::core::assist::utility::Format_fix_message(status.toString()));
 
         return FIX::Session::sendToTarget(status);
@@ -302,7 +319,7 @@ namespace exchange
     bool OrderManager::sendOrderMassActionRequest(const fh::cme::exchange::MassOrder &mass_order)
     {
         LOG_INFO("send sendOrderMassActionRequest");
-        FIX::Message action = createOrderMassActionRequest50sp2(
+        FIX::Message action = createOrderMassActionRequest42(
                 mass_order.cl_order_id,
                 mass_order.mass_action_type,
                 mass_order.mass_action_scope,
@@ -315,10 +332,27 @@ namespace exchange
                 mass_order.order_type,
                 mass_order.time_in_force);
 
-        LOG_INFO("message(xml): ", action.toXML());
+        LOG_DEBUG("message(xml): ", action.toXML());
         LOG_INFO("message(string): ", fh::core::assist::utility::Format_fix_message(action.toString()));
 
         return FIX::Session::sendToTarget(action);
+    }
+
+    void OrderManager::Mass_order_status()
+    {
+        fh::cme::exchange::MassOrder mass_order;
+        mass_order.mass_status_req_id = "S" + std::to_string(fh::core::assist::utility::Current_time_ns());   // 使用 "S + 当前时间" 作为 ID
+        mass_order.mass_status_req_type = 7;    //  7: All Orders
+        bool isSuccess = this->sendOrderMassStatusRequest(mass_order);
+        LOG_INFO("mass order status processed:", isSuccess);
+
+//        // TEST FOR Order Mass Action Request
+//        mass_order.cl_order_id =  mass_order.mass_status_req_id;
+//        mass_order.mass_action_type = 3;
+//        mass_order.mass_action_scope = 1;
+//        mass_order.security_desc = "TEST";
+//        bool isSuccess = this->sendOrderMassActionRequest(mass_order);
+//        LOG_INFO("mass order action processed:", isSuccess);
     }
 
     FIX42::Logout OrderManager::createLogout42(const std::string &text)
@@ -341,45 +375,38 @@ namespace exchange
             const std::string &security_desc,
             const std::string &expire_date)
     {
-        FIX::Account ac(m_account);
-        FIX::ClOrdID coi(cl_order_id);
-        FIX::HandlInst hi('1');     // 1: Automated execution
-        FIX::OrderQty oq(order_qty);
-        FIX::OrdType ot(order_type);
-        FIX::Price p(price);
-        FIX::Side s(side);
-        FIX::Symbol sym(symbol);
-        FIX::TimeInForce tif(time_in_force);
-        FIX::TransactTime tt;
-        FIX::ManualOrderIndicator moi(m_manual_flag);
-        FIX::StopPx sp(stop_px);
-        FIX::SecurityDesc sd(security_desc);
-        FIX::SecurityType st(m_security_type);
-        FIX::CustomerOrFirm cof(m_customer_flag);
-        FIX::ExpireDate ed(expire_date);
-        // FIX::CtiCode cc(m_cti_code);     // TODO 这个 tag 目前 quickfix 不支持
-        // FIX::CorrelationClOrdID ccoi(cl_order_id);    // TODO 这个 tag 目前 quickfix 不支持
+        FIX42::NewOrderSingle newOrderSingle;
+        newOrderSingle.set(FIX::Account(m_account));
+        newOrderSingle.set(FIX::ClOrdID(cl_order_id));
+        newOrderSingle.set(FIX::HandlInst('1'));     // 1: Automated execution
+        newOrderSingle.set(FIX::OrderQty(order_qty));
+        newOrderSingle.set(FIX::OrdType(order_type));
+        newOrderSingle.set(FIX::Side(side));
+        newOrderSingle.set(FIX::Symbol(symbol));
+        if(time_in_force != 0) newOrderSingle.set(FIX::TimeInForce(time_in_force));
+        newOrderSingle.set(FIX::TransactTime(true));
+        newOrderSingle.set(FIX::SecurityDesc(security_desc));
+        newOrderSingle.set(FIX::SecurityType(m_security_type));
+        newOrderSingle.set(FIX::CustomerOrFirm(m_customer_flag));
+        //newOrderSingle.set(FIX::ExpireDate(expire_date)); // 目前用不到  tag 59-TimeInForce=Good Till Date (GTD)
 
-        FIX42::NewOrderSingle newOrderSingle(coi, hi, sym, s, tt, ot);
-        newOrderSingle.set(ac);
-        newOrderSingle.set(oq);
-        newOrderSingle.set(tif);
-        // newOrderSingle.set(moi);    // TODO 这个 tag 目前 quickfix 的 NewOrderSingle 不支持
-        newOrderSingle.set(sd);
-        newOrderSingle.set(st);
-        newOrderSingle.set(cof);
-        newOrderSingle.set(ed);
-        // newOrderSingle.set(cc);  // TODO 这个 tag 目前 quickfix 不支持
-        // newOrderSingle.set(ccoi);  // TODO 这个 tag 目前 quickfix 不支持
+        // 下面的 tag，目前 quickfix 不支持，所以用下面这种方式设置
+        newOrderSingle.setField(fh::cme::exchange::CmeFixField::CtiCode, m_cti_code);
+        newOrderSingle.setField(fh::cme::exchange::CmeFixField::CorrelationClOrdID, cl_order_id);
+
+        // 下面的 tag，目前 quickfix 的 NewOrderSingle 不支持，所以用下面这种方式设置
+        newOrderSingle.setField(FIX::FIELD::ManualOrderIndicator, m_manual_flag ? "Y" : "N");
 
         if (order_type == FIX::OrdType_LIMIT || order_type == FIX::OrdType_STOP_LIMIT)
         {
-            newOrderSingle.set(p);
+            newOrderSingle.set(FIX::Price(price));
         }
-        if (order_type == FIX::OrdType_STOP || order_type == FIX::OrdType_STOP_LIMIT)
-        {
-            newOrderSingle.set(sp);
-        }
+
+        // 目前用不到 OrdType = stop ， stop-limit
+        //if (order_type == FIX::OrdType_STOP || order_type == FIX::OrdType_STOP_LIMIT)
+        //{
+        //    newOrderSingle.set(FIX::StopPx(stop_px));
+        //}
 
         setHeader(newOrderSingle.getHeader());
 
@@ -394,25 +421,22 @@ namespace exchange
             const std::string &order_id,
             const std::string &security_desc)
     {
-        FIX::Account ac(m_account);
-        FIX::ClOrdID coi(cl_order_id);
-        FIX::OrderID oi(order_id);
-        FIX::OrigClOrdID ocoi(orig_cl_order_id);
-        FIX::Side s(side);
-        FIX::Symbol sym(symbol);
-        FIX::TransactTime tt;
-        FIX::ManualOrderIndicator moi(m_manual_flag);
-        FIX::SecurityDesc sd(security_desc);
-        FIX::SecurityType st(m_security_type);
-        // FIX::CorrelationClOrdID ccoi(cl_order_id);    // TODO 这个 tag 目前 quickfix 不支持
+        FIX42::OrderCancelRequest orderCancelRequest;
+        orderCancelRequest.set(FIX::Account(m_account));
+        orderCancelRequest.set(FIX::ClOrdID(cl_order_id));
+        orderCancelRequest.set(FIX::OrderID(order_id));
+        orderCancelRequest.set(FIX::OrigClOrdID(orig_cl_order_id));
+        orderCancelRequest.set(FIX::Side(side));
+        //orderCancelRequest.set(FIX::Symbol(symbol));		// 目前用不到
+        orderCancelRequest.set(FIX::TransactTime(true));
+        orderCancelRequest.set(FIX::SecurityDesc(security_desc));
+        orderCancelRequest.set(FIX::SecurityType(m_security_type));
 
-        FIX42::OrderCancelRequest orderCancelRequest(ocoi, coi, sym, s, tt);
-        orderCancelRequest.set(ac);
-        orderCancelRequest.set(oi);
-        // orderCancelRequest.set(moi);    // TODO 这个 tag 目前 quickfix 的 OrderCancelRequest 不支持
-        orderCancelRequest.set(sd);
-        orderCancelRequest.set(st);
-        // orderCancelRequest.set(ccoi);  // TODO 这个 tag 目前 quickfix 不支持
+        // 下面的 tag，目前 quickfix 不支持，所以用下面这种方式设置
+        orderCancelRequest.setField(fh::cme::exchange::CmeFixField::CorrelationClOrdID, cl_order_id);
+
+        // 下面的 tag，目前 quickfix 的 OrderCancelRequest 不支持，所以用下面这种方式设置
+        orderCancelRequest.setField(FIX::FIELD::ManualOrderIndicator, m_manual_flag ? "Y" : "N");
 
         setHeader(orderCancelRequest.getHeader());
 
@@ -433,48 +457,40 @@ namespace exchange
             const std::string &security_desc,
             const std::string &expire_date)
     {
-        FIX::Account ac(m_account);
-        FIX::ClOrdID coi(cl_order_id);
-        FIX::OrderID oi(order_id);
-        FIX::HandlInst hi('1');     // 1: Automated execution
-        FIX::OrderQty oq(order_qty);
-        FIX::OrdType ot(order_type);
-        FIX::OrigClOrdID ocoi(orig_cl_order_id);
-        FIX::Price p(price);
-        FIX::Side s(side);
-        FIX::Symbol sym(symbol);
-        FIX::TimeInForce tif(time_in_force);
-        FIX::ManualOrderIndicator moi(m_manual_flag);
-        FIX::TransactTime tt;
-        FIX::StopPx sp(stop_px);
-        FIX::SecurityDesc sd(security_desc);
-        FIX::SecurityType st(m_security_type);
-        FIX::CustomerOrFirm cof(m_customer_flag);
-        FIX::ExpireDate ed(expire_date);
-        // FIX::CtiCode cc(m_cti_code);     // TODO 这个 tag 目前 quickfix 不支持
-        // FIX::CorrelationClOrdID ccoi(cl_order_id);    // TODO 这个 tag 目前 quickfix 不支持
+        FIX42::OrderCancelReplaceRequest cancelReplaceRequest;
+        cancelReplaceRequest.set(FIX::Account(m_account));
+        cancelReplaceRequest.set(FIX::ClOrdID(cl_order_id));
+        cancelReplaceRequest.set(FIX::OrderID(order_id));
+        cancelReplaceRequest.set(FIX::HandlInst('1'));     // 1: Automated execution
+        cancelReplaceRequest.set(FIX::OrderQty(order_qty));
+        cancelReplaceRequest.set(FIX::OrdType(order_type));
+        cancelReplaceRequest.set(FIX::OrigClOrdID(orig_cl_order_id));
+        cancelReplaceRequest.set(FIX::Side(side));
+        //cancelReplaceRequest.set(FIX::Symbol(symbol));		// 目前用不到
+        if(time_in_force != 0) cancelReplaceRequest.set(FIX::TimeInForce(time_in_force));
+        cancelReplaceRequest.set(FIX::TransactTime(true));
+        cancelReplaceRequest.set(FIX::SecurityDesc(security_desc));
+        cancelReplaceRequest.set(FIX::SecurityType(m_security_type));
+        cancelReplaceRequest.set(FIX::CustomerOrFirm(m_customer_flag));
+        //cancelReplaceRequest.set(FIX::ExpireDate(expire_date)); // 目前用不到  tag 59-TimeInForce=Good Till Date (GTD)
 
-        FIX42::OrderCancelReplaceRequest cancelReplaceRequest(ocoi, coi, hi, sym, s, tt, ot);
-        cancelReplaceRequest.set(ac);
-        cancelReplaceRequest.set(oi);
-        cancelReplaceRequest.set(oq);
-        cancelReplaceRequest.set(tif);
-        // cancelReplaceRequest.set(moi);    // TODO 这个 tag 目前 quickfix 的 OrderCancelReplaceRequest 不支持
-        cancelReplaceRequest.set(sd);
-        cancelReplaceRequest.set(st);
-        cancelReplaceRequest.set(cof);
-        cancelReplaceRequest.set(ed);
-        // cancelReplaceRequest.set(cc);  // TODO 这个 tag 目前 quickfix 不支持
-        // cancelReplaceRequest.set(ccoi);  // TODO 这个 tag 目前 quickfix 不支持
+        // 下面的 tag，目前 quickfix 不支持，所以用下面这种方式设置
+        cancelReplaceRequest.setField(fh::cme::exchange::CmeFixField::CtiCode, m_cti_code);
+        cancelReplaceRequest.setField(fh::cme::exchange::CmeFixField::CorrelationClOrdID, cl_order_id);
+
+        // 下面的 tag，目前 quickfix 的 OrderCancelReplaceRequest 不支持，所以用下面这种方式设置
+        cancelReplaceRequest.setField(FIX::FIELD::ManualOrderIndicator, m_manual_flag ? "Y" : "N");
 
         if (order_type == FIX::OrdType_LIMIT || order_type == FIX::OrdType_STOP_LIMIT)
         {
-            cancelReplaceRequest.set(p);
+            cancelReplaceRequest.set(FIX::Price(price));
         }
-        if (order_type == FIX::OrdType_STOP || order_type == FIX::OrdType_STOP_LIMIT)
-        {
-            cancelReplaceRequest.set(sp);
-        }
+
+        // 目前用不到 OrdType = stop ， stop-limit
+        //if (order_type == FIX::OrdType_STOP || order_type == FIX::OrdType_STOP_LIMIT)
+        //{
+        //    cancelReplaceRequest.set(FIX::StopPx(stop_px));
+        //}
 
         setHeader(cancelReplaceRequest.getHeader());
 
@@ -488,30 +504,27 @@ namespace exchange
             const std::string &order_id,
             const std::string &security_desc)
     {
-        FIX::ClOrdID coi(cl_order_id);
-        FIX::OrderID oi(order_id);
-        FIX::Side s(side);
-        FIX::Symbol sym(symbol);
-        FIX::ManualOrderIndicator moi(m_manual_flag);
-        FIX::TransactTime tt;
-        FIX::SecurityDesc sd(security_desc);
-        FIX::SecurityType st(m_security_type);
-        // FIX::CorrelationClOrdID ccoi(cl_order_id);    // TODO 这个 tag 目前 quickfix 不支持
+        FIX42::OrderStatusRequest orderStatusRequest;
+        orderStatusRequest.set(FIX::ClOrdID(cl_order_id));
+        orderStatusRequest.set(FIX::OrderID(order_id));
+        orderStatusRequest.set(FIX::Side(side));
+        orderStatusRequest.set(FIX::Symbol(symbol));
+        orderStatusRequest.set(FIX::SecurityDesc(security_desc));
+        orderStatusRequest.set(FIX::SecurityType(m_security_type));
 
-        FIX42::OrderStatusRequest orderStatusRequest(coi, sym, s);
-        orderStatusRequest.set(oi);
-        //orderStatusRequest.set(moi);    // TODO 这个 tag 目前 quickfix 的 OrderStatusRequest 不支持
-        //orderStatusRequest.set(tt);        // TODO 这个 tag 目前 quickfix 的 OrderStatusRequest 不支持
-        orderStatusRequest.set(sd);
-        orderStatusRequest.set(st);
-        // orderStatusRequest.set(ccoi);  // TODO 这个 tag 目前 quickfix 不支持
+        // 下面的 tag，目前 quickfix 不支持，所以用下面这种方式设置
+        orderStatusRequest.setField(fh::cme::exchange::CmeFixField::CorrelationClOrdID, cl_order_id);
+
+        // 下面的 tag，目前 quickfix 的 OrderStatusRequest 不支持，所以用下面这种方式设置
+        orderStatusRequest.setField(FIX::FIELD::ManualOrderIndicator, m_manual_flag ? "Y" : "N");
+        orderStatusRequest.setField(FIX::FIELD::TransactTime, FIX::TransactTime(true).getString());
 
         setHeader(orderStatusRequest.getHeader());
 
         return orderStatusRequest;
     }
 
-    FIX50SP2::OrderMassStatusRequest OrderManager::createOrderMassStatusRequest50sp2(
+    cme::exchange::message::OrderMassStatusRequest OrderManager::createOrderMassStatusRequest42(
             const std::string &mass_status_req_id,
             std::uint8_t mass_status_req_type,
             const std::string &market_segment_id,
@@ -521,33 +534,28 @@ namespace exchange
             const std::string &security_desc,
             char time_in_force)
     {
-        FIX::MassStatusReqID msri(mass_status_req_id);
-        FIX::MassStatusReqType msrt(mass_status_req_type);
-        FIX::MarketSegmentID msi(market_segment_id);
-        //FIX::OrdStatusReqType osrt(ord_status_req_type);  // TODO 这个 tag 目前 quickfix 不支持
-        FIX::Account a(account);
-        FIX::Symbol s(symbol);
-        FIX::SecurityDesc sd(security_desc);
-        FIX::TimeInForce tif(time_in_force);
-        FIX::TransactTime tt;
-        FIX::ManualOrderIndicator moi(m_manual_flag);
+        cme::exchange::message::OrderMassStatusRequest orderMassStatus;
+        orderMassStatus.set(FIX::MassStatusReqID(mass_status_req_id));
+        orderMassStatus.set(FIX::MassStatusReqType(mass_status_req_type));
+        //orderMassStatus.set(FIX::Account(account));       // 目前不需要设置
+        //orderMassStatus.set(FIX::Symbol(symbol));      // 目前不需要设置
+        //orderMassStatus.set(FIX::SecurityDesc(security_desc));      // 目前不需要设置
 
-        FIX50SP2::OrderMassStatusRequest orderMassStatus(msri, msrt);
-        //orderMassStatus.set(msi);       // TODO 这个 tag 目前 quickfix 的 OrderMassStatusRequest 不支持
-        //orderMassStatus.set(osrt);      // TODO 这个 tag 目前 quickfix 的 OrderMassStatusRequest 不支持
-        orderMassStatus.set(a);
-        orderMassStatus.set(s);
-        orderMassStatus.set(sd);
-        //orderMassStatus.set(tif);           // TODO 这个 tag 目前 quickfix 的 OrderMassStatusRequest 不支持
-        //orderMassStatus.set(tt);            // TODO 这个 tag 目前 quickfix 的 OrderMassStatusRequest 不支持
-        //orderMassStatus.set(moi);        // TODO 这个 tag 目前 quickfix 的 OrderMassStatusRequest 不支持
+        // 下面的 tag，目前 quickfix 不支持，所以用下面这种方式设置：目前不需要设置
+        //orderMassStatus.setField(fh::cme::exchange::CmeFixField::OrdStatusReqType, std::to_string(ord_status_req_type));
+
+        // 下面的 tag，目前 quickfix 的 OrderMassStatusRequest 不支持，所以用下面这种方式设置
+        //orderMassStatus.setField(FIX::FIELD::MarketSegmentID, market_segment_id);     // 目前不需要设置
+        //orderMassStatus.setField(FIX::FIELD::TimeInForce, std::string(1, time_in_force));   // 目前不需要设置
+        orderMassStatus.setField(FIX::FIELD::TransactTime, FIX::TransactTime(true).getString());
+        orderMassStatus.setField(FIX::FIELD::ManualOrderIndicator, m_manual_flag ? "Y" : "N");
 
         setHeader(orderMassStatus.getHeader());
 
         return orderMassStatus;
     }
 
-    FIX50SP2::OrderMassActionRequest OrderManager::createOrderMassActionRequest50sp2(
+    cme::exchange::message::OrderMassActionRequest OrderManager::createOrderMassActionRequest42(
             const std::string &cl_order_id,
             std::uint8_t mass_action_type,
             std::uint8_t mass_action_scope,
@@ -560,30 +568,24 @@ namespace exchange
             char order_type,
             char time_in_force)
     {
-        FIX::ClOrdID coi(cl_order_id);
-        FIX::MassActionType mat(mass_action_type);
-        FIX::MassActionScope mas(mass_action_scope);
-        FIX::MarketSegmentID msi(market_segment_id);
-        FIX::Symbol sym(symbol);
-        FIX::SecurityDesc sd(security_desc);
-        FIX::MassCancelRequestType mcrt(mass_cancel_req_type);
-        FIX::Account a(account);
-        FIX::Side s(side);
-        FIX::OrdType ot(order_type);
-        FIX::TimeInForce tif(time_in_force);
-        FIX::TransactTime tt;
-        FIX::ManualOrderIndicator moi(m_manual_flag);
+        cme::exchange::message::OrderMassActionRequest orderMassAction;
+        orderMassAction.set(FIX::ClOrdID(cl_order_id));
+        orderMassAction.set(FIX::MassActionType(mass_action_type));
+        orderMassAction.set(FIX::MassActionScope(mass_action_scope));
+        //orderMassAction.set(FIX::MarketSegmentID(market_segment_id));  // 目前不需要设置
+        //orderMassAction.set(FIX::Symbol(symbol)); // 目前不需要设置
+        orderMassAction.set(FIX::SecurityDesc(security_desc));
+        //orderMassAction.set(FIX::Side(side));     // 目前不需要设置
+        orderMassAction.set(FIX::TransactTime(true));
 
-        FIX50SP2::OrderMassActionRequest orderMassAction(coi, mat, mas, tt);
-        orderMassAction.set(msi);
-        orderMassAction.set(sym);
-        orderMassAction.set(sd);
-        //orderMassAction.set(mcrt);      // TODO 这个 tag 目前 quickfix 的 OrderMassStatusRequest 不支持
-        //orderMassAction.set(a);         // TODO 这个 tag 目前 quickfix 的 OrderMassStatusRequest 不支持
-        orderMassAction.set(s);
-        //orderMassAction.set(ot);        // TODO 这个 tag 目前 quickfix 的 OrderMassStatusRequest 不支持
-        //orderMassAction.set(tif);       // TODO 这个 tag 目前 quickfix 的 OrderMassStatusRequest 不支持
-        //orderMassAction.set(moi);   // TODO 这个 tag 目前 quickfix 的 OrderMassStatusRequest 不支持
+        // 下面的 tag，目前 quickfix 不支持，所以用下面这种方式设置
+        orderMassAction.setField(fh::cme::exchange::CmeFixField::MassCancelRequestType, std::to_string(mass_cancel_req_type));
+
+        // 下面的 tag，目前 quickfix 的 OrderMassActionRequest 不支持，所以用下面这种方式设置
+        orderMassAction.setField(FIX::FIELD::Account, account);
+        orderMassAction.setField(FIX::FIELD::OrdType, std::string(1, order_type));
+        orderMassAction.setField(FIX::FIELD::TimeInForce, std::string(1, time_in_force));
+        orderMassAction.setField(FIX::FIELD::ManualOrderIndicator, m_manual_flag ? "Y" : "N");
 
         setHeader(orderMassAction.getHeader());
 
@@ -605,17 +607,15 @@ namespace exchange
         message.setField(FIX::FIELD::EncryptMethod, "0");
         message.setField(FIX::FIELD::ResetSeqNumFlag, "N");
 
-        // TODO 下面这几个 tag，FIX 不认识，需要修改 quickfix 对应
-        //message.setField(1603, m_app_name);        // ApplicationSystemName
-        //message.setField(1604, m_trading_ver);    // TradingSystemVersion
-        //message.setField(1605, m_app_vendor);  // ApplicationSystemVendor
+        message.setField(fh::cme::exchange::CmeFixField::ApplicationSystemName, m_app_name);
+        message.setField(fh::cme::exchange::CmeFixField::TradingSystemVersion, m_trading_ver);
+        message.setField(fh::cme::exchange::CmeFixField::ApplicationSystemVendor, m_app_vendor);
     }
 
     void OrderManager::appendLogoutField(FIX::Message& message, const FIX::SessionID& sessionID)
     {
         // FIX 里面做成 logout message（tag 35-MsgType=5）时，有些 CME 要求的字段没有赋值，在这边给他加上去
-        // TODO 下面这个 tag，FIX 不认识，需要修改 quickfix 对应
-        //message.setField(FIX::FIELD::NextExpectedMsgSeqNum, fh::core::assist::utility::Next_expected_seq_num(sessionID));
+        message.setField(FIX::FIELD::NextExpectedMsgSeqNum, fh::core::assist::utility::Next_expected_seq_num(sessionID));
     }
 
     void OrderManager::appendResendRequestField(FIX::Message& message, const FIX::SessionID& sessionID)
@@ -640,165 +640,103 @@ namespace exchange
 
     fh::cme::exchange::SingleOrderReport OrderManager::processOrderResult(const FIX42::ExecutionReport& message) const
     {
-        FIX::ExecType et;
-        FIX::ClOrdID coi;
-        FIX::Account a;
-        FIX::OrderID oi;
-        FIX::MassStatusReqID msri;
-        FIX::ExecID ei;
-        FIX::OrigClOrdID ocoi;
-        FIX::OrdStatus os;
-        FIX::OrdType ot;
-        FIX::Side s;
-        FIX::Symbol sym;
-        FIX::SecurityID si;
-        FIX::SecurityDesc sd;
-        FIX::CumQty cq;
-        FIX::LeavesQty leq;
-        FIX::OrderQty oq;
-        FIX::Price p;
-        FIX::LastPx lp;
-        FIX::LastQty lq;
-        FIX::BusinessRejectReason brr;
-        FIX::OrdRejReason orr;
-        FIX::Text t;
-        FIX::TransactTime tt;
-        FIX::TradeDate td;
-
-        message. get(et);
-        message.get(coi);
-        message. get(a);
-        message.get(oi);
-        //message.get(msri);      // TODO 这个 tag 目前 quickfix 的 ExecutionReport 不支持
-        message.get(ei);
-        message.get(ocoi);
-        message.get(os);
-        message.get(ot);
-        message.get(s);
-        message.get(sym);
-        message.get(si);
-        message.get(sd);
-        message.get(cq);
-        message.get(leq);
-        message.get(oq);
-        message.get(p);
-        message.get(lp);
-        //message.get(lq);        // TODO 这个 tag 目前 quickfix 的 ExecutionReport 不支持
-        //message.get(brr);       // TODO 这个 tag 目前 quickfix 的 ExecutionReport 不支持
-        message.get(orr);
-        message.get(t);
-        message.get(tt);
-        message.get(td);
-
         fh::cme::exchange::SingleOrderReport report;
-        report.exec_type = et;
-        report.cl_order_id = coi;
-        report.account = a;
-        report.order_id = oi;
-        report.mass_status_req_id = msri;
-        report.exec_id = ei;
-        report.orig_cl_order_id = ocoi;
-        report.order_status = os;
-        report.order_type = ot;
-        report.side = s;
-        report.symbol = sym;
-        report.security_id = si;
-        report.security_desc = sd;
-        report.cum_qty = cq;
-        report.leaves_qty = leq;
-        report.order_qty = oq;
-        report.price = p;
-        report.last_px = lp;
-        report.last_qty = lq;
-        report.rej_reason = (et == 'I' ? brr : orr);
-        report.text = t;
-        report.transact_time = fh::core::assist::utility::Fix_time_to_posix(tt.getValue());
-        report.trade_date = td;
+        OrderManager::Try_pick_value(message, report.exec_type, FIX::ExecType());
+        OrderManager::Try_pick_value(message, report.cl_order_id, FIX::ClOrdID());
+        OrderManager::Try_pick_value(message, report.account, FIX::Account());
+        OrderManager::Try_pick_value(message, report.order_id, FIX::OrderID());
+        OrderManager::Try_pick_value(message, report.exec_id, FIX::ExecID());
+        OrderManager::Try_pick_value(message, report.orig_cl_order_id, FIX::OrigClOrdID());
+        OrderManager::Try_pick_value(message, report.order_status, FIX::OrdStatus());
+        OrderManager::Try_pick_value(message, report.order_type, FIX::OrdType());
+        OrderManager::Try_pick_value(message, report.side, FIX::Side());
+        OrderManager::Try_pick_value(message, report.symbol, FIX::Symbol());
+        OrderManager::Try_pick_value(message, report.security_id, FIX::SecurityID());
+        OrderManager::Try_pick_value(message, report.security_desc, FIX::SecurityDesc());
+        OrderManager::Try_pick_value(message, report.time_in_force, FIX::TimeInForce());
+        OrderManager::Try_pick_value(message, report.cum_qty, FIX::CumQty());
+        OrderManager::Try_pick_value(message, report.leaves_qty, FIX::LeavesQty());
+        OrderManager::Try_pick_value(message, report.order_qty, FIX::OrderQty());
+        OrderManager::Try_pick_value(message, report.price, FIX::Price());
+        OrderManager::Try_pick_value(message, report.last_px, FIX::LastPx());
+        OrderManager::Try_pick_value(message, report.text, FIX::Text());
+        OrderManager::Try_pick_string(message, report.transact_time, FIX::FIELD::TransactTime);
+        OrderManager::Try_pick_value(message, report.trade_date, FIX::TradeDate());
+
+        // 下面的 tag 目前 quickfix 的 ExecutionReport 不支持，所以用下面的方式获取
+        OrderManager::Try_pick_string(message, report.mass_status_req_id, FIX::FIELD::MassStatusReqID);
+        OrderManager::Try_pick_int(message, report.last_qty, FIX::FIELD::LastQty);
+        report.exec_type == 'I' ? OrderManager::Try_pick_int(message, report.rej_reason, FIX::FIELD::BusinessRejectReason)
+                                              :  OrderManager::Try_pick_int(message, report.rej_reason, FIX::FIELD::OrdRejReason);
 
         return report;
     }
 
     fh::cme::exchange::SingleOrderReport OrderManager::processOrderResult(const FIX42::OrderCancelReject& message) const
     {
-        FIX::Account a;
-        FIX::ClOrdID coi;
-        FIX::ExecID ei;
-        FIX::OrderID oi;
-        FIX::OrdStatus os;
-        FIX::OrigClOrdID ocoi;
-        FIX::SecurityID si;
-        FIX::Text t;
-        FIX::TransactTime tt;
-        FIX::CxlRejReason crr;
-        FIX::SecurityDesc sd;
-        FIX::CxlRejResponseTo crrt;
-
-        message. get(a);
-        message.get(coi);
-        //message.get(ei);         // TODO 这个 tag 目前 quickfix 的 OrderCancelReject 不支持
-        message.get(oi);
-        message.get(os);
-        message.get(ocoi);
-        //message.get(si);        // TODO 这个 tag 目前 quickfix 的 OrderCancelReject 不支持
-        message.get(t);
-        message.get(tt);
-        message.get(crr);
-        //message.get(sd);        // TODO 这个 tag 目前 quickfix 的 OrderCancelReject 不支持
-        message.get(crrt);
-
         fh::cme::exchange::SingleOrderReport report;
-        report.cl_order_id = coi;
-        report.account = a;
-        report.order_id = oi;
-        report.exec_id = ei;
-        report.orig_cl_order_id = ocoi;
-        report.order_status = os;
-        report.security_id = si;
-        report.security_desc = sd;
-        report.cancel_rej_response_to = crrt;
-        report.rej_reason = crr;
-        report.text = t;
-        report.transact_time = fh::core::assist::utility::Fix_time_to_posix(tt.getValue());
+        OrderManager::Try_pick_value(message, report.cl_order_id, FIX::ClOrdID());
+        OrderManager::Try_pick_value(message, report.account, FIX::Account());
+        OrderManager::Try_pick_value(message, report.order_id, FIX::OrderID());
+        OrderManager::Try_pick_value(message, report.orig_cl_order_id, FIX::OrigClOrdID());
+        OrderManager::Try_pick_value(message, report.order_status, FIX::OrdStatus());
+        OrderManager::Try_pick_value(message, report.cancel_rej_response_to, FIX::CxlRejResponseTo());
+        OrderManager::Try_pick_value(message, report.rej_reason, FIX::CxlRejReason());
+        OrderManager::Try_pick_value(message, report.text, FIX::Text());
+        OrderManager::Try_pick_string(message, report.transact_time, FIX::FIELD::TransactTime);
+
+        // 下面的 tag 目前 quickfix 的 OrderCancelReject 不支持，所以用下面的方式获取
+        OrderManager::Try_pick_string(message, report.exec_id, FIX::FIELD::ExecID);
+        OrderManager::Try_pick_string(message, report.security_id, FIX::FIELD::SecurityID);
+        OrderManager::Try_pick_string(message, report.security_desc, FIX::FIELD::SecurityDesc);
 
         return report;
     }
 
-    fh::cme::exchange::MassOrderReport OrderManager::processOrderResult(const FIX50SP2::OrderMassActionReport& message) const
+    fh::cme::exchange::MassOrderReport OrderManager::processOrderResult(const FIX42::Message &message) const
     {
-        FIX::ClOrdID coi;
-        FIX::MassActionResponse mar;
-        FIX::TotalAffectedOrders tao;
-        FIX::NoAffectedOrders nao;
-        FIX50SP2::OrderMassActionReport::NoAffectedOrders orders;
-        FIX::TransactTime tt;
-        FIX::Text t;
-
-        message.get(coi);
-        message.get(mar);
-        message.get(tao);
-        message.get(nao);
-        message.get(tt);
-        message.get(t);
+        fh::cme::exchange::MassOrderReport report;
+        OrderManager::Try_pick_value(message, report.cl_order_id, FIX::ClOrdID());
+        OrderManager::Try_pick_value(message, report.mass_action_response, FIX::MassActionResponse());
+        OrderManager::Try_pick_value(message, report.total_affected_orders, FIX::TotalAffectedOrders());
+        OrderManager::Try_pick_value(message, report.no_affected_orders, FIX::NoAffectedOrders());
+        OrderManager::Try_pick_string(message, report.transact_time, FIX::FIELD::TransactTime);
+        OrderManager::Try_pick_value(message, report.text, FIX::Text());
 
         std::vector<std::string> orig_cl_order_ids;
-        for ( int i = 1; i <= nao; ++i )
+        for ( std::uint32_t i = 1; i <= report.no_affected_orders; ++i )
         {
             FIX::OrigClOrdID ocoi;
+            cme::exchange::message::OrderMassActionReport::NoAffectedOrders orders;
             message.getGroup( i, orders );
-            orders.get( ocoi );
-            orig_cl_order_ids.push_back(ocoi.getValue());
+            orig_cl_order_ids.push_back(orders.get( ocoi ).getValue());
         }
-
-        fh::cme::exchange::MassOrderReport report;
-        report.cl_order_id = coi;
-        report.mass_action_response = mar;
-        report.total_affected_orders = tao;
-        report.no_affected_orders = nao;
         report.orig_cl_order_ids = boost::algorithm::join(orig_cl_order_ids, "^");
-        report.transact_time = fh::core::assist::utility::Fix_time_to_posix(tt.getValue());
-        report.text = t;
 
         return report;
+    }
+
+    // 从指定的 FIX message 中提取指定类型的字段的值
+    template <typename FIXFieldType, typename Type>
+    void OrderManager::Try_pick_value(const FIX::Message &message, Type &target, const FIXFieldType &fft)
+    {
+        FIXFieldType a(fft);
+        target = message.getFieldIfSet(a) ? (Type)a : Type();
+    }
+
+    // 从指定的 FIX message 中提取指定 tag 的字段的原始值
+    void OrderManager::Try_pick_string(const FIX::Message &message, std::string &target, int tagnum)
+    {
+        FIX::FieldBase fb(tagnum, "");
+        target = message.getFieldIfSet(fb) ? fb.getString() : "";
+    }
+
+    // 从指定的 FIX message 中提取指定 tag 的字段的整数值
+    template <typename IntType>
+    void OrderManager::Try_pick_int(const FIX::Message &message, IntType &target, int num)
+    {
+        FIX::FieldBase fb(num, "");
+        target = (message.getFieldIfSet(fb) && !fb.getString().empty()) ? boost::lexical_cast<IntType>(fb.getString()) : 0;
     }
 
 } // namespace exchange

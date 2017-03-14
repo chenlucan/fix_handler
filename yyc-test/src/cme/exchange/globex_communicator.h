@@ -34,14 +34,18 @@ namespace exchange
             void Order_response(const fh::cme::exchange::OrderReport& report);
 
         private:
-            fh::cme::exchange::Order Create_order(const char *data, size_t size);
-            fh::cme::exchange::MassOrder Create_mass_order(const char *data, size_t size);
-            std::string Create_order_result(const fh::cme::exchange::OrderReport& report);
-            char Convert_tif(pb::ems::TimeInForce tif) const;
-            char Convert_order_type(pb::ems::OrderType type) const;
-            char Convert_buy_sell(pb::ems::BuySell bs) const;
-            pb::ems::BuySell Convert_buy_sell(char bs) const;
-            pb::ems::OrderStatus Convert_order_status(char status) const;
+            static fh::cme::exchange::Order Create_order(const char *data, size_t size);
+            static fh::cme::exchange::MassOrder Create_mass_order(const char *data, size_t size);
+            static std::string Create_order_result(const fh::cme::exchange::OrderReport& report);
+
+        private:
+            static char Convert_tif(pb::ems::TimeInForce tif);
+            static pb::ems::TimeInForce Convert_tif(char tif);
+            static char Convert_order_type(pb::ems::OrderType type);
+            static pb::ems::OrderType Convert_order_type(char type);
+            static char Convert_buy_sell(pb::ems::BuySell bs);
+            static pb::ems::BuySell Convert_buy_sell(char bs);
+            static pb::ems::OrderStatus Convert_order_status(char status);
 
         private:
             OrderManager m_order_manager;

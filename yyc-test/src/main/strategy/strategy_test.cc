@@ -78,7 +78,7 @@ std::string make_order()
     order.set_buy_sell(pb::ems::BuySell::BS_Buy);
     order.set_price(std::to_string(100 + r));
     order.set_quantity(r);
-    order.set_tif(pb::ems::TimeInForce::TIF_None);
+    order.set_tif(pb::ems::TimeInForce::TIF_GFD);
     order.set_order_type(pb::ems::OrderType::OT_Limit);
     order.set_exchange_order_id("CME-1");
     order.set_status(pb::ems::OrderStatus::OS_Pending);
@@ -88,9 +88,13 @@ std::string make_order()
     order.set_message("test information in order");
     //order.set_submit_time();
 
+    static const char msg_type[] = "DFGH";
+    char type = msg_type[r % strlen(msg_type)];
+
+    LOG_INFO("send order:  (", type, ")", fh::core::assist::utility::Format_pb_message(order));
+
     std::string str = order.SerializeAsString();
-    static const char *msg_type = "DFGH";
-    return str.insert(0, 1, msg_type[r % 4]);
+    return str.insert(0, 1, type);
 }
 
 
@@ -130,7 +134,6 @@ int main(int argc, char* argv[])
         {
             std::string order = make_order();
             sender.Send(order);
-            LOG_INFO("sent:  ", order);
             std::this_thread::sleep_for(std::chrono::milliseconds(send_interval_ms));
         }
     }
