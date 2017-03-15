@@ -1,0 +1,51 @@
+package pb.dms;
+
+message DataPoint {
+  optional double  price = 1;
+  optional uint64  size  = 2;
+}
+
+message Trade {
+  optional string    contract     = 1;
+  optional DataPoint last         = 2;
+}
+
+message BBO {
+  optional string    contract     = 1;
+  optional DataPoint bid          = 2;
+  optional DataPoint offer        = 3;
+}
+
+message Bid {
+optional string    contract = 1;
+  optional DataPoint bid    = 2;
+}
+
+message Offer {
+  optional string    contract = 1;
+  optional DataPoint offer    = 2;
+}
+
+message L2 {
+  optional string    contract = 1;
+  repeated DataPoint bid      = 2;
+  repeated DataPoint offer    = 3;
+}
+
+enum ContractType {
+  CT_None     = 0;
+  CT_Futures  = 1;
+  CT_Spread   = 2;
+}
+
+message Contract {
+  required string  name                  = 1;
+  required string  tick_size             = 2;
+  optional string  tick_value            = 3;
+  optional string  yesterday_close_price = 4;
+  optional string  upper_limit           = 5;
+  optional string  lower_limit           = 6;
+  optional ContractType contract_type    = 7;
+  optional string  legA                  = 8;
+  optional string  legB                  = 9;
+}
