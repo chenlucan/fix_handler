@@ -225,6 +225,94 @@ namespace utility
         return oss.str();
     }
 
+    // 把 protobuf 的消息整理成可读字符串
+    std::string Format_pb_message(const pb::dms::Trade &trade)
+    {
+        std::ostringstream oss;
+
+        oss << "contract=" << trade.contract() << ", ";
+        oss << "last=" << Format_pb_message(trade.last());
+
+        return oss.str();
+    }
+
+    // 把 protobuf 的消息整理成可读字符串
+    std::string Format_pb_message(const pb::dms::BBO &bbo)
+    {
+        std::ostringstream oss;
+
+        oss << "contract=" << bbo.contract() << ", ";
+        oss << "bid=" << Format_pb_message(bbo.bid());
+        oss << "offer=" << Format_pb_message(bbo.offer());
+
+        return oss.str();
+    }
+
+    // 把 protobuf 的消息整理成可读字符串
+    std::string Format_pb_message(const pb::dms::Bid &bid)
+    {
+        std::ostringstream oss;
+
+        oss << "contract=" << bid.contract() << ", ";
+        oss << "bid=" << Format_pb_message(bid.bid());
+
+        return oss.str();
+    }
+
+    // 把 protobuf 的消息整理成可读字符串
+    std::string Format_pb_message(const pb::dms::Offer &offer)
+    {
+        std::ostringstream oss;
+
+        oss << "contract=" << offer.contract() << ", ";
+        oss << "offer=" << Format_pb_message(offer.offer());
+
+        return oss.str();
+    }
+
+    // 把 protobuf 的消息整理成可读字符串
+    std::string Format_pb_message(const pb::dms::L2 &l2)
+    {
+        std::ostringstream oss;
+
+        oss << "contract=" << l2.contract() << ", ";
+        oss << "bid=";
+        std::for_each(l2.bid().begin(), l2.bid().end(), [&oss](const pb::dms::DataPoint &dp){ oss << Format_pb_message(dp); });
+        oss << ", offer=";
+        std::for_each(l2.offer().begin(), l2.offer().end(), [&oss](const pb::dms::DataPoint &dp){ oss << Format_pb_message(dp); });
+
+        return oss.str();
+    }
+
+    // 把 protobuf 的消息整理成可读字符串
+    std::string Format_pb_message(const pb::dms::Contract &contract)
+    {
+        std::ostringstream oss;
+
+        oss << "name=" << contract.name() << ", ";
+        oss << "tick_size=" << contract.tick_size() << ", ";
+        oss << "tick_value=" << contract.tick_value() << ", ";
+        oss << "yesterday_close_price=" << contract.yesterday_close_price() << ", ";
+        oss << "upper_limit=" << contract.upper_limit() << ", ";
+        oss << "lower_limit=" << contract.lower_limit() << ", ";
+        oss << "contract_type=" << contract.contract_type() << ", ";
+        oss << "legA=" << contract.lega() << ", ";
+        oss << "legB=" << contract.legb();
+
+        return oss.str();
+    }
+
+    // 把 protobuf 的消息整理成可读字符串
+    std::string Format_pb_message(const pb::dms::DataPoint &dp)
+    {
+        std::ostringstream oss;
+
+        oss << "[price=" << std::setprecision (std::numeric_limits<double>::digits10) << dp.price() << ", ";
+        oss << "size=" << dp.size() << "]";
+
+        return oss.str();
+    }
+
     // 把 protobuf 的时间格式整理成可读字符串
     std::string Format_pb_timestamp(const pb::ems::Timestamp &dt)
     {

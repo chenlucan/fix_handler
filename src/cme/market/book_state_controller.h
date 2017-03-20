@@ -21,14 +21,12 @@ namespace market
 
         public:
             void Create_or_shrink(const fh::cme::market::message::Instrument &instrument);
-            bool Modify_state(const fh::cme::market::message::Book &b);
-            bool Has_instrument();
-            std::string Get();
+            std::pair<std::uint8_t, const void *> Modify_state(const fh::cme::market::message::Book &b);
 
         private:
-            static BookState Create(std::uint8_t book_type, std::uint32_t security_id, std::uint8_t market_depth);
+            static BookState Create(std::uint8_t book_type, std::uint32_t security_id, std::string symbol, std::uint8_t market_depth);
             static void Shrink(BookState &book_state, std::uint8_t market_new_depth);
-            bool Reset_state(const fh::cme::market::message::Book &b, BookState &book_state);
+            void Reset_state();
             bool Update_price(const fh::cme::market::message::Book &b, BookState &book_state);
             bool New_price(const fh::cme::market::message::Book &b, BookState &book_state);
             bool Change_price(const fh::cme::market::message::Book &b, BookState &book_state);

@@ -16,7 +16,83 @@ class BookReceiver : public fh::core::zmq::ZmqReceiver
     public:
         virtual void Save(char *data, size_t size)
         {
-            LOG_INFO("received book: ", std::string(data, size));
+            char type = data[0];
+            if(type == 'L')
+            {
+                pb::dms::L2 l2;
+                if(l2.ParseFromArray(data + 1, size - 1))
+                {
+                    LOG_INFO("received L2: ", fh::core::assist::utility::Format_pb_message(l2));
+                }
+                else
+                {
+                    LOG_ERROR("received L2: parse error: ", type);
+                }
+            }
+            else if(type == 'B')
+            {
+                pb::dms::BBO bbo;
+                if(bbo.ParseFromArray(data + 1, size - 1))
+                {
+                    LOG_INFO("received BBO: ", fh::core::assist::utility::Format_pb_message(bbo));
+                }
+                else
+                {
+                    LOG_ERROR("received BBO: parse error: ", type);
+                }
+            }
+            else if(type == 'O')
+            {
+                pb::dms::Offer offer;
+                if(offer.ParseFromArray(data + 1, size - 1))
+                {
+                    LOG_INFO("received Offer: ", fh::core::assist::utility::Format_pb_message(offer));
+                }
+                else
+                {
+                    LOG_ERROR("received Offer: parse error: ", type);
+                }
+            }
+            else if(type == 'D')
+            {
+                pb::dms::Bid bid;
+                if(bid.ParseFromArray(data + 1, size - 1))
+                {
+                    LOG_INFO("received Bid: ", fh::core::assist::utility::Format_pb_message(bid));
+                }
+                else
+                {
+                    LOG_ERROR("received Bid: parse error: ", type);
+                }
+            }
+            else if(type == 'T')
+            {
+                pb::dms::Trade trade;
+                if(trade.ParseFromArray(data + 1, size - 1))
+                {
+                    LOG_INFO("received Trade: ", fh::core::assist::utility::Format_pb_message(trade));
+                }
+                else
+                {
+                    LOG_ERROR("received Trade: parse error: ", type);
+                }
+            }
+            else if(type == 'C')
+            {
+                pb::dms::Contract contract;
+                if(contract.ParseFromArray(data + 1, size - 1))
+                {
+                    LOG_INFO("received Contract: ", fh::core::assist::utility::Format_pb_message(contract));
+                }
+                else
+                {
+                    LOG_ERROR("received Contract: parse error: ", type);
+                }
+            }
+            else
+            {
+                LOG_ERROR("received book result: invalid type: ", type);
+            }
         }
 
     private:

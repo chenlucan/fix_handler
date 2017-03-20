@@ -1,6 +1,6 @@
 
+#include <gtest/gtest.h>
 #include "core/assist/utility.h"
-#include "gtest/gtest.h"
 
 TEST(HexStrTest, NormalInput)
 {

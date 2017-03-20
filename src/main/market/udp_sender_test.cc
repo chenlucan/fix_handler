@@ -55,14 +55,14 @@ int main(int argc, char* argv[])
         }
         else if(strcmp(argv[1], "-i") == 0)
         {
-            ids = new uint32_t[3]{30, 32, 37};
-            ids_len = 3;
+            ids = new uint32_t[5]{4, 30, 32, 36, 37};
+            ids_len = 5;
             total_number = std::numeric_limits<std::uint32_t>::max();
         }
         else if(strcmp(argv[1], "-a") == 0)
         {
-            ids = new uint32_t[5]{27, 30, 32, 37, 38};
-            ids_len = 5;
+            ids = new uint32_t[7]{4, 27, 30, 32, 36, 37, 38};
+            ids_len = 7;
             total_number = std::numeric_limits<std::uint32_t>::max();
         }
 

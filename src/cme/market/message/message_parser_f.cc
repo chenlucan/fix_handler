@@ -23,8 +23,8 @@ namespace message
 
     void MessageParserF::Parse(const fh::cme::market::message::MdpMessage &message, std::vector<Book> &books)
     {
-        // TODO  SecurityStatus30
-        LOG_DEBUG("message type is f, TODO");
+        // SecurityStatus30 无需处理
+        LOG_DEBUG("message type is f, discard");
     }
 
 } // namespace message

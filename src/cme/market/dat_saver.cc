@@ -13,7 +13,7 @@ namespace market
     DatSaver::DatSaver(const std::string &org_save_url, const std::string &book_save_url)
     : m_last_seq(0), m_unreceived_seqs(), m_mutex(), m_datas(),
       m_org_sender(org_save_url), m_book_sender(book_save_url),
-      m_definition_datas(nullptr), m_recovery_datas(nullptr), m_book_manager(),
+      m_definition_datas(nullptr), m_recovery_datas(nullptr), m_book_manager(&m_book_sender),
       m_recovery_first_seq(0)
     {
         // noop
@@ -115,7 +115,6 @@ namespace market
         if(m_datas.empty())
         {
             // 暂无数据
-            LOG_DEBUG("no message to send, wait a moment");
             return m_datas.end();
         }
 
@@ -168,7 +167,7 @@ namespace market
         }
 
         // convert the message to books and send to zeromq for book
-        m_book_manager.Parse_to_send(*message, m_book_sender);
+        m_book_manager.Parse_to_send(*message);
 
         // now send received messages to zeromq for save to db
         return true;

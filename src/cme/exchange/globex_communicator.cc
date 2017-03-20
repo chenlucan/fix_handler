@@ -107,7 +107,7 @@ namespace exchange
         order.symbol = org_order.contract();
         order.security_desc = org_order.contract();      // 这个域和 symbol 使用同一个值
         order.side = org_order.has_buy_sell() ? GlobexCommunicator::Convert_buy_sell(org_order.buy_sell()) : 0;
-        order.price = atof(org_order.price().data());
+        order.price = std::stod(org_order.price());
         order.order_qty = org_order.quantity();
         order.time_in_force = org_order.has_tif() ? GlobexCommunicator::Convert_tif(org_order.tif()) : 0;
         order.order_type = org_order.has_order_type() ? GlobexCommunicator::Convert_order_type(org_order.order_type()) : 0;

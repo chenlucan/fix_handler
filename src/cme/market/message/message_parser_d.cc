@@ -75,6 +75,11 @@ namespace message
         i.securityID = message->securityID();
         i.depthGBI = 0;
         i.depthGBX = 0;
+        i.securityUpdateAction = message->securityUpdateAction();
+        i.symbol = message->getSymbolAsString();
+        i.minPriceIncrement = message->minPriceIncrement().mantissa();
+        i.highLimitPrice = message->highLimitPrice().mantissa();
+        i.lowLimitPrice = message->lowLimitPrice().mantissa();
 
         // 重要：必须要跳过下面这个 group 后才能正确取到 NoMDFeedTypes 字段值
         auto noEvents = message->noEvents();

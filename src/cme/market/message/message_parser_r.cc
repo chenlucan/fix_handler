@@ -23,8 +23,8 @@ namespace message
 
     void MessageParserR::Parse(const fh::cme::market::message::MdpMessage &message, std::vector<Book> &books)
     {
-        // TODO  QuoteRequest39
-        LOG_DEBUG("message type is R, TODO");
+        // QuoteRequest39 无需处理
+        LOG_DEBUG("message type is R, discard");
     }
 
 } // namespace message

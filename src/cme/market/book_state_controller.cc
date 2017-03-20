@@ -23,11 +23,18 @@ namespace market
         auto instrument_depth = instrument.depthGBX;
         auto security_id = instrument.securityID;
 
+        if(instrument.securityUpdateAction == 'D')
+        {
+            // 删除的场合
+            m_md_book_states.erase(security_id);
+            return;
+        }
+
         auto state_pos = m_md_book_states.find(security_id);
         if(state_pos == m_md_book_states.end())
         {
             // 该产品的 book state 还不存在，需要创建
-            BookState bs = BookStateController::Create(1, security_id, instrument_depth);    // 1: Multiple Depth Book
+            BookState bs = BookStateController::Create(1, security_id, instrument.symbol, instrument_depth);    // 1: Multiple Depth Book
             m_md_book_states.insert({security_id, bs});
         }
         else
@@ -37,56 +44,63 @@ namespace market
         }
     }
 
-    bool BookStateController::Modify_state(const fh::cme::market::message::Book &b)
+    // 将新的 book 情报更新到保存的 book state
+    // 如果是 BookReset 消息，则清除所有的 book state 信息，返回 {1, null}
+    // 如果找不到该 book 对应的定义情报，返回  {0, null}
+    // 如果是 Trade 消息，返回 {3, 传入的 book}
+    // 如果是 Bid 或者 Offer 消息，更新其对应的 book state 信息，返回 {2, 更新后 book state}
+    // 否则返回  {0, null}
+    std::pair<std::uint8_t, const void *> BookStateController::Modify_state(const fh::cme::market::message::Book &b)
     {
-        LOG_DEBUG("modify book state by: book_type=", b.type, " security_id=", b.securityID, " mDEntryType=", b.mDEntryType);
+        LOG_DEBUG("modify book state by: book_type=", b.type, " security_id=", b.securityID, " mDEntryType=", (char)b.mDEntryType);
+
+        if(b.mDEntryType == mktdata::MDEntryType::Value::BookReset)
+        {
+            // 重置所有的 book state 情报
+            this->Reset_state();
+            return std::make_pair(1, nullptr);
+        }
 
         auto pos = m_md_book_states.find(b.securityID);
         if(pos == m_md_book_states.end())
         {
             // 这个产品没有定义情报，扔掉该 book
             LOG_WARN("no difinition found: security id=", b.securityID, "; discard");
-            return false;
+            return std::make_pair(0, nullptr);
         }
 
         switch(b.mDEntryType)
         {
-            case mktdata::MDEntryType::Value::BookReset:
-                return this->Reset_state(b, pos->second);
             case mktdata::MDEntryType::Value::Bid:
             case mktdata::MDEntryType::Value::Offer:
-                return this->Update_price(b, pos->second);
+            {
+                auto book_state = this->Update_price(b, pos->second) ? &pos->second : nullptr;
+                return std::make_pair(2, book_state);
+            }
+            case mktdata::MDEntryType::Value::Trade:
+            {
+                auto trade_book = &b;
+                return std::make_pair(3, trade_book);
+            }
             case mktdata::MDEntryType::Value::ImpliedBid:
             case mktdata::MDEntryType::Value::ImpliedOffer:
             default:
-                LOG_INFO("ignore mDEntryType: ", b.mDEntryType);
-                return false;
+            {
+                LOG_INFO("ignore mDEntryType: ", (char)b.mDEntryType);
+                return std::make_pair(0, nullptr);
+            }
         }
     }
 
-    bool BookStateController::Has_instrument()
-    {
-        return !m_md_book_states.empty();
-    }
-
-    std::string BookStateController::Get()
-    {
-        std::ostringstream os;
-        std::for_each(m_md_book_states.cbegin(), m_md_book_states.cend(), [&os](const std::pair<std::uint32_t , fh::cme::market::BookState> &bs)
-        {
-            os << bs.second.Serialize();
-        });
-        return os.str();
-    }
-
-    BookState BookStateController::Create(std::uint8_t book_type, std::uint32_t security_id, std::uint8_t market_depth)
+    BookState BookStateController::Create(std::uint8_t book_type, std::uint32_t security_id, std::string symbol, std::uint8_t market_depth)
     {
         BookState bs;
         bs.bookType = book_type;
         bs.securityID = security_id;
+        bs.symbol = symbol;
         bs.marketDepth = market_depth;
 
-        LOG_DEBUG("create new book state: book_type=", book_type, " security_id=", security_id, " market_depth=", (int)market_depth);
+        LOG_DEBUG("create new book state: book_type=", book_type, " security_id=", security_id, " symbol=", symbol, " market_depth=", (int)market_depth);
 
         return bs;
     }
@@ -106,11 +120,14 @@ namespace market
         LOG_DEBUG("reset book state depth: security_id=", book_state.securityID, " market_depth=", (int)book_state.marketDepth);
     }
 
-    bool BookStateController::Reset_state(const fh::cme::market::message::Book &b, BookState &book_state)
+    void BookStateController::Reset_state()
     {
-        // TODO
-        LOG_INFO("reset book state, TODO");
-        return false;
+        // 收到 BookReset 后需要清除当前所有的 bid 和 ask 信息
+        LOG_INFO("reset book state: clear bid and ask");
+        std::for_each(m_md_book_states.begin(), m_md_book_states.end(), [](std::pair<const std::uint32_t , fh::cme::market::BookState> &s){
+            s.second.bid.clear();
+            s.second.ask.clear();
+        });
     }
 
     bool BookStateController::Update_price(const fh::cme::market::message::Book &b, BookState &book_state)
@@ -142,15 +159,14 @@ namespace market
         }
         else
         {
-            // increment book - other
-            // TODO 35=f, 35=R
+            // increment book - 其他类型无需更新
             return false;
         }
     }
 
     bool BookStateController::New_price(const fh::cme::market::message::Book &b, BookState &book_state)
     {
-        LOG_INFO("create price level ", (int)b.mDPriceLevel, " of ", b.securityID, "-", b.mDEntryType);
+        LOG_INFO("create price level ", (int)b.mDPriceLevel, " of ", b.securityID, "-", (char)b.mDEntryType);
 
         std::uint8_t depth = book_state.marketDepth;
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
@@ -184,12 +200,12 @@ namespace market
 
     bool BookStateController::Change_price(const fh::cme::market::message::Book &b, BookState &book_state)
     {
-        LOG_INFO("change price level ", (int)b.mDPriceLevel, " of ", b.securityID, "-", b.mDEntryType);
+        LOG_INFO("change price level ", (int)b.mDPriceLevel, " of ", b.securityID, "-", (char)b.mDEntryType);
 
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
         if(target.size() < (std::size_t)b.mDPriceLevel)
         {
-            LOG_WARN("change not exist price level ", (int)b.mDPriceLevel, " of ", b.securityID, "-", b.mDEntryType, "; ignore");
+            LOG_WARN("change not exist price level ", (int)b.mDPriceLevel, " of ", b.securityID, "-", (char)b.mDEntryType, "; ignore");
             return false;
         }
 
@@ -204,12 +220,12 @@ namespace market
 
     bool BookStateController::Delete_price(const fh::cme::market::message::Book &b, BookState &book_state)
     {
-        LOG_INFO("delete price level ", (int)b.mDPriceLevel, " of ", b.securityID, "-", b.mDEntryType);
+        LOG_INFO("delete price level ", (int)b.mDPriceLevel, " of ", b.securityID, "-", (char)b.mDEntryType);
 
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
         if(target.size() < (std::size_t)b.mDPriceLevel)
         {
-            LOG_WARN("delete not exist price level ", (int)b.mDPriceLevel, " of ", b.securityID, "-", b.mDEntryType, "; ignore");
+            LOG_WARN("delete not exist price level ", (int)b.mDPriceLevel, " of ", b.securityID, "-", (char)b.mDEntryType, "; ignore");
             return false;
         }
 
@@ -221,7 +237,7 @@ namespace market
 
     bool BookStateController::Delete_all_price(const fh::cme::market::message::Book &b, BookState &book_state)
     {
-        LOG_INFO("delete all price level of ", b.securityID, "-", b.mDEntryType);
+        LOG_INFO("delete all price level of ", b.securityID, "-", (char)b.mDEntryType);
 
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
         target.clear();
@@ -232,7 +248,7 @@ namespace market
 
     bool BookStateController::Delete_top_price(const fh::cme::market::message::Book &b, BookState &book_state)
     {
-        LOG_INFO("delete top price level ", (int)b.mDPriceLevel, " of ", b.securityID, "-", b.mDEntryType);
+        LOG_INFO("delete top price level ", (int)b.mDPriceLevel, " of ", b.securityID, "-", (char)b.mDEntryType);
 
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
         target.erase(target.begin(), target.begin() + std::min((std::size_t)b.mDPriceLevel, target.size()));

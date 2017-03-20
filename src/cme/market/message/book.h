@@ -64,8 +64,7 @@ namespace message
         std::uint32_t tradeID;
         std::uint16_t tradingReferenceDate;
 
-        // TODO serialize to send
-        std::string Serialize() const
+        std::string To_string() const
         {
             std::ostringstream os;
             os << "book: ";

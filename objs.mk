@@ -20,6 +20,9 @@ $(BIN_PATH)/recovery_saver.o: $(SRC_PATH)/cme/market/recovery_saver.cc
 $(BIN_PATH)/book_manager.o: $(SRC_PATH)/cme/market/book_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
+$(BIN_PATH)/definition_manager.o: $(SRC_PATH)/cme/market/definition_manager.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/book_state_controller.o: $(SRC_PATH)/cme/market/book_state_controller.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
@@ -135,6 +138,9 @@ $(BIN_PATH)/exchange_client_test.o: $(SRC_PATH)/main/exchange/client/exchange_cl
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/ems.pb.o: $(SRC_PATH)/pb/ems/ems.pb.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/dms.pb.o: $(SRC_PATH)/pb/dms/dms.pb.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/%.xml: $(SRC_PATH)/%.xml

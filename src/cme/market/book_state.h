@@ -19,8 +19,7 @@ namespace market
         std::uint32_t mDEntrySize;    // quantity
         std::uint64_t mDEntryPx;    // price, exponent is -7
 
-        // TODO serialize to send
-        std::string Serialize() const
+        std::string To_string() const
         {
             std::ostringstream os;
             os << "price:";
@@ -37,28 +36,29 @@ namespace market
     {
         std::uint8_t bookType;    // 1: Multiple Depth Book 2: Implied Book
         std::uint32_t securityID;
+        std::string symbol;
         std::uint8_t marketDepth;
         std::deque<BookPrice> bid;
         std::deque<BookPrice> ask;
 
-        // TODO serialize to send
-        std::string Serialize() const
+        std::string To_string() const
         {
             std::ostringstream os;
             os << "book state:";
             os << " bookType=" << (int)bookType;
             os << " securityID=" << securityID;
+            os << " symbol=" << symbol;
             os << " marketDepth=" << (int)marketDepth;
             os << std::endl;
 
             os << "  bid:" << bid.size() << std::endl;
             std::for_each(bid.cbegin(), bid.cend(), [&os](const BookPrice &p){
-                os << "     [" << p.Serialize() << "]" << std::endl;
+                os << "     [" << p.To_string() << "]" << std::endl;
             });
 
             os << "  ask:" << ask.size() << std::endl;
             std::for_each(ask.cbegin(), ask.cend(), [&os](const BookPrice &a){
-                os << "     [" << a.Serialize() << "]" << std::endl;
+                os << "     [" << a.To_string() << "]" << std::endl;
             });
 
             return os.str();

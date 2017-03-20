@@ -5,15 +5,19 @@ ROOT = .
 SRC_PATH = $(ROOT)/src
 TEST_PATH = $(ROOT)/test
 BIN_PATH = $(ROOT)/bin
+VENDOR_PATH = $(realpath $(ROOT)/vendor)
 
-INCLUDE_PATH = -I$(SRC_PATH)
-LIBS_PATH = -L/usr/lib64 -L/usr/local/lib
+INCLUDE_PATH = -I$(SRC_PATH) -I$(VENDOR_PATH)/boost/include -I$(VENDOR_PATH)/gtest/include  -I$(VENDOR_PATH)/mongodb/include  \
+								-I$(VENDOR_PATH)/protobuf/include -I$(VENDOR_PATH)/quickfix/include -I$(VENDOR_PATH)/sbe/include -I$(VENDOR_PATH)/zeromq/include
+LIBS_PATH = -L$(VENDOR_PATH)/boost/libs -L$(VENDOR_PATH)/gtest/libs  -L$(VENDOR_PATH)/mongodb/libs  \
+								-L$(VENDOR_PATH)/protobuf/libs -L$(VENDOR_PATH)/quickfix/libs -L$(VENDOR_PATH)/sbe/libs -L$(VENDOR_PATH)/zeromq/libs
+EXEC_LIBS_PATH = -Wl,-rpath,$(VENDOR_PATH)/boost/libs:$(VENDOR_PATH)/gtest/libs:$(VENDOR_PATH)/mongodb/libs:$(VENDOR_PATH)/protobuf/libs:$(VENDOR_PATH)/quickfix/libs:$(VENDOR_PATH)/sbe/libs:$(VENDOR_PATH)/zeromq/libs
 LIBS = -lpthread -lboost_system -lzmq -lstdc++ -lquickfix -lmongocxx -lbsoncxx -lmongoc -lbson -lprotobuf
 TEST_LIBS = -lgmock
 RELEASE_FLAGS = -O3 -DNDEBUG -Ofast
 DBG_FLAGS = -g -rdynamic
 FLAGS = -std=c++11 -Wall -Wno-pragmas $(DBG_FLAGS)
-COMPILE_COMMAND = $(COMPILER) $(INCLUDE_PATH) $(LIBS_PATH) $(LIBS) $(FLAGS)
+COMPILE_COMMAND = $(COMPILER) $(INCLUDE_PATH) $(LIBS_PATH) $(EXEC_LIBS_PATH) $(LIBS) $(FLAGS)
 LINT_COMMAND = $(TEST_PATH)/cpplint.py
 
 SETTINGS = $(BIN_PATH)/market_config.xml $(BIN_PATH)/market_settings.ini  $(BIN_PATH)/exchange_server.cfg \
@@ -22,7 +26,8 @@ ALL_OBJS =  $(filter-out $(wildcard $(BIN_PATH)/*_test.o), $(wildcard $(BIN_PATH
 TEST_OBJS = $(BIN_PATH)/utility_unittest.o
 COMM_OBJS = $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/utility.o $(BIN_PATH)/message_utility.o $(BIN_PATH)/logger.o \
 						   $(BIN_PATH)/mdp_message.o $(BIN_PATH)/sbe_decoder.o $(BIN_PATH)/settings.o \
-						   $(BIN_PATH)/time_measurer.o $(BIN_PATH)/zmq_sender.o $(BIN_PATH)/zmq_receiver.o $(BIN_PATH)/ems.pb.o
+						   $(BIN_PATH)/time_measurer.o $(BIN_PATH)/zmq_sender.o $(BIN_PATH)/zmq_receiver.o \
+						   $(BIN_PATH)/ems.pb.o $(BIN_PATH)/dms.pb.o
 ALL_FILES = $(shell find $(SRC_PATH) -name '*.h' -or -name '*.cc')						   
 						   
 SENDER_TARGET = $(BIN_PATH)/udp_sender_test
@@ -54,7 +59,7 @@ receiver: $(BIN_PATH)/udp_receiver_test.o $(BIN_PATH)/dat_processor.o $(BIN_PATH
                $(BIN_PATH)/tcp_receiver.o $(BIN_PATH)/dat_arbitrator.o $(BIN_PATH)/application.o $(BIN_PATH)/market_settings.o \
                $(BIN_PATH)/recovery_saver.o $(BIN_PATH)/dat_replayer.o $(BIN_PATH)/book_manager.o $(BIN_PATH)/book_state_controller.o\
                $(BIN_PATH)/message_parser_d.o $(BIN_PATH)/message_parser_f.o $(BIN_PATH)/message_parser_r.o $(BIN_PATH)/channel_settings.o \
-               $(BIN_PATH)/message_parser_x.o $(BIN_PATH)/message_parser_w.o \
+               $(BIN_PATH)/message_parser_x.o $(BIN_PATH)/message_parser_w.o $(BIN_PATH)/definition_manager.o \
                $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(RECEIVER_TARGET) $?
 

@@ -2,6 +2,7 @@
 #include "cme/market/book_manager.h"
 #include "core/assist/time_measurer.h"
 #include "core/assist/logger.h"
+#include "pb/dms/dms.pb.h"
 
 namespace fh
 {
@@ -10,10 +11,10 @@ namespace cme
 namespace market
 {
 
-    BookManager::BookManager()
-    : m_instruments(), m_recovery_books(), m_recovery_wait_merge(m_recovery_books.cbegin()),
-      m_parser_d(), m_parser_f(), m_parser_r(), m_parser_x(), m_parser_w(),
-      m_book_state_controller()
+    BookManager::BookManager(fh::core::zmq::ZmqSender *sender)
+    : m_recovery_books(), m_recovery_wait_merge(m_recovery_books.cbegin()),
+      m_parser_f(), m_parser_r(), m_parser_x(), m_parser_w(),
+      m_book_state_controller(), m_book_sender(sender), m_definition_manager(sender)
     {
         // noop
     }
@@ -35,33 +36,150 @@ namespace market
         this->Parse_recovery(*recovery_datas);
     }
 
-    // parse message to books and send to target zeromq
-    void BookManager::Parse_to_send(const fh::cme::market::message::MdpMessage &message, fh::core::zmq::ZmqSender &sender)
+    // parse increment message to books and send to target zeromq
+    void BookManager::Parse_to_send(const fh::cme::market::message::MdpMessage &message)
     {
         fh::core::assist::TimeMeasurer t;
 
         std::vector<fh::cme::market::message::Book> increment_books = this->Parse_increment(message);
-        std::vector<fh::cme::market::message::Book> merged_books = this->Merge_with_recovery(message.packet_seq_num(), increment_books);
+        if(increment_books.empty())
+        {
+            LOG_INFO("no book in message.");
+            return;
+        }
 
-        LOG_INFO("parse to books: ", t.Elapsed_nanoseconds(), "ns, count=", merged_books.size());
+        // 看看有没有 BookReset
+        auto index = std::find_if(increment_books.rbegin(), increment_books.rend(),
+                                                [](const fh::cme::market::message::Book &b) { return b.mDEntryType == mktdata::MDEntryType::BookReset; });
+        if(index == increment_books.rend())
+        {
+            // 没有的话，就和恢复数据进行 merge
+            this->Merge_with_recovery(message.packet_seq_num(), increment_books);
+        }
+        else
+        {
+            // 有的话，在它之前的数据都不要了，还要把保存的恢复数据扔掉（留下 BookReset 自己）
+            increment_books.erase(increment_books.begin(), std::next(index).base());
+            m_recovery_books.clear();
+            m_recovery_wait_merge = m_recovery_books.cbegin();
+        }
 
-        std::for_each(merged_books.cbegin(), merged_books.cend(), [this, &sender, &t](const fh::cme::market::message::Book &b){
-            if(m_book_state_controller.Modify_state(b))
-            {
-                sender.Send(m_book_state_controller.Get());
-                LOG_INFO("send to zmq(book state): ", t.Elapsed_nanoseconds(), "ns");
-            }
+        LOG_INFO("parse to books: ", t.Elapsed_nanoseconds(), "ns, count=", increment_books.size());
+
+        std::for_each(increment_books.cbegin(), increment_books.cend(),
+                [this, &t](const fh::cme::market::message::Book &b)
+                {
+                    auto changed_state_or_trade = m_book_state_controller.Modify_state(b);
+                    std::uint8_t flag = changed_state_or_trade.first;   // 0: no data  changed 1: reset  2: book state  3: trade state
+                    void *data = changed_state_or_trade.second;
+                    if(flag == 1)
+                    {
+                        // TODO reset 后如果通知策略端
+                    }
+                    else if(flag == 2 && data != nullptr)
+                    {
+                        this->Send(static_cast<fh::cme::market::BookState *>(data));
+                        LOG_INFO("send to zmq(book state): ", t.Elapsed_nanoseconds(), "ns");
+                    }
+                    else if(flag == 3 && data != nullptr)
+                    {
+                        this->Send(static_cast<fh::cme::market::message::Book *>(data));
+                        LOG_INFO("send to zmq(trade book): ", t.Elapsed_nanoseconds(), "ns");
+                    }
+                }
+        );
+    }
+
+    void BookManager::Send(const fh::cme::market::BookState *state)
+    {
+        // 发送二级行情
+        pb::dms::L2 l2_info;
+        l2_info.set_contract(state->symbol);
+        std::for_each(state->bid.cbegin(), state->bid.cend(), [&l2_info](const BookPrice &p){
+            pb::dms::DataPoint *bid = l2_info.add_bid();
+            bid->set_price(p.mDEntryPx);        // TODO 要加上小数点偏移
+            bid->set_size(p.mDEntrySize);
+        });
+        std::for_each(state->ask.cbegin(), state->ask.cend(), [&l2_info](const BookPrice &p){
+            pb::dms::DataPoint *ask = l2_info.add_offer();
+            ask->set_price(p.mDEntryPx);
+            ask->set_size(p.mDEntrySize);
         });
 
-        LOG_INFO("book parsed.");
+        // 前面加个 L 标记是 L2 数据
+        LOG_INFO("send L2: ", fh::core::assist::utility::Format_pb_message(l2_info));
+        m_book_sender->Send("L" + l2_info.SerializeAsString());
+
+        // 发送最优价位
+        bool is_bid_empty = state->bid.empty();
+        bool is_ask_empty = state->ask.empty();
+        if(is_bid_empty && is_ask_empty)
+        {
+            // TODO bid 和 ask 都不存在
+        }
+        else if(!is_bid_empty && !is_ask_empty)
+        {
+            // bid 和 ask 都存在
+            pb::dms::BBO bbo_info;
+            bbo_info.set_contract(state->symbol);
+            pb::dms::DataPoint *bid = bbo_info.mutable_bid();
+            bid->set_price(state->bid.front().mDEntryPx);
+            bid->set_size(state->bid.front().mDEntrySize);
+            pb::dms::DataPoint *ask = bbo_info.mutable_offer();
+            ask->set_price(state->ask.front().mDEntryPx);
+            ask->set_size(state->ask.front().mDEntrySize);
+
+            // 前面加个 B 标记是 BBO 数据
+            LOG_INFO("send BBO: ", fh::core::assist::utility::Format_pb_message(bbo_info));
+            m_book_sender->Send("B" + bbo_info.SerializeAsString());
+        }
+        else if(is_bid_empty)
+        {
+            // 只有 ask
+            pb::dms::Offer offer_info;
+            offer_info.set_contract(state->symbol);
+            pb::dms::DataPoint *offer = offer_info.mutable_offer();
+            offer->set_price(state->ask.front().mDEntryPx);
+            offer->set_size(state->ask.front().mDEntrySize);
+
+            // 前面加个 O 标记是 offer 数据
+            LOG_INFO("send Offer: ", fh::core::assist::utility::Format_pb_message(offer_info));
+            m_book_sender->Send("O" + offer_info.SerializeAsString());
+        }
+        else
+        {
+            // 只有 bid
+            pb::dms::Bid bid_info;
+            bid_info.set_contract(state->symbol);
+            pb::dms::DataPoint *bid = bid_info.mutable_bid();
+            bid->set_price(state->bid.front().mDEntryPx);
+            bid->set_size(state->bid.front().mDEntrySize);
+
+            // 前面加个 D 标记是 bid 数据
+            LOG_INFO("send Bid: ", fh::core::assist::utility::Format_pb_message(bid_info));
+            m_book_sender->Send("D" + bid_info.SerializeAsString());
+        }
+    }
+
+    void BookManager::Send(const fh::cme::market::message::Book *trade_book)
+    {
+        // 发送 trade 数据
+        pb::dms::Trade trade;
+        trade.set_contract(m_definition_manager.Get_symbol(trade_book->securityID));
+        pb::dms::DataPoint *last = trade.mutable_last();
+        last->set_price(trade_book->mDEntryPx);
+        last->set_size(trade_book->mDEntrySize);
+
+        // 前面加个 T 标记是 trade 数据
+        LOG_INFO("send Trade: ", fh::core::assist::utility::Format_pb_message(trade));
+        m_book_sender->Send("T" + trade.SerializeAsString());
     }
 
     void BookManager::Parse_definition(const std::vector<fh::cme::market::message::MdpMessage> &messages)
     {
-        // parse definition data, 35=d
         std::for_each(messages.cbegin(), messages.cend(),
                 [this](const fh::cme::market::message::MdpMessage &message){
-                    this->Update_definition(message);
+                    m_definition_manager.On_new_definition(message, std::bind(&BookManager::On_definition_changed, this, std::placeholders::_1));
                 }
         );
     }
@@ -91,7 +209,7 @@ namespace market
         }
         else if(type == 'd')
         {
-            this->Update_definition(message);
+            m_definition_manager.On_new_definition(message, std::bind(&BookManager::On_definition_changed, this, std::placeholders::_1));
         }
         else if(type == 'R')
         {
@@ -109,21 +227,7 @@ namespace market
         return books;
     }
 
-    void BookManager::Update_definition(const fh::cme::market::message::MdpMessage &message)
-    {
-        std::vector<fh::cme::market::message::Instrument> instruments;
-        m_parser_d.Parse(message, instruments);
-
-        std::for_each(instruments.begin(), instruments.end(),
-            [this](fh::cme::market::message::Instrument &i){
-                LOG_DEBUG("new definition: ", i.Serialize());
-                m_instruments[i.securityID] = std::move(i);
-                this->On_definition_changed(i.securityID);
-            }
-        );
-    }
-
-    std::vector<fh::cme::market::message::Book>  BookManager::Merge_with_recovery(std::uint32_t message_seq, std::vector<fh::cme::market::message::Book> &increment_books)
+    void BookManager::Merge_with_recovery(std::uint32_t message_seq, std::vector<fh::cme::market::message::Book> &increment_books)
     {
         std::vector<fh::cme::market::message::Book> merged_books;
         auto old_pos = m_recovery_wait_merge;
@@ -151,13 +255,13 @@ namespace market
 
         // 剩下的 increment books 是需要保存的
         BookManager::Move_append(increment_books, merged_books);
-
-        return merged_books;
+        increment_books = std::move(merged_books);
     }
 
-    void BookManager::On_definition_changed(std::uint32_t security_id)
+    void BookManager::On_definition_changed(const fh::cme::market::message::Instrument &instrument)
     {
-        m_book_state_controller.Create_or_shrink(m_instruments.at(security_id));
+        // 根据更新的产品信息修正对应的 book state 情报
+        m_book_state_controller.Create_or_shrink(instrument);
     }
 
     // move vector contents to another vector

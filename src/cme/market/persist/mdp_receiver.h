@@ -31,23 +31,24 @@ namespace persist
             virtual void Save(char *data, size_t size);
 
         private:
-            void AppendData(bson_t *document, mktdata::ChannelReset4 *m);
-            void AppendData(bson_t *document, mktdata::MDInstrumentDefinitionFuture27 *m);
-            void AppendData(bson_t *document, mktdata::MDInstrumentDefinitionSpread29 *m);
-            void AppendData(bson_t *document, mktdata::SecurityStatus30 *m);
-            void AppendData(bson_t *document, mktdata::MDIncrementalRefreshBook32 *m);
-            void AppendData(bson_t *document, mktdata::MDIncrementalRefreshDailyStatistics33 *m);
-            void AppendData(bson_t *document, mktdata::MDIncrementalRefreshLimitsBanding34 *m);
-            void AppendData(bson_t *document, mktdata::MDIncrementalRefreshSessionStatistics35 *m);
-            void AppendData(bson_t *document, mktdata::MDIncrementalRefreshTrade36 *m);
-            void AppendData(bson_t *document, mktdata::MDIncrementalRefreshVolume37 *m);
-            void AppendData(bson_t *document, mktdata::SnapshotFullRefresh38 *m);
-            void AppendData(bson_t *document, mktdata::QuoteRequest39 *m);
-            void AppendData(bson_t *document, mktdata::MDInstrumentDefinitionOption41 *m);
-            void AppendData(bson_t *document, mktdata::MDIncrementalRefreshTradeSummary42 *m);
-            void AppendData(bson_t *document, mktdata::MDIncrementalRefreshOrderBook43 *m);
-            void AppendData(bson_t *document, mktdata::SnapshotFullRefreshOrderBook44 *m);
-
+            void AppendData(bson_t *document, mktdata::ChannelReset4 *m, std::vector<bson_t *> &destroyVector);
+            void AppendData(bson_t *document, mktdata::MDInstrumentDefinitionFuture27 *m, std::vector<bson_t *> &destroyVector);
+            void AppendData(bson_t *document, mktdata::MDInstrumentDefinitionSpread29 *m, std::vector<bson_t *> &destroyVector);
+            void AppendData(bson_t *document, mktdata::SecurityStatus30 *m, std::vector<bson_t *> &destroyVector);
+            void AppendData(bson_t *document, mktdata::MDIncrementalRefreshBook32 *m, std::vector<bson_t *> &destroyVector);
+            void AppendData(bson_t *document, mktdata::MDIncrementalRefreshDailyStatistics33 *m, std::vector<bson_t *> &destroyVector);
+            void AppendData(bson_t *document, mktdata::MDIncrementalRefreshLimitsBanding34 *m, std::vector<bson_t *> &destroyVector);
+            void AppendData(bson_t *document, mktdata::MDIncrementalRefreshSessionStatistics35 *m, std::vector<bson_t *> &destroyVector);
+            void AppendData(bson_t *document, mktdata::MDIncrementalRefreshTrade36 *m, std::vector<bson_t *> &destroyVector);
+            void AppendData(bson_t *document, mktdata::MDIncrementalRefreshVolume37 *m, std::vector<bson_t *> &destroyVector);
+            void AppendData(bson_t *document, mktdata::SnapshotFullRefresh38 *m, std::vector<bson_t *> &destroyVector);
+            void AppendData(bson_t *document, mktdata::QuoteRequest39 *m, std::vector<bson_t *> &destroyVector);
+            void AppendData(bson_t *document, mktdata::MDInstrumentDefinitionOption41 *m, std::vector<bson_t *> &destroyVector);
+            void AppendData(bson_t *document, mktdata::MDIncrementalRefreshTradeSummary42 *m, std::vector<bson_t *> &destroyVector);
+            void AppendData(bson_t *document, mktdata::MDIncrementalRefreshOrderBook43 *m, std::vector<bson_t *> &destroyVector);
+            void AppendData(bson_t *document, mktdata::SnapshotFullRefreshOrderBook44 *m, std::vector<bson_t *> &destroyVector);
+            void DestroyBsonVector(const std::vector<bson_t *> &valList);
+			
         private:
             std::string m_db_url;
             std::string m_db_name;

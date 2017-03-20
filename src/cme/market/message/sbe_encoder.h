@@ -34,6 +34,8 @@ namespace message
             std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::SnapshotFullRefresh38 &message);
             std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::AdminLogin15 &message);
             std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::AdminLogout16 &message);
+            std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::ChannelReset4 &message);
+            std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::MDIncrementalRefreshTrade36 &message);
 
         private:
             std::size_t m_encoded_length;

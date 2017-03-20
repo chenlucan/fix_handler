@@ -7,6 +7,7 @@
 #include <quickfix/Message.h>
 #include "core/global.h"
 #include "pb/ems/ems.pb.h"
+#include "pb/dms/dms.pb.h"
 
 namespace fh
 {
@@ -73,6 +74,27 @@ namespace utility
 
     // 把 protobuf 的消息整理成可读字符串
     std::string Format_pb_message(const pb::ems::Fill &fill);
+
+    // 把 protobuf 的消息整理成可读字符串
+    std::string Format_pb_message(const pb::dms::Trade &trade);
+
+    // 把 protobuf 的消息整理成可读字符串
+    std::string Format_pb_message(const pb::dms::BBO &bbo);
+
+    // 把 protobuf 的消息整理成可读字符串
+    std::string Format_pb_message(const pb::dms::Bid &bid);
+
+    // 把 protobuf 的消息整理成可读字符串
+    std::string Format_pb_message(const pb::dms::Offer &offer);
+
+    // 把 protobuf 的消息整理成可读字符串
+    std::string Format_pb_message(const pb::dms::L2 &l2);
+
+    // 把 protobuf 的消息整理成可读字符串
+    std::string Format_pb_message(const pb::dms::Contract &contract);
+
+    // 把 protobuf 的消息整理成可读字符串
+    std::string Format_pb_message(const pb::dms::DataPoint &dp);
 
     // 把 protobuf 的时间格式整理成可读字符串
     std::string Format_pb_timestamp(const pb::ems::Timestamp &time);
