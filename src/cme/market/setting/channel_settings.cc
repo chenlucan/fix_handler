@@ -1,5 +1,6 @@
 
 #include "cme/market/setting/channel_settings.h"
+#include "core/assist/logger.h"
 
 namespace fh
 {
@@ -15,19 +16,22 @@ namespace setting
         {"H", fh::cme::market::setting::FeedType::H},
         {"I", fh::cme::market::setting::FeedType::I},
         {"N", fh::cme::market::setting::FeedType::N},    
-        {"S", fh::cme::market::setting::FeedType::S}
+        {"S", fh::cme::market::setting::FeedType::S},
+        {"", fh::cme::market::setting::FeedType::UNKNOW}
     };
 
     const std::unordered_map<std::string, fh::cme::market::setting::Protocol> ChannelSettings::PROTOCOLS =
     {
         {"TCP/IP", fh::cme::market::setting::Protocol::TCP},
-        {"UDP/IP", fh::cme::market::setting::Protocol::UDP}
+        {"UDP/IP", fh::cme::market::setting::Protocol::UDP},
+        {"", fh::cme::market::setting::Protocol::UNKNOW}
     };
 
     const std::unordered_map<std::string, fh::cme::market::setting::Feed> ChannelSettings::FEEDS =
     {
         {"A", fh::cme::market::setting::Feed::A},
-        {"B", fh::cme::market::setting::Feed::B}
+        {"B", fh::cme::market::setting::Feed::B},
+        {"", fh::cme::market::setting::Feed::UNKNOW}
     };
 
     ChannelSettings::ChannelSettings(const std::string &channel_setting_file)
@@ -64,7 +68,11 @@ namespace setting
             auto connections = this->Read_channel_connections(channel);
 
             m_channels.insert({id, {id, label, products, connections}});
+
+            //LOG_DEBUG("read channel end, id=", id);
         }   
+
+        LOG_INFO("channels read ok, size=", m_channels.size());
     }
 
     std::vector<fh::cme::market::setting::Product> ChannelSettings::Read_channel_products(boost::property_tree::ptree::value_type &channel)
@@ -72,7 +80,7 @@ namespace setting
         std::vector<fh::cme::market::setting::Product> products;
         for(boost::property_tree::ptree::value_type &p : channel.second.get_child("products"))
         {
-            auto pcode = p.second.get<std::string>("<xmlattr>.code");  
+            auto pcode = p.second.get<std::string>("<xmlattr>.code");
             auto gcode = p.second.get_child("group").get<std::string>("<xmlattr>.code");
 
             fh::cme::market::setting::Group group = { gcode };
@@ -92,7 +100,7 @@ namespace setting
             auto type = c.second.get_child("type").get<std::string>("<xmlattr>.feed-type");  
             auto type_des = c.second.get<std::string>("type");  
             auto protocol = c.second.get<std::string>("protocol");  
-            auto ip = c.second.get<std::string>("ip", "0.0.0.0");  
+            auto ip = c.second.get<std::string>("ip");
             auto host_ip = c.second.get<std::string>("host-ip");  
             auto port = c.second.get<std::uint16_t>("port");  
             auto feed = c.second.get<std::string>("feed");
@@ -102,13 +110,14 @@ namespace setting
                 ChannelSettings::Convert(type, ChannelSettings::FEED_TYPES),
                 type_des,
                 ChannelSettings::Convert(protocol, ChannelSettings::PROTOCOLS),
-                boost::asio::ip::address::from_string(ip),
+                boost::asio::ip::address::from_string(ip == "" ? "127.0.0.1" : ip),
                 boost::asio::ip::address::from_string(host_ip),
                 port,
                 ChannelSettings::Convert(feed, ChannelSettings::FEEDS),
             };
 
             connections.push_back(connection);
+            //LOG_INFO("channel connections read end, id= ", cid);
         }
         return connections;
     }
@@ -116,6 +125,8 @@ namespace setting
     template <typename T> 
     T ChannelSettings::Convert(const std::string &value, const std::unordered_map<std::string, T> &all_values)
     {
+        auto index = all_values.find(value);
+        if(index == all_values.end()) return all_values.at("");
         return all_values.at(value);
     }
 

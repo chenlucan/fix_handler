@@ -14,13 +14,13 @@ namespace market
     namespace setting
     {
         // Historical Replay, Incremental, Instrument Replay, Snapshot
-        enum class FeedType { H, I, N, S };
+        enum class FeedType { H, I, N, S, UNKNOW };
 
         // TCP/IP, UDP/IP
-        enum class Protocol { TCP, UDP };
+        enum class Protocol { TCP, UDP, UNKNOW };
 
         // A, B
-        enum class Feed { A, B };
+        enum class Feed { A, B, UNKNOW };
 
         struct Group
         {
