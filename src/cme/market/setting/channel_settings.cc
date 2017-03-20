@@ -100,7 +100,7 @@ namespace setting
             auto type = c.second.get_child("type").get<std::string>("<xmlattr>.feed-type");  
             auto type_des = c.second.get<std::string>("type");  
             auto protocol = c.second.get<std::string>("protocol");  
-            auto ip = c.second.get<std::string>("ip");
+            auto ip = c.second.get<std::string>("ip", "127.0.0.1");
             auto host_ip = c.second.get<std::string>("host-ip");  
             auto port = c.second.get<std::uint16_t>("port");  
             auto feed = c.second.get<std::string>("feed");
