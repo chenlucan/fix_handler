@@ -8,6 +8,7 @@
 #include "cme/market/message/mdp_message.h"
 #include "core/zmq/zmq_sender.h"
 #include "cme/market/book_manager.h"
+#include "cme/market/book_sender.h"
 
 namespace fh
 {
@@ -18,7 +19,7 @@ namespace market
     class DatSaver
     {
         public:
-            DatSaver(const std::string &org_save_url, const std::string &book_save_url);
+            DatSaver(const std::string &org_save_url, fh::cme::market::BookSender *book_sender);
             virtual ~DatSaver();
 
         public:
@@ -62,7 +63,6 @@ namespace market
             std::mutex m_mutex;
             std::multiset<fh::cme::market::message::MdpMessage, Message_Compare> m_datas;
             fh::core::zmq::ZmqSender m_org_sender;
-            fh::core::zmq::ZmqSender m_book_sender;
             std::vector<fh::cme::market::message::MdpMessage> *m_definition_datas;
             std::vector<fh::cme::market::message::MdpMessage> *m_recovery_datas;
             fh::cme::market::BookManager m_book_manager;

@@ -10,10 +10,10 @@ namespace cme
 {
 namespace market
 {
-    DatSaver::DatSaver(const std::string &org_save_url, const std::string &book_save_url)
+    DatSaver::DatSaver(const std::string &org_save_url, fh::cme::market::BookSender *book_sender)
     : m_last_seq(0), m_unreceived_seqs(), m_mutex(), m_datas(),
-      m_org_sender(org_save_url), m_book_sender(book_save_url),
-      m_definition_datas(nullptr), m_recovery_datas(nullptr), m_book_manager(&m_book_sender),
+      m_org_sender(org_save_url),
+      m_definition_datas(nullptr), m_recovery_datas(nullptr), m_book_manager(book_sender),
       m_recovery_first_seq(0)
     {
         // noop

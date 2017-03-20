@@ -5,6 +5,7 @@
 #include "core/global.h"
 #include "core/zmq/zmq_receiver.h"
 #include "core/zmq/zmq_sender.h"
+#include "core/exchange/exchangelisteneri.h"
 
 namespace fh
 {
@@ -29,7 +30,7 @@ namespace exchange
             DISALLOW_COPY_AND_ASSIGN(StrategyReceiver);
     };
 
-    class StrategyCommunicator
+    class StrategyCommunicator : core::exchange::ExchangeListenerI
     {
         public:
             StrategyCommunicator(const std::string &send_url, const std::string &receive_url);
@@ -39,6 +40,14 @@ namespace exchange
             void Start_receive(std::function<void(char *, const size_t)> processor);
             void Send(const char *message, size_t length);
             void Send(const std::string &message);
+
+        public:
+            // implement of ExchangeListenerI
+            virtual void OnOrder(::pb::ems::Order order);
+            // implement of ExchangeListenerI
+            virtual void OnFill(::pb::ems::Fill fill);
+            // implement of ExchangeListenerI
+            virtual void OnExchangeReady(boost::container::flat_map<std::string, std::string>);
 
         private:
             fh::core::zmq::ZmqSender m_sender;

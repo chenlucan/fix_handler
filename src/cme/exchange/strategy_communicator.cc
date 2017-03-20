@@ -59,6 +59,25 @@ namespace exchange
         m_sender.Send(message);
     }
 
+    // implement of ExchangeListenerI
+    void StrategyCommunicator::OnOrder(::pb::ems::Order order)
+    {
+
+    }
+
+    // implement of ExchangeListenerI
+    void StrategyCommunicator::OnFill(::pb::ems::Fill fill)
+    {
+
+    }
+
+    // implement of ExchangeListenerI
+    void StrategyCommunicator::OnExchangeReady(boost::container::flat_map<std::string, std::string>)
+    {
+
+    }
+
+
 } // namespace exchange
 } // namespace cme
 } // namespace fh

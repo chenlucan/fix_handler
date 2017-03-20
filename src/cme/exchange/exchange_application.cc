@@ -15,10 +15,11 @@ namespace exchange
 {
 
     ExchangeApplication::ExchangeApplication(
+            core::exchange::ExchangeListenerI* listener,
             bool is_week_begin,
             const std::string &fix_setting_file,
             const std::string &app_setting_file)
-    : m_strategy(nullptr), m_globex(nullptr)
+    : core::exchange::ExchangeI(listener), m_strategy(nullptr), m_globex(nullptr)
     {
         this->Initial_application(fix_setting_file, app_setting_file, is_week_begin);
     }
@@ -37,7 +38,8 @@ namespace exchange
         m_globex = new GlobexCommunicator(fix_setting_file, app_settings, is_week_begin);
     }
 
-    void ExchangeApplication::Start()
+    // implement of ExchangeI
+    bool ExchangeApplication::Start(std::vector<::pb::ems::Order>)
     {
         // 启动一个线程，用来从策略模块接受交易指令，并将交易结果发送回去
         LOG_DEBUG("start strategy thread");
@@ -52,8 +54,11 @@ namespace exchange
             m_globex->Start(std::bind(&ExchangeApplication::On_from_globex, this, std::placeholders::_1, std::placeholders::_2));
         });
         globex_listener.detach();
+
+        return true;
     }
 
+    // implement of ExchangeI
     void ExchangeApplication::Stop()
     {
         m_globex->Stop();
@@ -73,6 +78,30 @@ namespace exchange
     {
         // 接受到交易所返回的信息后，转发给策略模块
         m_strategy->Send(data, size);
+    }
+
+    // implement of ExchangeI
+    void ExchangeApplication::Initialize(std::vector<::pb::dms::Contract> contracts)
+    {
+
+    }
+
+    // implement of ExchangeI
+    void ExchangeApplication::Add(const ::pb::ems::Order& order)
+    {
+
+    }
+
+    // implement of ExchangeI
+    void ExchangeApplication::Change(const ::pb::ems::Order& order)
+    {
+
+    }
+
+    // implement of ExchangeI
+    void ExchangeApplication::Delete(const ::pb::ems::Order& order)
+    {
+
     }
 
 } // namespace exchange

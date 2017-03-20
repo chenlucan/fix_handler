@@ -11,7 +11,7 @@ namespace cme
 namespace market
 {
 
-    BookManager::BookManager(fh::core::zmq::ZmqSender *sender)
+    BookManager::BookManager(fh::cme::market::BookSender *sender)
     : m_recovery_books(), m_recovery_wait_merge(m_recovery_books.cbegin()),
       m_parser_f(), m_parser_r(), m_parser_x(), m_parser_w(),
       m_book_state_controller(), m_book_sender(sender), m_definition_manager(sender)

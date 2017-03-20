@@ -11,6 +11,7 @@
 #include "cme/market/message/message_parser_x.h"
 #include "cme/market/message/message_parser_w.h"
 #include "cme/market/definition_manager.h"
+#include "cme/market/book_sender.h"
 
 namespace fh
 {
@@ -21,7 +22,7 @@ namespace market
     class BookManager
     {
         public:
-            explicit BookManager(fh::core::zmq::ZmqSender *sender);
+            explicit BookManager(fh::cme::market::BookSender *sender);
             virtual ~BookManager();
 
         public:
@@ -55,7 +56,7 @@ namespace market
             fh::cme::market::message::MessageParserX m_parser_x;
             fh::cme::market::message::MessageParserW m_parser_w;
             BookStateController m_book_state_controller;
-            fh::core::zmq::ZmqSender *m_book_sender;
+            fh::cme::market::BookSender *m_book_sender;
             fh::cme::market::DefinitionManager m_definition_manager;
 
         private:

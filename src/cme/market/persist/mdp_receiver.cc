@@ -121,24 +121,23 @@ namespace persist
                 break;
         }
 
-        bson_error_t error; 
 		size_t  length;
 		char *str = bson_as_json (document, &length);
-		
-		if(length == 0)
+		LOG_TRACE("message: ", length == 0 ? "length == 0" : "(" + std::to_string(length) + ")" + str);
+
+		if(length != 0)
 		{
-			LOG_TRACE("message length == 0");
+		    bson_error_t error;
+		    if (mongoc_collection_insert (m_collection, MONGOC_INSERT_NONE, document, nullptr, &error))
+            {
+                LOG_TRACE("message inserted.");
+            }
+            else
+            {
+                LOG_ERROR("message insert error: ", error.message);
+            }
 		}
-		
-        if (length != 0 && mongoc_collection_insert (m_collection, MONGOC_INSERT_NONE, document, nullptr, &error))
-        {
-			LOG_TRACE("message inserted: ", length);
-			LOG_TRACE("message inserted: ", str);           
-        }
-        else
-        {
-            LOG_ERROR("db insert error: ", error.message);
-        }
+
 		bson_free (str);
 		DestroyBsonVector(arraydestroy);
         bson_destroy (document);

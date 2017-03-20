@@ -4,6 +4,7 @@
 #include "cme/market/setting/channel_settings.h"
 #include "core/assist/logger.h"
 
+
 namespace fh
 {
 namespace cme
@@ -11,10 +12,14 @@ namespace cme
 namespace market
 {
 
-    Application::Application(const std::string &channel_id, const std::string &channel_setting_file, const std::string &app_setting_file)
-    : m_udp_incrementals(), m_udp_recoveries(), m_udp_definitions(),
-      m_tcp_replayer(nullptr),
-      m_saver(nullptr), m_processor(nullptr), m_definition_saver(nullptr), m_recovery_saver(nullptr)
+    Application::Application(
+            core::market::MarketListenerI *listener,
+            const std::string &channel_id,
+            const std::string &channel_setting_file, const std::string &app_setting_file)
+    : fh::core::market::MarketI(listener),
+      m_udp_incrementals(), m_udp_recoveries(), m_udp_definitions(),
+      m_tcp_replayer(nullptr), m_book_sender(nullptr),m_saver(nullptr),
+      m_processor(nullptr), m_definition_saver(nullptr), m_recovery_saver(nullptr)
     {
         Initial_application(channel_id, channel_setting_file, app_setting_file);
     }
@@ -27,6 +32,7 @@ namespace market
         std::for_each(m_udp_definitions.cbegin(), m_udp_definitions.cend(), release_udp);
         delete m_tcp_replayer;
         delete m_processor;
+        delete m_book_sender;
         delete m_saver;
         delete m_definition_saver;
         delete m_recovery_saver;
@@ -69,13 +75,15 @@ namespace market
             }
         });
 
-        m_saver = new  fh::cme::market::DatSaver(save_url.first, save_url.second);
+        m_book_sender = new fh::cme::market::BookSender(save_url.second);
+        m_saver = new  fh::cme::market::DatSaver(save_url.first, m_book_sender);
         m_processor = new  fh::cme::market::DatProcessor(*m_saver, *m_tcp_replayer);
         m_definition_saver = new  fh::cme::market::RecoverySaver(true);
         m_recovery_saver = new  fh::cme::market::RecoverySaver(false);
     }
 
-    void Application::Start()
+    // implement of MarketI
+    bool Application::Start()
     {
         LOG_INFO("Start to listen ...");
 
@@ -87,6 +95,8 @@ namespace market
                       std::bind(&Application::Start_increment_feed, this, std::placeholders::_1));
         // start message saver
         Start_save();
+
+        return true;
     }
 
     void Application::Join()
@@ -179,6 +189,36 @@ namespace market
 
         std::thread t(&DatSaver::Start_save, m_saver);
         t.detach();
+    }
+
+    // implement of MarketI
+    void Application::Initialize(std::vector<std::string> insts)
+    {
+
+    }
+
+    // implement of MarketI
+    void Application::Stop()
+    {
+
+    }
+
+    // implement of MarketI
+    void Application::Subscribe(std::vector<std::string> instruments)
+    {
+
+    }
+
+    // implement of MarketI
+    void Application::UnSubscribe(std::vector<std::string> instruments)
+    {
+
+    }
+
+    // implement of MarketI
+    void Application::ReqDefinitions(std::vector<std::string> instruments)
+    {
+
     }
 
 } // namespace market

@@ -41,8 +41,8 @@ int main(int argc, char* argv[])
 
         fh::core::assist::Logger::Set_level(fh::core::assist::Logger::Level::INFO);
         bool is_week_begin = (strcmp(argv[1], "-s") == 0);
-        fh::cme::exchange::ExchangeApplication a(is_week_begin);
-        a.Start();
+        fh::cme::exchange::ExchangeApplication a(nullptr, is_week_begin);
+        a.Start(std::vector<::pb::ems::Order>());
 
         std::cin.get();
         a.Stop();

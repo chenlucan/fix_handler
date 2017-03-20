@@ -1,7 +1,7 @@
 
 ## dependences: 
-	boost
-	sbe
+    boost
+    sbe
     zeromq
     quickfix
     mongodb
@@ -15,7 +15,7 @@
 ### 周末启动的场合（pre-opening startup）
 
 * 启动行情数据接受模块(从端口 30001，30002 接受行情数据；发送原始数据到 5557 端口，发送 book 情报到 5558 端口)：
-	> ./udp_receiver_test -s
+	> ./udp_receiver_test -s ***360***
 
 * 启动 TCP 服务器模拟模块(接受到 tcp recovery 请求后，发送行情数据到 30007 端口)
 	> ./tcp_sender_test 30007
@@ -34,7 +34,7 @@
 ### 周中启动的场合（later joiner startup）
 
 * 启动行情数据接受模块(从端口 30001-30006 接受行情数据；发送原始数据到 5557 端口，发送 book 情报到 5558 端口)：
-	> ./udp_receiver_test -j
+	> ./udp_receiver_test -j ***360***
 
 * 启动 TCP 服务器模拟模块(接受到 tcp recovery 请求后，发送行情数据到 30007 端口)
 	> ./tcp_sender_test 30007
