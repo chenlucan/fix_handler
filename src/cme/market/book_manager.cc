@@ -71,19 +71,19 @@ namespace market
                 {
                     auto changed_state_or_trade = m_book_state_controller.Modify_state(b);
                     std::uint8_t flag = changed_state_or_trade.first;   // 0: no data  changed 1: reset  2: book state  3: trade state
-                    void *data = changed_state_or_trade.second;
+                    const void *data = changed_state_or_trade.second;
                     if(flag == 1)
                     {
                         // TODO reset 后如果通知策略端
                     }
                     else if(flag == 2 && data != nullptr)
                     {
-                        this->Send(static_cast<fh::cme::market::BookState *>(data));
+                        this->Send(static_cast<const fh::cme::market::BookState *>(data));
                         LOG_INFO("send to zmq(book state): ", t.Elapsed_nanoseconds(), "ns");
                     }
                     else if(flag == 3 && data != nullptr)
                     {
-                        this->Send(static_cast<fh::cme::market::message::Book *>(data));
+                        this->Send(static_cast<const fh::cme::market::message::Book *>(data));
                         LOG_INFO("send to zmq(trade book): ", t.Elapsed_nanoseconds(), "ns");
                     }
                 }
