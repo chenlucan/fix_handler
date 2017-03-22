@@ -15,11 +15,10 @@ namespace exchange
 {
 
     ExchangeApplication::ExchangeApplication(
-            core::exchange::ExchangeListenerI* listener,
             bool is_week_begin,
             const std::string &fix_setting_file,
             const std::string &app_setting_file)
-    : core::exchange::ExchangeI(listener), m_strategy(nullptr), m_globex(nullptr)
+    : m_strategy(nullptr), m_globex(nullptr)
     {
         this->Initial_application(fix_setting_file, app_setting_file, is_week_begin);
     }
@@ -35,11 +34,10 @@ namespace exchange
         fh::cme::exchange::ExchangeSettings app_settings(app_setting_file);
         std::pair<std::string, std::string> url = app_settings.Get_strategy_url();
         m_strategy = new StrategyCommunicator(url.first, url.second);
-        m_globex = new GlobexCommunicator(fix_setting_file, app_settings, is_week_begin);
+        m_globex = new GlobexCommunicator(m_strategy, fix_setting_file, app_settings, is_week_begin);
     }
 
-    // implement of ExchangeI
-    bool ExchangeApplication::Start(std::vector<::pb::ems::Order>)
+    void ExchangeApplication::Start()
     {
         // 启动一个线程，用来从策略模块接受交易指令，并将交易结果发送回去
         LOG_DEBUG("start strategy thread");
@@ -51,14 +49,11 @@ namespace exchange
         // 启动一个线程，用来将从策略模块接受到的交易指令发送到 CME，然后将 CME 返回的交易结果返回给策略模块
         LOG_DEBUG("start globex thread");
         std::thread globex_listener([this]{
-            m_globex->Start(std::bind(&ExchangeApplication::On_from_globex, this, std::placeholders::_1, std::placeholders::_2));
+            m_globex->Start(std::vector<::pb::ems::Order>());
         });
         globex_listener.detach();
-
-        return true;
     }
 
-    // implement of ExchangeI
     void ExchangeApplication::Stop()
     {
         m_globex->Stop();
@@ -72,36 +67,6 @@ namespace exchange
         fh::core::assist::TimeMeasurer t;
         bool result = m_globex->Order_request(data, size);
         LOG_INFO("order processed:", result, ", used: ", t.Elapsed_nanoseconds(), "ns");
-    }
-
-    void ExchangeApplication::On_from_globex(char *data, size_t size)
-    {
-        // 接受到交易所返回的信息后，转发给策略模块
-        m_strategy->Send(data, size);
-    }
-
-    // implement of ExchangeI
-    void ExchangeApplication::Initialize(std::vector<::pb::dms::Contract> contracts)
-    {
-
-    }
-
-    // implement of ExchangeI
-    void ExchangeApplication::Add(const ::pb::ems::Order& order)
-    {
-
-    }
-
-    // implement of ExchangeI
-    void ExchangeApplication::Change(const ::pb::ems::Order& order)
-    {
-
-    }
-
-    // implement of ExchangeI
-    void ExchangeApplication::Delete(const ::pb::ems::Order& order)
-    {
-
     }
 
 } // namespace exchange

@@ -18,6 +18,7 @@ class MarketI {
 
   virtual void Initialize(InstrumentVec insts) = 0;
   virtual bool Start() = 0;
+  virtual bool Join() = 0;
   virtual void Stop()  = 0;
 
   virtual void Subscribe(InstrumentVec instruments)       = 0;

@@ -7,9 +7,11 @@
 #include <quickfix/SocketInitiator.h>
 #include <quickfix/SessionSettings.h>
 #include "core/global.h"
+#include "core/exchange/exchangei.h"
 #include "cme/exchange/order_manager.h"
 #include "cme/exchange/exchange_settings.h"
 #include "cme/exchange/globex_logger.h"
+#include "cme/exchange/strategy_communicator.h"
 #include "pb/ems/ems.pb.h"
 
 namespace fh
@@ -18,25 +20,39 @@ namespace cme
 {
 namespace exchange
 {
-    class GlobexCommunicator
+    class GlobexCommunicator : public core::exchange::ExchangeI
     {
         public:
             GlobexCommunicator(
+                    StrategyCommunicator *strategy,
                     const std::string &config_file,
                     const fh::cme::exchange::ExchangeSettings &app_settings,
                     bool is_week_begin);
             virtual ~GlobexCommunicator();
 
         public:
-            void Start(std::function<void(char *data, size_t size)> processor);
-            void Stop();
+            // implement of ExchangeI
+            virtual bool Start(std::vector<::pb::ems::Order>);
+            // implement of ExchangeI
+            virtual void Stop();
+
+        public:
+            // implement of ExchangeI
+            virtual void Initialize(std::vector<::pb::dms::Contract> contracts);
+            // implement of ExchangeI
+            virtual void Add(const ::pb::ems::Order& order);
+            // implement of ExchangeI
+            virtual void Change(const ::pb::ems::Order& order);
+            // implement of ExchangeI
+            virtual void Delete(const ::pb::ems::Order& order);
+
+        public:
             bool Order_request(const char *data, size_t size);
             void Order_response(const fh::cme::exchange::OrderReport& report);
 
         private:
             static fh::cme::exchange::Order Create_order(const char *data, size_t size);
             static fh::cme::exchange::MassOrder Create_mass_order(const char *data, size_t size);
-            static std::string Create_order_result(const fh::cme::exchange::OrderReport& report);
 
         private:
             static char Convert_tif(pb::ems::TimeInForce tif);
@@ -48,12 +64,12 @@ namespace exchange
             static pb::ems::OrderStatus Convert_order_status(char status);
 
         private:
+            StrategyCommunicator *m_strategy;
             OrderManager m_order_manager;
             FIX::SessionSettings m_settings;
             FIX::FileStoreFactory m_store;
             GlobexLogFactory m_logger;
             FIX::SocketInitiator m_initiator;
-            std::function<void(char *data, size_t size)> m_processor;
 
         private:
             DISALLOW_COPY_AND_ASSIGN(GlobexCommunicator);

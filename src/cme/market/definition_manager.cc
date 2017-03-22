@@ -1,5 +1,6 @@
 
 #include "cme/market/definition_manager.h"
+#include "cme/market/message/message_utility.h"
 #include "core/assist/time_measurer.h"
 #include "core/assist/logger.h"
 #include "pb/dms/dms.pb.h"
@@ -76,17 +77,16 @@ namespace market
         // 将更新的产品信息发送到策略
         pb::dms::Contract contract;
         contract.set_name(instrument.symbol);
-        contract.set_tick_size(std::to_string(instrument.minPriceIncrement));
+        contract.set_tick_size(std::to_string(fh::cme::market::message::utility::Get_price(instrument.minPriceIncrement)));
 //        contract.set_tick_value();         TODO
 //        contract.set_yesterday_close_price();      TODO
-        contract.set_upper_limit(std::to_string(instrument.highLimitPrice));
-        contract.set_lower_limit(std::to_string(instrument.lowLimitPrice));
+        contract.set_upper_limit(std::to_string(fh::cme::market::message::utility::Get_price(instrument.highLimitPrice)));
+        contract.set_lower_limit(std::to_string(fh::cme::market::message::utility::Get_price(instrument.lowLimitPrice)));
         contract.set_contract_type(pb::dms::ContractType::CT_Futures);      // 固定：期货
         // contract.set_lega(); // 暂不使用
         // contract.set_legb(); // 暂不使用
 
-        // 前面加个 O 标记是 offer 数据
-        m_sender->Send("C" + contract.SerializeAsString());
+        m_sender->OnContractDefinition(contract);
     }
 
 } // namespace market

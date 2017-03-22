@@ -15,8 +15,8 @@ public:
   virtual ~ExchangeListenerI() {};
 
 public:
-  virtual void OnOrder(::pb::ems::Order order)  = 0;
-  virtual void OnFill(::pb::ems::Fill fill)     = 0;
+  virtual void OnOrder(const ::pb::ems::Order &order)  = 0;
+  virtual void OnFill(const ::pb::ems::Fill &fill)     = 0;
   //virtual void OnPosition(fh::core::exchange::PositionVec) = 0;
 
   typedef boost::container::flat_map<std::string, std::string> ValueMap;

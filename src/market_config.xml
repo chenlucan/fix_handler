@@ -3325,7 +3325,7 @@
     <connection id="360IA">
       <type feed-type="I">Incremental</type>
       <protocol>UDP/IP</protocol>
-      <ip>192.168.1.185</ip>
+      <ip>224.0.28.123</ip>
       <host-ip>192.168.1.185</host-ip>
       <port>30001</port>
       <feed>A</feed>
@@ -3333,7 +3333,7 @@
     <connection id="360IB">
       <type feed-type="I">Incremental</type>
       <protocol>UDP/IP</protocol>
-      <ip>192.168.1.185</ip>
+      <ip>224.0.28.123</ip>
       <host-ip>192.168.1.185</host-ip>
       <port>30002</port>
       <feed>B</feed>
@@ -3341,7 +3341,7 @@
     <connection id="360NA">
       <type feed-type="N">Instrument Replay</type>
       <protocol>UDP/IP</protocol>
-      <ip>192.168.1.185</ip>
+      <ip>224.0.28.123</ip>
       <host-ip>192.168.1.185</host-ip>
       <port>30003</port>
       <feed>A</feed>
@@ -3349,7 +3349,7 @@
     <connection id="360NB">
       <type feed-type="N">Instrument Replay</type>
       <protocol>UDP/IP</protocol>
-      <ip>192.168.1.185</ip>
+      <ip>224.0.28.123</ip>
       <host-ip>192.168.1.185</host-ip>
       <port>30004</port>
       <feed>B</feed>
@@ -3357,7 +3357,7 @@
     <connection id="360SA">
       <type feed-type="S">Snapshot</type>
       <protocol>UDP/IP</protocol>
-      <ip>192.168.1.185</ip>
+      <ip>224.0.28.123</ip>
       <host-ip>192.168.1.185</host-ip>
       <port>30005</port>
       <feed>A</feed>
@@ -3365,7 +3365,7 @@
     <connection id="360SB">
       <type feed-type="S">Snapshot</type>
       <protocol>UDP/IP</protocol>
-      <ip>192.168.1.185</ip>
+      <ip>224.0.28.123</ip>
       <host-ip>192.168.1.185</host-ip>
       <port>30006</port>
       <feed>B</feed>

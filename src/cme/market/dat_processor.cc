@@ -38,7 +38,7 @@ namespace market
         if(status == std::numeric_limits<std::uint32_t>::max())
         {
             // should be discarded
-            LOG_DEBUG("****** discard tcp increment packet: seq=", packet_seq_num);
+            LOG_DEBUG("{IN}****** discard tcp increment packet: seq=", packet_seq_num);
             return;
         }
 
@@ -55,7 +55,7 @@ namespace market
         if(status == std::numeric_limits<std::uint32_t>::max())
         {
             // should be discarded
-            LOG_DEBUG("****** discard udp increment packet: seq=", packet_seq_num);
+            LOG_DEBUG("{IN}****** discard udp increment packet: seq=", packet_seq_num);
             return;
         }
 
@@ -84,7 +84,12 @@ namespace market
         std::uint32_t packet_seq_num = fh::cme::market::message::utility::Pick_messages_from_packet(buffer, data_length, mdp_messages);
         this->Save_message(packet_seq_num, mdp_messages);
 
-        LOG_INFO("received increment packet: ", t.Elapsed_nanoseconds(), "ns, seq=", packet_seq_num, ", len=", data_length);
+        std::vector<char> message_types;
+        std::for_each(mdp_messages.cbegin(), mdp_messages.cend(), [&message_types](const fh::cme::market::message::MdpMessage &m)
+                {
+                    message_types.push_back(m.message_type());
+                });
+        LOG_INFO("{IN}received increment packet: ", t.Elapsed_nanoseconds(), "ns, seq=", packet_seq_num, ", len=", data_length, ", message=", std::string(message_types.begin(), message_types.end()));
     }
 
     void DatProcessor::Start_tcp_replay(std::uint32_t begin, std::uint32_t end)

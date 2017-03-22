@@ -47,34 +47,24 @@ namespace exchange
         m_receiver.Start_receive();
     }
 
-    void StrategyCommunicator::Send(const char *message, size_t length)
+    // implement of ExchangeListenerI
+    void StrategyCommunicator::OnOrder(const ::pb::ems::Order &order)
     {
-        LOG_DEBUG("send: ", std::string(message, length));
-        m_sender.Send(message, length);
-    }
-
-    void StrategyCommunicator::Send(const std::string &message)
-    {
-        LOG_DEBUG("send: ", message);
-        m_sender.Send(message);
+        LOG_INFO("send order result:  (O)", fh::core::assist::utility::Format_pb_message(order));
+        m_sender.Send("O" + order.SerializeAsString());
     }
 
     // implement of ExchangeListenerI
-    void StrategyCommunicator::OnOrder(::pb::ems::Order order)
+    void StrategyCommunicator::OnFill(const ::pb::ems::Fill &fill)
     {
-
-    }
-
-    // implement of ExchangeListenerI
-    void StrategyCommunicator::OnFill(::pb::ems::Fill fill)
-    {
-
+        LOG_INFO("send order result:  (F)", fh::core::assist::utility::Format_pb_message(fill));
+        m_sender.Send("F" + fill.SerializeAsString());
     }
 
     // implement of ExchangeListenerI
     void StrategyCommunicator::OnExchangeReady(boost::container::flat_map<std::string, std::string>)
     {
-
+        LOG_INFO("trade server is ready");
     }
 
 

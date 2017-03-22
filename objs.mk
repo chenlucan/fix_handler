@@ -1,5 +1,8 @@
 
-$(BIN_PATH)/application.o: $(SRC_PATH)/cme/market/application.cc
+$(BIN_PATH)/market_application.o: $(SRC_PATH)/cme/market/market_application.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/market_manager.o: $(SRC_PATH)/cme/market/market_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/dat_arbitrator.o: $(SRC_PATH)/cme/market/dat_arbitrator.cc

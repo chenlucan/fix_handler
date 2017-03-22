@@ -62,7 +62,12 @@ namespace exchange
     {
         LOG_DEBUG("on logon: ", sessionID);
 
-        // 登录成功后发送请求，查询所有订单状态
+        // 登录成功后先发送状态
+        fh::cme::exchange::OrderReport result;
+        result.message_type = "";   // 用这个空的 type 标识登录成功了
+        m_processor(result);
+
+        // 然后发送请求，查询所有订单状态
         this->Mass_order_status();
     }
 

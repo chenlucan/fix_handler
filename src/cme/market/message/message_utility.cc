@@ -113,6 +113,12 @@ namespace utility
         return position - buffer;
     }
 
+    // convert price in sbe message to double
+    double Get_price(std::uint64_t price_mantissa)
+    {
+        return price_mantissa * 1e-7;
+    }
+
 } // namespace utility
 } // namespace message
 } // namespace market

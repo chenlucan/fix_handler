@@ -95,7 +95,7 @@ namespace market
                bool should_send_now = this->Convert_message(message);
                if(should_send_now)
                {
-                   this->Send_message(message->Serialize());
+                   this->Send_message(*message);
                }
 
                Remove_past_message(message);
@@ -135,34 +135,37 @@ namespace market
     {
         if(m_definition_datas == nullptr)
         {
+            LOG_INFO("no definition message.");
             return;
         }
 
         std::for_each(m_definition_datas->cbegin(), m_definition_datas->cend(),
-                [this](const fh::cme::market::message::MdpMessage &m){ this->Send_message(m.Serialize()); });
+                [this](const fh::cme::market::message::MdpMessage &m){ this->Send_message(m); });
 
-        LOG_INFO("all definition message sent: ", m_definition_datas->size());
+        LOG_INFO("{DB}all definition message sent: ", m_definition_datas->size());
     }
 
     void DatSaver::Send_recovery_messages()
     {
         if(m_recovery_datas == nullptr)
         {
+            LOG_INFO("no recovery message.");
             return;
         }
 
         std::for_each(m_recovery_datas->cbegin(), m_recovery_datas->cend(),
-                [this](const fh::cme::market::message::MdpMessage &m){ this->Send_message(m.Serialize()); });
+                [this](const fh::cme::market::message::MdpMessage &m){ this->Send_message(m); });
 
-        LOG_INFO("all recovery message sent: ", m_recovery_datas->size());
+        LOG_INFO("{DB}all recovery message sent: ", m_recovery_datas->size());
     }
 
     bool DatSaver::Convert_message(std::multiset<fh::cme::market::message::MdpMessage>::iterator message)
     {
+        LOG_INFO("{BS}process message: seq=", message->packet_seq_num(), ", type=", message->message_type());
         if(message->packet_seq_num() <= m_recovery_first_seq)
         {
             // drop the message before first recovery's message's 369-LastMsgSeqNumProcessed
-            LOG_INFO("drop message: seq=", message->packet_seq_num());
+            LOG_INFO("this message is before irst recovery's message, discard it");
             return false;
         }
 
@@ -170,24 +173,18 @@ namespace market
         m_book_manager.Parse_to_send(*message);
 
         // now send received messages to zeromq for save to db
+        LOG_INFO("{BE}processed: seq=", message->packet_seq_num());
         return true;
     }
 
-    void DatSaver::Send_message(const std::string &serialized_message)
+    void DatSaver::Send_message(const fh::cme::market::message::MdpMessage &message)
     {
         static fh::core::assist::TimeMeasurer t;
 
-        // send to zeroqueue
-        m_org_sender.Send(serialized_message);
+        // send to db
+        m_org_sender.Send(message.Serialize());
 
-        //        8 bytes : m_received_time
-        //        2 bytes : m_packet_length
-        //        4 bytes : m_packet_seq_num
-        //        8 bytes : m_packet_sending_time
-        //        2 bytes : m_message_length
-        std::uint32_t packet_seq_num = *(std::uint32_t *)(serialized_message.data() + 8 + 2);
-        std::uint16_t message_length = *(std::uint16_t *)(serialized_message.data() + 8 + 2 + 4 + 8);
-        LOG_INFO("sent to zmq(original data): ", t.Elapsed_nanoseconds(), "ns, send size=", serialized_message.size(), " seq=", packet_seq_num, " message size=", message_length);
+        LOG_INFO("{DB}sent to zmq(original data): ", t.Elapsed_nanoseconds(), "ns, length=", message.message_length(), " seq=", message.packet_seq_num(), " type=", message.message_type());
     }
 
     void DatSaver::Remove_past_message(std::multiset<fh::cme::market::message::MdpMessage>::iterator message)

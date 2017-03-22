@@ -12,11 +12,12 @@ namespace exchange
 {
 
     GlobexCommunicator::GlobexCommunicator(
+            StrategyCommunicator *strategy,
             const std::string &config_file,
             const fh::cme::exchange::ExchangeSettings &app_settings,
             bool is_week_begin)
-    : m_order_manager(app_settings, is_week_begin), m_settings(config_file), m_store(m_settings),
-      m_logger(m_settings), m_initiator(m_order_manager, m_store, m_settings, m_logger)
+    : core::exchange::ExchangeI(strategy), m_strategy(strategy), m_order_manager(app_settings, is_week_begin),
+      m_settings(config_file), m_store(m_settings), m_logger(m_settings), m_initiator(m_order_manager, m_store, m_settings, m_logger)
     {
         m_order_manager.setCallback(std::bind(&GlobexCommunicator::Order_response, this, std::placeholders::_1));
     }
@@ -26,12 +27,14 @@ namespace exchange
         // noop
     }
 
-    void GlobexCommunicator::Start(std::function<void(char *data, size_t size)> processor)
+    // implement of ExchangeI
+    bool GlobexCommunicator::Start(std::vector<::pb::ems::Order>)
     {
-        m_processor = processor;
         m_initiator.start();
+        return true;
     }
 
+    // implement of ExchangeI
     void GlobexCommunicator::Stop()
     {
         // TODO 在下面这个方法中，quickfix 中做了 logout 处理
@@ -39,6 +42,30 @@ namespace exchange
         // 如果此时服务器端有 resend request 请求，那么能不能在 10s 内完成？
         // 如果不能保证，则需要重写这个 stop 方法，以达到在确认收到 logout 回应时才断开连接
         m_initiator.stop();
+    }
+
+    // implement of ExchangeI
+    void GlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contracts)
+    {
+        // noop
+    }
+
+    // implement of ExchangeI
+    void GlobexCommunicator::Add(const ::pb::ems::Order& order)
+    {
+
+    }
+
+    // implement of ExchangeI
+    void GlobexCommunicator::Change(const ::pb::ems::Order& order)
+    {
+
+    }
+
+    // implement of ExchangeI
+    void GlobexCommunicator::Delete(const ::pb::ems::Order& order)
+    {
+
     }
 
     bool GlobexCommunicator::Order_request(const char *data, size_t size)
@@ -144,26 +171,21 @@ namespace exchange
 
     void GlobexCommunicator::Order_response(const fh::cme::exchange::OrderReport& report)
     {
-        std::string message_str = GlobexCommunicator::Create_order_result(report);
-        if(!message_str.empty())
+        if(report.message_type == "")
         {
-            m_processor(const_cast<char *>(message_str.data()), message_str.length());
+            // 登录成功，说明可以开始交易了
+            m_strategy->OnExchangeReady(boost::container::flat_map<std::string, std::string>());
         }
-    }
-
-    // 将接受到的 fix 消息变成 protobuf 的消息（第一个字节放消息类型）
-    std::string GlobexCommunicator::Create_order_result(const fh::cme::exchange::OrderReport& report)
-    {
-        if(report.message_type == "BZ")
+        else if(report.message_type == "BZ")
         {
             // Order Mass Action Report
-            return "";      // TODO 目前 protobuf 中还没有定义
+            return;      // TODO 目前 protobuf 中还没有定义
         }
         else if(report.message_type == "8" && report.single_report.order_status == 'H')
         {
             // Execution Report - Trade Cancel
             // 这个不用发送回去
-            return "";
+            return;
         }
         else if(report.message_type == "8" && (report.single_report.order_status == '1' || report.single_report.order_status == '2'))
         {
@@ -179,9 +201,7 @@ namespace exchange
             fill.set_buy_sell(GlobexCommunicator::Convert_buy_sell(report.single_report.side));
             fh::core::assist::utility::To_pb_time(fill.mutable_fill_time(), report.single_report.transact_time);
 
-            LOG_INFO("send order result:  (F)", fh::core::assist::utility::Format_pb_message(fill));
-
-            return "F" + fill.SerializeAsString();
+            m_strategy->OnFill(fill);
         }
         else
         {
@@ -203,9 +223,7 @@ namespace exchange
             order.set_message(report.single_report.text);
             fh::core::assist::utility::To_pb_time(order.mutable_submit_time(), report.single_report.transact_time);
 
-            LOG_INFO("send order result:  (O)", fh::core::assist::utility::Format_pb_message(order));
-
-            return "O" + order.SerializeAsString();
+            m_strategy->OnOrder(order);
         }
     }
 

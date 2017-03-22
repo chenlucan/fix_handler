@@ -307,7 +307,7 @@ namespace utility
     {
         std::ostringstream oss;
 
-        oss << "[price=" << std::setprecision (std::numeric_limits<double>::digits10) << dp.price() << ", ";
+        oss << "[price=" << std::to_string(dp.price()) << ", ";
         oss << "size=" << dp.size() << "]";
 
         return oss.str();

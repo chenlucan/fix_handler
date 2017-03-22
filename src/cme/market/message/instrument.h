@@ -30,7 +30,7 @@ namespace message
         std::string To_string() const
         {
             std::ostringstream os;
-            os << "instrument: ";
+            os << "instrument={";
             os << "packet_seq_num=" << packet_seq_num << " ";
             os << "template_id=" << template_id << " ";
             os << "securityID=" << securityID << " ";
@@ -40,7 +40,7 @@ namespace message
             os << "highLimitPrice=" << highLimitPrice << " ";
             os << "lowLimitPrice=" << lowLimitPrice << " ";
             os << "depthGBX=" << (int)depthGBX << " ";
-            os << "depthGBI=" << (int)depthGBI << " ";
+            os << "depthGBI=" << (int)depthGBI << "}";
 
             return os.str();
         }

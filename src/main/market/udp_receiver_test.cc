@@ -6,7 +6,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "cme/market/application.h"
+#include "cme/market/market_application.h"
 #include "core/assist/logger.h"
 
 void handler(int sig) 
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
         }
 
         fh::core::assist::Logger::Set_level(fh::core::assist::Logger::Level::TRACE);
-        fh::cme::market::Application a(nullptr, argv[2]);
+        fh::cme::market::MarketApplication a(argv[2]);
 
         if(strcmp(argv[1], "-s") == 0)
         {
@@ -50,6 +50,8 @@ int main(int argc, char* argv[])
         }
 
         std::cin.get();
+
+        a.Stop();
     }
     catch (std::exception& e)
     {

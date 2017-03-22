@@ -35,16 +35,16 @@ namespace market
             void Set_recovery_data(std::vector<fh::cme::market::message::MdpMessage> *recovery_datas);
 
         private:
-            // send definition messages
+            // send definition messages to db
             void Send_definition_messages();
-            // send recovery messages
+            // send recovery messages to db
             void Send_recovery_messages();
             // pick first message to serialize and remove it from memory
             std::multiset<fh::cme::market::message::MdpMessage>::iterator Pick_next_message();
-            // merge recovery message to increment message
+            // 如果有必要的话对指定 message 进行变换（结合 recovery message）；同时提取 book 信息，整理成 book state 发送出去
             bool Convert_message(std::multiset<fh::cme::market::message::MdpMessage>::iterator message);
-            // send increment messages
-            void Send_message(const std::string &serialized_message);
+            // send increment messages to db
+            void Send_message(const fh::cme::market::message::MdpMessage &message);
             // remove increment message after sent
             void Remove_past_message(std::multiset<fh::cme::market::message::MdpMessage>::iterator message);
 

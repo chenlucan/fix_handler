@@ -1,5 +1,6 @@
 
 #include "cme/market/book_manager.h"
+#include "cme/market/message/message_utility.h"
 #include "core/assist/time_measurer.h"
 #include "core/assist/logger.h"
 #include "pb/dms/dms.pb.h"
@@ -44,7 +45,7 @@ namespace market
         std::vector<fh::cme::market::message::Book> increment_books = this->Parse_increment(message);
         if(increment_books.empty())
         {
-            LOG_INFO("no book in message.");
+            LOG_INFO("parsed. no book info in message.");
             return;
         }
 
@@ -97,18 +98,16 @@ namespace market
         l2_info.set_contract(state->symbol);
         std::for_each(state->bid.cbegin(), state->bid.cend(), [&l2_info](const BookPrice &p){
             pb::dms::DataPoint *bid = l2_info.add_bid();
-            bid->set_price(p.mDEntryPx);        // TODO 要加上小数点偏移
+            bid->set_price(fh::cme::market::message::utility::Get_price(p.mDEntryPx));
             bid->set_size(p.mDEntrySize);
         });
         std::for_each(state->ask.cbegin(), state->ask.cend(), [&l2_info](const BookPrice &p){
             pb::dms::DataPoint *ask = l2_info.add_offer();
-            ask->set_price(p.mDEntryPx);
+            ask->set_price(fh::cme::market::message::utility::Get_price(p.mDEntryPx));
             ask->set_size(p.mDEntrySize);
         });
 
-        // 前面加个 L 标记是 L2 数据
-        LOG_INFO("send L2: ", fh::core::assist::utility::Format_pb_message(l2_info));
-        m_book_sender->Send("L" + l2_info.SerializeAsString());
+        m_book_sender->OnL2(l2_info);
 
         // 发送最优价位
         bool is_bid_empty = state->bid.empty();
@@ -123,15 +122,13 @@ namespace market
             pb::dms::BBO bbo_info;
             bbo_info.set_contract(state->symbol);
             pb::dms::DataPoint *bid = bbo_info.mutable_bid();
-            bid->set_price(state->bid.front().mDEntryPx);
+            bid->set_price(fh::cme::market::message::utility::Get_price(state->bid.front().mDEntryPx));
             bid->set_size(state->bid.front().mDEntrySize);
             pb::dms::DataPoint *ask = bbo_info.mutable_offer();
-            ask->set_price(state->ask.front().mDEntryPx);
+            ask->set_price(fh::cme::market::message::utility::Get_price(state->ask.front().mDEntryPx));
             ask->set_size(state->ask.front().mDEntrySize);
 
-            // 前面加个 B 标记是 BBO 数据
-            LOG_INFO("send BBO: ", fh::core::assist::utility::Format_pb_message(bbo_info));
-            m_book_sender->Send("B" + bbo_info.SerializeAsString());
+            m_book_sender->OnBBO(bbo_info);
         }
         else if(is_bid_empty)
         {
@@ -139,12 +136,10 @@ namespace market
             pb::dms::Offer offer_info;
             offer_info.set_contract(state->symbol);
             pb::dms::DataPoint *offer = offer_info.mutable_offer();
-            offer->set_price(state->ask.front().mDEntryPx);
+            offer->set_price(fh::cme::market::message::utility::Get_price(state->ask.front().mDEntryPx));
             offer->set_size(state->ask.front().mDEntrySize);
 
-            // 前面加个 O 标记是 offer 数据
-            LOG_INFO("send Offer: ", fh::core::assist::utility::Format_pb_message(offer_info));
-            m_book_sender->Send("O" + offer_info.SerializeAsString());
+            m_book_sender->OnOffer(offer_info);
         }
         else
         {
@@ -152,12 +147,10 @@ namespace market
             pb::dms::Bid bid_info;
             bid_info.set_contract(state->symbol);
             pb::dms::DataPoint *bid = bid_info.mutable_bid();
-            bid->set_price(state->bid.front().mDEntryPx);
+            bid->set_price(fh::cme::market::message::utility::Get_price(state->bid.front().mDEntryPx));
             bid->set_size(state->bid.front().mDEntrySize);
 
-            // 前面加个 D 标记是 bid 数据
-            LOG_INFO("send Bid: ", fh::core::assist::utility::Format_pb_message(bid_info));
-            m_book_sender->Send("D" + bid_info.SerializeAsString());
+            m_book_sender->OnBid(bid_info);
         }
     }
 
@@ -167,12 +160,10 @@ namespace market
         pb::dms::Trade trade;
         trade.set_contract(m_definition_manager.Get_symbol(trade_book->securityID));
         pb::dms::DataPoint *last = trade.mutable_last();
-        last->set_price(trade_book->mDEntryPx);
+        last->set_price(fh::cme::market::message::utility::Get_price(trade_book->mDEntryPx));
         last->set_size(trade_book->mDEntrySize);
 
-        // 前面加个 T 标记是 trade 数据
-        LOG_INFO("send Trade: ", fh::core::assist::utility::Format_pb_message(trade));
-        m_book_sender->Send("T" + trade.SerializeAsString());
+        m_book_sender->OnTrade(trade);
     }
 
     void BookManager::Parse_definition(const std::vector<fh::cme::market::message::MdpMessage> &messages)
@@ -229,6 +220,12 @@ namespace market
 
     void BookManager::Merge_with_recovery(std::uint32_t message_seq, std::vector<fh::cme::market::message::Book> &increment_books)
     {
+        if(m_recovery_books.empty())
+        {
+            // 没有 recovery 数据，直接返回
+            return;
+        }
+
         std::vector<fh::cme::market::message::Book> merged_books;
         auto old_pos = m_recovery_wait_merge;
 

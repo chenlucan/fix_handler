@@ -1,9 +1,11 @@
 
-#ifndef __FH_CME_MARKET_APPLICATION_H__
-#define __FH_CME_MARKET_APPLICATION_H__
+#ifndef __FH_CME_MARKET_MANAGER_H__
+#define __FH_CME_MARKET_MANAGER_H__
 
 #include "core/global.h"
 #include "core/udp/udp_receiver.h"
+#include "cme/market/setting/market_settings.h"
+#include "cme/market/setting/channel_settings.h"
 #include "cme/market/dat_replayer.h"
 #include "cme/market/dat_processor.h"
 #include "cme/market/dat_saver.h"
@@ -18,22 +20,20 @@ namespace cme
 namespace market
 {
 
-    class Application : public fh::core::market::MarketI
+    class MarketManager : public fh::core::market::MarketI
     {
         public:
-            explicit Application(
-                    core::market::MarketListenerI *listener,
-                    const std::string &channel_id,
-                    const std::string &channel_setting_file = "market_config.xml",
-                    const std::string &app_setting_file = "market_settings.ini");
-            virtual ~Application();
+            MarketManager(
+                    fh::cme::market::BookSender *listener,
+                    const fh::cme::market::setting::Channel &channel,
+                    const fh::cme::market::setting::MarketSettings &settings);
+            virtual ~MarketManager();
 
         public:
             // implement of MarketI
             virtual bool Start();
-            void Join();
-
-        public:
+            // implement of MarketI
+            virtual bool Join();
             // implement of MarketI
             virtual void Initialize(std::vector<std::string> insts);
             // implement of MarketI
@@ -46,7 +46,10 @@ namespace market
             virtual void ReqDefinitions(std::vector<std::string> instruments);
 
         private:
-            void Initial_application(const std::string &channel_id, const std::string &channel_setting_file, const std::string &app_setting_file);
+            void Initial_application(
+                    fh::cme::market::BookSender *listener,
+                    const fh::cme::market::setting::Channel &channel,
+                    const fh::cme::market::setting::MarketSettings &settings);
             void Start_increment_feed(fh::core::udp::UDPReceiver *udp);
             void Start_definition_feed(fh::core::udp::UDPReceiver *udp);
             void Start_recovery_feed(fh::core::udp::UDPReceiver *udp);
@@ -61,17 +64,16 @@ namespace market
             std::vector<fh::core::udp::UDPReceiver *> m_udp_recoveries;
             std::vector<fh::core::udp::UDPReceiver *> m_udp_definitions;
             fh::cme::market::DatReplayer *m_tcp_replayer;
-            fh::cme::market::BookSender *m_book_sender;
             fh::cme::market::DatSaver *m_saver;
             fh::cme::market::DatProcessor *m_processor;
             fh::cme::market::RecoverySaver *m_definition_saver;
             fh::cme::market::RecoverySaver *m_recovery_saver;
 
         private:
-            DISALLOW_COPY_AND_ASSIGN(Application);
+            DISALLOW_COPY_AND_ASSIGN(MarketManager);
     };   
 } // namespace market
 } // namespace cme
 } // namespace fh
 
-#endif // __FH_CME_MARKET_APPLICATION_H__
+#endif // __FH_CME_MARKET_MANAGER_H__

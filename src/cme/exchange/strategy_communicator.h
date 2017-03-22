@@ -30,7 +30,7 @@ namespace exchange
             DISALLOW_COPY_AND_ASSIGN(StrategyReceiver);
     };
 
-    class StrategyCommunicator : core::exchange::ExchangeListenerI
+    class StrategyCommunicator : public core::exchange::ExchangeListenerI
     {
         public:
             StrategyCommunicator(const std::string &send_url, const std::string &receive_url);
@@ -38,14 +38,12 @@ namespace exchange
 
         public:
             void Start_receive(std::function<void(char *, const size_t)> processor);
-            void Send(const char *message, size_t length);
-            void Send(const std::string &message);
 
         public:
             // implement of ExchangeListenerI
-            virtual void OnOrder(::pb::ems::Order order);
+            virtual void OnOrder(const ::pb::ems::Order &order);
             // implement of ExchangeListenerI
-            virtual void OnFill(::pb::ems::Fill fill);
+            virtual void OnFill(const ::pb::ems::Fill &fill);
             // implement of ExchangeListenerI
             virtual void OnExchangeReady(boost::container::flat_map<std::string, std::string>);
 

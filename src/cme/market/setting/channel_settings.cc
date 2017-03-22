@@ -100,7 +100,7 @@ namespace setting
             auto type = c.second.get_child("type").get<std::string>("<xmlattr>.feed-type");  
             auto type_des = c.second.get<std::string>("type");  
             auto protocol = c.second.get<std::string>("protocol");  
-            auto ip = c.second.get<std::string>("ip", "127.0.0.1");
+            auto ip = c.second.get<std::string>("ip", "0.0.0.0");
             auto host_ip = c.second.get<std::string>("host-ip");  
             auto port = c.second.get<std::uint16_t>("port");  
             auto feed = c.second.get<std::string>("feed");
@@ -110,7 +110,7 @@ namespace setting
                 ChannelSettings::Convert(type, ChannelSettings::FEED_TYPES),
                 type_des,
                 ChannelSettings::Convert(protocol, ChannelSettings::PROTOCOLS),
-                boost::asio::ip::address::from_string(ip == "" ? "127.0.0.1" : ip),
+                boost::asio::ip::address::from_string(ip == "" ? "0.0.0.0" : ip),
                 boost::asio::ip::address::from_string(host_ip),
                 port,
                 ChannelSettings::Convert(feed, ChannelSettings::FEEDS),

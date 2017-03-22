@@ -30,7 +30,7 @@ namespace zmq
         memcpy((char *)zmsg.data(), &now, sizeof(now));
         memcpy((char *)zmsg.data() + sizeof(now), message, length);
 
-        bool isSuccess = m_sender.send(zmsg);
+        bool isSuccess = m_sender.send(zmsg, ZMQ_NOBLOCK);
 
         LOG_DEBUG("message sent ", (isSuccess ? "success" : "failure"), ", id=", now);
     }

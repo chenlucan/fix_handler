@@ -33,6 +33,8 @@ namespace utility
     // make a mdp packet for test
     std::size_t Make_packet(char *buffer, std::uint32_t packet_seq_num, std::uint32_t *ids, size_t len);
 
+    // convert price in sbe message to double
+    double Get_price(std::uint64_t price_mantissa);
 } // namespace utility
 } // namespace message
 } // namespace market
