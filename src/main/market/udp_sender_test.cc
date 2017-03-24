@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
             sock.send_to(boost::asio::buffer(buf, len), send_ep);
 
             LOG_INFO("sent : seq=", seq, " len=", len);
-            LOG_DEBUG("    msg=", fh::core::assist::utility::Hex_str(buf, len));
+            LOG_DEBUG("msg=", fh::core::assist::utility::Hex_str(buf, len));
 
             std::this_thread::sleep_for(std::chrono::milliseconds(send_interval_ms));
         }

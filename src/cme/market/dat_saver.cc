@@ -173,7 +173,7 @@ namespace market
         m_book_manager.Parse_to_send(*message);
 
         // now send received messages to zeromq for save to db
-        LOG_INFO("{BE}processed: seq=", message->packet_seq_num());
+        LOG_INFO("{BE}processed: seq=", message->packet_seq_num(), ", type=", message->message_type());
         return true;
     }
 

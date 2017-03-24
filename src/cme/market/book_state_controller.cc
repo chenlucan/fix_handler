@@ -237,7 +237,7 @@ namespace market
 
     bool BookStateController::Delete_all_price(const fh::cme::market::message::Book &b, BookState &book_state)
     {
-        LOG_INFO("delete all price: securityID= ", b.securityID, ", type=", (char)b.mDEntryType);
+        LOG_INFO("delete all price: securityID=", b.securityID, ", type=", (char)b.mDEntryType);
 
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
         target.clear();
@@ -248,7 +248,7 @@ namespace market
 
     bool BookStateController::Delete_top_price(const fh::cme::market::message::Book &b, BookState &book_state)
     {
-        LOG_INFO("delete top price: level=", (int)b.mDPriceLevel, "securityID=", b.securityID, ", type=", (char)b.mDEntryType);
+        LOG_INFO("delete top price: level=", (int)b.mDPriceLevel, ", securityID=", b.securityID, ", type=", (char)b.mDEntryType);
 
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
         target.erase(target.begin(), target.begin() + std::min((std::size_t)b.mDPriceLevel, target.size()));

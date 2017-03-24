@@ -82,7 +82,7 @@ namespace utility
         std::memcpy(position, &message_size, 2);
         std::memcpy(position + 2, encoded.first, message_size);
 
-        LOG_DEBUG("message: size=", message_size, " msg=", fh::core::assist::utility::Hex_str(encoded.first, message_size));
+        LOG_DEBUG("make message: size=", message_size, " msg=", fh::core::assist::utility::Hex_str(encoded.first, message_size));
 
         return message_size + 2;
     }
@@ -109,7 +109,7 @@ namespace utility
             position = position + message_total_size;
         }
 
-        LOG_DEBUG("packet: seq=", packet_seq_num, " time=", time, " num=", message_num, " size=", position - buffer);
+        LOG_DEBUG("make packet: seq=", packet_seq_num, " time=", time, " num=", message_num, " size=", position - buffer);
         return position - buffer;
     }
 

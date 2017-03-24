@@ -39,7 +39,6 @@ namespace market
             std::vector<fh::cme::market::message::Book> Parse_increment(const fh::cme::market::message::MdpMessage &message);
             void Merge_with_recovery(std::uint32_t message_seq, std::vector<fh::cme::market::message::Book> &increment_books);
             void On_definition_changed(const fh::cme::market::message::Instrument &instrument);
-            static void Move_append(std::vector<fh::cme::market::message::Book>& src, std::vector<fh::cme::market::message::Book>& dst);
             void Send(const fh::cme::market::BookState *state);
             void Send(const fh::cme::market::message::Book *trade_book);
 

@@ -37,7 +37,7 @@ namespace message
             char message_type() const;
             std::uint32_t last_msg_seq_num_processed() const;
 
-        private:
+        public:
             // message type index with template id
             static const char *MDP_MESSAGE_TYPES;
 

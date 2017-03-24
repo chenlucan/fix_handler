@@ -177,12 +177,13 @@ namespace market
 
     void BookManager::Parse_recovery(const std::vector<fh::cme::market::message::MdpMessage> &messages)
     {
-        // parse revocery data, 35=W
+        // parse recovery data, 35=W
         std::for_each(messages.cbegin(), messages.cend(),
                 [this](const fh::cme::market::message::MdpMessage &message){
                     std::vector<fh::cme::market::message::Book> books;
                     m_parser_w.Parse(message, books);
-                    BookManager::Move_append(books, m_recovery_books);
+                    m_recovery_books.insert(m_recovery_books.end(),
+                            std::make_move_iterator(books.begin()), std::make_move_iterator(books.end()));
                 }
         );
 
@@ -220,21 +221,21 @@ namespace market
 
     void BookManager::Merge_with_recovery(std::uint32_t message_seq, std::vector<fh::cme::market::message::Book> &increment_books)
     {
-        if(m_recovery_books.empty())
+        if(m_recovery_wait_merge == m_recovery_books.cend())
         {
-            // 没有 recovery 数据，直接返回
+            // 没有 recovery 数据或者都处理完了，直接返回
             return;
         }
 
-        std::vector<fh::cme::market::message::Book> merged_books;
+        std::vector<fh::cme::market::message::Book> recovery_books;
         auto old_pos = m_recovery_wait_merge;
 
         // 首先将 recovery books 中 LastMsgSeqNumProcessed 在该 message_seq 之前（包括）的 books 保存下来
         while(m_recovery_wait_merge != m_recovery_books.cend() && m_recovery_wait_merge->packet_seq_num <= message_seq)
         {
-            merged_books.push_back(std::ref(*m_recovery_wait_merge));
             ++m_recovery_wait_merge;
         }
+        recovery_books.insert(recovery_books.end(), old_pos, m_recovery_wait_merge);
 
         // 看看 increment_books 中有没有 SecurityID 在 recovery books 的 [之前保存下的位置，末尾] 中存在
         for(auto pos = old_pos; pos != m_recovery_books.cend(); ++pos)
@@ -250,30 +251,15 @@ namespace market
             }
         }
 
-        // 剩下的 increment books 是需要保存的
-        BookManager::Move_append(increment_books, merged_books);
-        increment_books = std::move(merged_books);
+        // 然后将 recovery_books 插入到 剩下的 increment books 的前面，返回出去
+        increment_books.insert(increment_books.begin(),
+                std::make_move_iterator(recovery_books.begin()), std::make_move_iterator(recovery_books.end()));
     }
 
     void BookManager::On_definition_changed(const fh::cme::market::message::Instrument &instrument)
     {
         // 根据更新的产品信息修正对应的 book state 情报
         m_book_state_controller.Create_or_shrink(instrument);
-    }
-
-    // move vector contents to another vector
-    void BookManager::Move_append(std::vector<fh::cme::market::message::Book>& src, std::vector<fh::cme::market::message::Book>& dst)
-    {
-        if (dst.empty())
-        {
-            dst = std::move(src);
-        }
-        else
-        {
-            dst.reserve(dst.size() + src.size());
-            std::move(std::begin(src), std::end(src), std::back_inserter(dst));
-            src.clear();
-        }
     }
 
 } // namespace market
