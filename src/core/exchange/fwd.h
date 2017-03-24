@@ -3,7 +3,9 @@
 
 #include <memory>
 
-#include "build/pb/ems/ems.pb.h"
+#include <vector>
+#include "pb/ems/ems.pb.h"
+#include "pb/dms/dms.pb.h"
 
 namespace fh {
 namespace core {

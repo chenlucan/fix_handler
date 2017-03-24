@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "build/pb/ems/ems.pb.h"
+#include "pb/ems/ems.pb.h"
 
 #include "core/exchange/fwd.h"
 
@@ -18,7 +18,7 @@ public:
 
 public:
   // blocking call
-  virtual void Initialize(core::pb::ContractVec contracts) = 0;
+  virtual void Initialize(fh::core::exchange::ContractVec contracts) = 0;
   // to verify these orders status with exchange
   virtual bool Start(PbOrderVec)  = 0;
   virtual void Stop()             = 0;

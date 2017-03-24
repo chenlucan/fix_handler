@@ -1,0 +1,5709 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration environment="New Release Certification" updated="2017/03/20-00:17:02">
+  <channel id="601" label="AutoCert Interest Rate Options">
+    <products>
+      <product code="1GE">
+        <group code="98"/>
+      </product>
+      <product code="1GE">
+        <group code="92"/>
+      </product>
+      <product code="1GE0">
+        <group code="98"/>
+      </product>
+      <product code="1GE0">
+        <group code="92"/>
+      </product>
+      <product code="2GE">
+        <group code="92"/>
+      </product>
+      <product code="2GE0">
+        <group code="92"/>
+      </product>
+      <product code="3GE">
+        <group code="92"/>
+      </product>
+      <product code="3GE0">
+        <group code="92"/>
+      </product>
+      <product code="4GE">
+        <group code="92"/>
+      </product>
+      <product code="4GE0">
+        <group code="92"/>
+      </product>
+      <product code="5GE">
+        <group code="92"/>
+      </product>
+      <product code="5GE0">
+        <group code="92"/>
+      </product>
+      <product code="6GE">
+        <group code="92"/>
+      </product>
+      <product code="6GE0">
+        <group code="92"/>
+      </product>
+      <product code="7GE">
+        <group code="92"/>
+      </product>
+      <product code="7GE0">
+        <group code="92"/>
+      </product>
+      <product code="8GE">
+        <group code="92"/>
+      </product>
+      <product code="8GE0">
+        <group code="92"/>
+      </product>
+      <product code="9GE">
+        <group code="92"/>
+      </product>
+      <product code="9GE0">
+        <group code="92"/>
+      </product>
+      <product code="AGE">
+        <group code="92"/>
+      </product>
+      <product code="AGE0">
+        <group code="92"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="601IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11601</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="601IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11701</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="601NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16601</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="601SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>11935</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="601SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20601</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="602" label="AutoCert Commodity Options">
+    <products/>
+   <connections>
+    <connection id="602IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11602</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="602IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11702</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="602NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16602</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="602SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19602</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="602SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20602</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="603" label="AutoCert Interest Rate Options">
+    <products/>
+   <connections>
+    <connection id="603IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11603</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="603IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11703</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="603NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16603</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="603SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19603</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="603SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20603</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="604" label="AutoCert Commodity Options">
+    <products>
+      <product code="0OEH">
+        <group code="$Y"/>
+      </product>
+      <product code="0OEH">
+        <group code="Y$"/>
+      </product>
+      <product code="1OEH">
+        <group code="Y$"/>
+      </product>
+      <product code="1OEH">
+        <group code="$Y"/>
+      </product>
+      <product code="2OEH">
+        <group code="Y$"/>
+      </product>
+      <product code="3OEH">
+        <group code="Y$"/>
+      </product>
+      <product code="4OEH">
+        <group code="Y$"/>
+      </product>
+      <product code="5OEH">
+        <group code="Y$"/>
+      </product>
+      <product code="6OEH">
+        <group code="Y$"/>
+      </product>
+      <product code="7OEH">
+        <group code="Y$"/>
+      </product>
+      <product code="8OEH">
+        <group code="Y$"/>
+      </product>
+      <product code="9OEH">
+        <group code="Y$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="604IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11604</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="604IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11704</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="604NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16604</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="604SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19604</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="604SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20604</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="605" label="AutoCert Interest Rate Options">
+    <products/>
+   <connections>
+    <connection id="605IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11605</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="605IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11705</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="605NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16605</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="605SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19605</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="605SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20605</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="606" label="AutoCert Energy Options">
+    <products>
+      <product code="1ES">
+        <group code="$H"/>
+      </product>
+      <product code="1ES">
+        <group code="H$"/>
+      </product>
+      <product code="2ES">
+        <group code="H$"/>
+      </product>
+      <product code="2ES">
+        <group code="$H"/>
+      </product>
+      <product code="3ES">
+        <group code="H$"/>
+      </product>
+      <product code="4ES">
+        <group code="H$"/>
+      </product>
+      <product code="5ES">
+        <group code="H$"/>
+      </product>
+      <product code="6ES">
+        <group code="H$"/>
+      </product>
+      <product code="7ES">
+        <group code="H$"/>
+      </product>
+      <product code="8ES">
+        <group code="H$"/>
+      </product>
+      <product code="9ES">
+        <group code="H$"/>
+      </product>
+      <product code="AES">
+        <group code="H$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="606IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11606</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="606IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11706</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="606NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16606</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="606SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19610</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="606SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20606</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="607" label="AutoCert Interest Rate Options">
+    <products>
+      <product code="0EMD">
+        <group code="8$"/>
+      </product>
+      <product code="0EMD">
+        <group code="$8"/>
+      </product>
+      <product code="1EMD">
+        <group code="8$"/>
+      </product>
+      <product code="1EMD">
+        <group code="$8"/>
+      </product>
+      <product code="2EMD">
+        <group code="8$"/>
+      </product>
+      <product code="3EMD">
+        <group code="8$"/>
+      </product>
+      <product code="4EMD">
+        <group code="8$"/>
+      </product>
+      <product code="5EMD">
+        <group code="8$"/>
+      </product>
+      <product code="6EMD">
+        <group code="8$"/>
+      </product>
+      <product code="7EMD">
+        <group code="8$"/>
+      </product>
+      <product code="8EMD">
+        <group code="8$"/>
+      </product>
+      <product code="9EMD">
+        <group code="8$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="607IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11607</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="607IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11707</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="607NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16607</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="607SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19607</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="607SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20607</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="608" label="AutoCert Energy Options">
+    <products>
+      <product code="0OYM">
+        <group code="7$"/>
+      </product>
+      <product code="0OYM">
+        <group code="$7"/>
+      </product>
+      <product code="1OYM">
+        <group code="7$"/>
+      </product>
+      <product code="2OYM">
+        <group code="7$"/>
+      </product>
+      <product code="3OYM">
+        <group code="7$"/>
+      </product>
+      <product code="4OYM">
+        <group code="7$"/>
+      </product>
+      <product code="5OYM">
+        <group code="7$"/>
+      </product>
+      <product code="6OYM">
+        <group code="7$"/>
+      </product>
+      <product code="7OYM">
+        <group code="7$"/>
+      </product>
+      <product code="8OYM">
+        <group code="7$"/>
+      </product>
+      <product code="9OYM">
+        <group code="7$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="608IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11608</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="608IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11708</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="608NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16608</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="608SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19612</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="608SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20608</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="609" label="AutoCert Equity Options">
+    <products>
+      <product code="0NQ">
+        <group code="99"/>
+      </product>
+      <product code="0NQ">
+        <group code="96"/>
+      </product>
+      <product code="1ES">
+        <group code="96"/>
+      </product>
+      <product code="1ES">
+        <group code="99"/>
+      </product>
+      <product code="1NQ">
+        <group code="96"/>
+      </product>
+      <product code="2ES">
+        <group code="96"/>
+      </product>
+      <product code="2NQ">
+        <group code="96"/>
+      </product>
+      <product code="3ES">
+        <group code="96"/>
+      </product>
+      <product code="3NQ">
+        <group code="96"/>
+      </product>
+      <product code="4ES">
+        <group code="96"/>
+      </product>
+      <product code="4NQ">
+        <group code="96"/>
+      </product>
+      <product code="5ES">
+        <group code="96"/>
+      </product>
+      <product code="5NQ">
+        <group code="96"/>
+      </product>
+      <product code="6ES">
+        <group code="96"/>
+      </product>
+      <product code="6NQ">
+        <group code="96"/>
+      </product>
+      <product code="7ES">
+        <group code="96"/>
+      </product>
+      <product code="7NQ">
+        <group code="96"/>
+      </product>
+      <product code="8ES">
+        <group code="96"/>
+      </product>
+      <product code="8NQ">
+        <group code="96"/>
+      </product>
+      <product code="9ES">
+        <group code="96"/>
+      </product>
+      <product code="9NQ">
+        <group code="96"/>
+      </product>
+      <product code="AES">
+        <group code="96"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="609IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11609</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="609IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11709</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="609NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16609</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="609SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19609</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="609SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20609</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="610" label="AutoCert Energy Options">
+    <products>
+      <product code="0AAO">
+        <group code="D$"/>
+      </product>
+      <product code="0AAO">
+        <group code="C$"/>
+      </product>
+      <product code="1AAO">
+        <group code="C$"/>
+      </product>
+      <product code="2AAO">
+        <group code="C$"/>
+      </product>
+      <product code="3AAO">
+        <group code="C$"/>
+      </product>
+      <product code="4AAO">
+        <group code="C$"/>
+      </product>
+      <product code="5AAO">
+        <group code="C$"/>
+      </product>
+      <product code="6AAO">
+        <group code="C$"/>
+      </product>
+      <product code="7AAO">
+        <group code="C$"/>
+      </product>
+      <product code="8AAO">
+        <group code="C$"/>
+      </product>
+      <product code="9AAO">
+        <group code="C$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="610IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11610</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="610IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11710</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="610NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16610</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="610SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19610</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="610SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20610</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="611" label="AutoCert Equity Options">
+    <products/>
+   <connections>
+    <connection id="611IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11611</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="611IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11711</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="611NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16611</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="611SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19611</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="611SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20611</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="612" label="AutoCert Energy Options">
+    <products>
+      <product code="0XT">
+        <group code="9$"/>
+      </product>
+      <product code="0XT">
+        <group code="$9"/>
+      </product>
+      <product code="1XT">
+        <group code="9$"/>
+      </product>
+      <product code="2XT">
+        <group code="9$"/>
+      </product>
+      <product code="3XT">
+        <group code="9$"/>
+      </product>
+      <product code="4XT">
+        <group code="9$"/>
+      </product>
+      <product code="5XT">
+        <group code="9$"/>
+      </product>
+      <product code="6XT">
+        <group code="9$"/>
+      </product>
+      <product code="7XT">
+        <group code="9$"/>
+      </product>
+      <product code="8XT">
+        <group code="9$"/>
+      </product>
+      <product code="9XT">
+        <group code="9$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="612IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11612</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="612IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11712</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="612NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16612</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="612SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19612</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="612SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20612</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="613" label="AutoCert Currency Options">
+    <products/>
+   <connections>
+    <connection id="613IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11613</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="613IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11713</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="613NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16613</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="613SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19613</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="613SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20613</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="614" label="AutoCert Commodity Options">
+    <products>
+      <product code="06N">
+        <group code="X$"/>
+      </product>
+      <product code="06N">
+        <group code="$X"/>
+      </product>
+      <product code="16N">
+        <group code="X$"/>
+      </product>
+      <product code="26N">
+        <group code="X$"/>
+      </product>
+      <product code="36N">
+        <group code="X$"/>
+      </product>
+      <product code="46N">
+        <group code="X$"/>
+      </product>
+      <product code="56N">
+        <group code="X$"/>
+      </product>
+      <product code="66N">
+        <group code="X$"/>
+      </product>
+      <product code="76N">
+        <group code="X$"/>
+      </product>
+      <product code="86N">
+        <group code="X$"/>
+      </product>
+      <product code="96N">
+        <group code="X$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="614IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11614</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="614IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11714</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="614NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16614</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="614SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19606</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="614SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20614</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="615" label="AutoCert Currency Options">
+    <products>
+      <product code="0OB">
+        <group code="$L"/>
+      </product>
+      <product code="0OB">
+        <group code="L$"/>
+      </product>
+      <product code="1OB">
+        <group code="L$"/>
+      </product>
+      <product code="2OB">
+        <group code="L$"/>
+      </product>
+      <product code="3OB">
+        <group code="L$"/>
+      </product>
+      <product code="4OB">
+        <group code="L$"/>
+      </product>
+      <product code="5OB">
+        <group code="L$"/>
+      </product>
+      <product code="6OB">
+        <group code="L$"/>
+      </product>
+      <product code="7OB">
+        <group code="L$"/>
+      </product>
+      <product code="8OB">
+        <group code="L$"/>
+      </product>
+      <product code="9OB">
+        <group code="L$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="615IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11615</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="615IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11715</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="615NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16615</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="615SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19615</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="615SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20615</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="616" label="AutoCert Commodity Options">
+    <products/>
+   <connections>
+    <connection id="616IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11616</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="616IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11716</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="616NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>16616</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="616SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>19608</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="616SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>20616</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="617" label="AutoCert Interest Rate Options">
+    <products>
+      <product code="1GE4">
+        <group code="3$"/>
+      </product>
+      <product code="1GE4">
+        <group code="$3"/>
+      </product>
+      <product code="2GE4">
+        <group code="3$"/>
+      </product>
+      <product code="3GE4">
+        <group code="3$"/>
+      </product>
+      <product code="4GE4">
+        <group code="3$"/>
+      </product>
+      <product code="5GE4">
+        <group code="3$"/>
+      </product>
+      <product code="6GE4">
+        <group code="3$"/>
+      </product>
+      <product code="7GE4">
+        <group code="3$"/>
+      </product>
+      <product code="8GE4">
+        <group code="3$"/>
+      </product>
+      <product code="9GE4">
+        <group code="3$"/>
+      </product>
+      <product code="AGE4">
+        <group code="3$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="617IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11617</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="617IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11717</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="617NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>16617</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="617SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>19617</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="617SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>20617</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="618" label="AutoCert MexDer">
+    <products/>
+   <connections>
+    <connection id="618IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11618</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="618IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11718</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="618NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>16618</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="618SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>19618</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="619" label="AutoCert Interest Rate Options">
+    <products>
+      <product code="1GE5">
+        <group code="4$"/>
+      </product>
+      <product code="1GE5">
+        <group code="$4"/>
+      </product>
+      <product code="2GE5">
+        <group code="4$"/>
+      </product>
+      <product code="3GE5">
+        <group code="4$"/>
+      </product>
+      <product code="4GE5">
+        <group code="4$"/>
+      </product>
+      <product code="5GE5">
+        <group code="4$"/>
+      </product>
+      <product code="6GE5">
+        <group code="4$"/>
+      </product>
+      <product code="7GE5">
+        <group code="4$"/>
+      </product>
+      <product code="8GE5">
+        <group code="4$"/>
+      </product>
+      <product code="9GE5">
+        <group code="4$"/>
+      </product>
+      <product code="AGE5">
+        <group code="4$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="619IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11619</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="619IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11719</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="619NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>16619</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="619SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>19619</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="619SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>20619</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="621" label="AutoCert Equity Options">
+    <products>
+      <product code="0LNE">
+        <group code="$5"/>
+      </product>
+      <product code="0LNE">
+        <group code="5$"/>
+      </product>
+      <product code="1LNE">
+        <group code="5$"/>
+      </product>
+      <product code="2LNE">
+        <group code="5$"/>
+      </product>
+      <product code="3LNE">
+        <group code="5$"/>
+      </product>
+      <product code="4LNE">
+        <group code="5$"/>
+      </product>
+      <product code="5LNE">
+        <group code="5$"/>
+      </product>
+      <product code="6LNE">
+        <group code="5$"/>
+      </product>
+      <product code="7LNE">
+        <group code="5$"/>
+      </product>
+      <product code="8LNE">
+        <group code="5$"/>
+      </product>
+      <product code="9LNE">
+        <group code="5$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="621IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11621</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="621IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11721</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="621NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>16621</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="621SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>19621</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="621SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>20621</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="623" label="AutoCert Equity Options">
+    <products>
+      <product code="0AE7">
+        <group code="$6"/>
+      </product>
+      <product code="0AE7">
+        <group code="6$"/>
+      </product>
+      <product code="1AE7">
+        <group code="6$"/>
+      </product>
+      <product code="2AE7">
+        <group code="6$"/>
+      </product>
+      <product code="3AE7">
+        <group code="6$"/>
+      </product>
+      <product code="4AE7">
+        <group code="6$"/>
+      </product>
+      <product code="5AE7">
+        <group code="6$"/>
+      </product>
+      <product code="6AE7">
+        <group code="6$"/>
+      </product>
+      <product code="7AE7">
+        <group code="6$"/>
+      </product>
+      <product code="8AE7">
+        <group code="6$"/>
+      </product>
+      <product code="9AE7">
+        <group code="6$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="623IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11623</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="623IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11723</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="623NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>16623</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="623SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>19623</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="623SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>20623</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="625" label="AutoCert Equity Futures">
+    <products>
+      <product code="1FT5">
+        <group code="91"/>
+      </product>
+      <product code="1RSV">
+        <group code="91"/>
+      </product>
+      <product code="2EMD">
+        <group code="S$"/>
+      </product>
+      <product code="2ES">
+        <group code="91"/>
+      </product>
+      <product code="2SLP">
+        <group code="91"/>
+      </product>
+      <product code="3FT5">
+        <group code="91"/>
+      </product>
+      <product code="3RSV">
+        <group code="91"/>
+      </product>
+      <product code="4EMD">
+        <group code="S$"/>
+      </product>
+      <product code="4SLP">
+        <group code="91"/>
+      </product>
+      <product code="5DVE">
+        <group code="91"/>
+      </product>
+      <product code="5ES">
+        <group code="91"/>
+      </product>
+      <product code="5RSV">
+        <group code="91"/>
+      </product>
+      <product code="6EMD">
+        <group code="S$"/>
+      </product>
+      <product code="6SMC">
+        <group code="S$"/>
+      </product>
+      <product code="7DVE">
+        <group code="91"/>
+      </product>
+      <product code="8ES">
+        <group code="91"/>
+      </product>
+      <product code="8RSV">
+        <group code="91"/>
+      </product>
+      <product code="8SMC">
+        <group code="S$"/>
+      </product>
+      <product code="9SLP">
+        <group code="91"/>
+      </product>
+      <product code="AES">
+        <group code="91"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="625IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11625</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="625IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11725</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="625NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>16625</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="625SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>19625</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="625SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>20625</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="627" label="AutoCert Equity Futures">
+    <products>
+      <product code="0EMD">
+        <group code="S$"/>
+      </product>
+      <product code="0SMC">
+        <group code="S$"/>
+      </product>
+      <product code="1DVE">
+        <group code="91"/>
+      </product>
+      <product code="1FT5">
+        <group code="91"/>
+      </product>
+      <product code="1SMC">
+        <group code="S$"/>
+      </product>
+      <product code="2NQ">
+        <group code="91"/>
+      </product>
+      <product code="3DVE">
+        <group code="91"/>
+      </product>
+      <product code="4NQ">
+        <group code="91"/>
+      </product>
+      <product code="5FT5">
+        <group code="91"/>
+      </product>
+      <product code="5NQ">
+        <group code="91"/>
+      </product>
+      <product code="5SLP">
+        <group code="91"/>
+      </product>
+      <product code="5SMC">
+        <group code="S$"/>
+      </product>
+      <product code="7FT5">
+        <group code="91"/>
+      </product>
+      <product code="7SLP">
+        <group code="91"/>
+      </product>
+      <product code="8EMD">
+        <group code="S$"/>
+      </product>
+      <product code="8NQ">
+        <group code="91"/>
+      </product>
+      <product code="9DVE">
+        <group code="91"/>
+      </product>
+      <product code="9FT5">
+        <group code="91"/>
+      </product>
+      <product code="AES">
+        <group code="91"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="627IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11627</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="627IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11727</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="627NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>16627</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="627SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>19627</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="627SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>20627</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="629" label="AutoCert Equity Futures">
+    <products>
+      <product code="1ES">
+        <group code="91"/>
+      </product>
+      <product code="1NQ">
+        <group code="91"/>
+      </product>
+      <product code="1SLP">
+        <group code="91"/>
+      </product>
+      <product code="2EMD">
+        <group code="S$"/>
+      </product>
+      <product code="2SMC">
+        <group code="S$"/>
+      </product>
+      <product code="3RSV">
+        <group code="91"/>
+      </product>
+      <product code="3SLP">
+        <group code="91"/>
+      </product>
+      <product code="3SMC">
+        <group code="S$"/>
+      </product>
+      <product code="4ES">
+        <group code="91"/>
+      </product>
+      <product code="4FT5">
+        <group code="91"/>
+      </product>
+      <product code="4SMC">
+        <group code="S$"/>
+      </product>
+      <product code="5RSV">
+        <group code="91"/>
+      </product>
+      <product code="6DVE">
+        <group code="91"/>
+      </product>
+      <product code="6EMD">
+        <group code="S$"/>
+      </product>
+      <product code="6FT5">
+        <group code="91"/>
+      </product>
+      <product code="7NQ">
+        <group code="91"/>
+      </product>
+      <product code="7SLP">
+        <group code="91"/>
+      </product>
+      <product code="8DVE">
+        <group code="91"/>
+      </product>
+      <product code="8RSV">
+        <group code="91"/>
+      </product>
+      <product code="9SLP">
+        <group code="91"/>
+      </product>
+      <product code="9SMC">
+        <group code="S$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="629IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11629</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="629IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11729</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="629NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>16629</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="629SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>19629</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="629SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>20629</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="631" label="AutoCert Equity Futures">
+    <products>
+      <product code="0DVE">
+        <group code="91"/>
+      </product>
+      <product code="0EMD">
+        <group code="S$"/>
+      </product>
+      <product code="0FT5">
+        <group code="91"/>
+      </product>
+      <product code="0NQ">
+        <group code="91"/>
+      </product>
+      <product code="1EMD">
+        <group code="S$"/>
+      </product>
+      <product code="1RSV">
+        <group code="91"/>
+      </product>
+      <product code="2DVE">
+        <group code="91"/>
+      </product>
+      <product code="2NQ">
+        <group code="91"/>
+      </product>
+      <product code="3ES">
+        <group code="91"/>
+      </product>
+      <product code="4NQ">
+        <group code="91"/>
+      </product>
+      <product code="5EMD">
+        <group code="S$"/>
+      </product>
+      <product code="5SLP">
+        <group code="91"/>
+      </product>
+      <product code="6ES">
+        <group code="91"/>
+      </product>
+      <product code="6RSV">
+        <group code="91"/>
+      </product>
+      <product code="7EMD">
+        <group code="S$"/>
+      </product>
+      <product code="7ES">
+        <group code="91"/>
+      </product>
+      <product code="7SMC">
+        <group code="S$"/>
+      </product>
+      <product code="8ES">
+        <group code="91"/>
+      </product>
+      <product code="8FT5">
+        <group code="91"/>
+      </product>
+      <product code="9ES">
+        <group code="91"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="631IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11631</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="631IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11731</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="631NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>16631</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="631SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>19631</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="631SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.66</host-ip>
+      <port>20631</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="632" label="AutoCert Currency Futures">
+    <products>
+      <product code="06A">
+        <group code="93"/>
+      </product>
+      <product code="06B">
+        <group code="93"/>
+      </product>
+      <product code="16J">
+        <group code="R$"/>
+      </product>
+      <product code="16S">
+        <group code="R$"/>
+      </product>
+      <product code="26J">
+        <group code="R$"/>
+      </product>
+      <product code="26S">
+        <group code="R$"/>
+      </product>
+      <product code="36A">
+        <group code="93"/>
+      </product>
+      <product code="36B">
+        <group code="93"/>
+      </product>
+      <product code="46J">
+        <group code="R$"/>
+      </product>
+      <product code="46S">
+        <group code="R$"/>
+      </product>
+      <product code="56A">
+        <group code="93"/>
+      </product>
+      <product code="56B">
+        <group code="93"/>
+      </product>
+      <product code="56S">
+        <group code="R$"/>
+      </product>
+      <product code="66B">
+        <group code="93"/>
+      </product>
+      <product code="76J">
+        <group code="R$"/>
+      </product>
+      <product code="86A">
+        <group code="93"/>
+      </product>
+      <product code="86B">
+        <group code="93"/>
+      </product>
+      <product code="86J">
+        <group code="R$"/>
+      </product>
+      <product code="86S">
+        <group code="R$"/>
+      </product>
+      <product code="96A">
+        <group code="93"/>
+      </product>
+      <product code="96B">
+        <group code="93"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="632IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11632</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="632IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11732</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="632NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>16632</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="632SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>19632</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="632SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.66</host-ip>
+      <port>20632</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="633" label="AutoCert Equity Futures">
+    <products>
+      <product code="0NQ">
+        <group code="91"/>
+      </product>
+      <product code="0SMC">
+        <group code="S$"/>
+      </product>
+      <product code="1SLP">
+        <group code="91"/>
+      </product>
+      <product code="2FT5">
+        <group code="91"/>
+      </product>
+      <product code="2RSV">
+        <group code="91"/>
+      </product>
+      <product code="2SMC">
+        <group code="S$"/>
+      </product>
+      <product code="3EMD">
+        <group code="S$"/>
+      </product>
+      <product code="3NQ">
+        <group code="91"/>
+      </product>
+      <product code="3SLP">
+        <group code="91"/>
+      </product>
+      <product code="4DVE">
+        <group code="91"/>
+      </product>
+      <product code="4FT5">
+        <group code="91"/>
+      </product>
+      <product code="5SMC">
+        <group code="S$"/>
+      </product>
+      <product code="6DVE">
+        <group code="91"/>
+      </product>
+      <product code="6FT5">
+        <group code="91"/>
+      </product>
+      <product code="6NQ">
+        <group code="91"/>
+      </product>
+      <product code="7RSV">
+        <group code="91"/>
+      </product>
+      <product code="8SLP">
+        <group code="91"/>
+      </product>
+      <product code="9EMD">
+        <group code="S$"/>
+      </product>
+      <product code="9NQ">
+        <group code="91"/>
+      </product>
+      <product code="9RSV">
+        <group code="91"/>
+      </product>
+      <product code="9SMC">
+        <group code="S$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="633IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11633</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="633IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11733</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="633NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>16633</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="633SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>19633</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="633SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.66</host-ip>
+      <port>20633</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="634" label="AutoCert Currency Futures">
+    <products>
+      <product code="06A">
+        <group code="93"/>
+      </product>
+      <product code="06J">
+        <group code="R$"/>
+      </product>
+      <product code="16J">
+        <group code="R$"/>
+      </product>
+      <product code="16S">
+        <group code="R$"/>
+      </product>
+      <product code="26A">
+        <group code="93"/>
+      </product>
+      <product code="26B">
+        <group code="93"/>
+      </product>
+      <product code="26S">
+        <group code="R$"/>
+      </product>
+      <product code="36A">
+        <group code="93"/>
+      </product>
+      <product code="36B">
+        <group code="93"/>
+      </product>
+      <product code="36J">
+        <group code="R$"/>
+      </product>
+      <product code="46A">
+        <group code="93"/>
+      </product>
+      <product code="46J">
+        <group code="R$"/>
+      </product>
+      <product code="46S">
+        <group code="R$"/>
+      </product>
+      <product code="56A">
+        <group code="93"/>
+      </product>
+      <product code="56J">
+        <group code="R$"/>
+      </product>
+      <product code="56S">
+        <group code="R$"/>
+      </product>
+      <product code="66A">
+        <group code="93"/>
+      </product>
+      <product code="76J">
+        <group code="R$"/>
+      </product>
+      <product code="76S">
+        <group code="R$"/>
+      </product>
+      <product code="86A">
+        <group code="93"/>
+      </product>
+      <product code="86B">
+        <group code="93"/>
+      </product>
+      <product code="86J">
+        <group code="R$"/>
+      </product>
+      <product code="96B">
+        <group code="93"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="634IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11634</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="634IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11734</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="634NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>16634</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="634SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>19634</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="634SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.66</host-ip>
+      <port>20634</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="635" label="AutoCert Equity Futures">
+    <products>
+      <product code="0FT5">
+        <group code="91"/>
+      </product>
+      <product code="0RSV">
+        <group code="91"/>
+      </product>
+      <product code="1SMC">
+        <group code="S$"/>
+      </product>
+      <product code="2DVE">
+        <group code="91"/>
+      </product>
+      <product code="2FT5">
+        <group code="91"/>
+      </product>
+      <product code="2SLP">
+        <group code="91"/>
+      </product>
+      <product code="3NQ">
+        <group code="91"/>
+      </product>
+      <product code="4DVE">
+        <group code="91"/>
+      </product>
+      <product code="4ES">
+        <group code="91"/>
+      </product>
+      <product code="4RSV">
+        <group code="91"/>
+      </product>
+      <product code="4SLP">
+        <group code="91"/>
+      </product>
+      <product code="4SMC">
+        <group code="S$"/>
+      </product>
+      <product code="5EMD">
+        <group code="S$"/>
+      </product>
+      <product code="6SLP">
+        <group code="91"/>
+      </product>
+      <product code="6SMC">
+        <group code="S$"/>
+      </product>
+      <product code="7EMD">
+        <group code="S$"/>
+      </product>
+      <product code="8DVE">
+        <group code="91"/>
+      </product>
+      <product code="8FT5">
+        <group code="91"/>
+      </product>
+      <product code="9EMD">
+        <group code="S$"/>
+      </product>
+      <product code="9ES">
+        <group code="91"/>
+      </product>
+      <product code="9NQ">
+        <group code="91"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="635IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11635</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="635IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11735</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="635NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>16635</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="635SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>19635</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="635SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.66</host-ip>
+      <port>20635</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="636" label="AutoCert Currency Futures">
+    <products>
+      <product code="06B">
+        <group code="93"/>
+      </product>
+      <product code="06J">
+        <group code="R$"/>
+      </product>
+      <product code="16A">
+        <group code="93"/>
+      </product>
+      <product code="16B">
+        <group code="93"/>
+      </product>
+      <product code="16J">
+        <group code="R$"/>
+      </product>
+      <product code="26B">
+        <group code="93"/>
+      </product>
+      <product code="36S">
+        <group code="R$"/>
+      </product>
+      <product code="46B">
+        <group code="93"/>
+      </product>
+      <product code="56B">
+        <group code="93"/>
+      </product>
+      <product code="66B">
+        <group code="93"/>
+      </product>
+      <product code="66J">
+        <group code="R$"/>
+      </product>
+      <product code="66S">
+        <group code="R$"/>
+      </product>
+      <product code="76A">
+        <group code="93"/>
+      </product>
+      <product code="76B">
+        <group code="93"/>
+      </product>
+      <product code="76J">
+        <group code="R$"/>
+      </product>
+      <product code="86B">
+        <group code="93"/>
+      </product>
+      <product code="86J">
+        <group code="R$"/>
+      </product>
+      <product code="86S">
+        <group code="R$"/>
+      </product>
+      <product code="96A">
+        <group code="93"/>
+      </product>
+      <product code="96J">
+        <group code="R$"/>
+      </product>
+      <product code="96S">
+        <group code="R$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="636IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11636</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="636IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11736</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="636NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>16636</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="636SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>19636</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="636SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.66</host-ip>
+      <port>20636</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="637" label="AutoCert Equity Futures">
+    <products>
+      <product code="0RSV">
+        <group code="91"/>
+      </product>
+      <product code="0SLP">
+        <group code="91"/>
+      </product>
+      <product code="1EMD">
+        <group code="S$"/>
+      </product>
+      <product code="1NQ">
+        <group code="91"/>
+      </product>
+      <product code="3EMD">
+        <group code="S$"/>
+      </product>
+      <product code="3ES">
+        <group code="91"/>
+      </product>
+      <product code="3FT5">
+        <group code="91"/>
+      </product>
+      <product code="3SMC">
+        <group code="S$"/>
+      </product>
+      <product code="5DVE">
+        <group code="91"/>
+      </product>
+      <product code="5FT5">
+        <group code="91"/>
+      </product>
+      <product code="6ES">
+        <group code="91"/>
+      </product>
+      <product code="6RSV">
+        <group code="91"/>
+      </product>
+      <product code="6SLP">
+        <group code="91"/>
+      </product>
+      <product code="7DVE">
+        <group code="91"/>
+      </product>
+      <product code="7ES">
+        <group code="91"/>
+      </product>
+      <product code="7RSV">
+        <group code="91"/>
+      </product>
+      <product code="8SLP">
+        <group code="91"/>
+      </product>
+      <product code="8SMC">
+        <group code="S$"/>
+      </product>
+      <product code="9DVE">
+        <group code="91"/>
+      </product>
+      <product code="9RSV">
+        <group code="91"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="637IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11637</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="637IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11737</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="637NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>16637</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="637SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>19637</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="637SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.66</host-ip>
+      <port>20637</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="638" label="AutoCert Currency Futures">
+    <products>
+      <product code="06A">
+        <group code="93"/>
+      </product>
+      <product code="06S">
+        <group code="R$"/>
+      </product>
+      <product code="16A">
+        <group code="93"/>
+      </product>
+      <product code="16B">
+        <group code="93"/>
+      </product>
+      <product code="26A">
+        <group code="93"/>
+      </product>
+      <product code="36A">
+        <group code="93"/>
+      </product>
+      <product code="36J">
+        <group code="R$"/>
+      </product>
+      <product code="36S">
+        <group code="R$"/>
+      </product>
+      <product code="46A">
+        <group code="93"/>
+      </product>
+      <product code="46B">
+        <group code="93"/>
+      </product>
+      <product code="56A">
+        <group code="93"/>
+      </product>
+      <product code="56J">
+        <group code="R$"/>
+      </product>
+      <product code="66B">
+        <group code="93"/>
+      </product>
+      <product code="66J">
+        <group code="R$"/>
+      </product>
+      <product code="66S">
+        <group code="R$"/>
+      </product>
+      <product code="76A">
+        <group code="93"/>
+      </product>
+      <product code="76B">
+        <group code="93"/>
+      </product>
+      <product code="96J">
+        <group code="R$"/>
+      </product>
+      <product code="96S">
+        <group code="R$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="638IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11638</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="638IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11738</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="638NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>16638</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="638SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>19638</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="638SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.66</host-ip>
+      <port>20638</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="639" label="AutoCert Equity Futures">
+    <products>
+      <product code="0SLP">
+        <group code="91"/>
+      </product>
+      <product code="1DVE">
+        <group code="91"/>
+      </product>
+      <product code="1ES">
+        <group code="91"/>
+      </product>
+      <product code="2ES">
+        <group code="91"/>
+      </product>
+      <product code="2RSV">
+        <group code="91"/>
+      </product>
+      <product code="3DVE">
+        <group code="91"/>
+      </product>
+      <product code="7FT5">
+        <group code="91"/>
+      </product>
+      <product code="9FT5">
+        <group code="91"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="639IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11639</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="639IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11739</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="639NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>16639</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="639SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>19639</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="639SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.66</host-ip>
+      <port>20639</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="640" label="AutoCert Currency Futures">
+    <products>
+      <product code="06J">
+        <group code="R$"/>
+      </product>
+      <product code="16A">
+        <group code="93"/>
+      </product>
+      <product code="16B">
+        <group code="93"/>
+      </product>
+      <product code="16S">
+        <group code="R$"/>
+      </product>
+      <product code="26A">
+        <group code="93"/>
+      </product>
+      <product code="26J">
+        <group code="R$"/>
+      </product>
+      <product code="26S">
+        <group code="R$"/>
+      </product>
+      <product code="36B">
+        <group code="93"/>
+      </product>
+      <product code="36S">
+        <group code="R$"/>
+      </product>
+      <product code="46B">
+        <group code="93"/>
+      </product>
+      <product code="46S">
+        <group code="R$"/>
+      </product>
+      <product code="56J">
+        <group code="R$"/>
+      </product>
+      <product code="56S">
+        <group code="R$"/>
+      </product>
+      <product code="66A">
+        <group code="93"/>
+      </product>
+      <product code="66J">
+        <group code="R$"/>
+      </product>
+      <product code="76A">
+        <group code="93"/>
+      </product>
+      <product code="76B">
+        <group code="93"/>
+      </product>
+      <product code="76J">
+        <group code="R$"/>
+      </product>
+      <product code="76S">
+        <group code="R$"/>
+      </product>
+      <product code="86A">
+        <group code="93"/>
+      </product>
+      <product code="96B">
+        <group code="93"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="640IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11640</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="640IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11740</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="640NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>16640</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="640SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>19640</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="640SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.66</host-ip>
+      <port>20640</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="641" label="AutoCert Energy Futures">
+    <products>
+      <product code="0QH">
+        <group code="95"/>
+      </product>
+      <product code="0RT">
+        <group code="P$"/>
+      </product>
+      <product code="0WS">
+        <group code="P$"/>
+      </product>
+      <product code="1BB">
+        <group code="95"/>
+      </product>
+      <product code="1WS">
+        <group code="P$"/>
+      </product>
+      <product code="2BB">
+        <group code="95"/>
+      </product>
+      <product code="2RT">
+        <group code="P$"/>
+      </product>
+      <product code="2WS">
+        <group code="P$"/>
+      </product>
+      <product code="3QH">
+        <group code="95"/>
+      </product>
+      <product code="3RT">
+        <group code="P$"/>
+      </product>
+      <product code="3WS">
+        <group code="P$"/>
+      </product>
+      <product code="4BB">
+        <group code="95"/>
+      </product>
+      <product code="4WS">
+        <group code="P$"/>
+      </product>
+      <product code="5RT">
+        <group code="P$"/>
+      </product>
+      <product code="6QH">
+        <group code="95"/>
+      </product>
+      <product code="6WS">
+        <group code="P$"/>
+      </product>
+      <product code="7BB">
+        <group code="95"/>
+      </product>
+      <product code="7QH">
+        <group code="95"/>
+      </product>
+      <product code="7RT">
+        <group code="P$"/>
+      </product>
+      <product code="7WS">
+        <group code="P$"/>
+      </product>
+      <product code="8RT">
+        <group code="P$"/>
+      </product>
+      <product code="9QH">
+        <group code="95"/>
+      </product>
+      <product code="9RT">
+        <group code="P$"/>
+      </product>
+      <product code="9WS">
+        <group code="P$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="641IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11641</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="641IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11741</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="641NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>16641</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="641SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>19641</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="641SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.66</host-ip>
+      <port>20641</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="642" label="AutoCert Interest Rate Futures">
+    <products>
+      <product code="1GE">
+        <group code="90"/>
+      </product>
+      <product code="2EB">
+        <group code="N$"/>
+      </product>
+      <product code="2ZQ">
+        <group code="90"/>
+      </product>
+      <product code="4GE">
+        <group code="90"/>
+      </product>
+      <product code="5EB">
+        <group code="N$"/>
+      </product>
+      <product code="5ZQ">
+        <group code="90"/>
+      </product>
+      <product code="6GLB">
+        <group code="N$"/>
+      </product>
+      <product code="7GE">
+        <group code="90"/>
+      </product>
+      <product code="8EB">
+        <group code="N$"/>
+      </product>
+      <product code="8GLB">
+        <group code="N$"/>
+      </product>
+      <product code="8ZQ">
+        <group code="90"/>
+      </product>
+      <product code="9GLB">
+        <group code="N$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="642IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11642</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="642IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11742</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="642NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>16642</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="642SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>19642</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="642SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.66</host-ip>
+      <port>20642</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="643" label="AutoCert Energy Futures">
+    <products>
+      <product code="0BB">
+        <group code="95"/>
+      </product>
+      <product code="0QH">
+        <group code="95"/>
+      </product>
+      <product code="0WS">
+        <group code="P$"/>
+      </product>
+      <product code="1RT">
+        <group code="P$"/>
+      </product>
+      <product code="1WS">
+        <group code="P$"/>
+      </product>
+      <product code="2BB">
+        <group code="95"/>
+      </product>
+      <product code="2WS">
+        <group code="P$"/>
+      </product>
+      <product code="3BB">
+        <group code="95"/>
+      </product>
+      <product code="3QH">
+        <group code="95"/>
+      </product>
+      <product code="4QH">
+        <group code="95"/>
+      </product>
+      <product code="4RT">
+        <group code="P$"/>
+      </product>
+      <product code="4WS">
+        <group code="P$"/>
+      </product>
+      <product code="5RT">
+        <group code="P$"/>
+      </product>
+      <product code="5WS">
+        <group code="P$"/>
+      </product>
+      <product code="6BB">
+        <group code="95"/>
+      </product>
+      <product code="6QH">
+        <group code="95"/>
+      </product>
+      <product code="6RT">
+        <group code="P$"/>
+      </product>
+      <product code="6WS">
+        <group code="P$"/>
+      </product>
+      <product code="7BB">
+        <group code="95"/>
+      </product>
+      <product code="7QH">
+        <group code="95"/>
+      </product>
+      <product code="7WS">
+        <group code="P$"/>
+      </product>
+      <product code="8WS">
+        <group code="P$"/>
+      </product>
+      <product code="9BB">
+        <group code="95"/>
+      </product>
+      <product code="9QH">
+        <group code="95"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="643IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11643</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="643IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11743</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="643NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>16643</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="643SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>19643</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="643SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.66</host-ip>
+      <port>20643</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="644" label="AutoCert Interest Rate Futures">
+    <products>
+      <product code="0GLB">
+        <group code="N$"/>
+      </product>
+      <product code="1GLB">
+        <group code="N$"/>
+      </product>
+      <product code="2GE">
+        <group code="90"/>
+      </product>
+      <product code="3GLB">
+        <group code="N$"/>
+      </product>
+      <product code="4EB">
+        <group code="N$"/>
+      </product>
+      <product code="4GLB">
+        <group code="N$"/>
+      </product>
+      <product code="5GE">
+        <group code="90"/>
+      </product>
+      <product code="5ZQ">
+        <group code="90"/>
+      </product>
+      <product code="6ZQ">
+        <group code="90"/>
+      </product>
+      <product code="7EB">
+        <group code="N$"/>
+      </product>
+      <product code="8GE">
+        <group code="90"/>
+      </product>
+      <product code="8GLB">
+        <group code="N$"/>
+      </product>
+      <product code="9ZQ">
+        <group code="90"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="644IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11644</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="644IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11744</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="644NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>16644</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="644SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>19644</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="644SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.66</host-ip>
+      <port>20644</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="645" label="AutoCert Interest Rate Futures&#9;">
+    <products>
+      <product code="1EB">
+        <group code="N$"/>
+      </product>
+      <product code="1GLB">
+        <group code="N$"/>
+      </product>
+      <product code="2GE">
+        <group code="90"/>
+      </product>
+      <product code="2GLB">
+        <group code="N$"/>
+      </product>
+      <product code="2ZQ">
+        <group code="90"/>
+      </product>
+      <product code="5GLB">
+        <group code="N$"/>
+      </product>
+      <product code="7GE">
+        <group code="90"/>
+      </product>
+      <product code="7GLB">
+        <group code="N$"/>
+      </product>
+      <product code="7ZQ">
+        <group code="90"/>
+      </product>
+      <product code="8EB">
+        <group code="N$"/>
+      </product>
+      <product code="9GE">
+        <group code="90"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="645IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11645</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="645IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11745</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="645NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>16645</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="645SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>19645</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="645SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.66</host-ip>
+      <port>20645</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="646" label="AutoCert Interest Rate Futures">
+    <products>
+      <product code="0EB">
+        <group code="N$"/>
+      </product>
+      <product code="1GE">
+        <group code="90"/>
+      </product>
+      <product code="3GE">
+        <group code="90"/>
+      </product>
+      <product code="3GLB">
+        <group code="N$"/>
+      </product>
+      <product code="4EB">
+        <group code="N$"/>
+      </product>
+      <product code="4GE">
+        <group code="90"/>
+      </product>
+      <product code="4ZQ">
+        <group code="90"/>
+      </product>
+      <product code="5GLB">
+        <group code="N$"/>
+      </product>
+      <product code="6GE">
+        <group code="90"/>
+      </product>
+      <product code="7GLB">
+        <group code="N$"/>
+      </product>
+      <product code="8EB">
+        <group code="N$"/>
+      </product>
+      <product code="8GE">
+        <group code="90"/>
+      </product>
+      <product code="9EB">
+        <group code="N$"/>
+      </product>
+      <product code="9GE">
+        <group code="90"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="646IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.126</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11646</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="646IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11746</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="646NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.126</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>16646</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="646SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>19646</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="646SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>20646</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="647" label="AutoCert Interest Rate Futures&#9;">
+    <products>
+      <product code="0EB">
+        <group code="N$"/>
+      </product>
+      <product code="1GLB">
+        <group code="N$"/>
+      </product>
+      <product code="2GE">
+        <group code="90"/>
+      </product>
+      <product code="3EB">
+        <group code="N$"/>
+      </product>
+      <product code="3GLB">
+        <group code="N$"/>
+      </product>
+      <product code="5EB">
+        <group code="N$"/>
+      </product>
+      <product code="5GE">
+        <group code="90"/>
+      </product>
+      <product code="5GLB">
+        <group code="N$"/>
+      </product>
+      <product code="6GE">
+        <group code="90"/>
+      </product>
+      <product code="6ZQ">
+        <group code="90"/>
+      </product>
+      <product code="7ZQ">
+        <group code="90"/>
+      </product>
+      <product code="9GLB">
+        <group code="N$"/>
+      </product>
+      <product code="9ZQ">
+        <group code="90"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="647IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.126</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11647</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="647IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11747</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="647NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.126</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>16647</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="647SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>19647</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="647SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>20647</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="648" label="AutoCert Interest Rate Futures">
+    <products>
+      <product code="1EB">
+        <group code="N$"/>
+      </product>
+      <product code="1GE">
+        <group code="90"/>
+      </product>
+      <product code="2EB">
+        <group code="N$"/>
+      </product>
+      <product code="2GE">
+        <group code="90"/>
+      </product>
+      <product code="3EB">
+        <group code="N$"/>
+      </product>
+      <product code="3GE">
+        <group code="90"/>
+      </product>
+      <product code="4EB">
+        <group code="N$"/>
+      </product>
+      <product code="5GE">
+        <group code="90"/>
+      </product>
+      <product code="5GLB">
+        <group code="N$"/>
+      </product>
+      <product code="6EB">
+        <group code="N$"/>
+      </product>
+      <product code="6GE">
+        <group code="90"/>
+      </product>
+      <product code="7EB">
+        <group code="N$"/>
+      </product>
+      <product code="8GE">
+        <group code="90"/>
+      </product>
+      <product code="9GE">
+        <group code="90"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="648IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.126</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11648</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="648IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11748</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="648NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.126</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>16648</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="648SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>19648</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="648SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>20648</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="649" label="AutoCert Commodity Futures">
+    <products>
+      <product code="0ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="0ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="1EH">
+        <group code="07"/>
+      </product>
+      <product code="1ZC">
+        <group code="07"/>
+      </product>
+      <product code="1ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="2ZC">
+        <group code="07"/>
+      </product>
+      <product code="2ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="2ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="3ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="4ZC">
+        <group code="07"/>
+      </product>
+      <product code="5EH">
+        <group code="07"/>
+      </product>
+      <product code="5ZC">
+        <group code="07"/>
+      </product>
+      <product code="5ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="6ZC">
+        <group code="07"/>
+      </product>
+      <product code="7EH">
+        <group code="07"/>
+      </product>
+      <product code="7ZC">
+        <group code="07"/>
+      </product>
+      <product code="8EH">
+        <group code="07"/>
+      </product>
+      <product code="8ZC">
+        <group code="07"/>
+      </product>
+      <product code="8ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="8ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="9ZC">
+        <group code="07"/>
+      </product>
+      <product code="9ZW">
+        <group code="Q$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="649IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11649</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="649IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11749</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="649NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>16649</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="649SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>19649</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="649SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>20649</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="650" label="AutoCert+ Interest Rate Options #2 (UDS)">
+    <products>
+      <product code="1GE">
+        <group code="A$"/>
+      </product>
+      <product code="1GE">
+        <group code="B$"/>
+      </product>
+      <product code="2GE">
+        <group code="A$"/>
+      </product>
+      <product code="2GE">
+        <group code="B$"/>
+      </product>
+      <product code="3GE">
+        <group code="B$"/>
+      </product>
+      <product code="3GE">
+        <group code="A$"/>
+      </product>
+      <product code="4GE">
+        <group code="B$"/>
+      </product>
+      <product code="4GE">
+        <group code="A$"/>
+      </product>
+      <product code="5GE">
+        <group code="B$"/>
+      </product>
+      <product code="5GE">
+        <group code="A$"/>
+      </product>
+      <product code="6GE">
+        <group code="A$"/>
+      </product>
+      <product code="6GE">
+        <group code="B$"/>
+      </product>
+      <product code="7GE">
+        <group code="B$"/>
+      </product>
+      <product code="7GE">
+        <group code="A$"/>
+      </product>
+      <product code="8GE">
+        <group code="B$"/>
+      </product>
+      <product code="8GE">
+        <group code="A$"/>
+      </product>
+      <product code="9GE">
+        <group code="B$"/>
+      </product>
+      <product code="9GE">
+        <group code="A$"/>
+      </product>
+      <product code="AGE">
+        <group code="A$"/>
+      </product>
+      <product code="AGE">
+        <group code="B$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="650IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11650</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="650IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11750</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="650NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>16650</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="650SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>19650</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="650SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>20650</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="651" label="AutoCert Commodity Futures">
+    <products>
+      <product code="0ZC">
+        <group code="07"/>
+      </product>
+      <product code="0ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="1ZC">
+        <group code="07"/>
+      </product>
+      <product code="1ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="2EH">
+        <group code="07"/>
+      </product>
+      <product code="2ZC">
+        <group code="07"/>
+      </product>
+      <product code="2ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="2ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="3ZC">
+        <group code="07"/>
+      </product>
+      <product code="3ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="4EH">
+        <group code="07"/>
+      </product>
+      <product code="4ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="5EH">
+        <group code="07"/>
+      </product>
+      <product code="5ZC">
+        <group code="07"/>
+      </product>
+      <product code="5ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="6ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="6ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="7EH">
+        <group code="07"/>
+      </product>
+      <product code="7ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="8EH">
+        <group code="07"/>
+      </product>
+      <product code="8ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="9ZW">
+        <group code="Q$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="651IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11651</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="651IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11751</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="651NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>16651</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="651SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.121</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>19651</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="651SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>20651</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="652" label="AutoCert FUTURES">
+    <products>
+      <product code="0AJC">
+        <group code="$A"/>
+      </product>
+      <product code="0LE">
+        <group code="$A"/>
+      </product>
+      <product code="1AJC">
+        <group code="$A"/>
+      </product>
+      <product code="1LE">
+        <group code="$A"/>
+      </product>
+      <product code="2AJC">
+        <group code="$A"/>
+      </product>
+      <product code="2LE">
+        <group code="$A"/>
+      </product>
+      <product code="3AJC">
+        <group code="$A"/>
+      </product>
+      <product code="3LE">
+        <group code="$A"/>
+      </product>
+      <product code="4AJC">
+        <group code="$A"/>
+      </product>
+      <product code="4LE">
+        <group code="$A"/>
+      </product>
+      <product code="5AJC">
+        <group code="$A"/>
+      </product>
+      <product code="5LE">
+        <group code="$A"/>
+      </product>
+      <product code="6AJC">
+        <group code="$A"/>
+      </product>
+      <product code="6LE">
+        <group code="$A"/>
+      </product>
+      <product code="7AJC">
+        <group code="$A"/>
+      </product>
+      <product code="7LE">
+        <group code="$A"/>
+      </product>
+      <product code="8AJC">
+        <group code="$A"/>
+      </product>
+      <product code="8LE">
+        <group code="$A"/>
+      </product>
+      <product code="9AJC">
+        <group code="$A"/>
+      </product>
+      <product code="9LE">
+        <group code="$A"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="652IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11652</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="652IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11752</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="652NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>16652</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="652SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>19652</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="652SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>20652</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="654" label="AutoCert Interest Rate Futures">
+    <products>
+      <product code="1GLB">
+        <group code="N$"/>
+      </product>
+      <product code="3EB">
+        <group code="N$"/>
+      </product>
+      <product code="3GE">
+        <group code="90"/>
+      </product>
+      <product code="3ZQ">
+        <group code="90"/>
+      </product>
+      <product code="4GE">
+        <group code="90"/>
+      </product>
+      <product code="6EB">
+        <group code="N$"/>
+      </product>
+      <product code="6ZQ">
+        <group code="90"/>
+      </product>
+      <product code="7GE">
+        <group code="90"/>
+      </product>
+      <product code="7GLB">
+        <group code="N$"/>
+      </product>
+      <product code="8ZQ">
+        <group code="90"/>
+      </product>
+      <product code="9EB">
+        <group code="N$"/>
+      </product>
+      <product code="9GLB">
+        <group code="N$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="654IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11654</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="654IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11754</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="654NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>16654</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="654SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>19654</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="654SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>20654</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="655" label="AutoCert Currency Options">
+    <products/>
+   <connections>
+    <connection id="655IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11655</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="655IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11755</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="655NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>16655</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="655SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>19655</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="655SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>20655</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="657" label="AutoCert Commodity Futures">
+    <products>
+      <product code="0ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="1EH">
+        <group code="07"/>
+      </product>
+      <product code="1ZC">
+        <group code="07"/>
+      </product>
+      <product code="1ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="2ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="3EH">
+        <group code="07"/>
+      </product>
+      <product code="3ZC">
+        <group code="07"/>
+      </product>
+      <product code="3ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="4ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="5ZC">
+        <group code="07"/>
+      </product>
+      <product code="5ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="6EH">
+        <group code="07"/>
+      </product>
+      <product code="6ZC">
+        <group code="07"/>
+      </product>
+      <product code="6ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="7EH">
+        <group code="07"/>
+      </product>
+      <product code="7ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="7ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="8EH">
+        <group code="07"/>
+      </product>
+      <product code="8ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="8ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="9EH">
+        <group code="07"/>
+      </product>
+      <product code="9ZL">
+        <group code="Q$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="657IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11657</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="657IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11757</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="657NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>16657</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="657SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.123</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>19657</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="657SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>20657</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="658" label="AutoCert Interest Rate Futures">
+    <products>
+      <product code="0GLB">
+        <group code="N$"/>
+      </product>
+      <product code="0ZQ">
+        <group code="90"/>
+      </product>
+      <product code="1GE">
+        <group code="90"/>
+      </product>
+      <product code="2GLB">
+        <group code="N$"/>
+      </product>
+      <product code="3GLB">
+        <group code="N$"/>
+      </product>
+      <product code="3ZQ">
+        <group code="90"/>
+      </product>
+      <product code="6EB">
+        <group code="N$"/>
+      </product>
+      <product code="6ZQ">
+        <group code="90"/>
+      </product>
+      <product code="7EB">
+        <group code="N$"/>
+      </product>
+      <product code="9EB">
+        <group code="N$"/>
+      </product>
+      <product code="9GLB">
+        <group code="N$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="658IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11658</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="658IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11758</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="658NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>16658</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="658SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>19658</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="658SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>20658</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="659" label="AutoCert Commodity Futures">
+    <products>
+      <product code="0EH">
+        <group code="07"/>
+      </product>
+      <product code="0ZC">
+        <group code="07"/>
+      </product>
+      <product code="1ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="2EH">
+        <group code="07"/>
+      </product>
+      <product code="2ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="3EH">
+        <group code="07"/>
+      </product>
+      <product code="3ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="3ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="4EH">
+        <group code="07"/>
+      </product>
+      <product code="4ZC">
+        <group code="07"/>
+      </product>
+      <product code="4ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="5EH">
+        <group code="07"/>
+      </product>
+      <product code="5ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="5ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="6ZC">
+        <group code="07"/>
+      </product>
+      <product code="6ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="6ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="8ZC">
+        <group code="07"/>
+      </product>
+      <product code="9EH">
+        <group code="07"/>
+      </product>
+      <product code="9ZC">
+        <group code="07"/>
+      </product>
+      <product code="9ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="9ZW">
+        <group code="Q$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="659IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11659</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="659IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11759</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="659NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.122</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>16659</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="659SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.79</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>19659</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="659SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.77</host-ip>
+      <port>20659</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="661" label="AutoCert Energy Futures">
+    <products>
+      <product code="0BB">
+        <group code="95"/>
+      </product>
+      <product code="0RT">
+        <group code="P$"/>
+      </product>
+      <product code="1BB">
+        <group code="95"/>
+      </product>
+      <product code="1QH">
+        <group code="95"/>
+      </product>
+      <product code="2QH">
+        <group code="95"/>
+      </product>
+      <product code="2RT">
+        <group code="P$"/>
+      </product>
+      <product code="2WS">
+        <group code="P$"/>
+      </product>
+      <product code="3BB">
+        <group code="95"/>
+      </product>
+      <product code="3QH">
+        <group code="95"/>
+      </product>
+      <product code="3RT">
+        <group code="P$"/>
+      </product>
+      <product code="3WS">
+        <group code="P$"/>
+      </product>
+      <product code="4QH">
+        <group code="95"/>
+      </product>
+      <product code="4WS">
+        <group code="P$"/>
+      </product>
+      <product code="5BB">
+        <group code="95"/>
+      </product>
+      <product code="5QH">
+        <group code="95"/>
+      </product>
+      <product code="5RT">
+        <group code="P$"/>
+      </product>
+      <product code="5WS">
+        <group code="P$"/>
+      </product>
+      <product code="6BB">
+        <group code="95"/>
+      </product>
+      <product code="6RT">
+        <group code="P$"/>
+      </product>
+      <product code="7QH">
+        <group code="95"/>
+      </product>
+      <product code="7RT">
+        <group code="P$"/>
+      </product>
+      <product code="7WS">
+        <group code="P$"/>
+      </product>
+      <product code="8BB">
+        <group code="95"/>
+      </product>
+      <product code="8QH">
+        <group code="95"/>
+      </product>
+      <product code="8RT">
+        <group code="P$"/>
+      </product>
+      <product code="9BB">
+        <group code="95"/>
+      </product>
+      <product code="9RT">
+        <group code="P$"/>
+      </product>
+      <product code="9WS">
+        <group code="P$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="661IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11661</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="661IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11761</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="661NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16661</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="661SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19661</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="661SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20661</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="662" label="AutoCert Interest Rate Futures">
+    <products>
+      <product code="0GLB">
+        <group code="N$"/>
+      </product>
+      <product code="0ZQ">
+        <group code="90"/>
+      </product>
+      <product code="1EB">
+        <group code="N$"/>
+      </product>
+      <product code="1ZQ">
+        <group code="90"/>
+      </product>
+      <product code="3GE">
+        <group code="90"/>
+      </product>
+      <product code="4GLB">
+        <group code="N$"/>
+      </product>
+      <product code="4ZQ">
+        <group code="90"/>
+      </product>
+      <product code="5EB">
+        <group code="N$"/>
+      </product>
+      <product code="6GLB">
+        <group code="N$"/>
+      </product>
+      <product code="9EB">
+        <group code="N$"/>
+      </product>
+      <product code="9GE">
+        <group code="90"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="662IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11662</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="662IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11762</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="662NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16662</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="662SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19662</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="662SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20662</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="663" label="AutoCert Energy Futures">
+    <products>
+      <product code="0BB">
+        <group code="95"/>
+      </product>
+      <product code="0RT">
+        <group code="P$"/>
+      </product>
+      <product code="0WS">
+        <group code="P$"/>
+      </product>
+      <product code="1QH">
+        <group code="95"/>
+      </product>
+      <product code="1WS">
+        <group code="P$"/>
+      </product>
+      <product code="2BB">
+        <group code="95"/>
+      </product>
+      <product code="2QH">
+        <group code="95"/>
+      </product>
+      <product code="2WS">
+        <group code="P$"/>
+      </product>
+      <product code="3RT">
+        <group code="P$"/>
+      </product>
+      <product code="3WS">
+        <group code="P$"/>
+      </product>
+      <product code="4QH">
+        <group code="95"/>
+      </product>
+      <product code="4RT">
+        <group code="P$"/>
+      </product>
+      <product code="5BB">
+        <group code="95"/>
+      </product>
+      <product code="5QH">
+        <group code="95"/>
+      </product>
+      <product code="5WS">
+        <group code="P$"/>
+      </product>
+      <product code="6RT">
+        <group code="P$"/>
+      </product>
+      <product code="7QH">
+        <group code="95"/>
+      </product>
+      <product code="7RT">
+        <group code="P$"/>
+      </product>
+      <product code="8BB">
+        <group code="95"/>
+      </product>
+      <product code="8QH">
+        <group code="95"/>
+      </product>
+      <product code="8WS">
+        <group code="P$"/>
+      </product>
+      <product code="9RT">
+        <group code="P$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="663IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11663</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="663IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11763</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="663NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16663</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="663SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19663</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="663SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20663</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="664" label="AutoCert Interest Rate Futures">
+    <products>
+      <product code="06A">
+        <group code="93"/>
+      </product>
+      <product code="06B">
+        <group code="93"/>
+      </product>
+      <product code="06S">
+        <group code="R$"/>
+      </product>
+      <product code="26B">
+        <group code="93"/>
+      </product>
+      <product code="26S">
+        <group code="R$"/>
+      </product>
+      <product code="36B">
+        <group code="93"/>
+      </product>
+      <product code="46S">
+        <group code="R$"/>
+      </product>
+      <product code="56B">
+        <group code="93"/>
+      </product>
+      <product code="66B">
+        <group code="93"/>
+      </product>
+      <product code="66S">
+        <group code="R$"/>
+      </product>
+      <product code="76S">
+        <group code="R$"/>
+      </product>
+      <product code="86B">
+        <group code="93"/>
+      </product>
+      <product code="86J">
+        <group code="R$"/>
+      </product>
+      <product code="86S">
+        <group code="R$"/>
+      </product>
+      <product code="96A">
+        <group code="93"/>
+      </product>
+      <product code="96J">
+        <group code="R$"/>
+      </product>
+      <product code="96S">
+        <group code="R$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="664IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11664</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="664IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11764</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="664NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16664</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="664SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19664</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="664SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20664</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="665" label="AutoCert Commodity Futures">
+    <products>
+      <product code="0EH">
+        <group code="07"/>
+      </product>
+      <product code="0ZC">
+        <group code="07"/>
+      </product>
+      <product code="0ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="0ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="1ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="1ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="2EH">
+        <group code="07"/>
+      </product>
+      <product code="2ZC">
+        <group code="07"/>
+      </product>
+      <product code="2ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="3ZC">
+        <group code="07"/>
+      </product>
+      <product code="3ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="4ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="5ZC">
+        <group code="07"/>
+      </product>
+      <product code="5ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="6EH">
+        <group code="07"/>
+      </product>
+      <product code="7ZC">
+        <group code="07"/>
+      </product>
+      <product code="7ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="8EH">
+        <group code="07"/>
+      </product>
+      <product code="8ZC">
+        <group code="07"/>
+      </product>
+      <product code="8ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="9ZC">
+        <group code="07"/>
+      </product>
+      <product code="9ZW">
+        <group code="Q$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="665IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11665</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="665IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11765</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="665NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16665</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="665SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19665</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="665SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20665</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="666" label="AutoCert Interest Rate Futures">
+    <products>
+      <product code="1ZQ">
+        <group code="90"/>
+      </product>
+      <product code="2EB">
+        <group code="N$"/>
+      </product>
+      <product code="2GLB">
+        <group code="N$"/>
+      </product>
+      <product code="4GLB">
+        <group code="N$"/>
+      </product>
+      <product code="4ZQ">
+        <group code="90"/>
+      </product>
+      <product code="6EB">
+        <group code="N$"/>
+      </product>
+      <product code="6GE">
+        <group code="90"/>
+      </product>
+      <product code="6GLB">
+        <group code="N$"/>
+      </product>
+      <product code="7EB">
+        <group code="N$"/>
+      </product>
+      <product code="7ZQ">
+        <group code="90"/>
+      </product>
+      <product code="8GLB">
+        <group code="N$"/>
+      </product>
+      <product code="8ZQ">
+        <group code="90"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="666IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11666</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="666IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11766</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="666NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16666</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="666SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19666</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="666SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20666</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="667" label="AutoCert Commodity Futures">
+    <products>
+      <product code="0EH">
+        <group code="07"/>
+      </product>
+      <product code="0ZC">
+        <group code="07"/>
+      </product>
+      <product code="0ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="0ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="1EH">
+        <group code="07"/>
+      </product>
+      <product code="1ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="2ZC">
+        <group code="07"/>
+      </product>
+      <product code="3EH">
+        <group code="07"/>
+      </product>
+      <product code="3ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="4ZC">
+        <group code="07"/>
+      </product>
+      <product code="4ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="4ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="5EH">
+        <group code="07"/>
+      </product>
+      <product code="6ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="7ZC">
+        <group code="07"/>
+      </product>
+      <product code="7ZL">
+        <group code="Q$"/>
+      </product>
+      <product code="7ZW">
+        <group code="Q$"/>
+      </product>
+      <product code="9ZL">
+        <group code="Q$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="667IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.126</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11667</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="667IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11767</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="667NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.126</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16667</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="667SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.126</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19667</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="667SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20667</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="668" label="AutoCert Interest Rate Futures">
+    <products>
+      <product code="0EB">
+        <group code="N$"/>
+      </product>
+      <product code="0GLB">
+        <group code="N$"/>
+      </product>
+      <product code="0ZQ">
+        <group code="90"/>
+      </product>
+      <product code="1EB">
+        <group code="N$"/>
+      </product>
+      <product code="2GLB">
+        <group code="N$"/>
+      </product>
+      <product code="2ZQ">
+        <group code="90"/>
+      </product>
+      <product code="4EB">
+        <group code="N$"/>
+      </product>
+      <product code="5GE">
+        <group code="90"/>
+      </product>
+      <product code="5ZQ">
+        <group code="90"/>
+      </product>
+      <product code="7GE">
+        <group code="90"/>
+      </product>
+      <product code="8GLB">
+        <group code="N$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="668IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.126</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11668</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="668IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11768</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="668NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.126</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16668</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="668SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.126</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19668</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="668SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20668</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="669" label="AutoCert FUTURES">
+    <products/>
+   <connections>
+    <connection id="669IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip/>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11669</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="669IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11769</port>
+      <feed>B</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="670" label="AutoCert FUTURES">
+    <products/>
+   <connections>
+    <connection id="670IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip/>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11670</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="670IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11770</port>
+      <feed>B</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="671" label="AutoCert FUTURES">
+    <products/>
+   <connections>
+    <connection id="671IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip/>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11671</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="671IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11771</port>
+      <feed>B</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="672" label="AutoCert FUTURES">
+    <products/>
+   <connections>
+    <connection id="672IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip/>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11672</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="672IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11772</port>
+      <feed>B</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="673" label="AutoCert FUTURES">
+    <products/>
+   <connections>
+    <connection id="673IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip/>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11673</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="673IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11773</port>
+      <feed>B</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="674" label="AutoCert Interest Rate Futures">
+    <products>
+      <product code="1K2F">
+        <group code="K$"/>
+      </product>
+      <product code="2K2F">
+        <group code="K$"/>
+      </product>
+      <product code="3K2F">
+        <group code="K$"/>
+      </product>
+      <product code="4K2F">
+        <group code="K$"/>
+      </product>
+      <product code="6K2F">
+        <group code="K$"/>
+      </product>
+      <product code="8K2F">
+        <group code="K$"/>
+      </product>
+      <product code="9K2F">
+        <group code="K$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="674IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.126</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11674</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="674IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11774</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="674NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.126</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>16674</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="674SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.126</ip>
+      <host-ip>69.50.112.74</host-ip>
+      <port>19674</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="674SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>20674</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="685" label="AutoCert Interest Rate Futures&#9;">
+    <products>
+      <product code="2EB">
+        <group code="N$"/>
+      </product>
+      <product code="3EB">
+        <group code="N$"/>
+      </product>
+      <product code="3ZQ">
+        <group code="90"/>
+      </product>
+      <product code="4GLB">
+        <group code="N$"/>
+      </product>
+      <product code="8GE">
+        <group code="90"/>
+      </product>
+      <product code="9ZQ">
+        <group code="90"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="685IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11685</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="685IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11785</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="685NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.127</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>16685</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="685SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>19685</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="685SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>20685</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="687" label="AutoCert Interest Rate Futures&#9;">
+    <products>
+      <product code="0QH">
+        <group code="95"/>
+      </product>
+      <product code="1QH">
+        <group code="95"/>
+      </product>
+      <product code="1RT">
+        <group code="P$"/>
+      </product>
+      <product code="2RT">
+        <group code="P$"/>
+      </product>
+      <product code="3BB">
+        <group code="95"/>
+      </product>
+      <product code="4BB">
+        <group code="95"/>
+      </product>
+      <product code="4RT">
+        <group code="P$"/>
+      </product>
+      <product code="5BB">
+        <group code="95"/>
+      </product>
+      <product code="5RT">
+        <group code="P$"/>
+      </product>
+      <product code="6BB">
+        <group code="95"/>
+      </product>
+      <product code="6WS">
+        <group code="P$"/>
+      </product>
+      <product code="7BB">
+        <group code="95"/>
+      </product>
+      <product code="7WS">
+        <group code="P$"/>
+      </product>
+      <product code="8BB">
+        <group code="95"/>
+      </product>
+      <product code="8WS">
+        <group code="P$"/>
+      </product>
+      <product code="9BB">
+        <group code="95"/>
+      </product>
+      <product code="9WS">
+        <group code="P$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="687IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11687</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="687IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11787</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="687NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>16687</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="687SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>19687</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="687SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>20687</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="688" label="AutoCert Commodity Options">
+    <products>
+      <product code="0OCD">
+        <group code="Z$"/>
+      </product>
+      <product code="1OCD">
+        <group code="Z$"/>
+      </product>
+      <product code="2OCD">
+        <group code="Z$"/>
+      </product>
+      <product code="3OCD">
+        <group code="Z$"/>
+      </product>
+      <product code="4OCD">
+        <group code="Z$"/>
+      </product>
+      <product code="5OCD">
+        <group code="Z$"/>
+      </product>
+      <product code="6OCD">
+        <group code="Z$"/>
+      </product>
+      <product code="7OCD">
+        <group code="Z$"/>
+      </product>
+      <product code="8OCD">
+        <group code="Z$"/>
+      </product>
+      <product code="9OCD">
+        <group code="Z$"/>
+      </product>
+    </products>
+   <connections>
+    <connection id="688IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>12688</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="688IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11788</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="688NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>16688</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="688SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.124</ip>
+      <host-ip>69.50.112.76</host-ip>
+      <port>19698</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="688SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.66</host-ip>
+      <port>20688</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+  <channel id="689" label="AutoCert Interest Rate Futures&#9;">
+    <products/>
+   <connections>
+    <connection id="689IA">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11689</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="689IB">
+      <type feed-type="I">Incremental</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.101</ip>
+      <host-ip>69.50.112.67</host-ip>
+      <port>11789</port>
+      <feed>B</feed>
+    </connection>
+    <connection id="689NA">
+      <type feed-type="N">Instrument Replay</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>16689</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="689SA">
+      <type feed-type="S">Snapshot</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.28.125</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>19689</port>
+      <feed>A</feed>
+    </connection>
+    <connection id="689SAMBO">
+      <type feed-type="SMBO">Snapshot-MBO</type>
+      <protocol>UDP/IP</protocol>
+      <ip>224.0.25.254</ip>
+      <host-ip>69.50.112.75</host-ip>
+      <port>20689</port>
+      <feed>A</feed>
+    </connection>
+   </connections>
+  </channel>
+</configuration>
