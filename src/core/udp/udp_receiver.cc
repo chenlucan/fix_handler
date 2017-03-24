@@ -2,6 +2,7 @@
 #include <boost/bind.hpp>
 #include "core/udp/udp_receiver.h"
 #include "core/assist/logger.h"
+#include "core/assist/utility.h"
 
 namespace fh
 {
@@ -72,8 +73,8 @@ namespace udp
             return;
         }
 
+        LOG_TRACE("udp received:(", bytes_recieved, ")=", fh::core::assist::utility::Hex_str(m_buffer, bytes_recieved));
         processor(m_buffer, bytes_recieved);
-
         this->Async_receive_from(processor);
     }
 

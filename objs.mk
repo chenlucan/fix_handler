@@ -128,6 +128,9 @@ $(BIN_PATH)/tcp_sender_test.o: $(SRC_PATH)/main/market/tcp_sender_test.cc
 $(BIN_PATH)/sbe_test.o: $(SRC_PATH)/main/market/sbe_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
+$(BIN_PATH)/packet_test.o: $(SRC_PATH)/main/market/packet_test.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/exchange_server_test.o: $(SRC_PATH)/main/exchange/server/exchange_server_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 

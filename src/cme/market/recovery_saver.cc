@@ -35,10 +35,11 @@ namespace market
         }
 
         bool is_all_saved = this->Save_packet(buffer, data_length, packet_seq_num);
-        LOG_INFO("saved ", m_is_definition ? "definition" : "recovery", " packet: seq=", packet_seq_num, " total=", m_total_number);
+        LOG_INFO("saved ", m_is_definition ? "definition" : "recovery", " packet: seq=", packet_seq_num, " total=", m_total_number, " saved=", m_recovery_datas.size());
 
         if(is_all_saved)
         {
+            // 所有的消息都接收了
             callback();
         }
     }
@@ -65,7 +66,7 @@ namespace market
         // get messages from packet
         m_current_sequence = fh::cme::market::message::utility::Pick_messages_from_packet(buffer, data_length, m_recovery_datas);
 
-        return m_total_number == m_current_sequence;
+        return m_total_number == m_recovery_datas.size();
     }
 
 } // namespace market

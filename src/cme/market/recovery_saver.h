@@ -29,7 +29,7 @@ namespace market
         private:
             bool m_is_definition;
             std::uint32_t m_current_sequence;
-            std::uint32_t m_total_number;
+            std::uint32_t m_total_number;       // 总共需要接收的 message 数
             std::vector<fh::cme::market::message::MdpMessage> m_recovery_datas;
             std::mutex m_mutex;
 

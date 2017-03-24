@@ -29,9 +29,9 @@ namespace utility
         {
             std::uint16_t message_length = *((std::uint16_t *)current_position);
             char *message = current_position + 2;
-            fh::cme::market::message::MdpMessage mdp(message, message_length, data_length, packet_seq_num, packet_sending_time);
+            fh::cme::market::message::MdpMessage mdp(message, message_length - 2, data_length, packet_seq_num, packet_sending_time);
             mdp_messages.push_back(std::move(mdp));
-            current_position = current_position + message_length + 2;
+            current_position = current_position + message_length;
         }
 
         return packet_seq_num;
@@ -78,13 +78,13 @@ namespace utility
         encoder.Start_encode(ids[index]);
         std::pair<const char*, std::size_t> encoded = encoder.Encoded_buffer();
 
-        std::size_t message_size = encoded.second;
+        std::size_t message_size = encoded.second + 2;  // 长度要包括本身这 2 个字节
         std::memcpy(position, &message_size, 2);
         std::memcpy(position + 2, encoded.first, message_size);
 
         LOG_DEBUG("make message: size=", message_size, " msg=", fh::core::assist::utility::Hex_str(encoded.first, message_size));
 
-        return message_size + 2;
+        return message_size;
     }
 
     // make a mdp packet for test

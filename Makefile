@@ -34,6 +34,7 @@ SENDER_TARGET = $(BIN_PATH)/udp_sender_test
 TSENDER_TARGET = $(BIN_PATH)/tcp_sender_test
 RECEIVER_TARGET = $(BIN_PATH)/udp_receiver_test
 SBE_TARGET = $(BIN_PATH)/sbe_test
+PACKET_TARGET = $(BIN_PATH)/packet_test
 ZMQ_TARGET = $(BIN_PATH)/zmq_receiver_test
 EXCHANGE_SERVER_TARGET = $(BIN_PATH)/exchange_server_test
 STRATEGY_TARGET = $(BIN_PATH)/strategy_test
@@ -44,7 +45,7 @@ default: all;
     
 include objs.mk
     
-all: createdir usender tsender receiver sbe zmqrec eserver strategy eclient copyfile
+all: createdir usender tsender receiver sbe ptest zmqrec eserver strategy eclient copyfile
 
 createdir:
 	mkdir -p ${BIN_PATH}
@@ -65,6 +66,9 @@ receiver: $(BIN_PATH)/udp_receiver_test.o $(BIN_PATH)/dat_processor.o $(BIN_PATH
 
 sbe: $(BIN_PATH)/sbe_test.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(SBE_TARGET) $?
+
+ptest: $(BIN_PATH)/packet_test.o $(BIN_PATH)/mdp_receiver.o $(COMM_OBJS) 
+	$(COMPILE_COMMAND) -o $(PACKET_TARGET) $?
 
 zmqrec: $(BIN_PATH)/mdp_receiver.o $(BIN_PATH)/mdp_saver.o $(BIN_PATH)/zmq_receiver_test.o $(BIN_PATH)/market_settings.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(ZMQ_TARGET) $?
