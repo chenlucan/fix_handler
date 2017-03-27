@@ -97,3 +97,10 @@ message Fill {
   
   optional Timestamp   fill_time    = 60;
 }
+
+message Position {
+  optional string contract      = 1;
+  optional string account       = 2;
+
+  optional int64  position      = 10;
+}

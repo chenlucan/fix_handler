@@ -24,6 +24,10 @@ class MarketListenerI {
   virtual void OnL2(const pb::dms::L2 &l2)    = 0;
   virtual void OnL3()    = 0;
   virtual void OnTrade(const pb::dms::Trade &trade) = 0;
+
+  virtual void OnContractAuctioning(std::string contract)   = 0;
+  virtual void OnContractNoTrading(std::string contract)    = 0;
+  virtual void OnContractTrading(std::string contract)      = 0;
 };
 
 }  // namespace market

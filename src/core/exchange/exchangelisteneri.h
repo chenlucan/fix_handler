@@ -18,7 +18,11 @@ public:
 public:
   virtual void OnOrder(const ::pb::ems::Order &order)  = 0;
   virtual void OnFill(const ::pb::ems::Fill &fill)     = 0;
-  //virtual void OnPosition(fh::core::exchange::PositionVec) = 0;
+  virtual void OnPosition(const core::exchange::PositionVec&) = 0;
+
+  virtual void OnContractAuctioning(std::string contract)   = 0;
+  virtual void OnContractNoTrading(std::string contract)    = 0;
+  virtual void OnContractTrading(std::string contract)      = 0;
 
   typedef boost::container::flat_map<std::string, std::string> ValueMap;
   virtual void OnExchangeReady(ValueMap)         = 0;
