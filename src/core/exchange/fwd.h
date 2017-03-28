@@ -2,7 +2,6 @@
 #define CORE_EXCHANGE_FWD_H
 
 #include <memory>
-
 #include <vector>
 #include "pb/ems/ems.pb.h"
 #include "pb/dms/dms.pb.h"

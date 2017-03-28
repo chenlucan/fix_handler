@@ -3,7 +3,6 @@
 
 #include <boost/container/flat_map.hpp>
 #include "pb/ems/ems.pb.h"
-
 #include "core/exchange/fwd.h"
 
 namespace fh {

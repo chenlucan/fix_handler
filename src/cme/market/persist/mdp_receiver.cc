@@ -71,6 +71,12 @@ namespace persist
             case 4:     // ChannelReset4
                 this->AppendData(document, static_cast<mktdata::ChannelReset4*>(mdp_message), arraydestroy);
                 break;
+            case 12: // AdminHeartbeat12
+                LOG_INFO("message is Admin Heartbeat(12), ignore.");
+                break;
+            case 16: // AdminLogout16
+                LOG_WARN("message is Admin Logout(16), strange! ignore.");
+                break;
             case 27:     // MDInstrumentDefinitionFuture27
                 this->AppendData(document, static_cast<mktdata::MDInstrumentDefinitionFuture27*>(mdp_message), arraydestroy);
                 break;
@@ -167,7 +173,7 @@ namespace persist
             noMDEntries.next();
             bson_t *temp_child = BCON_NEW (
                     "mDUpdateAction", BCON_INT32((int)noMDEntries.mDUpdateAction()),
-                    "mDEntryType", BCON_UTF8(noMDEntries.mDEntryType()),
+                    "mDEntryType", BCON_INT32(noMDEntries.mDEntryType(0)),
                     "applID", BCON_INT32((int)noMDEntries.applID())
             );
             BSON_APPEND_DOCUMENT(mdEntries, std::to_string(index_md).c_str(), temp_child);
@@ -477,11 +483,11 @@ namespace persist
         std::uint64_t index_NoLegs = 0;
 		while (lgs.hasNext())
 		{
-			ts.next();
+			lgs.next();
 			bson_t *temp_child = BCON_NEW (
 				"LegSecurityID", BCON_INT32(lgs.legSecurityID()), "LegSecurityIDSource",  BCON_UTF8(lgs.legSecurityIDSource()), "LegSide", BCON_INT32(lgs.legSide()),
 				"LegRatioQty", BCON_INT32(lgs.legRatioQty()), "LegPriceMantissa",  BCON_INT64(lgs.legPrice().mantissa()),  "LegPriceExponent",  BCON_INT32(lgs.legPrice().exponent()), 
-				"legOptionDeltaMantissa",  BCON_INT64(lgs.legOptionDelta().mantissa()),  "legOptionDeltaExponent",  BCON_INT32(lgs.legOptionDelta().exponent())
+				"legOptionDeltaMantissa",  BCON_INT32(lgs.legOptionDelta().mantissa()),  "legOptionDeltaExponent",  BCON_INT32(lgs.legOptionDelta().exponent())
             );
             BSON_APPEND_DOCUMENT(Legs, std::to_string(index_NoLotTypeRules).c_str(), temp_child);
 		    destroyVector.push_back(temp_child);
@@ -509,10 +515,17 @@ namespace persist
 
     void MdpReceiver::AppendData(bson_t *document, mktdata::MDIncrementalRefreshBook32 *m, std::vector<bson_t *> &destroyVector)
     {
-        BCON_APPEND (document,
-                "type", BCON_UTF8("MDIncrementalRefreshBook32"),
-                "transactTime", BCON_INT64 (m->transactTime()),
-                "matchEventIndicator", BCON_UTF8 (m->matchEventIndicator().buffer())
+		BCON_APPEND (document,
+			"type", BCON_UTF8("MDIncrementalRefreshBook32"),
+			"transactTime", BCON_INT64 (m->transactTime()),
+			"matchEventIndicatorLastTradeMsg", BCON_INT32(m->matchEventIndicator().lastTradeMsg()),
+			"matchEventIndicatorLastVolumeMsg", BCON_INT32(m->matchEventIndicator().lastVolumeMsg()),
+			"matchEventIndicatorLastQuoteMsg", BCON_INT32(m->matchEventIndicator().lastQuoteMsg()),
+			"matchEventIndicatorLastStatsMsg", BCON_INT32(m->matchEventIndicator().lastStatsMsg()),
+			"matchEventIndicatorLastImpliedMsg", BCON_INT32(m->matchEventIndicator().lastImpliedMsg()),
+			"matchEventIndicatorRecoveryMsg", BCON_INT32(m->matchEventIndicator().recoveryMsg()),
+			"matchEventIndicatorReserved", BCON_INT32(m->matchEventIndicator().reserved()),
+			"matchEventIndicatorEndOfEvent", BCON_INT32(m->matchEventIndicator().endOfEvent())
         );
 
         bson_t *mdEntries = bson_new();
@@ -522,7 +535,7 @@ namespace persist
         {
             noMDEntries.next();
             bson_t *temp_child = BCON_NEW (
-                    "mDEntryPx", BCON_INT32(noMDEntries.mDEntryPx().mantissa()),
+                    "mDEntryPx", BCON_INT64(noMDEntries.mDEntryPx().mantissa()),
                     "mDEntrySize", BCON_INT32 ((int)noMDEntries.mDEntrySize()),
                     "securityID", BCON_INT32 ((int)noMDEntries.securityID()),
                     "rptSeq", BCON_INT32 ((int)noMDEntries.rptSeq()),
@@ -560,13 +573,21 @@ namespace persist
     }
 
     void MdpReceiver::AppendData(bson_t *document, mktdata::MDIncrementalRefreshDailyStatistics33 *m, std::vector<bson_t *> &destroyVector)
-    {
+    {        
         BCON_APPEND (document,
                 "type", BCON_UTF8("MDIncrementalRefreshDailyStatistics33"),
                 "transactTime", BCON_INT64 (m->transactTime()),
-                "matchEventIndicator", BCON_UTF8 (m->matchEventIndicator().buffer())
-        );
-           
+                "matchEventIndicatorLastTradeMsg", BCON_INT32(m->matchEventIndicator().lastTradeMsg()),
+				"matchEventIndicatorLastVolumeMsg", BCON_INT32(m->matchEventIndicator().lastVolumeMsg()),
+				"matchEventIndicatorLastQuoteMsg", BCON_INT32(m->matchEventIndicator().lastQuoteMsg()),
+				"matchEventIndicatorLastStatsMsg", BCON_INT32(m->matchEventIndicator().lastStatsMsg()),
+				"matchEventIndicatorLastImpliedMsg", BCON_INT32(m->matchEventIndicator().lastImpliedMsg()),
+				"matchEventIndicatorRecoveryMsg", BCON_INT32(m->matchEventIndicator().recoveryMsg()),
+				"matchEventIndicatorReserved", BCON_INT32(m->matchEventIndicator().reserved()),
+				"matchEventIndicatorEndOfEvent", BCON_INT32(m->matchEventIndicator().endOfEvent())
+        );		   
+		
+		   
         bson_t *mdEntries = bson_new();
         mktdata::MDIncrementalRefreshDailyStatistics33::NoMDEntries& noMDEntries = m->noMDEntries();
         std::uint64_t index_md = 0;
@@ -574,7 +595,7 @@ namespace persist
         {
             noMDEntries.next();
             bson_t *temp_child = BCON_NEW (
-                    "mDEntryPx", BCON_INT32(noMDEntries.mDEntryPx().mantissa()),
+                    "mDEntryPx", BCON_INT64(noMDEntries.mDEntryPx().mantissa()),
                     "mDEntrySize", BCON_INT32 ((int)noMDEntries.mDEntrySize()),
                     "securityID", BCON_INT32 ((int)noMDEntries.securityID()),
                     "rptSeq", BCON_INT32 ((int)noMDEntries.rptSeq()),
@@ -598,10 +619,17 @@ namespace persist
 
     void MdpReceiver::AppendData(bson_t *document, mktdata::MDIncrementalRefreshLimitsBanding34 *m, std::vector<bson_t *> &destroyVector)
     {
-        BCON_APPEND (document,
-                "type", BCON_UTF8("MDIncrementalRefreshLimitsBanding34"),
-                "transactTime", BCON_INT64 (m->transactTime()),
-                "matchEventIndicator", BCON_UTF8 (m->matchEventIndicator().buffer())
+		BCON_APPEND (document,
+		"type", BCON_UTF8("ChannelReset4"),
+		"transactTime", BCON_INT64 (m->transactTime()),
+		"matchEventIndicatorLastTradeMsg", BCON_INT32(m->matchEventIndicator().lastTradeMsg()),
+		"matchEventIndicatorLastVolumeMsg", BCON_INT32(m->matchEventIndicator().lastVolumeMsg()),
+		"matchEventIndicatorLastQuoteMsg", BCON_INT32(m->matchEventIndicator().lastQuoteMsg()),
+		"matchEventIndicatorLastStatsMsg", BCON_INT32(m->matchEventIndicator().lastStatsMsg()),
+		"matchEventIndicatorLastImpliedMsg", BCON_INT32(m->matchEventIndicator().lastImpliedMsg()),
+		"matchEventIndicatorRecoveryMsg", BCON_INT32(m->matchEventIndicator().recoveryMsg()),
+		"matchEventIndicatorReserved", BCON_INT32(m->matchEventIndicator().reserved()),
+		"matchEventIndicatorEndOfEvent", BCON_INT32(m->matchEventIndicator().endOfEvent())
         );
 
         bson_t *mdEntries = bson_new();
@@ -613,14 +641,14 @@ namespace persist
             bson_t *temp_child = BCON_NEW (
                     "HighLimitPriceMantissa", BCON_INT64(noMDEntries.highLimitPrice().mantissa()),
 					"HighLimitPriceExponent", BCON_INT32(noMDEntries.highLimitPrice().exponent()),
-                    "LowLimitPriceMantissa", BCON_INT32 (noMDEntries.lowLimitPrice().mantissa()),
+                    "LowLimitPriceMantissa", BCON_INT64 (noMDEntries.lowLimitPrice().mantissa()),
 					"LowLimitPriceExponent", BCON_INT32 (noMDEntries.lowLimitPrice().exponent()),
 					"MaxPriceVariationMantissa", BCON_INT64(noMDEntries.maxPriceVariation().mantissa()),
 			        "MaxPriceVariationExponent", BCON_INT32(noMDEntries.maxPriceVariation().exponent()),	
                     "securityID", BCON_INT32 ((int)noMDEntries.securityID()),
                     "rptSeq", BCON_INT32 ((int)noMDEntries.rptSeq()),
 					"mDUpdateAction", BCON_INT32((int)noMDEntries.mDUpdateAction()),
-                    "mDEntryType", BCON_UTF8(noMDEntries.mDEntryType())    
+                    "mDEntryType", BCON_INT32(noMDEntries.mDEntryType(0))    
             );
             BSON_APPEND_DOCUMENT(mdEntries, std::to_string(index_md).c_str(), temp_child);
 		    destroyVector.push_back(temp_child);
@@ -635,8 +663,15 @@ namespace persist
         BCON_APPEND (document,
                 "type", BCON_UTF8("MDIncrementalRefreshSessionStatistics35"),
                 "transactTime", BCON_INT64 (m->transactTime()),
-                "matchEventIndicator", BCON_UTF8 (m->matchEventIndicator().buffer())
-        );
+                "matchEventIndicatorLastTradeMsg", BCON_INT32(m->matchEventIndicator().lastTradeMsg()),
+				"matchEventIndicatorLastVolumeMsg", BCON_INT32(m->matchEventIndicator().lastVolumeMsg()),
+				"matchEventIndicatorLastQuoteMsg", BCON_INT32(m->matchEventIndicator().lastQuoteMsg()),
+				"matchEventIndicatorLastStatsMsg", BCON_INT32(m->matchEventIndicator().lastStatsMsg()),
+				"matchEventIndicatorLastImpliedMsg", BCON_INT32(m->matchEventIndicator().lastImpliedMsg()),
+				"matchEventIndicatorRecoveryMsg", BCON_INT32(m->matchEventIndicator().recoveryMsg()),
+				"matchEventIndicatorReserved", BCON_INT32(m->matchEventIndicator().reserved()),
+				"matchEventIndicatorEndOfEvent", BCON_INT32(m->matchEventIndicator().endOfEvent())
+        );		
 
         bson_t *mdEntries = bson_new();
         mktdata::MDIncrementalRefreshSessionStatistics35::NoMDEntries& noMDEntries = m->noMDEntries();
@@ -667,8 +702,15 @@ namespace persist
         BCON_APPEND (document,
                 "type", BCON_UTF8("MDIncrementalRefreshDailyStatistics33"),
                 "transactTime", BCON_INT64 (m->transactTime()),
-                "matchEventIndicator", BCON_UTF8 (m->matchEventIndicator().buffer())
-        );
+                "matchEventIndicatorLastTradeMsg", BCON_INT32(m->matchEventIndicator().lastTradeMsg()),
+				"matchEventIndicatorLastVolumeMsg", BCON_INT32(m->matchEventIndicator().lastVolumeMsg()),
+				"matchEventIndicatorLastQuoteMsg", BCON_INT32(m->matchEventIndicator().lastQuoteMsg()),
+				"matchEventIndicatorLastStatsMsg", BCON_INT32(m->matchEventIndicator().lastStatsMsg()),
+				"matchEventIndicatorLastImpliedMsg", BCON_INT32(m->matchEventIndicator().lastImpliedMsg()),
+				"matchEventIndicatorRecoveryMsg", BCON_INT32(m->matchEventIndicator().recoveryMsg()),
+				"matchEventIndicatorReserved", BCON_INT32(m->matchEventIndicator().reserved()),
+				"matchEventIndicatorEndOfEvent", BCON_INT32(m->matchEventIndicator().endOfEvent())
+        );		
 
         bson_t *mdEntries = bson_new();
         mktdata::MDIncrementalRefreshTrade36::NoMDEntries& noMDEntries = m->noMDEntries();
@@ -677,7 +719,7 @@ namespace persist
         {
             noMDEntries.next();
             bson_t *temp_child = BCON_NEW (
-                    "mDEntryPx", BCON_INT32(noMDEntries.mDEntryPx().mantissa()),
+                    "mDEntryPx", BCON_INT64(noMDEntries.mDEntryPx().mantissa()),
                     "mDEntrySize", BCON_INT32 ((int)noMDEntries.mDEntrySize()),
                     "securityID", BCON_INT32 ((int)noMDEntries.securityID()),
                     "rptSeq", BCON_INT32 ((int)noMDEntries.rptSeq()),
@@ -685,7 +727,7 @@ namespace persist
 					"TradeID", BCON_INT32 ((int)noMDEntries.tradeIDId()),
 					"AggressorSide", BCON_INT32((int)noMDEntries.aggressorSide()),
 					"mDUpdateAction", BCON_INT32((int)noMDEntries.mDUpdateAction()),
-                    "mDEntryType", BCON_UTF8(noMDEntries.mDEntryType())        
+                    "mDEntryType", BCON_INT32(noMDEntries.mDEntryType(0))        
             );
             BSON_APPEND_DOCUMENT(mdEntries, std::to_string(index_md).c_str(), temp_child);
 		    destroyVector.push_back(temp_child);
@@ -700,8 +742,15 @@ namespace persist
         BCON_APPEND (document,
                 "type", BCON_UTF8("MDIncrementalRefreshVolume37"),
                 "transactTime", BCON_INT64 (m->transactTime()),
-                "matchEventIndicator", BCON_UTF8 (m->matchEventIndicator().buffer())
-        );
+                "matchEventIndicatorLastTradeMsg", BCON_INT32(m->matchEventIndicator().lastTradeMsg()),
+				"matchEventIndicatorLastVolumeMsg", BCON_INT32(m->matchEventIndicator().lastVolumeMsg()),
+				"matchEventIndicatorLastQuoteMsg", BCON_INT32(m->matchEventIndicator().lastQuoteMsg()),
+				"matchEventIndicatorLastStatsMsg", BCON_INT32(m->matchEventIndicator().lastStatsMsg()),
+				"matchEventIndicatorLastImpliedMsg", BCON_INT32(m->matchEventIndicator().lastImpliedMsg()),
+				"matchEventIndicatorRecoveryMsg", BCON_INT32(m->matchEventIndicator().recoveryMsg()),
+				"matchEventIndicatorReserved", BCON_INT32(m->matchEventIndicator().reserved()),
+				"matchEventIndicatorEndOfEvent", BCON_INT32(m->matchEventIndicator().endOfEvent())
+        );		
 
         bson_t *mdEntries = bson_new();
         mktdata::MDIncrementalRefreshVolume37::NoMDEntries& noMDEntries = m->noMDEntries();
@@ -714,7 +763,7 @@ namespace persist
 				"securityID", BCON_INT32 ((int)noMDEntries.securityID()),
 				"rptSeq", BCON_INT32 ((int)noMDEntries.rptSeq()),
                 "mDUpdateAction", BCON_INT32((int)noMDEntries.mDUpdateAction()),
-                "mDEntryType", BCON_UTF8(noMDEntries.mDEntryType())
+                "mDEntryType", BCON_INT32(noMDEntries.mDEntryType(0))
             );
             BSON_APPEND_DOCUMENT(mdEntries, std::to_string(index_md).c_str(), temp_child);
 		    destroyVector.push_back(temp_child);
@@ -750,7 +799,7 @@ namespace persist
         {
             noMDEntries.next();
             bson_t *temp_child = BCON_NEW (
-			        "mDEntryPxMantissa", BCON_INT32(noMDEntries.mDEntryPx().mantissa()),
+			        "mDEntryPxMantissa", BCON_INT64(noMDEntries.mDEntryPx().mantissa()),
 					"mDEntryPxExponent", BCON_INT32(noMDEntries.mDEntryPx().exponent()),
 					"mDEntrySize", BCON_INT32((int)noMDEntries.mDEntrySize()),
 					"numberOfOrders", BCON_INT32 ((int)noMDEntries.numberOfOrders()),
@@ -777,11 +826,18 @@ namespace persist
     {
         BCON_APPEND (document,
                 "type", BCON_UTF8("QuoteRequest39"),
-                "transactTime", BCON_INT64 (m->transactTime()),
 				"QuoteReqID", BCON_UTF8 (m->quoteReqID()),
-                "matchEventIndicator", BCON_UTF8 (m->matchEventIndicator().buffer())
-        );
-
+                "transactTime", BCON_INT64 (m->transactTime()),
+                "matchEventIndicatorLastTradeMsg", BCON_INT32(m->matchEventIndicator().lastTradeMsg()),
+				"matchEventIndicatorLastVolumeMsg", BCON_INT32(m->matchEventIndicator().lastVolumeMsg()),
+				"matchEventIndicatorLastQuoteMsg", BCON_INT32(m->matchEventIndicator().lastQuoteMsg()),
+				"matchEventIndicatorLastStatsMsg", BCON_INT32(m->matchEventIndicator().lastStatsMsg()),
+				"matchEventIndicatorLastImpliedMsg", BCON_INT32(m->matchEventIndicator().lastImpliedMsg()),
+				"matchEventIndicatorRecoveryMsg", BCON_INT32(m->matchEventIndicator().recoveryMsg()),
+				"matchEventIndicatorReserved", BCON_INT32(m->matchEventIndicator().reserved()),
+				"matchEventIndicatorEndOfEvent", BCON_INT32(m->matchEventIndicator().endOfEvent())
+        );		
+		
         bson_t *relatedSym = bson_new();
         mktdata::QuoteRequest39::NoRelatedSym& noRelatedSym = m->noRelatedSym();
         std::uint64_t index_md = 0;
@@ -805,8 +861,19 @@ namespace persist
 
     void MdpReceiver::AppendData(bson_t *document, mktdata::MDInstrumentDefinitionOption41 *m, std::vector<bson_t *> &destroyVector)
     {
-        BCON_APPEND(document, 
-		    "type", BCON_UTF8("MDInstrumentDefinitionOption41"), 
+		BCON_APPEND (document,
+			"type", BCON_UTF8("MDInstrumentDefinitionOption41"),
+			"matchEventIndicatorLastTradeMsg", BCON_INT32(m->matchEventIndicator().lastTradeMsg()),
+			"matchEventIndicatorLastVolumeMsg", BCON_INT32(m->matchEventIndicator().lastVolumeMsg()),
+			"matchEventIndicatorLastQuoteMsg", BCON_INT32(m->matchEventIndicator().lastQuoteMsg()),
+			"matchEventIndicatorLastStatsMsg", BCON_INT32(m->matchEventIndicator().lastStatsMsg()),
+			"matchEventIndicatorLastImpliedMsg", BCON_INT32(m->matchEventIndicator().lastImpliedMsg()),
+			"matchEventIndicatorRecoveryMsg", BCON_INT32(m->matchEventIndicator().recoveryMsg()),
+			"matchEventIndicatorReserved", BCON_INT32(m->matchEventIndicator().reserved()),
+			"matchEventIndicatorEndOfEvent", BCON_INT32(m->matchEventIndicator().endOfEvent())
+        );
+		
+        BCON_APPEND(document,  
 			"totNumReports", BCON_INT32((int)m->totNumReports()),
 		    "securityUpdateAction", BCON_INT32((int)m->securityUpdateAction()),
 			"lastUpdateTime", BCON_INT64(m->lastUpdateTime()),
@@ -858,6 +925,7 @@ namespace persist
 			"SettlPriceTypeReservedBits", BCON_INT32(m->settlPriceType().reservedBits()),
 			"SettlPriceTypeNullValue", BCON_INT32(m->settlPriceType().nullValue()),
 			"OpenInterestQty", BCON_INT32(m->openInterestQty()),
+			"ClearedVolume", BCON_INT32(m->clearedVolume()),
 			"LowLimitPriceMantissa", BCON_INT64(m->lowLimitPrice().mantissa()),
 			"LowLimitPriceExponent", BCON_INT32(m->lowLimitPrice().exponent()),
 			"HighLimitPriceMantissa", BCON_INT64(m->highLimitPrice().mantissa()),
@@ -989,9 +1057,16 @@ namespace persist
         BCON_APPEND (document,
                 "type", BCON_UTF8("MDIncrementalRefreshTradeSummary42"),
                 "transactTime", BCON_INT64 (m->transactTime()),
-                "matchEventIndicator", BCON_UTF8 (m->matchEventIndicator().buffer())
-        );
-
+                "matchEventIndicatorLastTradeMsg", BCON_INT32(m->matchEventIndicator().lastTradeMsg()),
+				"matchEventIndicatorLastVolumeMsg", BCON_INT32(m->matchEventIndicator().lastVolumeMsg()),
+				"matchEventIndicatorLastQuoteMsg", BCON_INT32(m->matchEventIndicator().lastQuoteMsg()),
+				"matchEventIndicatorLastStatsMsg", BCON_INT32(m->matchEventIndicator().lastStatsMsg()),
+				"matchEventIndicatorLastImpliedMsg", BCON_INT32(m->matchEventIndicator().lastImpliedMsg()),
+				"matchEventIndicatorRecoveryMsg", BCON_INT32(m->matchEventIndicator().recoveryMsg()),
+				"matchEventIndicatorReserved", BCON_INT32(m->matchEventIndicator().reserved()),
+				"matchEventIndicatorEndOfEvent", BCON_INT32(m->matchEventIndicator().endOfEvent())
+        );		
+		
         bson_t *mdEntries = bson_new();
         mktdata::MDIncrementalRefreshTradeSummary42::NoMDEntries& noMDEntries = m->noMDEntries();
         std::uint64_t index_md = 0;
@@ -999,7 +1074,7 @@ namespace persist
         {
             noMDEntries.next();
             bson_t *temp_child = BCON_NEW (
-                    "mDEntryPxMantissa", BCON_INT32(noMDEntries.mDEntryPx().mantissa()),
+                    "mDEntryPxMantissa", BCON_INT64(noMDEntries.mDEntryPx().mantissa()),
 					"mDEntryPxExponent", BCON_INT32(noMDEntries.mDEntryPx().exponent()),
                     "mDEntrySize", BCON_INT32 ((int)noMDEntries.mDEntrySize()),
                     "securityID", BCON_INT32 ((int)noMDEntries.securityID()),
@@ -1007,7 +1082,7 @@ namespace persist
                     "numberOfOrders", BCON_INT32 ((int)noMDEntries.numberOfOrders()),
 					"AggressorSide", BCON_INT32((int)noMDEntries.aggressorSide()),
                     "mDUpdateAction", BCON_INT32((int)noMDEntries.mDUpdateAction()),
-                    "mDEntryType", BCON_UTF8(noMDEntries.mDEntryType())
+                    "mDEntryType", BCON_INT32(noMDEntries.mDEntryType(0))
             );
             BSON_APPEND_DOCUMENT(mdEntries, std::to_string(index_md).c_str(), temp_child);
 		    destroyVector.push_back(temp_child);
@@ -1023,10 +1098,10 @@ namespace persist
         {
             noOrderIDEntries.next();
             bson_t *temp_child = BCON_NEW (
-                    "OrderID", BCON_INT32(noOrderIDEntries.orderID()),
+                    "OrderID", BCON_INT64(noOrderIDEntries.orderID()),
                     "lastQty", BCON_INT32(noOrderIDEntries.lastQty())
             );
-            BSON_APPEND_DOCUMENT(orderIdEntries, std::to_string(index_md).c_str(), temp_child);
+            BSON_APPEND_DOCUMENT(orderIdEntries, std::to_string(index_order).c_str(), temp_child);
 		    destroyVector.push_back(temp_child);
             index_order++;
         }
@@ -1049,9 +1124,9 @@ namespace persist
         {
             noMDEntries.next();
             bson_t *temp_child = BCON_NEW (
-			        "OrderID", BCON_INT32(noMDEntries.orderID()),
+			        "OrderID", BCON_INT64(noMDEntries.orderID()),
 					"mDOrderPriority", BCON_INT64(noMDEntries.mDOrderPriority()),
-                    "mDEntryPxMantissa", BCON_INT32(noMDEntries.mDEntryPx().mantissa()),
+                    "mDEntryPxMantissa", BCON_INT64(noMDEntries.mDEntryPx().mantissa()),
 					"mDEntryPxExponent", BCON_INT32(noMDEntries.mDEntryPx().exponent()),
 					"mDDisplayQty", BCON_INT32(noMDEntries.mDDisplayQty()),
                     "securityID", BCON_INT32 ((int)noMDEntries.securityID()),
@@ -1085,9 +1160,9 @@ namespace persist
         {
             noMDEntries.next();
             bson_t *temp_child = BCON_NEW (
-			        "OrderID", BCON_INT32(noMDEntries.orderID()),
+			        "OrderID", BCON_INT64(noMDEntries.orderID()),
 					"mDOrderPriority", BCON_INT64(noMDEntries.mDOrderPriority()),
-                    "mDEntryPxMantissa", BCON_INT32(noMDEntries.mDEntryPx().mantissa()),
+                    "mDEntryPxMantissa", BCON_INT64(noMDEntries.mDEntryPx().mantissa()),
 					"mDEntryPxExponent", BCON_INT32(noMDEntries.mDEntryPx().exponent()),
 					"mDDisplayQty", BCON_INT32(noMDEntries.mDDisplayQty()),
                     "mDEntryType", BCON_INT32(noMDEntries.mDEntryType())

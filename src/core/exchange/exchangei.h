@@ -2,9 +2,7 @@
 #define CORE_EXCHANGE_EXCHANGEI_H
 
 #include <vector>
-
 #include "pb/ems/ems.pb.h"
-
 #include "core/exchange/fwd.h"
 
 namespace fh {

@@ -55,7 +55,7 @@ namespace message
                 this->Parse_42((mktdata::MDIncrementalRefreshTradeSummary42 *)body, books);
                 break;
             case 43:    // MDIncrementalRefreshOrderBook43
-                this->Parse_43((mktdata::MDIncrementalRefreshOrderBook43 *)body, books);
+                LOG_INFO("MDIncrementalRefreshOrderBook43 is for market by order, ignore.");
                 break;
             default:
                 break;

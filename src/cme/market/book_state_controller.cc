@@ -168,6 +168,12 @@ namespace market
     {
         LOG_INFO("create price: level=", (int)b.mDPriceLevel, ", securityID=", b.securityID, ", type=", (char)b.mDEntryType);
 
+        if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
+        {
+            LOG_WARN("price level invalid, ignore:", b.mDPriceLevel);
+            return false;
+        }
+
         std::uint8_t depth = book_state.marketDepth;
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
         BookPrice new_price = {b.numberOfOrders, b.mDEntrySize, b.mDEntryPx};
@@ -202,6 +208,12 @@ namespace market
     {
         LOG_INFO("change price: level=", (int)b.mDPriceLevel, ", securityID=", b.securityID, ", type=", (char)b.mDEntryType);
 
+        if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
+        {
+            LOG_WARN("price level invalid, ignore:", b.mDPriceLevel);
+            return false;
+        }
+
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
         if(target.size() < (std::size_t)b.mDPriceLevel)
         {
@@ -221,6 +233,12 @@ namespace market
     bool BookStateController::Delete_price(const fh::cme::market::message::Book &b, BookState &book_state)
     {
         LOG_INFO("delete price: level=", (int)b.mDPriceLevel, ", securityID=", b.securityID, ", type=", (char)b.mDEntryType);
+
+        if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
+        {
+            LOG_WARN("price level invalid, ignore:", b.mDPriceLevel);
+            return false;
+        }
 
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
         if(target.size() < (std::size_t)b.mDPriceLevel)
@@ -249,6 +267,12 @@ namespace market
     bool BookStateController::Delete_top_price(const fh::cme::market::message::Book &b, BookState &book_state)
     {
         LOG_INFO("delete top price: level=", (int)b.mDPriceLevel, ", securityID=", b.securityID, ", type=", (char)b.mDEntryType);
+
+        if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
+        {
+            LOG_WARN("price level invalid, ignore:", b.mDPriceLevel);
+            return false;
+        }
 
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
         target.erase(target.begin(), target.begin() + std::min((std::size_t)b.mDPriceLevel, target.size()));

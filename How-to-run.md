@@ -80,3 +80,13 @@
 	struct to class
 	cpplint
 	gtest
+	
+## tasks	
+	在 market_application 和  market_manager 之间加一层作为 MarketI，能够对应多个 channel
+	收到 Security Status 消息后要能够把当前状态发送给策略
+	统一 MarketManager 的 Start 和 Join
+	将保存原始数据的操作也作为一个 listener 独立出来
+	关于 Thread.detach 的确认
+	交易模块连接上交易所后需要将当前状态（position）发送给策略
+	
+	
