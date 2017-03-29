@@ -20,23 +20,26 @@ namespace market
 
         public:
             // implement of MarketListenerI
-            virtual void OnMarketDisconnect(core::market::MarketI* market);
+            void OnMarketDisconnect(core::market::MarketI* market) override;
             // implement of MarketListenerI
-            virtual void OnMarketReconnect(core::market::MarketI* market);
+            void OnMarketReconnect(core::market::MarketI* market) override;
             // implement of MarketListenerI
-            virtual void OnContractDefinition(const pb::dms::Contract &contract);
+            void OnContractDefinition(const pb::dms::Contract &contract) override;
             // implement of MarketListenerI
-            virtual void OnBBO(const pb::dms::BBO &bbo);
+            void OnBBO(const pb::dms::BBO &bbo) override;
             // implement of MarketListenerI
-            virtual void OnBid(const pb::dms::Bid &bid);
+            void OnBid(const pb::dms::Bid &bid) override;
             // implement of MarketListenerI
-            virtual void OnOffer(const pb::dms::Offer &offer);
+            void OnOffer(const pb::dms::Offer &offer) override;
             // implement of MarketListenerI
-            virtual void OnL2(const pb::dms::L2 &l2);
+            void OnL2(const pb::dms::L2 &l2) override;
             // implement of MarketListenerI
-            virtual void OnL3();
+            void OnL3() override;
             // implement of MarketListenerI
-            virtual void OnTrade(const pb::dms::Trade &trade);
+            void OnTrade(const pb::dms::Trade &trade) override;
+            void OnContractAuctioning(std::string contract) override;
+            void OnContractNoTrading(std::string contract)  override;
+            void OnContractTrading(std::string contract)    override;
 
         private:
             fh::core::zmq::ZmqSender m_sender;
