@@ -84,7 +84,18 @@ namespace market
         LOG_INFO("send Trade: ", fh::core::assist::utility::Format_pb_message(trade));
         m_sender.Send("T" + trade.SerializeAsString());
     }
-
+    void BookSender::OnContractAuctioning(std::string contract)
+    {
+      LOG_INFO("contract status update [Auction]");
+    }
+    void BookSender::OnContractNoTrading(std::string contract)
+    {
+      LOG_INFO("contract status update [NoTrading]");
+    }
+    void BookSender::OnContractTrading(std::string contract)
+    {
+      LOG_INFO("contract status update [Trading]");
+    }
 } // namespace market
 } // namespace cme
 } // namespace fh

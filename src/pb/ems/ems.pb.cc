@@ -40,6 +40,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* Fill_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   Fill_reflection_ = NULL;
+const ::google::protobuf::Descriptor* Position_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  Position_reflection_ = NULL;
 const ::google::protobuf::EnumDescriptor* BuySell_descriptor_ = NULL;
 const ::google::protobuf::EnumDescriptor* OrderStatus_descriptor_ = NULL;
 const ::google::protobuf::EnumDescriptor* TimeInForce_descriptor_ = NULL;
@@ -175,6 +178,23 @@ void protobuf_AssignDesc_ems_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Fill));
+  Position_descriptor_ = file->message_type(6);
+  static const int Position_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, contract_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, account_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, position_),
+  };
+  Position_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      Position_descriptor_,
+      Position::default_instance_,
+      Position_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(Position));
   BuySell_descriptor_ = file->enum_type(0);
   OrderStatus_descriptor_ = file->enum_type(1);
   TimeInForce_descriptor_ = file->enum_type(2);
@@ -203,6 +223,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
     Order_descriptor_, &Order::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     Fill_descriptor_, &Fill::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    Position_descriptor_, &Position::default_instance());
 }
 
 }  // namespace
@@ -220,6 +242,8 @@ void protobuf_ShutdownFile_ems_2eproto() {
   delete Order_reflection_;
   delete Fill::default_instance_;
   delete Fill_reflection_;
+  delete Position::default_instance_;
+  delete Position_reflection_;
 }
 
 void protobuf_AddDesc_ems_2eproto() {
@@ -252,15 +276,16 @@ void protobuf_AddDesc_ems_2eproto() {
     " \001(\t\022\027\n\017client_order_id\030\n \001(\t\022\031\n\021exchang"
     "e_order_id\030\013 \001(\t\022\020\n\010contract\030\014 \001(\t\022!\n\010bu"
     "y_sell\030\r \001(\0162\017.pb.ems.BuySell\022$\n\tfill_ti"
-    "me\030< \001(\0132\021.pb.ems.Timestamp*/\n\007BuySell\022\013"
-    "\n\007BS_None\020\000\022\n\n\006BS_Buy\020\001\022\013\n\007BS_Sell\020\002*l\n\013"
-    "OrderStatus\022\013\n\007OS_None\020\000\022\020\n\014OS_Cancelled"
-    "\020\001\022\r\n\tOS_Filled\020\002\022\017\n\013OS_Rejected\020\003\022\016\n\nOS"
-    "_Working\020\004\022\016\n\nOS_Pending\020\005*O\n\013TimeInForc"
-    "e\022\014\n\010TIF_None\020\000\022\013\n\007TIF_FAK\020\001\022\013\n\007TIF_FOK\020"
-    "\002\022\013\n\007TIF_GFD\020\003\022\013\n\007TIF_GTC\020\004*5\n\tOrderType"
-    "\022\013\n\007OT_None\020\000\022\014\n\010OT_Limit\020\001\022\r\n\tOT_Market"
-    "\020\002", 1242);
+    "me\030< \001(\0132\021.pb.ems.Timestamp\"\?\n\010Position\022"
+    "\020\n\010contract\030\001 \001(\t\022\017\n\007account\030\002 \001(\t\022\020\n\010po"
+    "sition\030\n \001(\003*/\n\007BuySell\022\013\n\007BS_None\020\000\022\n\n\006"
+    "BS_Buy\020\001\022\013\n\007BS_Sell\020\002*l\n\013OrderStatus\022\013\n\007"
+    "OS_None\020\000\022\020\n\014OS_Cancelled\020\001\022\r\n\tOS_Filled"
+    "\020\002\022\017\n\013OS_Rejected\020\003\022\016\n\nOS_Working\020\004\022\016\n\nO"
+    "S_Pending\020\005*O\n\013TimeInForce\022\014\n\010TIF_None\020\000"
+    "\022\013\n\007TIF_FAK\020\001\022\013\n\007TIF_FOK\020\002\022\013\n\007TIF_GFD\020\003\022"
+    "\013\n\007TIF_GTC\020\004*5\n\tOrderType\022\013\n\007OT_None\020\000\022\014"
+    "\n\010OT_Limit\020\001\022\r\n\tOT_Market\020\002", 1307);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "ems.proto", &protobuf_RegisterTypes);
   Date::default_instance_ = new Date();
@@ -269,12 +294,14 @@ void protobuf_AddDesc_ems_2eproto() {
   Status::default_instance_ = new Status();
   Order::default_instance_ = new Order();
   Fill::default_instance_ = new Fill();
+  Position::default_instance_ = new Position();
   Date::default_instance_->InitAsDefaultInstance();
   Time::default_instance_->InitAsDefaultInstance();
   Timestamp::default_instance_->InitAsDefaultInstance();
   Status::default_instance_->InitAsDefaultInstance();
   Order::default_instance_->InitAsDefaultInstance();
   Fill::default_instance_->InitAsDefaultInstance();
+  Position::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_ems_2eproto);
 }
 
@@ -3262,6 +3289,349 @@ void Fill::Swap(Fill* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = Fill_descriptor_;
   metadata.reflection = Fill_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int Position::kContractFieldNumber;
+const int Position::kAccountFieldNumber;
+const int Position::kPositionFieldNumber;
+#endif  // !_MSC_VER
+
+Position::Position()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:pb.ems.Position)
+}
+
+void Position::InitAsDefaultInstance() {
+}
+
+Position::Position(const Position& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:pb.ems.Position)
+}
+
+void Position::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  contract_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  account_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  position_ = GOOGLE_LONGLONG(0);
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+Position::~Position() {
+  // @@protoc_insertion_point(destructor:pb.ems.Position)
+  SharedDtor();
+}
+
+void Position::SharedDtor() {
+  if (contract_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete contract_;
+  }
+  if (account_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete account_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void Position::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* Position::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return Position_descriptor_;
+}
+
+const Position& Position::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_ems_2eproto();
+  return *default_instance_;
+}
+
+Position* Position::default_instance_ = NULL;
+
+Position* Position::New() const {
+  return new Position;
+}
+
+void Position::Clear() {
+  if (_has_bits_[0 / 32] & 7) {
+    if (has_contract()) {
+      if (contract_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        contract_->clear();
+      }
+    }
+    if (has_account()) {
+      if (account_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        account_->clear();
+      }
+    }
+    position_ = GOOGLE_LONGLONG(0);
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool Position::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:pb.ems.Position)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional string contract = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_contract()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->contract().data(), this->contract().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "contract");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(18)) goto parse_account;
+        break;
+      }
+
+      // optional string account = 2;
+      case 2: {
+        if (tag == 18) {
+         parse_account:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_account()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->account().data(), this->account().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "account");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(80)) goto parse_position;
+        break;
+      }
+
+      // optional int64 position = 10;
+      case 10: {
+        if (tag == 80) {
+         parse_position:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &position_)));
+          set_has_position();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:pb.ems.Position)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:pb.ems.Position)
+  return false;
+#undef DO_
+}
+
+void Position::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:pb.ems.Position)
+  // optional string contract = 1;
+  if (has_contract()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->contract().data(), this->contract().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "contract");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->contract(), output);
+  }
+
+  // optional string account = 2;
+  if (has_account()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->account().data(), this->account().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "account");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      2, this->account(), output);
+  }
+
+  // optional int64 position = 10;
+  if (has_position()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(10, this->position(), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:pb.ems.Position)
+}
+
+::google::protobuf::uint8* Position::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:pb.ems.Position)
+  // optional string contract = 1;
+  if (has_contract()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->contract().data(), this->contract().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "contract");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->contract(), target);
+  }
+
+  // optional string account = 2;
+  if (has_account()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->account().data(), this->account().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "account");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->account(), target);
+  }
+
+  // optional int64 position = 10;
+  if (has_position()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(10, this->position(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:pb.ems.Position)
+  return target;
+}
+
+int Position::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional string contract = 1;
+    if (has_contract()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->contract());
+    }
+
+    // optional string account = 2;
+    if (has_account()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->account());
+    }
+
+    // optional int64 position = 10;
+    if (has_position()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int64Size(
+          this->position());
+    }
+
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Position::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const Position* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const Position*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void Position::MergeFrom(const Position& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_contract()) {
+      set_contract(from.contract());
+    }
+    if (from.has_account()) {
+      set_account(from.account());
+    }
+    if (from.has_position()) {
+      set_position(from.position());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void Position::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void Position::CopyFrom(const Position& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Position::IsInitialized() const {
+
+  return true;
+}
+
+void Position::Swap(Position* other) {
+  if (other != this) {
+    std::swap(contract_, other->contract_);
+    std::swap(account_, other->account_);
+    std::swap(position_, other->position_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata Position::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = Position_descriptor_;
+  metadata.reflection = Position_reflection_;
   return metadata;
 }
 

@@ -17,6 +17,7 @@ class ExchangeListenerI;
 
 typedef std::vector<::pb::dms::Contract> ContractVec;
 typedef std::vector<::pb::ems::Order> PbOrderVec;
+typedef std::vector<::pb::ems::Position> PositionVec;
 typedef std::vector<std::string> InstrumentVec;
 typedef std::function<void()> ExchangeDisconnected;
 } // exchange

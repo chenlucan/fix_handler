@@ -62,11 +62,34 @@ namespace exchange
     }
 
     // implement of ExchangeListenerI
+    void StrategyCommunicator::OnPosition(const core::exchange::PositionVec& position)
+    {
+
+    }
+
+    // implement of ExchangeListenerI
     void StrategyCommunicator::OnExchangeReady(boost::container::flat_map<std::string, std::string>)
     {
         LOG_INFO("trade server is ready");
     }
 
+    // implement of ExchangeListenerI
+    void StrategyCommunicator::OnContractAuctioning(std::string contract)
+    {
+      LOG_INFO("contract status update [Auction]");
+    }
+
+    // implement of ExchangeListenerI
+    void StrategyCommunicator::OnContractNoTrading(std::string contract)
+    {
+      LOG_INFO("contract status update [NoTrading]");
+    }
+
+    // implement of ExchangeListenerI
+    void StrategyCommunicator::OnContractTrading(std::string contract)
+    {
+      LOG_INFO("contract status update [Trading]");
+    }
 
 } // namespace exchange
 } // namespace cme
