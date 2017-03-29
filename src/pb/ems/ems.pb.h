@@ -41,6 +41,7 @@ class Timestamp;
 class Status;
 class Order;
 class Fill;
+class Position;
 
 enum Status_Code {
   Status_Code_OK = 0,
@@ -1021,6 +1022,115 @@ class Fill : public ::google::protobuf::Message {
 
   void InitAsDefaultInstance();
   static Fill* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class Position : public ::google::protobuf::Message {
+ public:
+  Position();
+  virtual ~Position();
+
+  Position(const Position& from);
+
+  inline Position& operator=(const Position& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Position& default_instance();
+
+  void Swap(Position* other);
+
+  // implements Message ----------------------------------------------
+
+  Position* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Position& from);
+  void MergeFrom(const Position& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional string contract = 1;
+  inline bool has_contract() const;
+  inline void clear_contract();
+  static const int kContractFieldNumber = 1;
+  inline const ::std::string& contract() const;
+  inline void set_contract(const ::std::string& value);
+  inline void set_contract(const char* value);
+  inline void set_contract(const char* value, size_t size);
+  inline ::std::string* mutable_contract();
+  inline ::std::string* release_contract();
+  inline void set_allocated_contract(::std::string* contract);
+
+  // optional string account = 2;
+  inline bool has_account() const;
+  inline void clear_account();
+  static const int kAccountFieldNumber = 2;
+  inline const ::std::string& account() const;
+  inline void set_account(const ::std::string& value);
+  inline void set_account(const char* value);
+  inline void set_account(const char* value, size_t size);
+  inline ::std::string* mutable_account();
+  inline ::std::string* release_account();
+  inline void set_allocated_account(::std::string* account);
+
+  // optional int64 position = 10;
+  inline bool has_position() const;
+  inline void clear_position();
+  static const int kPositionFieldNumber = 10;
+  inline ::google::protobuf::int64 position() const;
+  inline void set_position(::google::protobuf::int64 value);
+
+  // @@protoc_insertion_point(class_scope:pb.ems.Position)
+ private:
+  inline void set_has_contract();
+  inline void clear_has_contract();
+  inline void set_has_account();
+  inline void clear_has_account();
+  inline void set_has_position();
+  inline void clear_has_position();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::std::string* contract_;
+  ::std::string* account_;
+  ::google::protobuf::int64 position_;
+  friend void  protobuf_AddDesc_ems_2eproto();
+  friend void protobuf_AssignDesc_ems_2eproto();
+  friend void protobuf_ShutdownFile_ems_2eproto();
+
+  void InitAsDefaultInstance();
+  static Position* default_instance_;
 };
 // ===================================================================
 
@@ -2713,6 +2823,186 @@ inline void Fill::set_allocated_fill_time(::pb::ems::Timestamp* fill_time) {
     clear_has_fill_time();
   }
   // @@protoc_insertion_point(field_set_allocated:pb.ems.Fill.fill_time)
+}
+
+// -------------------------------------------------------------------
+
+// Position
+
+// optional string contract = 1;
+inline bool Position::has_contract() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Position::set_has_contract() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Position::clear_has_contract() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Position::clear_contract() {
+  if (contract_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    contract_->clear();
+  }
+  clear_has_contract();
+}
+inline const ::std::string& Position::contract() const {
+  // @@protoc_insertion_point(field_get:pb.ems.Position.contract)
+  return *contract_;
+}
+inline void Position::set_contract(const ::std::string& value) {
+  set_has_contract();
+  if (contract_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    contract_ = new ::std::string;
+  }
+  contract_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.ems.Position.contract)
+}
+inline void Position::set_contract(const char* value) {
+  set_has_contract();
+  if (contract_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    contract_ = new ::std::string;
+  }
+  contract_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.ems.Position.contract)
+}
+inline void Position::set_contract(const char* value, size_t size) {
+  set_has_contract();
+  if (contract_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    contract_ = new ::std::string;
+  }
+  contract_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.ems.Position.contract)
+}
+inline ::std::string* Position::mutable_contract() {
+  set_has_contract();
+  if (contract_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    contract_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.ems.Position.contract)
+  return contract_;
+}
+inline ::std::string* Position::release_contract() {
+  clear_has_contract();
+  if (contract_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = contract_;
+    contract_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void Position::set_allocated_contract(::std::string* contract) {
+  if (contract_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete contract_;
+  }
+  if (contract) {
+    set_has_contract();
+    contract_ = contract;
+  } else {
+    clear_has_contract();
+    contract_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.ems.Position.contract)
+}
+
+// optional string account = 2;
+inline bool Position::has_account() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Position::set_has_account() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Position::clear_has_account() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Position::clear_account() {
+  if (account_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    account_->clear();
+  }
+  clear_has_account();
+}
+inline const ::std::string& Position::account() const {
+  // @@protoc_insertion_point(field_get:pb.ems.Position.account)
+  return *account_;
+}
+inline void Position::set_account(const ::std::string& value) {
+  set_has_account();
+  if (account_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    account_ = new ::std::string;
+  }
+  account_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.ems.Position.account)
+}
+inline void Position::set_account(const char* value) {
+  set_has_account();
+  if (account_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    account_ = new ::std::string;
+  }
+  account_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.ems.Position.account)
+}
+inline void Position::set_account(const char* value, size_t size) {
+  set_has_account();
+  if (account_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    account_ = new ::std::string;
+  }
+  account_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.ems.Position.account)
+}
+inline ::std::string* Position::mutable_account() {
+  set_has_account();
+  if (account_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    account_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.ems.Position.account)
+  return account_;
+}
+inline ::std::string* Position::release_account() {
+  clear_has_account();
+  if (account_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = account_;
+    account_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void Position::set_allocated_account(::std::string* account) {
+  if (account_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete account_;
+  }
+  if (account) {
+    set_has_account();
+    account_ = account;
+  } else {
+    clear_has_account();
+    account_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.ems.Position.account)
+}
+
+// optional int64 position = 10;
+inline bool Position::has_position() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void Position::set_has_position() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void Position::clear_has_position() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void Position::clear_position() {
+  position_ = GOOGLE_LONGLONG(0);
+  clear_has_position();
+}
+inline ::google::protobuf::int64 Position::position() const {
+  // @@protoc_insertion_point(field_get:pb.ems.Position.position)
+  return position_;
+}
+inline void Position::set_position(::google::protobuf::int64 value) {
+  set_has_position();
+  position_ = value;
+  // @@protoc_insertion_point(field_set:pb.ems.Position.position)
 }
 
 
