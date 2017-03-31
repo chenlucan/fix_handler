@@ -12,11 +12,10 @@ namespace exchange
 {
 
     GlobexCommunicator::GlobexCommunicator(
-            StrategyCommunicator *strategy,
+            core::exchange::ExchangeListenerI *strategy,
             const std::string &config_file,
-            const fh::cme::exchange::ExchangeSettings &app_settings,
-            bool is_week_begin)
-    : core::exchange::ExchangeI(strategy), m_strategy(strategy), m_order_manager(app_settings, is_week_begin),
+            const fh::cme::exchange::ExchangeSettings &app_settings)
+    : core::exchange::ExchangeI(strategy), m_strategy(strategy), m_order_manager(app_settings),
       m_settings(config_file), m_store(m_settings), m_logger(m_settings), m_initiator(m_order_manager, m_store, m_settings, m_logger)
     {
         m_order_manager.setCallback(std::bind(&GlobexCommunicator::Order_response, this, std::placeholders::_1));
@@ -156,14 +155,16 @@ namespace exchange
     {
         // TODO 目前还没有 protobuf 定义，暂时格式假设为：
         // id（20 byte）：CA 消息的场合是 cl_order_id，AF 消息的场合是 mass_status_req_id
-        // name（20 byte）：CA 消息的场合 security_desc，AF 消息的场合没有这个数据
+        // req_type（1 byte）：CA 消息的场合不使用，AF 消息的场合是 mass_status_req_type
+        // name（20 byte）：CA 消息的场合 security_desc，AF 消息的场合 security_desc 或者 symbol
         fh::cme::exchange::MassOrder mass_order;
         mass_order.cl_order_id =  std::string(data, 20);                              // （CA）
         mass_order.mass_action_type = 3;      // （CA）
         mass_order.mass_action_scope = 1;               // （CA）     1: Instrument  9: Market Segment ID   10: Instrument Group
-        mass_order.security_desc = size > 20 ? std::string(data + 20, size - 20) : "";                           // （CA）
         mass_order.mass_status_req_id = mass_order.cl_order_id;                // （AF）
-        mass_order.mass_status_req_type = 7;          // （AF）         1: Instrument  3: Instrument Group  7: All Orders  100: Market Segment
+        mass_order.mass_status_req_type = data[20] - '0';          // （AF）         1: Instrument  3: Instrument Group  7: All Orders  100: Market Segment（不对应）
+        mass_order.security_desc = size > 21 ? std::string(data + 21, size - 21) : "";                           // （CA/AF）
+        mass_order.symbol = mass_order.security_desc;  // （AF）
         // 其他项目无需设置
 
         return mass_order;

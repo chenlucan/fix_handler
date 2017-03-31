@@ -34,7 +34,7 @@ namespace market
         fh::cme::market::setting::MarketSettings app_settings(app_setting_file);
         std::pair<std::string, std::string> save_url = app_settings.Get_data_save_url();
 
-        m_book_sender = new BookSender(save_url.second);
+        m_book_sender = new BookSender(save_url.first, save_url.second);
         m_market_manager = new MarketManager(m_book_sender, channel, app_settings);
     }
 

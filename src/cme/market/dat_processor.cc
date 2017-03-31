@@ -11,8 +11,8 @@ namespace cme
 namespace market
 {
 
-    DatProcessor::DatProcessor(fh::cme::market::DatSaver &saver, fh::cme::market::DatReplayer &replayer)
-    : m_arbitrator(), m_saver(&saver), m_replayer(&replayer)
+    DatProcessor::DatProcessor(fh::cme::market::DatSaver *saver, fh::cme::market::DatReplayer *replayer)
+    : m_arbitrator(), m_saver(saver), m_replayer(replayer)
     {
         // noop
     }

@@ -17,7 +17,7 @@ namespace market
     class DatProcessor
     {
         public:
-            DatProcessor(fh::cme::market::DatSaver &, fh::cme::market::DatReplayer &);
+            DatProcessor(fh::cme::market::DatSaver *, fh::cme::market::DatReplayer *);
             virtual ~DatProcessor();
 
         public:

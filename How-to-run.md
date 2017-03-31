@@ -65,7 +65,7 @@
 	> ./exchange_server_test	
 
 * 启动交易模块(从端口 6001 接受策略模块的交易指令，往端口 5001 发送交易消息到 CME 服务器；发送交易结果到端口 6002)
-	> ./exchange_client_test -s|-j    (s: week begin startup; j: middle week startup)
+	> ./exchange_client_test
 
 
 * 启动策略模拟模块(从端口 5558 接受 book 情报；从端口 6001 每隔 1000ms 发送一条交易指令，从端口 6002 接受交易结果)
@@ -82,11 +82,12 @@
 	gtest
 	
 ## tasks	
-	在 market_application 和  market_manager 之间加一层作为 MarketI，能够对应多个 channel
-	收到 Security Status 消息后要能够把当前状态发送给策略
-	统一 MarketManager 的 Start 和 Join
-	将保存原始数据的操作也作为一个 listener 独立出来
-	关于 Thread.detach 的确认
-	交易模块连接上交易所后需要将当前状态（position）发送给策略
-	
+	1.在 market_application 和  market_manager 之间加一层作为 MarketI，能够对应多个 channel
+	2.统一 MarketManager 的 Start 和 Join
+	3.关于 Thread.detach 的确认
+	4.GAP 超出限制时，或者有 GAP 时没有 tcp 设定，则需要重新读取 recovery feed
+	5.交易模块连接上交易所后需要将当前状态（position）发送给策略
+	6.GlobexCommunicator 的启动无需独立线程
+	7.把对策略发来的交易指令的解析操作从 GlobexCommunicator 挪到 StrategyCommunicator
+	8.GlobexCommunicator 的 start 的时候，需要将参数中的 order 的状态都检索到，然后才能返回
 	

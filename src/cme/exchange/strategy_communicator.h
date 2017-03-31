@@ -42,12 +42,18 @@ namespace exchange
         public:
             // implement of ExchangeListenerI
             void OnOrder(const ::pb::ems::Order &order) override;
+            // implement of ExchangeListenerI
             void OnFill(const ::pb::ems::Fill &fill) override;
+            // implement of ExchangeListenerI
             void OnPosition(const core::exchange::PositionVec& position) override;
+            // implement of ExchangeListenerI
             void OnExchangeReady(boost::container::flat_map<std::string, std::string>) override;
-            void OnContractAuctioning(std::string contract) override;
-            void OnContractNoTrading(std::string contract) override;
-            void OnContractTrading(std::string contract) override;
+            // implement of ExchangeListenerI
+            void OnContractAuctioning(const std::string &contract) override;
+            // implement of ExchangeListenerI
+            void OnContractNoTrading(const std::string &contract) override;
+            // implement of ExchangeListenerI
+            void OnContractTrading(const std::string &contract) override;
 
         private:
             fh::core::zmq::ZmqSender m_sender;

@@ -43,7 +43,8 @@ namespace message
 			std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::MDIncrementalRefreshOrderBook43 &message);
             std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::SnapshotFullRefreshOrderBook44 &message);
 			std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::MDInstrumentDefinitionOption41 &message);
-			std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::MDInstrumentDefinitionSpread29 &message);			
+			std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::MDInstrumentDefinitionSpread29 &message);	
+            std::size_t Encode_message(mktdata::MessageHeader &header, mktdata::QuoteRequest39 &message);		
 			
         private:
             std::size_t m_encoded_length;

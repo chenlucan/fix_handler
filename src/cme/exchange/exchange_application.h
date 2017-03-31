@@ -18,7 +18,6 @@ namespace exchange
     {
         public:
             explicit ExchangeApplication(
-                bool is_week_begin,
                 const std::string &fix_setting_file = "exchange_client.cfg",
                 const std::string &app_setting_file = "exchange_settings.ini");
             virtual ~ExchangeApplication();
@@ -28,7 +27,7 @@ namespace exchange
             void Stop();
 
         private:
-            void Initial_application(const std::string &fix_setting_file, const std::string &app_setting_file, bool is_week_begin);
+            void Initial_application(const std::string &fix_setting_file, const std::string &app_setting_file);
             void On_from_strategy(char *data, size_t size);
 
         private:

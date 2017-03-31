@@ -1,6 +1,7 @@
 #ifndef __FH_CME_EXCHANGE_ORDER_MANAGER_H__
 #define __FH_CME_EXCHANGE_ORDER_MANAGER_H__
 
+#include <unordered_map>
 #include <quickfix/Application.h>
 #include <quickfix/MessageCracker.h>
 #include <quickfix/fix42/Logout.h>
@@ -23,6 +24,8 @@
 #include "cme/exchange/exchange_settings.h"
 #include "cme/exchange/order.h"
 
+#define  MAX_RESEND_SIZE 2500
+
 namespace fh
 {
 namespace cme
@@ -44,7 +47,7 @@ namespace exchange
     class OrderManager: public FIX::Application, public FIX::MessageCracker
     {
         public:
-            explicit OrderManager(const fh::cme::exchange::ExchangeSettings &app_settings, bool is_week_begin);
+            explicit OrderManager(const fh::cme::exchange::ExchangeSettings &app_settings);
             virtual ~OrderManager();
 
         public:
@@ -147,6 +150,8 @@ namespace exchange
                     char time_in_force);
 
         private:
+            void setCurrentReceivedSeq(const FIX::Message& message, const FIX::SessionID& sessionID);
+            std::uint32_t getCurrentReceivedSeq(const FIX::SessionID& sessionID);
             void setHeader(FIX::Header& header);
             void appendLogonField(FIX::Message& message, const FIX::SessionID& sessionID);
             void appendLogoutField(FIX::Message& message, const FIX::SessionID& sessionID);
@@ -166,7 +171,6 @@ namespace exchange
 
         private:
             std::function<void(const fh::cme::exchange::OrderReport&)> m_processor;
-            bool m_is_week_begin;        // 是不是一周初的第一次启动
             std::string m_target_comp_id;   // tag 56 in header
             std::string m_target_sub_id;   // tag 57 in header
             std::string m_sender_comp_id;   // tag 49 in header
@@ -182,6 +186,7 @@ namespace exchange
             std::string m_security_type;       // tag 167 for New Order (tag 35-MsgType=D)
             std::uint8_t m_customer_flag;     // tag 204 for New Order (tag 35-MsgType=D)
             std::string m_cti_code;         // tag 9702 for New Order (tag 35-MsgType=D)
+            std::unordered_map<std::string, std::uint32_t> m_current_received_seq;
 
         private:
              DISALLOW_COPY_AND_ASSIGN(OrderManager);

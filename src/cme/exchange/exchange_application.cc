@@ -15,12 +15,11 @@ namespace exchange
 {
 
     ExchangeApplication::ExchangeApplication(
-            bool is_week_begin,
             const std::string &fix_setting_file,
             const std::string &app_setting_file)
     : m_strategy(nullptr), m_globex(nullptr)
     {
-        this->Initial_application(fix_setting_file, app_setting_file, is_week_begin);
+        this->Initial_application(fix_setting_file, app_setting_file);
     }
 
     ExchangeApplication::~ExchangeApplication()
@@ -29,12 +28,12 @@ namespace exchange
         delete m_globex;
     }
 
-    void ExchangeApplication::Initial_application(const std::string &fix_setting_file, const std::string &app_setting_file, bool is_week_begin)
+    void ExchangeApplication::Initial_application(const std::string &fix_setting_file, const std::string &app_setting_file)
     {
         fh::cme::exchange::ExchangeSettings app_settings(app_setting_file);
         std::pair<std::string, std::string> url = app_settings.Get_strategy_url();
         m_strategy = new StrategyCommunicator(url.first, url.second);
-        m_globex = new GlobexCommunicator(m_strategy, fix_setting_file, app_settings, is_week_begin);
+        m_globex = new GlobexCommunicator(m_strategy, fix_setting_file, app_settings);
     }
 
     void ExchangeApplication::Start()

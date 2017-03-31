@@ -74,21 +74,21 @@ namespace exchange
     }
 
     // implement of ExchangeListenerI
-    void StrategyCommunicator::OnContractAuctioning(std::string contract)
+    void StrategyCommunicator::OnContractAuctioning(const std::string &contract)
     {
-      LOG_INFO("contract status update [Auction]");
+        LOG_INFO("contract[", contract, "] status update [Auction]");
     }
 
     // implement of ExchangeListenerI
-    void StrategyCommunicator::OnContractNoTrading(std::string contract)
+    void StrategyCommunicator::OnContractNoTrading(const std::string &contract)
     {
-      LOG_INFO("contract status update [NoTrading]");
+        LOG_INFO("contract[", contract, "] status update [NoTrading]");
     }
 
     // implement of ExchangeListenerI
-    void StrategyCommunicator::OnContractTrading(std::string contract)
+    void StrategyCommunicator::OnContractTrading(const std::string &contract)
     {
-      LOG_INFO("contract status update [Trading]");
+        LOG_INFO("contract[", contract, "] status update [Trading]");
     }
 
 } // namespace exchange

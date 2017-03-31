@@ -43,26 +43,26 @@ int main(int argc, char* argv[])
         std::uint32_t total_number;
         if(strcmp(argv[1], "-d") == 0)
         {
-            ids = new uint32_t[1]{27};
-            ids_len = 1;
+            ids = new uint32_t[3]{27, 29, 41};
+            ids_len = 3;
             total_number = 10;
         }
         else if(strcmp(argv[1], "-r") == 0)
         {
-            ids = new uint32_t[1]{38};
-            ids_len = 1;
+            ids = new uint32_t[2]{38, 44};
+            ids_len = 2;
             total_number = 10;
         }
         else if(strcmp(argv[1], "-i") == 0)
         {
-            ids = new uint32_t[5]{4, 30, 32, 36, 37};
-            ids_len = 5;
+            ids = new uint32_t[11]{4, 30, 32, 33, 34, 35, 36, 37, 39, 42, 43};
+            ids_len = 11;
             total_number = std::numeric_limits<std::uint32_t>::max();
         }
         else if(strcmp(argv[1], "-a") == 0)
         {
-            ids = new uint32_t[7]{4, 27, 30, 32, 36, 37, 38};
-            ids_len = 7;
+            ids = new uint32_t[16]{4, 27, 29, 30, 32, 33, 34, 35, 36, 37, 38, 39, 41, 42, 43, 44};
+            ids_len = 16;
             total_number = std::numeric_limits<std::uint32_t>::max();
         }
 

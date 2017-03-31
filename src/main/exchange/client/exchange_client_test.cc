@@ -33,15 +33,14 @@ int main(int argc, char* argv[])
 
     try
     {
-        if (argc != 2 || (strcmp(argv[1], "-s") != 0 && strcmp(argv[1], "-j") != 0))
+        if (argc != 1)
         {
-            LOG_ERROR("Usage: exchange_client_test -s|-j");
+            LOG_ERROR("Usage: exchange_client_test");
             return 1;
         }
 
-        fh::core::assist::Logger::Set_level(fh::core::assist::Logger::Level::INFO);
-        bool is_week_begin = (strcmp(argv[1], "-s") == 0);
-        fh::cme::exchange::ExchangeApplication a(is_week_begin);
+        fh::core::assist::Logger::Set_level(fh::core::assist::Logger::Level::TRACE);
+        fh::cme::exchange::ExchangeApplication a;
         a.Start();
 
         std::cin.get();
@@ -55,4 +54,4 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-// ./exchange_client_test -s
+// ./exchange_client_test

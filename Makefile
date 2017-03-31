@@ -56,11 +56,12 @@ usender: $(BIN_PATH)/udp_sender_test.o $(COMM_OBJS)
 tsender: $(BIN_PATH)/tcp_sender_test.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(TSENDER_TARGET) $?
 	
-receiver: $(BIN_PATH)/udp_receiver_test.o $(BIN_PATH)/dat_processor.o $(BIN_PATH)/udp_receiver.o $(BIN_PATH)/dat_saver.o $(BIN_PATH)/market_manager.o \
+receiver: $(BIN_PATH)/udp_receiver_test.o $(BIN_PATH)/dat_processor.o $(BIN_PATH)/udp_receiver.o $(BIN_PATH)/dat_saver.o \
                $(BIN_PATH)/tcp_receiver.o $(BIN_PATH)/dat_arbitrator.o $(BIN_PATH)/market_application.o $(BIN_PATH)/market_settings.o \
-               $(BIN_PATH)/recovery_saver.o $(BIN_PATH)/dat_replayer.o $(BIN_PATH)/book_manager.o $(BIN_PATH)/book_state_controller.o\
+               $(BIN_PATH)/recovery_saver.o $(BIN_PATH)/dat_replayer.o $(BIN_PATH)/book_manager.o $(BIN_PATH)/book_state_controller.o \
                $(BIN_PATH)/message_parser_d.o $(BIN_PATH)/message_parser_f.o $(BIN_PATH)/message_parser_r.o $(BIN_PATH)/channel_settings.o \
-               $(BIN_PATH)/message_parser_x.o $(BIN_PATH)/message_parser_w.o $(BIN_PATH)/definition_manager.o $(BIN_PATH)/book_sender.o \
+               $(BIN_PATH)/message_parser_x.o $(BIN_PATH)/message_parser_w.o $(BIN_PATH)/definition_manager.o $(BIN_PATH)/status_manager.o \
+               $(BIN_PATH)/market_manager.o $(BIN_PATH)/book_sender.o \
                $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(RECEIVER_TARGET) $?
 

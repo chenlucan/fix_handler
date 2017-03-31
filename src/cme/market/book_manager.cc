@@ -12,10 +12,11 @@ namespace cme
 namespace market
 {
 
-    BookManager::BookManager(fh::cme::market::BookSender *sender)
+    BookManager::BookManager(fh::core::market::MarketListenerI *sender)
     : m_recovery_books(), m_recovery_wait_merge(m_recovery_books.cbegin()),
-      m_parser_f(), m_parser_r(), m_parser_x(), m_parser_w(),
-      m_book_state_controller(), m_book_sender(sender), m_definition_manager(sender)
+      m_parser_r(), m_parser_x(), m_parser_w(),
+      m_book_state_controller(), m_book_sender(sender),
+      m_definition_manager(sender), m_status_manager(sender, &m_definition_manager)
     {
         // noop
     }
@@ -193,7 +194,7 @@ namespace market
         char type = message.message_type();
         if(type == 'f')
         {
-            m_parser_f.Parse(message, books);
+            m_status_manager.On_new_status(message);
         }
         else if(type == 'd')
         {

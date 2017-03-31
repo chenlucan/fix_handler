@@ -103,6 +103,12 @@ namespace utility
         return Format_fix_message(message.toString());
     }
 
+    // 判断指定的 session 是否已经准备就绪
+    bool Is_fix_session_exist(const FIX::SessionID& sessionID)
+    {
+        return FIX::Session::lookupSession(sessionID) != nullptr;
+    }
+
     // 取得 quickfix 保存的当前处理掉的最后一个服务器端序号
     std::string Last_processed_seq_num(const FIX::SessionID& sessionID)
     {

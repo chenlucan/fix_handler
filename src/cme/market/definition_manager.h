@@ -6,7 +6,7 @@
 #include "cme/market/message/mdp_message.h"
 #include "core/zmq/zmq_sender.h"
 #include "cme/market/message/message_parser_d.h"
-#include "cme/market/book_sender.h"
+#include "core/market/marketlisteneri.h"
 
 namespace fh
 {
@@ -17,7 +17,7 @@ namespace market
     class DefinitionManager
     {
         public:
-            explicit DefinitionManager(fh::cme::market::BookSender *sender);
+            explicit DefinitionManager(fh::core::market::MarketListenerI *sender);
             virtual ~DefinitionManager();
 
         public:
@@ -37,7 +37,7 @@ namespace market
             // 保存每个 SecurityID 对应的 definition 情报
             std::unordered_map<std::uint32_t , fh::cme::market::message::Instrument> m_instruments;
             fh::cme::market::message::MessageParserD m_parser_d;
-            fh::cme::market::BookSender *m_sender;
+            fh::core::market::MarketListenerI *m_sender;
 
         private:
             DISALLOW_COPY_AND_ASSIGN(DefinitionManager);

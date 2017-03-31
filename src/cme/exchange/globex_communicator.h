@@ -24,10 +24,9 @@ namespace exchange
     {
         public:
             GlobexCommunicator(
-                    StrategyCommunicator *strategy,
+                    core::exchange::ExchangeListenerI *strategy,
                     const std::string &config_file,
-                    const fh::cme::exchange::ExchangeSettings &app_settings,
-                    bool is_week_begin);
+                    const fh::cme::exchange::ExchangeSettings &app_settings);
             virtual ~GlobexCommunicator();
 
         public:
@@ -64,7 +63,7 @@ namespace exchange
             static pb::ems::OrderStatus Convert_order_status(char status);
 
         private:
-            StrategyCommunicator *m_strategy;
+            core::exchange::ExchangeListenerI *m_strategy;
             OrderManager m_order_manager;
             FIX::SessionSettings m_settings;
             FIX::FileStoreFactory m_store;

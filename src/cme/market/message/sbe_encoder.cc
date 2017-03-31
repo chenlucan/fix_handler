@@ -108,6 +108,12 @@ namespace message
             encodeHeaderLength = this->Encode_header<mktdata::SnapshotFullRefresh38>(header);
             encodeMessageLength = this->Encode_message(header, message);
         }
+        else if(templateId == 39)    // SnapshotFullRefresh38
+        {
+            mktdata::QuoteRequest39 message;
+            encodeHeaderLength = this->Encode_header<mktdata::QuoteRequest39>(header);
+            encodeMessageLength = this->Encode_message(header, message);
+        }		
 		else if(templateId == 41)    // MDInstrumentDefinitionOption41
         {
             mktdata::MDInstrumentDefinitionOption41 message;
@@ -347,7 +353,7 @@ namespace message
         message.transactTime(fh::core::assist::utility::Current_time_ns())
                .putSecurityGroup("ABCDEF")
                .putAsset("+-*/")
-               .securityID(654)
+               .securityID(72)
                .tradeDate(2017);
         message.matchEventIndicator()
                .clear()
@@ -360,7 +366,7 @@ namespace message
                .reserved(true)
                .endOfEvent(true);
 
-        message.securityTradingStatus(mktdata::SecurityTradingStatus::Close) // 4
+        message.securityTradingStatus((mktdata::SecurityTradingStatus::Value)fh::core::assist::utility::Random_number(17, 18))
                .haltReason(mktdata::HaltReason::InstrumentExpiration) // 4
                .securityTradingEvent(mktdata::SecurityTradingEvent::ResetStatistics); // 4
 
@@ -432,7 +438,7 @@ namespace message
                .mDEntrySize(fh::core::assist::utility::Random_number(10, 100))
 			   .tradingReferenceDate(18305)
                .mDUpdateAction((mktdata::MDUpdateAction::Value)fh::core::assist::utility::Random_number(0, 4))      // 0: New  1: Change 2: Delete  3: DeleteThru  4: DeleteFrom
-               .mDEntryType((mktdata::MDEntryTypeDailyStatistics::Value)fh::core::assist::utility::Random_number(48, 49));      // '0'(48): Bid  '1'(49): Offer
+               .mDEntryType((mktdata::MDEntryTypeDailyStatistics::Value)fh::core::assist::utility::Random_number(66, 67));      // '66': ClearedVolume  '67': OpenInterest
 
             LOG_INFO("entity in message 33(X): securityID=", n.securityID(),
                                 ", type=", (char)n.mDEntryType(),  ", action=", n.mDUpdateAction(), ", tradingReferenceDate=", (int)n.tradingReferenceDate(),
@@ -465,8 +471,7 @@ namespace message
 			n.highLimitPrice().mantissa(700004);
             n.lowLimitPrice().mantissa(700005);
             n.maxPriceVariation().mantissa(700006);
-            n.securityID(fh::core::assist::utility::Random_number(72, 73)).rptSeq(73)
-            .mDEntryType(fh::core::assist::utility::Random_number(48, 49));     // '0'(48): Bid  '1'(49): Offer
+            n.securityID(fh::core::assist::utility::Random_number(72, 73)).rptSeq(73);     
 
 	    }
 
@@ -498,7 +503,7 @@ namespace message
 			   .openCloseSettlFlag(mktdata::OpenCloseSettlFlag::DailyOpenPrice)
                .mDEntrySize(fh::core::assist::utility::Random_number(10, 100))
                .mDUpdateAction((mktdata::MDUpdateAction::Value)fh::core::assist::utility::Random_number(0, 4))       // 0: New  1: Change 2: Delete  3: DeleteThru  4: DeleteFrom
-               .mDEntryType((mktdata::MDEntryTypeStatistics::Value)fh::core::assist::utility::Random_number(48, 49));     // '0'(48): Bid  '1'(49): Offer
+               .mDEntryType((mktdata::MDEntryTypeStatistics::Value)fh::core::assist::utility::Random_number(55, 56));     // '55': HighTrade  '56': LowTrade
         }
 		
         return message.encodedLength();
@@ -596,11 +601,37 @@ namespace message
         n.mDEntrySize(700 + inc).numberOfOrders(70 + inc).mDPriceLevel(3).tradingReferenceDate(18300);
         n.openCloseSettlFlag(mktdata::OpenCloseSettlFlag::DailyOpenPrice);
         n.settlPriceType().clear().finalrc(true);
-        n.mDEntryType(mktdata::MDEntryType::Bid);
+        n.mDEntryType(mktdata::MDEntryType::Offer);
         }
         return message.encodedLength();
     }	
 
+    std::size_t SBEEncoder::Encode_message(mktdata::MessageHeader &header, mktdata::QuoteRequest39 &message)
+    {
+		char symbol[20] = "ProductName-123";
+		char quote[10] = "xx";
+        message.wrapForEncode(m_buffer, header.encodedLength(), sizeof(m_buffer));
+		message.transactTime(fh::core::assist::utility::Current_time_ns());
+		message.putQuoteReqID(quote);
+        message.matchEventIndicator()
+               .clear()
+               .lastTradeMsg(false)
+               .lastVolumeMsg(true)
+               .lastQuoteMsg(false)
+               .lastStatsMsg(true)
+               .lastImpliedMsg(false)
+               .recoveryMsg(true)
+               .reserved(false)
+               .endOfEvent(true);
+
+        mktdata::QuoteRequest39::NoRelatedSym& relatedSym = message.noRelatedSymCount(3);
+        relatedSym.next().orderQty(71).securityID(72).quoteType(73).side(13).putSymbol(symbol); 
+        relatedSym.next().orderQty(61).securityID(62).quoteType(63).side(14).putSymbol(symbol); 
+        relatedSym.next().orderQty(51).securityID(52).quoteType(53).side(17).putSymbol(symbol); 
+
+        return message.encodedLength();
+    }	
+	
     std::size_t SBEEncoder::Encode_message(mktdata::MessageHeader &header, mktdata::MDInstrumentDefinitionOption41 &message)
     {
         char symbol[20] = "ProductName-123";
@@ -634,7 +665,7 @@ namespace message
                .maturityMonthYear().year(2017).month(1).day(12).week(3);
 		message.putOrCall(mktdata::PutOrCall::Value::Put);
 		message.strikePrice().mantissa(1024); 
-		message.strikeCurrency(1,3);
+		message.putStrikeCurrency("UK");
 		message.minCabPrice().mantissa(1524);
         message.putCurrency("JPY")
                .putSettlCurrency("USA")
@@ -716,8 +747,7 @@ namespace message
 			   .mDTradeEntryID(259)
 			   .aggressorSide((mktdata::AggressorSide::Value)fh::core::assist::utility::Random_number(1, 2))
                .mDEntrySize(fh::core::assist::utility::Random_number(10, 100))
-               .mDUpdateAction((mktdata::MDUpdateAction::Value)fh::core::assist::utility::Random_number(0, 4))       // 0: New  1: Change 2: Delete  3: DeleteThru  4: DeleteFrom
-               .mDEntryType(fh::core::assist::utility::Random_number(48, 49));     // '0'(48): Bid  '1'(49): Offer
+               .mDUpdateAction((mktdata::MDUpdateAction::Value)fh::core::assist::utility::Random_number(0, 4));       // 0: New  1: Change 2: Delete  3: DeleteThru  4: DeleteFrom
         }
 
         mktdata::MDIncrementalRefreshTradeSummary42::NoOrderIDEntries& e = message.noOrderIDEntriesCount(1);
@@ -787,7 +817,7 @@ namespace message
 		n.mDOrderPriority(2345);
         n.mDEntryPx().mantissa((600 + inc)*100000);
 		n.mDDisplayQty(587);
-        n.mDEntryType(mktdata::MDEntryTypeBook::Bid);
+        n.mDEntryType(mktdata::MDEntryTypeBook::Offer);
         }
         {
         mktdata::SnapshotFullRefreshOrderBook44::NoMDEntries& n = entries.next();

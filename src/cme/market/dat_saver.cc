@@ -10,10 +10,10 @@ namespace cme
 {
 namespace market
 {
-    DatSaver::DatSaver(const std::string &org_save_url, fh::cme::market::BookSender *book_sender)
+    DatSaver::DatSaver(fh::core::market::MarketListenerI *book_sender)
     : m_last_seq(0), m_unreceived_seqs(), m_mutex(), m_datas(),
-      m_org_sender(org_save_url),
-      m_definition_datas(nullptr), m_recovery_datas(nullptr), m_book_manager(book_sender),
+      m_definition_datas(nullptr), m_recovery_datas(nullptr),
+      m_book_sender(book_sender), m_book_manager(book_sender),
       m_recovery_first_seq(0)
     {
         // noop
@@ -182,7 +182,7 @@ namespace market
         static fh::core::assist::TimeMeasurer t;
 
         // send to db
-        m_org_sender.Send(message.Serialize());
+        m_book_sender->OnOrginalMessage(message.Serialize());
 
         LOG_INFO("{DB}sent to zmq(original data): ", t.Elapsed_nanoseconds(), "ns, length=", message.message_length(), " seq=", message.packet_seq_num(), " type=", message.message_type());
     }

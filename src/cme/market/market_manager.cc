@@ -10,7 +10,7 @@ namespace market
 {
 
     MarketManager::MarketManager(
-            fh::cme::market::BookSender *listener,
+            fh::core::market::MarketListenerI *listener,
             const fh::cme::market::setting::Channel &channel,
             const fh::cme::market::setting::MarketSettings &settings)
     : fh::core::market::MarketI(listener),
@@ -35,13 +35,12 @@ namespace market
     }
 
     void MarketManager::Initial_application(
-            fh::cme::market::BookSender *listener,
+            fh::core::market::MarketListenerI *listener,
             const fh::cme::market::setting::Channel &channel,
             const fh::cme::market::setting::MarketSettings &settings)
     {
         std::vector<fh::cme::market::setting::Connection> connections = channel.connections;
         std::pair<std::string, std::string> auth = settings.Get_auth();
-        std::pair<std::string, std::string> save_url = settings.Get_data_save_url();
 
         std::for_each(connections.cbegin(), connections.cend(), [this, &channel, &auth](const fh::cme::market::setting::Connection &c){
             if(c.protocol == fh::cme::market::setting::Protocol::TCP)
@@ -70,8 +69,8 @@ namespace market
             }
         });
 
-        m_saver = new  fh::cme::market::DatSaver(save_url.first, listener);
-        m_processor = new  fh::cme::market::DatProcessor(*m_saver, *m_tcp_replayer);
+        m_saver = new  fh::cme::market::DatSaver(listener);
+        m_processor = new  fh::cme::market::DatProcessor(m_saver, m_tcp_replayer);
         m_definition_saver = new  fh::cme::market::RecoverySaver(true);
         m_recovery_saver = new  fh::cme::market::RecoverySaver(false);
     }

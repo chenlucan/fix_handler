@@ -11,7 +11,7 @@
 #include "cme/market/dat_saver.h"
 #include "cme/market/recovery_saver.h"
 #include "core/market/marketi.h"
-#include "cme/market/book_sender.h"
+#include "core/market/marketlisteneri.h"
 
 namespace fh
 {
@@ -24,7 +24,7 @@ namespace market
     {
         public:
             MarketManager(
-                    fh::cme::market::BookSender *listener,
+                    fh::core::market::MarketListenerI *listener,
                     const fh::cme::market::setting::Channel &channel,
                     const fh::cme::market::setting::MarketSettings &settings);
             virtual ~MarketManager();
@@ -47,7 +47,7 @@ namespace market
 
         private:
             void Initial_application(
-                    fh::cme::market::BookSender *listener,
+                    fh::core::market::MarketListenerI *listener,
                     const fh::cme::market::setting::Channel &channel,
                     const fh::cme::market::setting::MarketSettings &settings);
             void Start_increment_feed(fh::core::udp::UDPReceiver *udp);

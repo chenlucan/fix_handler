@@ -67,7 +67,7 @@ void decode_multi_message(const std::string &file)
     std::string line;
     while (std::getline(input, line))
     {
-        auto pos = line.find("udp received:(");
+        auto pos = line.find("udp received from ");
         if(pos != std::string::npos)
         {
             auto start = line.find(")=", pos);
