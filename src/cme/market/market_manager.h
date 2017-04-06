@@ -10,7 +10,6 @@
 #include "cme/market/dat_processor.h"
 #include "cme/market/dat_saver.h"
 #include "cme/market/recovery_saver.h"
-#include "core/market/marketi.h"
 #include "core/market/marketlisteneri.h"
 
 namespace fh
@@ -20,7 +19,7 @@ namespace cme
 namespace market
 {
 
-    class MarketManager : public fh::core::market::MarketI
+    class MarketManager
     {
         public:
             MarketManager(
@@ -30,20 +29,9 @@ namespace market
             virtual ~MarketManager();
 
         public:
-            // implement of MarketI
-            virtual bool Start();
-            // implement of MarketI
-            virtual bool Join();
-            // implement of MarketI
-            virtual void Initialize(std::vector<std::string> insts);
-            // implement of MarketI
-            virtual void Stop();
-            // implement of MarketI
-            virtual void Subscribe(std::vector<std::string> instruments);
-            // implement of MarketI
-            virtual void UnSubscribe(std::vector<std::string> instruments);
-            // implement of MarketI
-            virtual void ReqDefinitions(std::vector<std::string> instruments);
+            void Start();
+            void Join();
+            void Stop();
 
         private:
             void Initial_application(

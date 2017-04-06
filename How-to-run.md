@@ -82,9 +82,8 @@
 	gtest
 	
 ## tasks	
-	1.在 market_application 和  market_manager 之间加一层作为 MarketI，能够对应多个 channel
-	2.统一 MarketManager 的 Start 和 Join
-	3.关于 Thread.detach 的确认
-	4.GAP 超出限制时，或者有 GAP 时没有 tcp 设定，则需要重新读取 recovery feed
-	5.交易模块连接上交易所后需要将当前状态（position）发送给策略
+	1.统一 MarketManager 的 Start 和 Join
+	2.关于 Thread.detach 的确认
+	3.GAP 超出限制时，或者有 GAP 时没有 tcp 设定，则需要重新读取 recovery feed
+	4.交易模块连接上交易所后需要将当前状态（position）发送给策略
 	

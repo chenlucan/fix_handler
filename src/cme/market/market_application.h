@@ -3,7 +3,7 @@
 #define __FH_CME_MARKET_APPLICATION_H__
 
 #include "core/global.h"
-#include "cme/market/market_manager.h"
+#include "cme/market/cme_market.h"
 #include "cme/market/book_sender.h"
 
 namespace fh
@@ -29,10 +29,11 @@ namespace market
 
         private:
             void Initial_application(const std::string &channel_id, const std::string &channel_setting_file, const std::string &app_setting_file);
+            std::vector<fh::cme::market::setting::Channel> Get_target_channels(const std::string &channel_ids, const std::string &channel_setting_file);
 
         private:
             BookSender *m_book_sender;
-            MarketManager *m_market_manager;
+            CmeMarket *m_market;
 
         private:
             DISALLOW_COPY_AND_ASSIGN(MarketApplication);

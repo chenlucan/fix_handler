@@ -31,14 +31,14 @@ int main(int argc, char* argv[])
 
     try
     {
-        if (argc != 3 || (strcmp(argv[1], "-s") != 0 && strcmp(argv[1], "-j") != 0))
+        if ((argc != 2 && argc != 3) || (strcmp(argv[1], "-s") != 0 && strcmp(argv[1], "-j") != 0))
         {
-            LOG_ERROR("Usage: udp_receiver_test -s|-j channel_id");
+            LOG_ERROR("Usage: udp_receiver_test -s|-j [channel_id1[,channel_id2,...]]");
             return 1;
         }
 
         fh::core::assist::Logger::Set_level(fh::core::assist::Logger::Level::TRACE);
-        fh::cme::market::MarketApplication a(argv[2]);
+        fh::cme::market::MarketApplication a(argc == 3 ? argv[2] : "");
 
         if(strcmp(argv[1], "-s") == 0)
         {
@@ -61,4 +61,4 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-// ./udp_receiver_test -s 360
+// ./udp_receiver_test -s 360,361

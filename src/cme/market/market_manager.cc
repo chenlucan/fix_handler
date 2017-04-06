@@ -13,8 +13,7 @@ namespace market
             fh::core::market::MarketListenerI *listener,
             const fh::cme::market::setting::Channel &channel,
             const fh::cme::market::setting::MarketSettings &settings)
-    : fh::core::market::MarketI(listener),
-      m_udp_incrementals(), m_udp_recoveries(), m_udp_definitions(),
+    : m_udp_incrementals(), m_udp_recoveries(), m_udp_definitions(),
       m_tcp_replayer(nullptr), m_saver(nullptr),
       m_processor(nullptr), m_definition_saver(nullptr), m_recovery_saver(nullptr)
     {
@@ -75,8 +74,7 @@ namespace market
         m_recovery_saver = new  fh::cme::market::RecoverySaver(false);
     }
 
-    // implement of MarketI
-    bool MarketManager::Start()
+    void MarketManager::Start()
     {
         // must tell processer this is weekly pre-opening startup
         m_processor->Set_later_join(false);
@@ -86,12 +84,9 @@ namespace market
                       std::bind(&MarketManager::Start_increment_feed, this, std::placeholders::_1));
         // start message saver
         Start_save();
-
-        return true;
     }
 
-    // implement of MarketI
-    bool MarketManager::Join()
+    void MarketManager::Join()
     {
         // must tell processer this is weekly pre-opening startup
         m_processor->Set_later_join(true);
@@ -99,8 +94,6 @@ namespace market
         // start udp definitions
         std::for_each(m_udp_definitions.begin(), m_udp_definitions.end(),
                       std::bind(&MarketManager::Start_definition_feed, this, std::placeholders::_1));
-
-        return true;
     }
 
     void MarketManager::Stop_recoveries()
@@ -183,32 +176,7 @@ namespace market
         t.detach();
     }
 
-    // implement of MarketI
-    void MarketManager::Initialize(std::vector<std::string> insts)
-    {
-        // noop
-    }
-
-    // implement of MarketI
     void MarketManager::Stop()
-    {
-        // noop
-    }
-
-    // implement of MarketI
-    void MarketManager::Subscribe(std::vector<std::string> instruments)
-    {
-        // noop
-    }
-
-    // implement of MarketI
-    void MarketManager::UnSubscribe(std::vector<std::string> instruments)
-    {
-        // noop
-    }
-
-    // implement of MarketI
-    void MarketManager::ReqDefinitions(std::vector<std::string> instruments)
     {
         // noop
     }

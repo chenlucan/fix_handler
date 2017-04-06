@@ -2,6 +2,9 @@
 $(BIN_PATH)/market_application.o: $(SRC_PATH)/cme/market/market_application.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
+$(BIN_PATH)/cme_market.o: $(SRC_PATH)/cme/market/cme_market.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/market_manager.o: $(SRC_PATH)/cme/market/market_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
