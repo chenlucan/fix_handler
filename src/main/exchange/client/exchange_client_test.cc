@@ -43,6 +43,8 @@ int main(int argc, char* argv[])
         fh::cme::exchange::ExchangeApplication a;
         a.Start();
 
+        LOG_INFO("exchange client started.");
+
         std::cin.get();
         a.Stop();
     }

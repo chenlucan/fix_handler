@@ -145,7 +145,7 @@ class OrderResultReceiver : public fh::core::zmq::ZmqReceiver
 
 std::string make_order()
 {
-    std::uint32_t r = 4;//fh::core::assist::utility::Random_number(0, 5);
+    std::uint32_t r = fh::core::assist::utility::Random_number(0, 5);
     char type = '1' + r;     // 1:D 2:F 3:G 4:H 5:AF 6:CA
 
     if(r <= 3)

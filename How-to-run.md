@@ -87,7 +87,4 @@
 	3.关于 Thread.detach 的确认
 	4.GAP 超出限制时，或者有 GAP 时没有 tcp 设定，则需要重新读取 recovery feed
 	5.交易模块连接上交易所后需要将当前状态（position）发送给策略
-	6.GlobexCommunicator 的启动无需独立线程
-	7.把对策略发来的交易指令的解析操作从 GlobexCommunicator 挪到 StrategyCommunicator
-	8.GlobexCommunicator 的 start 的时候，需要将参数中的 order 的状态都检索到，然后才能返回
 	

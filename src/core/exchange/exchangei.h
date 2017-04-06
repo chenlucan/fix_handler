@@ -18,12 +18,15 @@ public:
   // blocking call
   virtual void Initialize(fh::core::exchange::ContractVec contracts) = 0;
   // to verify these orders status with exchange
-  virtual bool Start(PbOrderVec)  = 0;
+  virtual bool Start(const PbOrderVec &)  = 0;
   virtual void Stop()             = 0;
 
   virtual void Add(const ::pb::ems::Order& order)    = 0;
   virtual void Change(const ::pb::ems::Order& order) = 0;
   virtual void Delete(const ::pb::ems::Order& order) = 0;
+  virtual void Query(const ::pb::ems::Order& order)  = 0;
+  virtual void Query_mass(const char *data, size_t size)  = 0;
+  virtual void Delete_mass(const char *data, size_t size)  = 0;
 };
 
 } // exchange

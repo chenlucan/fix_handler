@@ -31,27 +31,33 @@ namespace exchange
 
         public:
             // implement of ExchangeI
-            virtual bool Start(std::vector<::pb::ems::Order>);
+            bool Start(const std::vector<::pb::ems::Order> &init_orders) override;
             // implement of ExchangeI
-            virtual void Stop();
+            void Stop() override;
 
         public:
             // implement of ExchangeI
-            virtual void Initialize(std::vector<::pb::dms::Contract> contracts);
+            void Initialize(std::vector<::pb::dms::Contract> contracts) override;
             // implement of ExchangeI
-            virtual void Add(const ::pb::ems::Order& order);
+            void Add(const ::pb::ems::Order& order) override;
             // implement of ExchangeI
-            virtual void Change(const ::pb::ems::Order& order);
+            void Change(const ::pb::ems::Order& order) override;
             // implement of ExchangeI
-            virtual void Delete(const ::pb::ems::Order& order);
+            void Delete(const ::pb::ems::Order& order) override;
+            // implement of ExchangeI
+            void Query(const ::pb::ems::Order& order) override;
+            // implement of ExchangeI
+            void Query_mass(const char *data, size_t size) override;
+            // implement of ExchangeI
+            void Delete_mass(const char *data, size_t size) override;
 
         public:
-            bool Order_request(const char *data, size_t size);
             void Order_response(const fh::cme::exchange::OrderReport& report);
 
         private:
-            static fh::cme::exchange::Order Create_order(const char *data, size_t size);
+            static fh::cme::exchange::Order Create_order(const ::pb::ems::Order& strategy_order);
             static fh::cme::exchange::MassOrder Create_mass_order(const char *data, size_t size);
+            void On_order_status_sent(const std::string &cl_order_id);
 
         private:
             static char Convert_tif(pb::ems::TimeInForce tif);
@@ -69,6 +75,7 @@ namespace exchange
             FIX::FileStoreFactory m_store;
             GlobexLogFactory m_logger;
             FIX::SocketInitiator m_initiator;
+            std::vector<::pb::ems::Order> m_init_orders;
 
         private:
             DISALLOW_COPY_AND_ASSIGN(GlobexCommunicator);

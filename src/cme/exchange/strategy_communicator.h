@@ -6,6 +6,8 @@
 #include "core/zmq/zmq_receiver.h"
 #include "core/zmq/zmq_sender.h"
 #include "core/exchange/exchangelisteneri.h"
+#include "core/exchange/exchangei.h"
+#include "pb/ems/ems.pb.h"
 
 namespace fh
 {
@@ -37,7 +39,8 @@ namespace exchange
             virtual ~StrategyCommunicator();
 
         public:
-            void Start_receive(std::function<void(char *, const size_t)> processor);
+            void Start_receive();
+            void Set_exchange(core::exchange::ExchangeI *exchange);
 
         public:
             // implement of ExchangeListenerI
@@ -56,8 +59,14 @@ namespace exchange
             void OnContractTrading(const std::string &contract) override;
 
         private:
+            void On_from_strategy(char *data, size_t size);
+            void Order_request(const char *data, size_t size);
+            static ::pb::ems::Order Create_order(const char *data, size_t size);
+
+        private:
             fh::core::zmq::ZmqSender m_sender;
             StrategyReceiver m_receiver;
+            core::exchange::ExchangeI *m_exchange;
 
         private:
             DISALLOW_COPY_AND_ASSIGN(StrategyCommunicator);

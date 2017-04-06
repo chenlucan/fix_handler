@@ -16,7 +16,8 @@ namespace exchange
             const std::string &config_file,
             const fh::cme::exchange::ExchangeSettings &app_settings)
     : core::exchange::ExchangeI(strategy), m_strategy(strategy), m_order_manager(app_settings),
-      m_settings(config_file), m_store(m_settings), m_logger(m_settings), m_initiator(m_order_manager, m_store, m_settings, m_logger)
+      m_settings(config_file), m_store(m_settings), m_logger(m_settings),
+      m_initiator(m_order_manager, m_store, m_settings, m_logger), m_init_orders()
     {
         m_order_manager.setCallback(std::bind(&GlobexCommunicator::Order_response, this, std::placeholders::_1));
     }
@@ -27,9 +28,21 @@ namespace exchange
     }
 
     // implement of ExchangeI
-    bool GlobexCommunicator::Start(std::vector<::pb::ems::Order>)
+    bool GlobexCommunicator::Start(const std::vector<::pb::ems::Order> &init_orders)
     {
+        m_init_orders = init_orders;
         m_initiator.start();
+
+        LOG_INFO("init orders count:", init_orders.size());
+
+        // 一直要到所有的指定订单的状态都发回去了，才能返回
+        while(!m_init_orders.empty())
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }
+
+        LOG_INFO("all init orders status sent");
+
         return true;
     }
 
@@ -52,98 +65,75 @@ namespace exchange
     // implement of ExchangeI
     void GlobexCommunicator::Add(const ::pb::ems::Order& order)
     {
-
+        // D: New Order
+        auto order_d = GlobexCommunicator::Create_order(order);
+        bool result = m_order_manager.sendNewOrderSingleRequest(order_d);
+        LOG_INFO("add order :", result);
     }
 
     // implement of ExchangeI
     void GlobexCommunicator::Change(const ::pb::ems::Order& order)
     {
-
+        // G: Order Cancel-Replace Request
+        auto order_g = GlobexCommunicator::Create_order(order);
+        bool result = m_order_manager.sendOrderCancelReplaceRequest(order_g);
+        LOG_INFO("change order :", result);
     }
 
     // implement of ExchangeI
     void GlobexCommunicator::Delete(const ::pb::ems::Order& order)
     {
-
+        // F: Order Cancel Request
+        auto order_f = GlobexCommunicator::Create_order(order);
+        bool result = m_order_manager.sendOrderCancelRequest(order_f);
+        LOG_INFO("delete order :", result);
     }
 
-    bool GlobexCommunicator::Order_request(const char *data, size_t size)
+    void GlobexCommunicator::Query(const ::pb::ems::Order& order)
     {
-        try
-        {
-            // 第一个字节指示 MsgType：1:D 2:F 3:G 4:H 5:AF 6:CA
-            std::uint8_t msg_type = data[0] - '1';  // 转换成 0,1,2,3,4,5
-            switch(msg_type)
-            {
-                case 0:     // D: New Order
-                {
-                    auto order_d = GlobexCommunicator::Create_order(data + 1, size - 1);
-                    return m_order_manager.sendNewOrderSingleRequest(order_d);
-                }
-                case 1:     // F: Order Cancel Request
-                {
-                    auto order_f = GlobexCommunicator::Create_order(data + 1, size - 1);
-                    return m_order_manager.sendOrderCancelRequest(order_f);
-                }
-                case 2:     // G: Order Cancel-Replace Request
-                {
-                    auto order_g = GlobexCommunicator::Create_order(data + 1, size - 1);
-                    return m_order_manager.sendOrderCancelReplaceRequest(order_g);
-                }
-                case 3:     // H: Order Status Request
-                {
-                    auto order_h = GlobexCommunicator::Create_order(data + 1, size - 1);
-                    return m_order_manager.sendOrderStatusRequest(order_h);
-                }
-                case 4:     // AF: Order Mass Status Request
-                {
-                    auto mass_order_af = GlobexCommunicator::Create_mass_order(data + 1, size - 1);
-                    return m_order_manager.sendOrderMassStatusRequest(mass_order_af);
-                }
-                case 5:     // CA: Order Mass Action Request
-                {
-                    auto mass_order_ca = GlobexCommunicator::Create_mass_order(data + 1, size - 1);
-                    return m_order_manager.sendOrderMassActionRequest(mass_order_ca);
-                }
-                default:
-                    LOG_WARN("unknow order message type: ", msg_type);
-                    return false;
-            }
-        }
-        catch(fh::cme::exchange::InvalidOrder &error)
-        {
-            LOG_ERROR("invalid order: ", error.what());
-            return false;
-        }
+        // H: Order Status Request
+        auto order_h = GlobexCommunicator::Create_order(order);
+        bool result = m_order_manager.sendOrderStatusRequest(order_h);
+        LOG_INFO("query order :", result);
     }
 
-    fh::cme::exchange::Order GlobexCommunicator::Create_order(const char *data, size_t size)
+    void GlobexCommunicator::Query_mass(const char *data, size_t size)
     {
-        pb::ems::Order org_order;
-        if(!org_order.ParseFromArray(data, size))
-        {
-            throw fh::cme::exchange::InvalidOrder("order parse error");
-        }
+        // AF: Order Mass Status Request
+        auto mass_order_af = GlobexCommunicator::Create_mass_order(data, size);
+        bool result = m_order_manager.sendOrderMassStatusRequest(mass_order_af);
+        LOG_INFO("query mass order :", result);
+    }
 
-        LOG_INFO("received order:  ", fh::core::assist::utility::Format_pb_message(org_order));
+    void GlobexCommunicator::Delete_mass(const char *data, size_t size)
+    {
+        // CA: Order Mass Action Request
+        auto mass_order_ca = GlobexCommunicator::Create_mass_order(data, size);
+        bool result = m_order_manager.sendOrderMassActionRequest(mass_order_ca);
+        LOG_INFO("delete mass order :", result);
+    }
+
+    fh::cme::exchange::Order GlobexCommunicator::Create_order(const ::pb::ems::Order& strategy_order)
+    {
+        LOG_INFO("received order:  ", fh::core::assist::utility::Format_pb_message(strategy_order));
 
         fh::cme::exchange::Order order;
-        order.cl_order_id = org_order.client_order_id();
-        //order. = org_order.account();        // 这个域从配置文件读取
-        order.symbol = org_order.contract();
-        order.security_desc = org_order.contract();      // 这个域和 symbol 使用同一个值
-        order.side = org_order.has_buy_sell() ? GlobexCommunicator::Convert_buy_sell(org_order.buy_sell()) : 0;
-        order.price = std::stod(org_order.price());
-        order.order_qty = org_order.quantity();
-        order.time_in_force = org_order.has_tif() ? GlobexCommunicator::Convert_tif(org_order.tif()) : 0;
-        order.order_type = org_order.has_order_type() ? GlobexCommunicator::Convert_order_type(org_order.order_type()) : 0;
-        order.order_id = org_order.exchange_order_id();
-        //order. = org_order.status();         // 这个域是回传订单结果的
-        //order. = org_order.working_price();        // 这个域是回传订单结果的
-        //order. = org_order.working_quantity();         // 这个域是回传订单结果的
-        //order. = org_order.filled_quantity();          // 这个域是回传订单结果的
-        //order. = org_order.message();          // 这个域是回传订单结果的
-        //order. = org_order.submit_time();          // 这个域是回传订单结果的
+        order.cl_order_id = strategy_order.client_order_id();
+        //order. = strategy_order.account();        // 这个域从配置文件读取
+        order.symbol = strategy_order.contract();
+        order.security_desc = strategy_order.contract();      // 这个域和 symbol 使用同一个值
+        order.side = strategy_order.has_buy_sell() ? GlobexCommunicator::Convert_buy_sell(strategy_order.buy_sell()) : 0;
+        order.price = std::stod(strategy_order.price());
+        order.order_qty = strategy_order.quantity();
+        order.time_in_force = strategy_order.has_tif() ? GlobexCommunicator::Convert_tif(strategy_order.tif()) : 0;
+        order.order_type = strategy_order.has_order_type() ? GlobexCommunicator::Convert_order_type(strategy_order.order_type()) : 0;
+        order.order_id = strategy_order.exchange_order_id();
+        //order. = strategy_order.status();         // 这个域是回传订单结果的
+        //order. = strategy_order.working_price();        // 这个域是回传订单结果的
+        //order. = strategy_order.working_quantity();         // 这个域是回传订单结果的
+        //order. = strategy_order.filled_quantity();          // 这个域是回传订单结果的
+        //order. = strategy_order.message();          // 这个域是回传订单结果的
+        //order. = strategy_order.submit_time();          // 这个域是回传订单结果的
         //order.stop_px = ;                                  // 这个域只在 OrdType = stop and stop-limit orders 时有用，目前不需要
         //order.expire_date = ;                          // 这个域只在 TimeInForce = Good Till Date (GTD) 时有用，目前不需要
         order.orig_cl_order_id = order.cl_order_id;                 // 这个域设置成和 cl_order_id 一样
@@ -225,6 +215,26 @@ namespace exchange
             fh::core::assist::utility::To_pb_time(order.mutable_submit_time(), report.single_report.transact_time);
 
             m_strategy->OnOrder(order);
+
+            if(report.message_type == "8" && report.single_report.exec_type == 'I')
+            {
+                // 是查询订单状态的应答消息的话，就消去该订单
+                this->On_order_status_sent(report.single_report.cl_order_id);
+            }
+        }
+    }
+
+    // 当一个订单的状态送出去后，就把它从初期订单列表中去掉
+    void GlobexCommunicator::On_order_status_sent(const std::string &cl_order_id)
+    {
+        LOG_DEBUG("order[", cl_order_id, "] status is got.");
+        auto index = std::find_if(m_init_orders.begin(), m_init_orders.end(), [&cl_order_id](::pb::ems::Order &order){
+            return order.client_order_id() == cl_order_id;
+        });
+        if(index != m_init_orders.end())
+        {
+            m_init_orders.erase(index);
+            LOG_DEBUG("order[", cl_order_id, "] is removed from init list.");
         }
     }
 
