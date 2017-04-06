@@ -188,7 +188,7 @@ namespace exchange
             fill.set_account(report.single_report.account);
             fill.set_client_order_id(report.single_report.cl_order_id);
             fill.set_exchange_order_id(report.single_report.order_id);
-            fill.set_contract(report.single_report.symbol);
+            fill.set_contract(report.single_report.security_desc);
             fill.set_buy_sell(GlobexCommunicator::Convert_buy_sell(report.single_report.side));
             fh::core::assist::utility::To_pb_time(fill.mutable_fill_time(), report.single_report.transact_time);
 
@@ -200,7 +200,7 @@ namespace exchange
             pb::ems::Order order;
             order.set_client_order_id(report.single_report.cl_order_id);
             order.set_account(report.single_report.account);
-            order.set_contract(report.single_report.symbol);
+            order.set_contract(report.single_report.security_desc);
             order.set_buy_sell(GlobexCommunicator::Convert_buy_sell(report.single_report.side));
             order.set_price(std::to_string(report.single_report.price));
             order.set_quantity(report.single_report.order_qty);
