@@ -170,7 +170,7 @@ namespace market
 
         if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
         {
-            LOG_WARN("price level invalid, ignore:", b.mDPriceLevel);
+            LOG_WARN("price level invalid, ignore:", (int)b.mDPriceLevel);
             return false;
         }
 
@@ -210,7 +210,7 @@ namespace market
 
         if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
         {
-            LOG_WARN("price level invalid, ignore:", b.mDPriceLevel);
+            LOG_WARN("price level invalid, ignore:", (int)b.mDPriceLevel);
             return false;
         }
 
@@ -236,7 +236,7 @@ namespace market
 
         if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
         {
-            LOG_WARN("price level invalid, ignore:", b.mDPriceLevel);
+            LOG_WARN("price level invalid, ignore:", (int)b.mDPriceLevel);
             return false;
         }
 
@@ -270,7 +270,7 @@ namespace market
 
         if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
         {
-            LOG_WARN("price level invalid, ignore:", b.mDPriceLevel);
+            LOG_WARN("price level invalid, ignore:", (int)b.mDPriceLevel);
             return false;
         }
 

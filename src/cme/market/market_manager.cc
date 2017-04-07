@@ -76,24 +76,14 @@ namespace market
 
     void MarketManager::Start()
     {
-        // must tell processer this is weekly pre-opening startup
-        m_processor->Set_later_join(false);
-
         // start udp incrementals
         std::for_each(m_udp_incrementals.begin(), m_udp_incrementals.end(),
                       std::bind(&MarketManager::Start_increment_feed, this, std::placeholders::_1));
-        // start message saver
-        Start_save();
-    }
-
-    void MarketManager::Join()
-    {
-        // must tell processer this is weekly pre-opening startup
-        m_processor->Set_later_join(true);
-
         // start udp definitions
         std::for_each(m_udp_definitions.begin(), m_udp_definitions.end(),
                       std::bind(&MarketManager::Start_definition_feed, this, std::placeholders::_1));
+        // start message saver
+        Start_save();
     }
 
     void MarketManager::Stop_recoveries()
@@ -106,6 +96,12 @@ namespace market
     {
         std::for_each(m_udp_definitions.begin(), m_udp_definitions.end(), std::mem_fun(&fh::core::udp::UDPReceiver::Stop));
         LOG_INFO("definition udp listener stopped.");
+    }
+
+    void MarketManager::Stop_increments()
+    {
+        std::for_each(m_udp_incrementals.begin(), m_udp_incrementals.end(), std::mem_fun(&fh::core::udp::UDPReceiver::Stop));
+        LOG_INFO("increment udp listener stopped.");
     }
 
     void MarketManager::Start_increment_feed(fh::core::udp::UDPReceiver *udp)
@@ -150,9 +146,6 @@ namespace market
         LOG_INFO("definition all received.");
         this->Stop_definitions();
 
-        // start udp incrementals
-        std::for_each(m_udp_incrementals.begin(), m_udp_incrementals.end(),
-                      std::bind(&MarketManager::Start_increment_feed, this, std::placeholders::_1));
         // start udp recoveries
         std::for_each(m_udp_recoveries.begin(), m_udp_recoveries.end(),
                       std::bind(&MarketManager::Start_recovery_feed, this, std::placeholders::_1));
@@ -163,22 +156,20 @@ namespace market
         LOG_INFO("recovery all received.");
         this->Stop_recoveries();
 
-        // start message saver
-        Start_save();
+        // 此时将接受到的恢复数据设置到 saver
+        m_saver->Set_recovery_data(m_definition_saver->Get_data(), m_recovery_saver->Get_data());
     }
 
     void MarketManager::Start_save()
     {
-        m_saver->Set_definition_data(m_definition_saver->Get_data());
-        m_saver->Set_recovery_data(m_recovery_saver->Get_data());
-
+        LOG_INFO("start data saver.");
         std::thread t(&DatSaver::Start_save, m_saver);
         t.detach();
     }
 
     void MarketManager::Stop()
     {
-        // noop
+        this->Stop_increments();
     }
 
 } // namespace market

@@ -30,8 +30,6 @@ namespace market
             // implement of MarketI
             bool Start() override;
             // implement of MarketI
-            bool Join() override;
-            // implement of MarketI
             void Initialize(std::vector<std::string> insts) override;
             // implement of MarketI
             void Stop() override;

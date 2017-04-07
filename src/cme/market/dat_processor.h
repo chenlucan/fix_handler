@@ -25,8 +25,6 @@ namespace market
             virtual void Process_feed_data(char *buffer, const size_t data_length);
             // process tcp replay data to mdp messages and save it
             virtual void Process_replay_data(char *buffer, const size_t data_length);
-            // set whether start join in middle week
-            void Set_later_join(bool is_lj);
 
         private:
             void Process_data(char *buffer, const size_t data_length);

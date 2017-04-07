@@ -22,12 +22,6 @@ namespace market
         // noop
     }
 
-    void DatProcessor::Set_later_join(bool is_lj)
-    {
-        m_arbitrator.Set_later_join(is_lj);
-        m_saver->Set_later_join(is_lj);
-    }
-
     // process tcp replay data to mdp messages and save it
     void DatProcessor::Process_replay_data(char *buffer, const size_t data_length)
     {

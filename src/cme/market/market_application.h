@@ -24,7 +24,6 @@ namespace market
 
         public:
             void Start();
-            void Join();
             void Stop();
 
         private:

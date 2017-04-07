@@ -44,13 +44,6 @@ namespace market
         m_market->Start();
     }
 
-
-    void MarketApplication::Join()
-    {
-        LOG_INFO("Join to listen ...");
-        m_market->Join();
-    }
-
     void MarketApplication::Stop()
     {
         LOG_INFO("Stop listen ...");

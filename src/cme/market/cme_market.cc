@@ -45,15 +45,6 @@ namespace market
     }
 
     // implement of MarketI
-    bool CmeMarket::Join()
-    {
-        std::for_each(m_market_managers.begin(), m_market_managers.end(), [](MarketManager *m){
-            m->Join();
-        });
-        return true;
-    }
-
-    // implement of MarketI
     void CmeMarket::Initialize(std::vector<std::string> insts)
     {
         // noop

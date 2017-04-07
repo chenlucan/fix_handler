@@ -33,7 +33,7 @@ namespace udp
     {
         m_socket.cancel();
         m_io_service.stop();
-        LOG_DEBUG("(udp receiver stopped)");
+        LOG_DEBUG("(udp receiver stopped:", m_socket.local_endpoint().port(), ")");
     }
 
     void UDPReceiver::Initialize_socket(
