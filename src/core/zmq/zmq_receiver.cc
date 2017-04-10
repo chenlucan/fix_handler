@@ -14,7 +14,7 @@ namespace zmq
     ZmqReceiver::ZmqReceiver(const std::string &url) : m_context(1), m_receiver(m_context, ZMQ_PULL)
     {
         m_receiver.connect(url);
-        LOG_DEBUG("(zmq receiver started)");
+        LOG_DEBUG("(zmq receiver started: ", url, ")");
     }
 
     ZmqReceiver::~ZmqReceiver()
