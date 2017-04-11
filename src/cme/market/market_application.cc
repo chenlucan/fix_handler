@@ -32,7 +32,7 @@ namespace market
     {
         fh::cme::market::setting::MarketSettings app_settings(app_setting_file);
         std::pair<std::string, std::string> save_url = app_settings.Get_data_save_url();
-        m_book_sender = new BookSender(save_url.first, save_url.second);
+        m_book_sender = new fh::core::book::BookSender(save_url.first, save_url.second);
 
         std::vector<fh::cme::market::setting::Channel> target_channels = this->Get_target_channels(channel_id, channel_setting_file);
         m_market = new CmeMarket(m_book_sender, target_channels, app_settings);

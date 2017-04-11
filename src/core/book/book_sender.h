@@ -1,5 +1,5 @@
-#ifndef __FH_CME_MARKET_BOOK_SENDER_H__
-#define __FH_CME_MARKET_BOOK_SENDER_H__
+#ifndef __FH_CORE_BOOK_BOOK_SENDER_H__
+#define __FH_CORE_BOOK_BOOK_SENDER_H__
 
 #include <string>
 #include "core/global.h"
@@ -8,9 +8,9 @@
 
 namespace fh
 {
-namespace cme
+namespace core
 {
-namespace market
+namespace book
 {
     class BookSender : public fh::core::market::MarketListenerI
     {
@@ -53,8 +53,8 @@ namespace market
         private:
             DISALLOW_COPY_AND_ASSIGN(BookSender);
     };
-} // namespace market
-} // namespace cme
+} // namespace book
+} // namespace core
 } // namespace fh
 
-#endif // __FH_CME_MARKET_BOOK_SENDER_H__
+#endif // __FH_CORE_BOOK_BOOK_SENDER_H__

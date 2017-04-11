@@ -4,7 +4,7 @@
 
 #include "core/global.h"
 #include "cme/market/cme_market.h"
-#include "cme/market/book_sender.h"
+#include "core/book/book_sender.h"
 
 namespace fh
 {
@@ -31,7 +31,7 @@ namespace market
             std::vector<fh::cme::market::setting::Channel> Get_target_channels(const std::string &channel_ids, const std::string &channel_setting_file);
 
         private:
-            BookSender *m_book_sender;
+            fh::core::book::BookSender *m_book_sender;
             CmeMarket *m_market;
 
         private:

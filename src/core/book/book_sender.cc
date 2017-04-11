@@ -1,12 +1,12 @@
 
 #include "core/assist/logger.h"
-#include "cme/market/book_sender.h"
+#include "core/book/book_sender.h"
 
 namespace fh
 {
-namespace cme
+namespace core
 {
-namespace market
+namespace book
 {
 
     BookSender::BookSender(const std::string &org_url, const std::string &book_url)
@@ -111,6 +111,6 @@ namespace market
         m_org_sender.Send(message);
     }
 
-} // namespace market
-} // namespace cme
+} // namespace book
+} // namespace core
 } // namespace fh
