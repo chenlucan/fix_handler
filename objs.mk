@@ -2,6 +2,9 @@
 $(BIN_PATH)/market_application.o: $(SRC_PATH)/cme/market/market_application.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
+$(BIN_PATH)/cme_market.o: $(SRC_PATH)/cme/market/cme_market.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/market_manager.o: $(SRC_PATH)/cme/market/market_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
@@ -27,6 +30,9 @@ $(BIN_PATH)/book_sender.o: $(SRC_PATH)/cme/market/book_sender.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/definition_manager.o: $(SRC_PATH)/cme/market/definition_manager.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/status_manager.o: $(SRC_PATH)/cme/market/status_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/book_state_controller.o: $(SRC_PATH)/cme/market/book_state_controller.cc
@@ -101,6 +107,15 @@ $(BIN_PATH)/settings.o: $(SRC_PATH)/core/assist/settings.cc
 $(BIN_PATH)/utility.o: $(SRC_PATH)/core/assist/utility.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
+$(BIN_PATH)/original_receiver.o: $(SRC_PATH)/core/persist/original_receiver.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/mongo.o: $(SRC_PATH)/core/persist/mongo.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/original_saver.o: $(SRC_PATH)/core/persist/original_saver.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/tcp_receiver.o: $(SRC_PATH)/core/tcp/tcp_receiver.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
@@ -129,6 +144,12 @@ $(BIN_PATH)/sbe_test.o: $(SRC_PATH)/main/market/sbe_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/packet_test.o: $(SRC_PATH)/main/market/packet_test.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/original_sender_test.o: $(SRC_PATH)/main/persist/original_sender_test.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/original_saver_test.o: $(SRC_PATH)/main/persist/original_saver_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/exchange_server_test.o: $(SRC_PATH)/main/exchange/server/exchange_server_test.cc

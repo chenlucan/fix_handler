@@ -6,12 +6,12 @@
 #include "cme/market/book_state_controller.h"
 #include "cme/market/message/mdp_message.h"
 #include "core/zmq/zmq_sender.h"
-#include "cme/market/message/message_parser_f.h"
 #include "cme/market/message/message_parser_r.h"
 #include "cme/market/message/message_parser_x.h"
 #include "cme/market/message/message_parser_w.h"
 #include "cme/market/definition_manager.h"
-#include "cme/market/book_sender.h"
+#include "cme/market/status_manager.h"
+#include "core/market/marketlisteneri.h"
 
 namespace fh
 {
@@ -22,7 +22,7 @@ namespace market
     class BookManager
     {
         public:
-            explicit BookManager(fh::cme::market::BookSender *sender);
+            explicit BookManager(fh::core::market::MarketListenerI *sender);
             virtual ~BookManager();
 
         public:
@@ -50,13 +50,13 @@ namespace market
             // 1.等于下一条要处理的 increment message 的 MsgSeqNum
             // 2.等于下一条要处理的 increment message 的 MsgSeqNum - 1（该位置是 recovery books 数组头的场合）
             std::vector<fh::cme::market::message::Book>::const_iterator m_recovery_wait_merge;
-            fh::cme::market::message::MessageParserF m_parser_f;
             fh::cme::market::message::MessageParserR m_parser_r;
             fh::cme::market::message::MessageParserX m_parser_x;
             fh::cme::market::message::MessageParserW m_parser_w;
             BookStateController m_book_state_controller;
-            fh::cme::market::BookSender *m_book_sender;
+            fh::core::market::MarketListenerI *m_book_sender;
             fh::cme::market::DefinitionManager m_definition_manager;
+            fh::cme::market::StatusManager m_status_manager;
 
         private:
             DISALLOW_COPY_AND_ASSIGN(BookManager);

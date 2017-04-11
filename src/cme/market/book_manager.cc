@@ -12,10 +12,11 @@ namespace cme
 namespace market
 {
 
-    BookManager::BookManager(fh::cme::market::BookSender *sender)
+    BookManager::BookManager(fh::core::market::MarketListenerI *sender)
     : m_recovery_books(), m_recovery_wait_merge(m_recovery_books.cbegin()),
-      m_parser_f(), m_parser_r(), m_parser_x(), m_parser_w(),
-      m_book_state_controller(), m_book_sender(sender), m_definition_manager(sender)
+      m_parser_r(), m_parser_x(), m_parser_w(),
+      m_book_state_controller(), m_book_sender(sender),
+      m_definition_manager(sender), m_status_manager(sender, &m_definition_manager)
     {
         // noop
     }
@@ -43,11 +44,7 @@ namespace market
         fh::core::assist::TimeMeasurer t;
 
         std::vector<fh::cme::market::message::Book> increment_books = this->Parse_increment(message);
-        if(increment_books.empty())
-        {
-            LOG_INFO("parsed. no book info in message.");
-            return;
-        }
+        LOG_INFO("parsed. books count in message=", increment_books.size());
 
         // 看看有没有 BookReset
         auto index = std::find_if(increment_books.rbegin(), increment_books.rend(),
@@ -65,7 +62,7 @@ namespace market
             m_recovery_wait_merge = m_recovery_books.cbegin();
         }
 
-        LOG_INFO("parse to books: ", t.Elapsed_nanoseconds(), "ns, count=", increment_books.size());
+        LOG_INFO("parse to books(after merge): ", t.Elapsed_nanoseconds(), "ns, count=", increment_books.size());
 
         std::for_each(increment_books.cbegin(), increment_books.cend(),
                 [this, &t](const fh::cme::market::message::Book &b)
@@ -156,7 +153,7 @@ namespace market
 
     void BookManager::Send(const fh::cme::market::message::Book *trade_book)
     {
-        // 发送 trade 数据
+        // 发送 trade 数据 TODO 这里要根据 mDUpdateAction 区分下不同的动作吧
         pb::dms::Trade trade;
         trade.set_contract(m_definition_manager.Get_symbol(trade_book->securityID));
         pb::dms::DataPoint *last = trade.mutable_last();
@@ -197,7 +194,7 @@ namespace market
         char type = message.message_type();
         if(type == 'f')
         {
-            m_parser_f.Parse(message, books);
+            m_status_manager.On_new_status(message);
         }
         else if(type == 'd')
         {
@@ -238,16 +235,19 @@ namespace market
         recovery_books.insert(recovery_books.end(), old_pos, m_recovery_wait_merge);
 
         // 看看 increment_books 中有没有 SecurityID 在 recovery books 的 [之前保存下的位置，末尾] 中存在
-        for(auto pos = old_pos; pos != m_recovery_books.cend(); ++pos)
+        if(!increment_books.empty())
         {
-            // 只看 LastMsgSeqNumProcessed 在该 increment book 的 message_seq 之后（包括）的数据
-            if(pos->packet_seq_num >= message_seq)
+            for(auto pos = old_pos; pos != m_recovery_books.cend(); ++pos)
             {
-                // 删除 increment books 中和当前 recovery book 一致的数据 （SecurityID 一样）
-                increment_books.erase(
-                        std::remove_if(increment_books.begin(), increment_books.end(), [pos](fh::cme::market::message::Book &ib){ return ib.securityID == pos->securityID; }),
-                        increment_books.end()
-                );
+                // 只看 LastMsgSeqNumProcessed 在该 increment book 的 message_seq 之后（包括）的数据
+                if(pos->packet_seq_num >= message_seq)
+                {
+                    // 删除 increment books 中和当前 recovery book 一致的数据 （SecurityID 一样）
+                    increment_books.erase(
+                            std::remove_if(increment_books.begin(), increment_books.end(), [pos](fh::cme::market::message::Book &ib){ return ib.securityID == pos->securityID; }),
+                            increment_books.end()
+                    );
+                }
             }
         }
 

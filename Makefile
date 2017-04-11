@@ -8,7 +8,8 @@ BIN_PATH = $(ROOT)/bin
 VENDOR_PATH = $(realpath $(ROOT)/vendor)
 
 INCLUDE_PATH = -I$(SRC_PATH) -I$(VENDOR_PATH)/boost/include -I$(VENDOR_PATH)/gtest/include  -I$(VENDOR_PATH)/mongodb/include  \
-								-I$(VENDOR_PATH)/protobuf/include -I$(VENDOR_PATH)/quickfix/include -I$(VENDOR_PATH)/sbe/include -I$(VENDOR_PATH)/zeromq/include
+								-I$(VENDOR_PATH)/protobuf/include -I$(VENDOR_PATH)/quickfix/include -I$(VENDOR_PATH)/sbe/include -I$(VENDOR_PATH)/zeromq/include \
+								 -I$(VENDOR_PATH)/mongodb/include/bsoncxx/v_noabi -I$(VENDOR_PATH)/mongodb/include/mongocxx/v_noabi
 LIBS_PATH = -L$(VENDOR_PATH)/boost/libs -L$(VENDOR_PATH)/gtest/libs  -L$(VENDOR_PATH)/mongodb/libs  \
 								-L$(VENDOR_PATH)/protobuf/libs -L$(VENDOR_PATH)/quickfix/libs -L$(VENDOR_PATH)/sbe/libs -L$(VENDOR_PATH)/zeromq/libs
 EXEC_LIBS_PATH = -Wl,-rpath,$(VENDOR_PATH)/boost/libs:$(VENDOR_PATH)/gtest/libs:$(VENDOR_PATH)/mongodb/libs:$(VENDOR_PATH)/protobuf/libs:$(VENDOR_PATH)/quickfix/libs:$(VENDOR_PATH)/sbe/libs:$(VENDOR_PATH)/zeromq/libs
@@ -21,7 +22,7 @@ COMPILE_COMMAND = $(COMPILER) $(INCLUDE_PATH) $(LIBS_PATH) $(EXEC_LIBS_PATH) $(L
 LINT_COMMAND = $(TEST_PATH)/cpplint.py
 
 SETTINGS = $(BIN_PATH)/market_config.xml $(BIN_PATH)/market_settings.ini  $(BIN_PATH)/exchange_server.cfg \
-					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg
+					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg $(BIN_PATH)/original_saver_settings.ini
 ALL_OBJS =  $(filter-out $(wildcard $(BIN_PATH)/*_test.o), $(wildcard $(BIN_PATH)/*.o)) 
 TEST_OBJS = $(BIN_PATH)/utility_unittest.o
 COMM_OBJS = $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/utility.o $(BIN_PATH)/message_utility.o $(BIN_PATH)/logger.o \
@@ -39,14 +40,16 @@ ZMQ_TARGET = $(BIN_PATH)/zmq_receiver_test
 EXCHANGE_SERVER_TARGET = $(BIN_PATH)/exchange_server_test
 STRATEGY_TARGET = $(BIN_PATH)/strategy_test
 EXCHANGE_CLIENT_TARGET = $(BIN_PATH)/exchange_client_test
+ORIGINAL_SAVER_TARGET = $(BIN_PATH)/original_saver_test
+ORIGINAL_SENDER_TARGET = $(BIN_PATH)/original_sender_test
 TEST_TARGET = $(BIN_PATH)/utest
     
 default: all;
     
 include objs.mk
     
-all: createdir usender tsender receiver sbe ptest zmqrec eserver strategy eclient copyfile
-
+all: createdir usender tsender receiver sbe ptest zmqrec eserver strategy eclient copyfile original orgsend
+ 
 createdir:
 	mkdir -p ${BIN_PATH}
 
@@ -56,11 +59,12 @@ usender: $(BIN_PATH)/udp_sender_test.o $(COMM_OBJS)
 tsender: $(BIN_PATH)/tcp_sender_test.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(TSENDER_TARGET) $?
 	
-receiver: $(BIN_PATH)/udp_receiver_test.o $(BIN_PATH)/dat_processor.o $(BIN_PATH)/udp_receiver.o $(BIN_PATH)/dat_saver.o $(BIN_PATH)/market_manager.o \
+receiver: $(BIN_PATH)/udp_receiver_test.o $(BIN_PATH)/dat_processor.o $(BIN_PATH)/udp_receiver.o $(BIN_PATH)/dat_saver.o \
                $(BIN_PATH)/tcp_receiver.o $(BIN_PATH)/dat_arbitrator.o $(BIN_PATH)/market_application.o $(BIN_PATH)/market_settings.o \
-               $(BIN_PATH)/recovery_saver.o $(BIN_PATH)/dat_replayer.o $(BIN_PATH)/book_manager.o $(BIN_PATH)/book_state_controller.o\
+               $(BIN_PATH)/recovery_saver.o $(BIN_PATH)/dat_replayer.o $(BIN_PATH)/book_manager.o $(BIN_PATH)/book_state_controller.o \
                $(BIN_PATH)/message_parser_d.o $(BIN_PATH)/message_parser_f.o $(BIN_PATH)/message_parser_r.o $(BIN_PATH)/channel_settings.o \
-               $(BIN_PATH)/message_parser_x.o $(BIN_PATH)/message_parser_w.o $(BIN_PATH)/definition_manager.o $(BIN_PATH)/book_sender.o \
+               $(BIN_PATH)/message_parser_x.o $(BIN_PATH)/message_parser_w.o $(BIN_PATH)/definition_manager.o $(BIN_PATH)/status_manager.o \
+               $(BIN_PATH)/cme_market.o $(BIN_PATH)/market_manager.o $(BIN_PATH)/book_sender.o \
                $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(RECEIVER_TARGET) $?
 
@@ -84,6 +88,13 @@ eclient: $(BIN_PATH)/exchange_client_test.o $(BIN_PATH)/exchange_application.o $
 			 $(BIN_PATH)/globex_logger.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(EXCHANGE_CLIENT_TARGET) $?
 
+original: $(BIN_PATH)/original_saver_test.o $(BIN_PATH)/mongo.o $(BIN_PATH)/original_saver.o $(BIN_PATH)/original_receiver.o \
+				$(COMM_OBJS) 
+	$(COMPILE_COMMAND) -o $(ORIGINAL_SAVER_TARGET) $?
+		
+orgsend: $(BIN_PATH)/original_sender_test.o $(COMM_OBJS)
+	$(COMPILE_COMMAND) -o $(ORIGINAL_SENDER_TARGET) $? 
+		
 copyfile: $(SETTINGS)
 
 test: $(ALL_OBJS) $(TEST_OBJS)

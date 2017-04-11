@@ -11,8 +11,8 @@ namespace cme
 namespace market
 {
 
-    DatProcessor::DatProcessor(fh::cme::market::DatSaver &saver, fh::cme::market::DatReplayer &replayer)
-    : m_arbitrator(), m_saver(&saver), m_replayer(&replayer)
+    DatProcessor::DatProcessor(fh::cme::market::DatSaver *saver, fh::cme::market::DatReplayer *replayer)
+    : m_arbitrator(), m_saver(saver), m_replayer(replayer)
     {
         // noop
     }
@@ -20,12 +20,6 @@ namespace market
     DatProcessor::~DatProcessor()
     {
         // noop
-    }
-
-    void DatProcessor::Set_later_join(bool is_lj)
-    {
-        m_arbitrator.Set_later_join(is_lj);
-        m_saver->Set_later_join(is_lj);
     }
 
     // process tcp replay data to mdp messages and save it

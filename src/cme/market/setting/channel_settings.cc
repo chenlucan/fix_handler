@@ -49,6 +49,17 @@ namespace setting
         return m_channels.at(channel_id);
     }
 
+    std::vector<fh::cme::market::setting::Channel> ChannelSettings::All_channels() const
+    {
+        std::vector<fh::cme::market::setting::Channel> v;
+        v.reserve(m_channels.size());
+        for (const auto &s : m_channels)
+        {
+           v.push_back(s.second);
+        }
+        return v;
+    }
+
     void ChannelSettings::Read_channels(const std::string &channel_setting_file)
     {
         boost::property_tree::ptree pt;

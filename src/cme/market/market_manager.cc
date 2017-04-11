@@ -10,11 +10,10 @@ namespace market
 {
 
     MarketManager::MarketManager(
-            fh::cme::market::BookSender *listener,
+            fh::core::market::MarketListenerI *listener,
             const fh::cme::market::setting::Channel &channel,
             const fh::cme::market::setting::MarketSettings &settings)
-    : fh::core::market::MarketI(listener),
-      m_udp_incrementals(), m_udp_recoveries(), m_udp_definitions(),
+    : m_udp_incrementals(), m_udp_recoveries(), m_udp_definitions(),
       m_tcp_replayer(nullptr), m_saver(nullptr),
       m_processor(nullptr), m_definition_saver(nullptr), m_recovery_saver(nullptr)
     {
@@ -35,13 +34,12 @@ namespace market
     }
 
     void MarketManager::Initial_application(
-            fh::cme::market::BookSender *listener,
+            fh::core::market::MarketListenerI *listener,
             const fh::cme::market::setting::Channel &channel,
             const fh::cme::market::setting::MarketSettings &settings)
     {
         std::vector<fh::cme::market::setting::Connection> connections = channel.connections;
         std::pair<std::string, std::string> auth = settings.Get_auth();
-        std::pair<std::string, std::string> save_url = settings.Get_data_save_url();
 
         std::for_each(connections.cbegin(), connections.cend(), [this, &channel, &auth](const fh::cme::market::setting::Connection &c){
             if(c.protocol == fh::cme::market::setting::Protocol::TCP)
@@ -70,38 +68,22 @@ namespace market
             }
         });
 
-        m_saver = new  fh::cme::market::DatSaver(save_url.first, listener);
-        m_processor = new  fh::cme::market::DatProcessor(*m_saver, *m_tcp_replayer);
+        m_saver = new  fh::cme::market::DatSaver(listener);
+        m_processor = new  fh::cme::market::DatProcessor(m_saver, m_tcp_replayer);
         m_definition_saver = new  fh::cme::market::RecoverySaver(true);
         m_recovery_saver = new  fh::cme::market::RecoverySaver(false);
     }
 
-    // implement of MarketI
-    bool MarketManager::Start()
+    void MarketManager::Start()
     {
-        // must tell processer this is weekly pre-opening startup
-        m_processor->Set_later_join(false);
-
         // start udp incrementals
         std::for_each(m_udp_incrementals.begin(), m_udp_incrementals.end(),
                       std::bind(&MarketManager::Start_increment_feed, this, std::placeholders::_1));
-        // start message saver
-        Start_save();
-
-        return true;
-    }
-
-    // implement of MarketI
-    bool MarketManager::Join()
-    {
-        // must tell processer this is weekly pre-opening startup
-        m_processor->Set_later_join(true);
-
         // start udp definitions
         std::for_each(m_udp_definitions.begin(), m_udp_definitions.end(),
                       std::bind(&MarketManager::Start_definition_feed, this, std::placeholders::_1));
-
-        return true;
+        // start message saver
+        Start_save();
     }
 
     void MarketManager::Stop_recoveries()
@@ -114,6 +96,12 @@ namespace market
     {
         std::for_each(m_udp_definitions.begin(), m_udp_definitions.end(), std::mem_fun(&fh::core::udp::UDPReceiver::Stop));
         LOG_INFO("definition udp listener stopped.");
+    }
+
+    void MarketManager::Stop_increments()
+    {
+        std::for_each(m_udp_incrementals.begin(), m_udp_incrementals.end(), std::mem_fun(&fh::core::udp::UDPReceiver::Stop));
+        LOG_INFO("increment udp listener stopped.");
     }
 
     void MarketManager::Start_increment_feed(fh::core::udp::UDPReceiver *udp)
@@ -158,9 +146,6 @@ namespace market
         LOG_INFO("definition all received.");
         this->Stop_definitions();
 
-        // start udp incrementals
-        std::for_each(m_udp_incrementals.begin(), m_udp_incrementals.end(),
-                      std::bind(&MarketManager::Start_increment_feed, this, std::placeholders::_1));
         // start udp recoveries
         std::for_each(m_udp_recoveries.begin(), m_udp_recoveries.end(),
                       std::bind(&MarketManager::Start_recovery_feed, this, std::placeholders::_1));
@@ -171,47 +156,20 @@ namespace market
         LOG_INFO("recovery all received.");
         this->Stop_recoveries();
 
-        // start message saver
-        Start_save();
+        // 此时将接受到的恢复数据设置到 saver
+        m_saver->Set_recovery_data(m_definition_saver->Get_data(), m_recovery_saver->Get_data());
     }
 
     void MarketManager::Start_save()
     {
-        m_saver->Set_definition_data(m_definition_saver->Get_data());
-        m_saver->Set_recovery_data(m_recovery_saver->Get_data());
-
+        LOG_INFO("start data saver.");
         std::thread t(&DatSaver::Start_save, m_saver);
         t.detach();
     }
 
-    // implement of MarketI
-    void MarketManager::Initialize(std::vector<std::string> insts)
-    {
-        // noop
-    }
-
-    // implement of MarketI
     void MarketManager::Stop()
     {
-        // noop
-    }
-
-    // implement of MarketI
-    void MarketManager::Subscribe(std::vector<std::string> instruments)
-    {
-        // noop
-    }
-
-    // implement of MarketI
-    void MarketManager::UnSubscribe(std::vector<std::string> instruments)
-    {
-        // noop
-    }
-
-    // implement of MarketI
-    void MarketManager::ReqDefinitions(std::vector<std::string> instruments)
-    {
-        // noop
+        this->Stop_increments();
     }
 
 } // namespace market

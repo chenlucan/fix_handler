@@ -23,6 +23,7 @@ namespace setting
 
         public:
             const fh::cme::market::setting::Channel Get_channel(const std::string &channel_id) const;
+            std::vector<fh::cme::market::setting::Channel> All_channels() const;
 
         private:
             static const std::unordered_map<std::string, fh::cme::market::setting::FeedType> FEED_TYPES;

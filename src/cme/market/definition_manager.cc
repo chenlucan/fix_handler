@@ -12,7 +12,7 @@ namespace cme
 namespace market
 {
 
-    DefinitionManager::DefinitionManager(fh::cme::market::BookSender *sender)
+    DefinitionManager::DefinitionManager(fh::core::market::MarketListenerI *sender)
     : m_instruments(), m_parser_d(), m_sender(sender)
     {
         // noop

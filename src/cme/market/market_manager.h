@@ -10,8 +10,7 @@
 #include "cme/market/dat_processor.h"
 #include "cme/market/dat_saver.h"
 #include "cme/market/recovery_saver.h"
-#include "core/market/marketi.h"
-#include "cme/market/book_sender.h"
+#include "core/market/marketlisteneri.h"
 
 namespace fh
 {
@@ -20,34 +19,22 @@ namespace cme
 namespace market
 {
 
-    class MarketManager : public fh::core::market::MarketI
+    class MarketManager
     {
         public:
             MarketManager(
-                    fh::cme::market::BookSender *listener,
+                    fh::core::market::MarketListenerI *listener,
                     const fh::cme::market::setting::Channel &channel,
                     const fh::cme::market::setting::MarketSettings &settings);
             virtual ~MarketManager();
 
         public:
-            // implement of MarketI
-            virtual bool Start();
-            // implement of MarketI
-            virtual bool Join();
-            // implement of MarketI
-            virtual void Initialize(std::vector<std::string> insts);
-            // implement of MarketI
-            virtual void Stop();
-            // implement of MarketI
-            virtual void Subscribe(std::vector<std::string> instruments);
-            // implement of MarketI
-            virtual void UnSubscribe(std::vector<std::string> instruments);
-            // implement of MarketI
-            virtual void ReqDefinitions(std::vector<std::string> instruments);
+            void Start();
+            void Stop();
 
         private:
             void Initial_application(
-                    fh::cme::market::BookSender *listener,
+                    fh::core::market::MarketListenerI *listener,
                     const fh::cme::market::setting::Channel &channel,
                     const fh::cme::market::setting::MarketSettings &settings);
             void Start_increment_feed(fh::core::udp::UDPReceiver *udp);
@@ -58,6 +45,7 @@ namespace market
             void Start_save();
             void Stop_recoveries();
             void Stop_definitions();
+            void Stop_increments();
 
         private:
             std::vector<fh::core::udp::UDPReceiver *> m_udp_incrementals;

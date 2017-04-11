@@ -10,26 +10,14 @@ namespace cme
 {
 namespace market
 {
-    DatSaver::DatSaver(const std::string &org_save_url, fh::cme::market::BookSender *book_sender)
-    : m_last_seq(0), m_unreceived_seqs(), m_mutex(), m_datas(),
-      m_org_sender(org_save_url),
-      m_definition_datas(nullptr), m_recovery_datas(nullptr), m_book_manager(book_sender),
+    DatSaver::DatSaver(fh::core::market::MarketListenerI *book_sender)
+    : m_last_seq(std::numeric_limits<std::uint32_t>::max()), m_unreceived_seqs(),
+      m_mutex(), m_recovery_mutex(), m_datas(),
+      m_definition_datas(nullptr), m_recovery_datas(nullptr),
+      m_book_sender(book_sender), m_book_manager(book_sender),
       m_recovery_first_seq(0)
     {
         // noop
-    }
-
-    void DatSaver::Set_later_join(bool is_lj)
-    {
-        if(is_lj)
-        {
-            // use max value as initial value
-            m_last_seq = std::numeric_limits<std::uint32_t>::max();
-        }
-        else
-        {
-            m_last_seq = 0;
-        }
     }
 
     // 把接受到的行情数据保存到内存，如果有 GAP 那么就记录下丢失的序号
@@ -42,7 +30,7 @@ namespace market
 
         if(m_last_seq == std::numeric_limits<std::uint32_t>::max())
         {
-            // 说明这次来的是 later joiner 的第一条数据，更新已保存最大序列号
+            // 说明这次来的是第一条数据，更新已保存最大序列号
             m_last_seq = packet_seq_num;
         }
         else if(packet_seq_num < m_last_seq)
@@ -60,45 +48,46 @@ namespace market
         }
     }
 
-    // set received definition messages
-    void DatSaver::Set_definition_data(std::vector<fh::cme::market::message::MdpMessage> *definition_datas)
+    // set received definition,recovery messages
+    void DatSaver::Set_recovery_data(
+            std::vector<fh::cme::market::message::MdpMessage> *definition_datas,
+            std::vector<fh::cme::market::message::MdpMessage> *recovery_datas)
     {
+        std::lock_guard<std::mutex> lock(m_recovery_mutex);
         m_definition_datas = definition_datas;
-        m_book_manager.Set_definition_data(definition_datas);
-    }
-
-    // set received recovery messages
-    void DatSaver::Set_recovery_data(std::vector<fh::cme::market::message::MdpMessage> *recovery_datas)
-    {
         m_recovery_datas = recovery_datas;
-        m_book_manager.Set_recovery_data(recovery_datas);
-
-        if(!recovery_datas->empty())
-        {
-            m_recovery_first_seq = recovery_datas->front().last_msg_seq_num_processed();
-        }
     }
 
     // process the messages in memory and save to zeroqueue
     void DatSaver::Start_save()
     {
-        // first, send definition messages if exist
-        this->Send_definition_messages();
-        // first, send recovery messages if exist
-        this->Send_recovery_messages();
+        std::uint32_t first_seq = Get_first_data_seq();
+        LOG_INFO("first message received, seq = ", first_seq);
+
+        if(first_seq == 1)
+        {
+            // 说明是从周末就开始启动了，这样才能接受到第 1 条行情数据，
+            // 此时无需处理恢复数据，直接从第一条行情数据开始处理即可
+        }
+        else
+        {
+            // 说明是周中才启动的，此时需要从恢复数据开始处理
+            // 这里会等待接受到所有的恢复数据，然后处理之（解析，发送）
+            Process_recovery_data();
+        }
 
         while(true)
         {
-           auto message = Pick_next_message();
-           if(message != m_datas.end())
+           auto message = Pick_next_message();  // 返回：{数据内容, 有无数据}
+           if(message.second)
            {
-               bool should_send_now = this->Convert_message(message);
+               bool should_send_now = this->Convert_message(message.first);
                if(should_send_now)
                {
-                   this->Send_message(*message);
+                   this->Send_message(*message.first);
                }
 
-               Remove_past_message(message);
+               Remove_past_message(message.first);
            }
            else
            {
@@ -107,15 +96,58 @@ namespace market
        }
     }
 
+    // 获取到第一条数据的 sequence number（如果没有数据，则一直等待）
+    std::uint32_t DatSaver::Get_first_data_seq()
+    {
+        while(true)
+        {
+            { // for release mutex
+                std::lock_guard<std::mutex> lock(m_mutex);
+                if(!m_datas.empty())
+                {
+                    return m_datas.cbegin()->packet_seq_num();
+                }
+            }
+            std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
+        }
+    }
+
+    // 处理恢复数据（如果没有恢复数据，则一直等待）
+    void DatSaver::Process_recovery_data()
+    {
+        while(true)
+        {
+            { // for release mutex
+                std::lock_guard<std::mutex> lock(m_recovery_mutex);
+                if(m_recovery_datas != nullptr)
+                {
+                    break;
+                }
+            }
+            std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
+        }
+
+        LOG_INFO("recovery messages received.");
+
+        m_book_manager.Set_definition_data(m_definition_datas);
+        m_book_manager.Set_recovery_data(m_recovery_datas);
+
+        m_recovery_first_seq = m_recovery_datas->front().last_msg_seq_num_processed();
+
+        // 发送接受到的恢复数据
+        this->Send_definition_messages();
+        this->Send_recovery_messages();
+    }
+
     // pick first message to serialize and remove it from memory
-    std::multiset<fh::cme::market::message::MdpMessage>::iterator DatSaver::Pick_next_message()
+    std::pair<std::multiset<fh::cme::market::message::MdpMessage>::iterator, bool> DatSaver::Pick_next_message()
     {
         std::lock_guard<std::mutex> lock(m_mutex);
 
         if(m_datas.empty())
         {
             // 暂无数据
-            return m_datas.end();
+            return {m_datas.end(), false};
         }
 
         auto message = m_datas.begin();
@@ -125,10 +157,10 @@ namespace market
         {
             // 下一个 seq 的数据缺失，需要等待
             LOG_DEBUG("wait for seq=", first_unreceived);
-            return m_datas.end();
+            return {m_datas.end(), false};
         }
 
-        return message;
+        return {message, true};
     }
 
     void DatSaver::Send_definition_messages()
@@ -182,7 +214,7 @@ namespace market
         static fh::core::assist::TimeMeasurer t;
 
         // send to db
-        m_org_sender.Send(message.Serialize());
+        m_book_sender->OnOrginalMessage(message.Serialize());
 
         LOG_INFO("{DB}sent to zmq(original data): ", t.Elapsed_nanoseconds(), "ns, length=", message.message_length(), " seq=", message.packet_seq_num(), " type=", message.message_type());
     }

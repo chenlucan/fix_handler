@@ -66,7 +66,7 @@ namespace market
         // get messages from packet
         m_current_sequence = fh::cme::market::message::utility::Pick_messages_from_packet(buffer, data_length, m_recovery_datas);
 
-        return m_total_number == m_recovery_datas.size();
+        return m_recovery_datas.size() >= m_total_number;
     }
 
 } // namespace market

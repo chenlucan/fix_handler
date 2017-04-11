@@ -4,6 +4,9 @@
 
 #include <string>
 #include "core/global.h"
+#include "cme/exchange/strategy_communicator.h"
+#include "cme/exchange/globex_communicator.h"
+
 
 namespace fh
 {
@@ -11,25 +14,21 @@ namespace cme
 {
 namespace exchange
 {
-    class StrategyCommunicator;
-    class GlobexCommunicator;
-
     class ExchangeApplication
     {
         public:
             explicit ExchangeApplication(
-                bool is_week_begin,
                 const std::string &fix_setting_file = "exchange_client.cfg",
                 const std::string &app_setting_file = "exchange_settings.ini");
             virtual ~ExchangeApplication();
 
         public:
-            void Start();
+            bool Start();
             void Stop();
 
         private:
-            void Initial_application(const std::string &fix_setting_file, const std::string &app_setting_file, bool is_week_begin);
-            void On_from_strategy(char *data, size_t size);
+            void Initial_application(const std::string &fix_setting_file, const std::string &app_setting_file);
+            std::vector<::pb::ems::Order> Get_init_orders();
 
         private:
             StrategyCommunicator *m_strategy;

@@ -55,7 +55,7 @@ namespace message
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
-            Book b;
+            Book b = {};
             b.mDEntryPx = noMDEntries.mDEntryPx().mantissa();
             b.mDEntrySize = noMDEntries.mDEntrySize();
             b.numberOfOrders = noMDEntries.numberOfOrders();
@@ -99,7 +99,7 @@ namespace message
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
-            Book b;
+            Book b = {};
             b.orderID = noMDEntries.orderID();
             b.mDOrderPriority = noMDEntries.mDOrderPriority();
             b.mDEntryPx = noMDEntries.mDEntryPx().mantissa();

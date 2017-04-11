@@ -15,7 +15,7 @@ namespace market
     class BookSender : public fh::core::market::MarketListenerI
     {
         public:
-            explicit BookSender(const std::string &url);
+            BookSender(const std::string &org_url, const std::string &book_url);
             virtual ~BookSender();
 
         public:
@@ -37,12 +37,18 @@ namespace market
             void OnL3() override;
             // implement of MarketListenerI
             void OnTrade(const pb::dms::Trade &trade) override;
-            void OnContractAuctioning(std::string contract) override;
-            void OnContractNoTrading(std::string contract)  override;
-            void OnContractTrading(std::string contract)    override;
+            // implement of MarketListenerI
+            void OnContractAuctioning(const std::string &contract) override;
+            // implement of MarketListenerI
+            void OnContractNoTrading(const std::string &contract)  override;
+            // implement of MarketListenerI
+            void OnContractTrading(const std::string &contract)    override;
+            // implement of MarketListenerI
+            virtual void OnOrginalMessage(const std::string &message);
 
         private:
-            fh::core::zmq::ZmqSender m_sender;
+            fh::core::zmq::ZmqSender m_org_sender;
+            fh::core::zmq::ZmqSender m_book_sender;
 
         private:
             DISALLOW_COPY_AND_ASSIGN(BookSender);

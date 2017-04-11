@@ -108,6 +108,11 @@ namespace market
         }
     }
 
+    void DatReplayer::Stop()
+    {
+        // TODO how to stop all tcp receiver?
+    }
+
     DatReplayer::~DatReplayer()
     {
         // noop
