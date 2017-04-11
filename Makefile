@@ -12,7 +12,7 @@ TMP_DIR = $(BIN_PATH)
 LCOV := $(VENDOR_PATH)/lcov/lcov
 GENHTML := $(VENDOR_PATH)/lcov/genhtml
 
-
+INCLUDE_TEST_PATH = -I$(TEST_PATH)
 INCLUDE_PATH = -I$(SRC_PATH) -I$(VENDOR_PATH)/boost/include -I$(VENDOR_PATH)/gtest/include  -I$(VENDOR_PATH)/mongodb/include  \
 								-I$(VENDOR_PATH)/protobuf/include -I$(VENDOR_PATH)/quickfix/include -I$(VENDOR_PATH)/sbe/include -I$(VENDOR_PATH)/zeromq/include
 LIBS_PATH = -L$(VENDOR_PATH)/boost/libs -L$(VENDOR_PATH)/gtest/libs  -L$(VENDOR_PATH)/mongodb/libs  \
@@ -25,12 +25,13 @@ DBG_FLAGS = -g -rdynamic
 COV_FLAG := -fprofile-arcs -ftest-coverage
 FLAGS = -std=c++11 -Wall -Wno-pragmas $(DBG_FLAGS) $(COV_FLAG)
 COMPILE_COMMAND = $(COMPILER) $(INCLUDE_PATH) $(LIBS_PATH) $(EXEC_LIBS_PATH) $(LIBS) $(FLAGS)
+TEST_COMPILE_COMMAND = $(COMPILER) $(INCLUDE_PATH) $(INCLUDE_TEST_PATH) $(LIBS_PATH) $(EXEC_LIBS_PATH) $(LIBS) $(FLAGS)
 LINT_COMMAND = $(TEST_PATH)/cpplint.py
 
 SETTINGS = $(BIN_PATH)/market_config.xml $(BIN_PATH)/market_settings.ini  $(BIN_PATH)/exchange_server.cfg \
 					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg
 ALL_OBJS =  $(filter-out $(wildcard $(BIN_PATH)/*_test.o), $(wildcard $(BIN_PATH)/*.o)) 
-TEST_OBJS = $(BIN_PATH)/utility_unittest.o
+TEST_OBJS = $(BIN_PATH)/utility_unittest.o $(BIN_PATH)/mut_book_sender.o
 COMM_OBJS = $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/utility.o $(BIN_PATH)/message_utility.o $(BIN_PATH)/logger.o \
 						   $(BIN_PATH)/mdp_message.o $(BIN_PATH)/sbe_decoder.o $(BIN_PATH)/settings.o \
 						   $(BIN_PATH)/time_measurer.o $(BIN_PATH)/zmq_sender.o $(BIN_PATH)/zmq_receiver.o \
@@ -96,7 +97,7 @@ eclient: $(BIN_PATH)/exchange_client_test.o $(BIN_PATH)/exchange_application.o $
 copyfile: $(SETTINGS)
 
 test: $(ALL_OBJS) $(TEST_OBJS)
-	$(COMPILE_COMMAND) $(TEST_LIBS) -o $(TEST_TARGET) $^
+	$(TEST_COMPILE_COMMAND) $(TEST_LIBS) -o $(TEST_TARGET) $^
 html:
 	cd $(BIN_PATH) && gcov $(ALL_CXXFILES) -o ./ && $(LCOV) -c -d ./ -o coverage.info \
 	&& $(GENHTML) -o ./result ./coverage.info

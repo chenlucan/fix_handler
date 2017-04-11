@@ -164,3 +164,6 @@ $(BIN_PATH)/%.cfg: $(SRC_PATH)/%.cfg
 $(BIN_PATH)/utility_unittest.o: $(TEST_PATH)/core/assist/utility_unittest.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 	
+$(BIN_PATH)/mut_book_sender.o: $(TEST_PATH)/cme/market/mut_book_sender.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+    
