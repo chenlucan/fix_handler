@@ -33,7 +33,7 @@ ALL_FILES = $(shell find $(SRC_PATH) -name '*.h' -or -name '*.cc')
 						   
 SENDER_TARGET = $(BIN_PATH)/udp_sender_test
 TSENDER_TARGET = $(BIN_PATH)/tcp_sender_test
-RECEIVER_TARGET = $(BIN_PATH)/udp_receiver_test
+MARKET_TARGET = $(BIN_PATH)/market_test
 SBE_TARGET = $(BIN_PATH)/sbe_test
 PACKET_TARGET = $(BIN_PATH)/packet_test
 ZMQ_TARGET = $(BIN_PATH)/zmq_receiver_test
@@ -48,7 +48,7 @@ default: all;
     
 include objs.mk
     
-all: createdir usender tsender receiver sbe ptest zmqrec eserver strategy eclient copyfile original orgsend
+all: createdir usender tsender market sbe ptest zmqrec eserver strategy eclient copyfile original orgsend
  
 createdir:
 	mkdir -p ${BIN_PATH}
@@ -59,14 +59,14 @@ usender: $(BIN_PATH)/udp_sender_test.o $(COMM_OBJS)
 tsender: $(BIN_PATH)/tcp_sender_test.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(TSENDER_TARGET) $?
 	
-receiver: $(BIN_PATH)/udp_receiver_test.o $(BIN_PATH)/dat_processor.o $(BIN_PATH)/udp_receiver.o $(BIN_PATH)/dat_saver.o \
+market: $(BIN_PATH)/market_test.o $(BIN_PATH)/dat_processor.o $(BIN_PATH)/udp_receiver.o $(BIN_PATH)/dat_saver.o \
                $(BIN_PATH)/tcp_receiver.o $(BIN_PATH)/dat_arbitrator.o $(BIN_PATH)/market_application.o $(BIN_PATH)/market_settings.o \
                $(BIN_PATH)/recovery_saver.o $(BIN_PATH)/dat_replayer.o $(BIN_PATH)/book_manager.o $(BIN_PATH)/book_state_controller.o \
                $(BIN_PATH)/message_parser_d.o $(BIN_PATH)/message_parser_f.o $(BIN_PATH)/message_parser_r.o $(BIN_PATH)/channel_settings.o \
                $(BIN_PATH)/message_parser_x.o $(BIN_PATH)/message_parser_w.o $(BIN_PATH)/definition_manager.o $(BIN_PATH)/status_manager.o \
                $(BIN_PATH)/cme_market.o $(BIN_PATH)/market_manager.o $(BIN_PATH)/book_sender.o \
                $(COMM_OBJS) 
-	$(COMPILE_COMMAND) -o $(RECEIVER_TARGET) $?
+	$(COMPILE_COMMAND) -o $(MARKET_TARGET) $?
 
 sbe: $(BIN_PATH)/sbe_test.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(SBE_TARGET) $?

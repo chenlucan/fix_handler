@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
     {
         if (argc != 1 && argc != 2)
         {
-            LOG_ERROR("Usage: udp_receiver_test [channel_id1[,channel_id2,...]]");
+            LOG_ERROR("Usage: market_test [channel_id1[,channel_id2,...]]");
             return 1;
         }
 
@@ -52,4 +52,4 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-// ./udp_receiver_test 360,361
+// ./market_test 360,361

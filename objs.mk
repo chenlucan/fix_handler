@@ -131,7 +131,7 @@ $(BIN_PATH)/zmq_sender.o: $(SRC_PATH)/core/zmq/zmq_sender.cc
 $(BIN_PATH)/zmq_receiver_test.o: $(SRC_PATH)/main/market/zmq_receiver_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
-$(BIN_PATH)/udp_receiver_test.o: $(SRC_PATH)/main/market/udp_receiver_test.cc
+$(BIN_PATH)/market_test.o: $(SRC_PATH)/main/market/market_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/udp_sender_test.o: $(SRC_PATH)/main/market/udp_sender_test.cc
