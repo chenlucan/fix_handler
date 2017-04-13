@@ -36,6 +36,13 @@ namespace market
 
         std::vector<fh::cme::market::setting::Channel> target_channels = this->Get_target_channels(channel_id, channel_setting_file);
         m_market = new CmeMarket(m_book_sender, target_channels, app_settings);
+
+        if(target_channels.empty())
+        {
+            // 如果没有 channel，直接终止
+            LOG_WARN("all channels not found, exit");
+            exit(1);
+        }
     }
 
     void MarketApplication::Start()
@@ -65,7 +72,10 @@ namespace market
             std::vector<fh::cme::market::setting::Channel> channels;
             for (const auto &c : channel_id_list)
             {
-                channels.push_back(channel_settings.Get_channel(c));
+                // 如果找到 id 对应的 channel，就保存下来
+                auto channel = channel_settings.Get_channel(c);
+                if(channel) channels.push_back(channel.get());
+                else LOG_WARN("channel ", c, " not found");
             }
             return channels;
         }
