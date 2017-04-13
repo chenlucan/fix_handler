@@ -37,6 +37,9 @@ namespace message
             char message_type() const;
             std::uint32_t last_msg_seq_num_processed() const;
 
+        private:
+            void Reset() const;
+
         public:
             // message type index with template id
             static const char *MDP_MESSAGE_TYPES;
@@ -46,9 +49,9 @@ namespace message
             std::uint32_t m_packet_seq_num;
             std::uint64_t m_packet_sending_time;
             std::uint16_t m_message_length;
-            std::vector<char> m_buffer;
-            std::shared_ptr<void> m_message_header;
-            std::shared_ptr<void> m_message_body;
+            mutable std::vector<char> m_buffer;
+            mutable std::shared_ptr<void> m_message_header;
+            mutable std::shared_ptr<void> m_message_body;
             std::uint64_t m_received_time;
 
         private:

@@ -107,7 +107,7 @@ namespace book
     // implement of MarketListenerI
     void BookSender::OnOrginalMessage(const std::string &message)
     {
-        LOG_INFO("send Original Message, size=", message.size());
+        LOG_INFO("send Original Message, size=", message.size(), " message=", message);
         m_org_sender.Send(message);
     }
 

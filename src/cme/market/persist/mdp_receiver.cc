@@ -1020,6 +1020,18 @@ namespace persist
 
     void MdpReceiver::AppendData(bson_t *document, mktdata::MDIncrementalRefreshSessionStatistics35 *m, std::vector<bson_t *> &destroyVector)
     {
+		boost::property_tree::ptree pt_document;
+		pt_document.put("Type", "MDIncrementalRefreshSessionStatistics35");
+		pt_document.put("TransactTime", m->transactTime());
+		pt_document.put("MatchEventIndicatorLastTradeMsg", m->matchEventIndicator().lastTradeMsg());
+		pt_document.put("MatchEventIndicatorLastVolumeMsg", m->matchEventIndicator().lastVolumeMsg());
+		pt_document.put("MatchEventIndicatorLastQuoteMsg", m->matchEventIndicator().lastQuoteMsg());
+		pt_document.put("MatchEventIndicatorLastStatsMsg", m->matchEventIndicator().lastStatsMsg());
+		pt_document.put("MatchEventIndicatorLastImpliedMsg", m->matchEventIndicator().lastImpliedMsg());
+		pt_document.put("MatchEventIndicatorRecoveryMsg", m->matchEventIndicator().recoveryMsg());
+		pt_document.put("MatchEventIndicatorReserved", m->matchEventIndicator().reserved());
+		pt_document.put("MatchEventIndicatorEndOfEvent", m->matchEventIndicator().endOfEvent());
+		
         BCON_APPEND (document,
                 "Type", BCON_UTF8("MDIncrementalRefreshSessionStatistics35"),
                 "TransactTime", BCON_INT64 (m->transactTime()),
@@ -1032,12 +1044,15 @@ namespace persist
 				"MatchEventIndicatorReserved", BCON_INT32(m->matchEventIndicator().reserved()),
 				"MatchEventIndicatorEndOfEvent", BCON_INT32(m->matchEventIndicator().endOfEvent())
         );		
-
+        
+		boost::property_tree::ptree pt_mdEntries;
+		
         bson_t *mdEntries = bson_new();
         mktdata::MDIncrementalRefreshSessionStatistics35::NoMDEntries& noMDEntries = m->noMDEntries();
         std::uint64_t index_md = 0;
         while (noMDEntries.hasNext())
         {
+			boost::property_tree::ptree pt_child;
             noMDEntries.next();
             bson_t *temp_child = BCON_NEW (
                     "MDEntryPxMantissa", BCON_INT64(noMDEntries.mDEntryPx().mantissa()),
@@ -1048,11 +1063,36 @@ namespace persist
                     "MDUpdateAction", BCON_INT32((int)noMDEntries.mDUpdateAction()),
                     "MDEntryType", BCON_INT32(noMDEntries.mDEntryType())
             );
+			
+			pt_child.put("MDEntryPxMantissa", noMDEntries.mDEntryPx().mantissa());
+			pt_child.put("MDEntryPxExponent", noMDEntries.mDEntryPx().exponent());
+			pt_child.put("SecurityID", noMDEntries.securityID());
+			pt_child.put("RptSeq", noMDEntries.rptSeq());
+			pt_child.put("OpenCloseSettlFlag", noMDEntries.openCloseSettlFlag());
+			pt_child.put("MDUpdateAction", noMDEntries.mDUpdateAction());
+			pt_child.put("MDEntryType", noMDEntries.mDEntryType());
+			pt_mdEntries.push_back(make_pair("",pt_child));
+			
 			MDEntrySizeIsNull(temp_child, noMDEntries);
             BSON_APPEND_DOCUMENT(mdEntries, std::to_string(index_md).c_str(), temp_child);
 		    destroyVector.push_back(temp_child);
             index_md ++;
         }
+		
+		pt_document.put_child("noMDEntries", pt_mdEntries);  
+		std::ostringstream buf; 
+		boost::property_tree::write_json (buf, pt_document, false);
+		std::string json = buf.str();
+		LOG_INFO("#####################################################################################");
+		LOG_INFO("#####################################################################################");
+		LOG_INFO("#####################################################################################");
+		LOG_INFO("#####################################################################################");
+        LOG_INFO(json);
+		LOG_INFO("#####################################################################################");
+		LOG_INFO("#####################################################################################");
+		LOG_INFO("#####################################################################################");
+		LOG_INFO("#####################################################################################");
+		
         BSON_APPEND_ARRAY(document, "noMDEntries", mdEntries);
 		destroyVector.push_back(mdEntries);
     }
@@ -1182,6 +1222,19 @@ namespace persist
 
     void MdpReceiver::AppendData(bson_t *document, mktdata::QuoteRequest39 *m, std::vector<bson_t *> &destroyVector)
     {
+		boost::property_tree::ptree pt_document;
+		pt_document.put("Type", "MDIncrementalRefreshSessionStatistics35");
+		pt_document.put("QuoteReqID", m->quoteReqID());
+		pt_document.put("TransactTime", m->transactTime());
+		pt_document.put("MatchEventIndicatorLastTradeMsg", m->matchEventIndicator().lastTradeMsg());
+		pt_document.put("MatchEventIndicatorLastVolumeMsg", m->matchEventIndicator().lastVolumeMsg());
+		pt_document.put("MatchEventIndicatorLastQuoteMsg", m->matchEventIndicator().lastQuoteMsg());
+		pt_document.put("MatchEventIndicatorLastStatsMsg", m->matchEventIndicator().lastStatsMsg());
+		pt_document.put("MatchEventIndicatorLastImpliedMsg", m->matchEventIndicator().lastImpliedMsg());
+		pt_document.put("MatchEventIndicatorRecoveryMsg", m->matchEventIndicator().recoveryMsg());
+		pt_document.put("MatchEventIndicatorReserved", m->matchEventIndicator().reserved());
+		pt_document.put("MatchEventIndicatorEndOfEvent", m->matchEventIndicator().endOfEvent());
+		
         BCON_APPEND (document,
                 "Type", BCON_UTF8("QuoteRequest39"),
 				"QuoteReqID", BCON_UTF8 (m->quoteReqID()),
@@ -1196,25 +1249,51 @@ namespace persist
 				"MatchEventIndicatorEndOfEvent", BCON_INT32(m->matchEventIndicator().endOfEvent())
         );		
 		
+		boost::property_tree::ptree pt_relatedSym;
+		
         bson_t *relatedSym = bson_new();
         mktdata::QuoteRequest39::NoRelatedSym& noRelatedSym = m->noRelatedSym();
         std::uint64_t index_md = 0;
         while (noRelatedSym.hasNext())
         {
+			boost::property_tree::ptree pt_child;
+			
             noRelatedSym.next();
             bson_t *temp_child = BCON_NEW (
 			        "Symbol", BCON_UTF8(noRelatedSym.getSymbolAsString().c_str()),
 					"SecurityID", BCON_INT32 ((int)noRelatedSym.securityID()),
                     "QuoteType", BCON_INT32(noRelatedSym.quoteType())
             );
+			
+			pt_child.put("Symbol", noRelatedSym.getSymbolAsString().c_str());
+			pt_child.put("SecurityID", noRelatedSym.securityID());
+			pt_child.put("QuoteType", noRelatedSym.quoteType());
+			pt_relatedSym.push_back(make_pair("",pt_child));			
+			
 			OrderQtyIsNull(temp_child, noRelatedSym);
 			SideIsNull(temp_child, noRelatedSym);
             BSON_APPEND_DOCUMENT(relatedSym, std::to_string(index_md).c_str(), temp_child);
 		    destroyVector.push_back(temp_child);
-            index_md++;
+            index_md++;			
+			
         }
         BSON_APPEND_ARRAY(document, "NoRelatedSym", relatedSym);
 		destroyVector.push_back(relatedSym);
+		
+		pt_document.put_child("NoRelatedSym", pt_relatedSym);  
+		std::ostringstream buf; 
+		boost::property_tree::write_json (buf, pt_document, false);
+		std::string json = buf.str();
+		LOG_INFO("#####################################################################################");
+		LOG_INFO("#####################################################################################");
+		LOG_INFO("#####################################################################################");
+		LOG_INFO("#####################################################################################");
+        LOG_INFO(json);
+		LOG_INFO("#####################################################################################");
+		LOG_INFO("#####################################################################################");
+		LOG_INFO("#####################################################################################");
+		LOG_INFO("#####################################################################################");
+		
     }
 
     void MdpReceiver::AppendData(bson_t *document, mktdata::MDInstrumentDefinitionOption41 *m, std::vector<bson_t *> &destroyVector)

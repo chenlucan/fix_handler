@@ -35,6 +35,9 @@ $(BIN_PATH)/status_manager.o: $(SRC_PATH)/cme/market/status_manager.cc
 $(BIN_PATH)/book_state_controller.o: $(SRC_PATH)/cme/market/book_state_controller.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
+$(BIN_PATH)/sbe_to_json.o: $(SRC_PATH)/cme/market/message/sbe_to_json.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/sbe_decoder.o: $(SRC_PATH)/cme/market/message/sbe_decoder.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 

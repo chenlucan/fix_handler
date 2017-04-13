@@ -4,7 +4,6 @@
 #include <string>
 #include <boost/algorithm/string.hpp>
 #include "core/assist/logger.h"
-#include "cme/market/persist/mdp_receiver.h"
 #include "cme/market/message/message_utility.h"
 
 void show_message(const std::string &hex_message)
@@ -41,10 +40,9 @@ void show_message(const std::string &hex_message)
 
     LOG_INFO("seq=", seq, ", message count=", message.size());
 
-    auto receiver = new fh::cme::market::persist::MdpReceiver("tcp://localhost:55555", "mongodb://localhost:55556/","a", "b");
-    std::for_each(message.cbegin(), message.cend(), [&receiver](const fh::cme::market::message::MdpMessage &m){
+    std::for_each(message.cbegin(), message.cend(), [](const fh::cme::market::message::MdpMessage &m){
         std::string  s = m.Serialize();
-        receiver->Save(const_cast<char*>(s.data()), s.length());
+        LOG_INFO(s);
     });
 }
 

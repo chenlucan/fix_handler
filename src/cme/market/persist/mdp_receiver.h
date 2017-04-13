@@ -5,6 +5,11 @@
 #include <libbson-1.0/bcon.h>
 #include <libbson-1.0/bson.h>
 #include <libmongoc-1.0/mongoc.h>
+#include <iostream>
+#include <sstream>
+#include <map>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 #include "core/global.h"
 #include "core/zmq/zmq_receiver.h"
 #include "cme/market/message/mktdata.h"

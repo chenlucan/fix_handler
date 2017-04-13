@@ -214,9 +214,16 @@ namespace market
         static fh::core::assist::TimeMeasurer t;
 
         // send to db
-        m_book_sender->OnOrginalMessage(message.Serialize());
-
-        LOG_INFO("{DB}sent to zmq(original data): ", t.Elapsed_nanoseconds(), "ns, length=", message.message_length(), " seq=", message.packet_seq_num(), " type=", message.message_type());
+        std::string json = message.Serialize();
+        if(json == "")  // 返回是空说明是不需要保存的消息
+        {
+            LOG_INFO("message not need be saved: ", t.Elapsed_nanoseconds(), "ns, seq=", message.packet_seq_num(), " type=", message.message_type());
+        }
+        else
+        {
+            m_book_sender->OnOrginalMessage(json);
+            LOG_INFO("{DB}sent to zmq(original data): ", t.Elapsed_nanoseconds(), "ns, seq=", message.packet_seq_num(), " type=", message.message_type());
+        }
     }
 
     void DatSaver::Remove_past_message(std::multiset<fh::cme::market::message::MdpMessage>::iterator message)

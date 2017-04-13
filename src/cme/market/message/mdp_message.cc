@@ -3,7 +3,7 @@
 #include "cme/market/message/sbe_decoder.h"
 #include "core/assist/utility.h"
 #include "cme/market/message/mktdata.h"
-
+#include "cme/market/message/sbe_to_json.h"
 
 namespace fh
 {
@@ -13,6 +13,7 @@ namespace market
 {
 namespace message
 {
+
     // message type index with template id
     const char *MdpMessage::MDP_MESSAGE_TYPES = "----X-------0--A5----------d-df-XXXXXXWR-dXXW";
 
@@ -22,10 +23,7 @@ namespace message
       m_message_length(message_length), m_buffer(&buffer[0], &buffer[message_length]),
       m_received_time(fh::core::assist::utility::Current_time_ns())
     {
-        fh::cme::market::message::SBEDecoder decoder(m_buffer.data(), m_message_length);
-        auto sbe_message = decoder.Start_decode();
-        m_message_header = sbe_message.first;
-        m_message_body = sbe_message.second;
+        this->Reset();
     }
 
     MdpMessage::MdpMessage(MdpMessage &&m)
@@ -90,33 +88,27 @@ namespace message
         return *(std::uint32_t *)(m_buffer.data() + 8);
     }
 
-    // serialize to send
+    // 将消息转换成 json 格式然后发送出去，以便保存到数据库
     std::string MdpMessage::Serialize() const
     {
-        //     8 bytes : m_received_time
-        //        2 bytes : m_packet_length
-        //        4 bytes : m_packet_seq_num
-        //        8 bytes : m_packet_sending_time
-        //        2 bytes : m_message_length
-        //        (m_message_length) bytes : m_buffer
-        std::uint16_t length = 8 + 2 + 4 + 8 + 2 + m_message_length;
-        std::vector<char> message;
-        message.reserve(length);
-        char *data = message.data();
-        memcpy(data, (char *)&m_received_time, 8);
-        memcpy(data + 8, (char *)&m_packet_length, 2);
-        memcpy(data + 8 + 2, (char *)&m_packet_seq_num, 4);
-        memcpy(data + 8 + 2 + 4, (char *)&m_packet_sending_time, 8);
-        memcpy(data + 8 + 2 + 4 + 8, (char *)&m_message_length, 2);
-        memcpy(data + 8 + 2 + 4 + 8 + 2, m_buffer.data(), m_message_length);
-
-        return std::string(data, length);
+        this->Reset();  // 因为在这个方法之前， mdp message 可能被解析过，会导致内部 position 指针已经变化了，所以这里要重置下
+        SBEtoJSON s2j(this);
+        return s2j.To_json();
     }
 
     MdpMessage::~MdpMessage()
     {
         // noop
     }
+
+    void MdpMessage::Reset() const
+    {
+        fh::cme::market::message::SBEDecoder decoder(m_buffer.data(), m_message_length);
+        auto sbe_message = decoder.Start_decode();
+        m_message_header = sbe_message.first;
+        m_message_body = sbe_message.second;
+    }
+
 } // namespace message
 } // namespace market
 } // namespace cme
