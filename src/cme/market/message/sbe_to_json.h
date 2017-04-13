@@ -9,6 +9,8 @@
 #include "cme/market/message/mdp_message.h"
 
 
+#define JSON_OBJ_TYPE boost::property_tree::ptree
+
 namespace fh
 {
 namespace cme
@@ -43,7 +45,7 @@ namespace message
             std::string To_json(mktdata::MDIncrementalRefreshTradeSummary42 *m);
             std::string To_json(mktdata::MDIncrementalRefreshOrderBook43 *m);
             std::string To_json(mktdata::SnapshotFullRefreshOrderBook44 *m);
-            std::string To_string(const boost::property_tree::ptree &json_message);
+            std::string To_string(const JSON_OBJ_TYPE &json_message);
 
         private:
             const MdpMessage *m_sbe_message;

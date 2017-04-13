@@ -21,9 +21,9 @@ namespace message
         char securityUpdateAction;      // A: add  D: delete  M:modify
         std::uint32_t securityID;
         std::string symbol;
-        std::uint64_t minPriceIncrement;
-        std::uint64_t highLimitPrice;
-        std::uint64_t lowLimitPrice;
+        std::int64_t minPriceIncrement;
+        std::int64_t highLimitPrice;
+        std::int64_t lowLimitPrice;
         std::uint8_t depthGBX;    // GBX- Real Book depth
         std::uint8_t depthGBI;        // GBI-Implied Book depth
 

@@ -46,6 +46,7 @@ namespace market
             void Stop_recoveries();
             void Stop_definitions();
             void Stop_increments();
+            void Stop_saver();
 
         private:
             std::vector<fh::core::udp::UDPReceiver *> m_udp_incrementals;

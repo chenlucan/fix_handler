@@ -31,6 +31,8 @@ namespace market
             void Set_recovery_data(
                     std::vector<fh::cme::market::message::MdpMessage> *definition_datas,
                     std::vector<fh::cme::market::message::MdpMessage> *recovery_datas);
+            // stop saver
+            void Stop();
 
         private:
             // send definition messages to db
@@ -70,6 +72,7 @@ namespace market
             fh::core::market::MarketListenerI *m_book_sender;
             fh::cme::market::BookManager m_book_manager;
             std::uint32_t m_recovery_first_seq;
+            bool m_is_stopped;
 
         private:
             DISALLOW_COPY_AND_ASSIGN(DatSaver);

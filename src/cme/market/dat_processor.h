@@ -17,7 +17,7 @@ namespace market
     class DatProcessor
     {
         public:
-            DatProcessor(fh::cme::market::DatSaver *, fh::cme::market::DatReplayer *);
+            DatProcessor(fh::cme::market::DatSaver *, fh::cme::market::DatReplayer *, std::function<void(void)> on_error);
             virtual ~DatProcessor();
 
         public:
@@ -35,6 +35,7 @@ namespace market
             fh::cme::market::DatArbitrator m_arbitrator;
             fh::cme::market::DatSaver *m_saver;
             fh::cme::market::DatReplayer *m_replayer;
+            std::function<void(void)> m_on_error;
 
         private:
             DISALLOW_COPY_AND_ASSIGN(DatProcessor);

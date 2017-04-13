@@ -3,68 +3,73 @@
 #include <boost/property_tree/json_parser.hpp>
 #include "cme/market/message/sbe_to_json.h"
 
-#define PUT_TO_JSON(json, message, field)  json.put(#field, (message).field())
-#define PUT_TO_JSON_CHAR(json, message, field)  json.put(#field, (message).field(0))
-#define PUT_TO_JSON_CHAR_ENUM(json, message, field)  json.put(#field, (char)(message).field())
-#define PUT_TO_JSON_CONSTANT(json, key, value)  json.put(key, value)
-#define PUT_TO_JSON_NON_NULL(json, message, field)  {  auto v = (message).field(); if(v != (message).field##NullValue()) json.put(#field, v);  }
-#define PUT_TO_JSON_STRING(json, message, field)  json.put(#field, (message).get##field##AsString())
-#define PUT_TO_JSON_PRICE(json, message, field)  { boost::property_tree::ptree price; \
-                                                                                                price.put("mantissa", (message).field().mantissa()); \
-                                                                                                price.put("exponent", (message).field().exponent()); \
-                                                                                                json.put_child(#field, price); }
+#define PUT_TO_JSON_VALUE(json, key, value)  json.put(key, value)
+#define PUT_TO_JSON_CHILD(json, key, child) json.put_child(key, child)
+#define PUT_TO_JSON_ARRAY_ITEM(json, item) json.push_back(std::make_pair("", item));
+#define JSON_TO_STRING(json)  std::ostringstream buf;  boost::property_tree::write_json (buf, json, true); return buf.str();
+
+#define PUT_TO_JSON(json, message, field) PUT_TO_JSON_VALUE(json, #field, (message).field())
+#define PUT_TO_JSON_CHAR(json, message, field)  PUT_TO_JSON_VALUE(json, #field, (message).field(0))
+#define PUT_TO_JSON_CHAR_ENUM(json, message, field)  PUT_TO_JSON_VALUE(json, #field, (char)(message).field())
+#define PUT_TO_JSON_NON_NULL(json, message, field)  {  auto v = (message).field(); if(v != (message).field##NullValue()) PUT_TO_JSON_VALUE(json, #field, v);  }
+#define PUT_TO_JSON_STRING(json, message, field) PUT_TO_JSON_VALUE(json, #field, (message).get##field##AsString())
+#define PUT_TO_JSON_PRICE(json, message, field)  { JSON_OBJ_TYPE price; \
+                                                                                                PUT_TO_JSON_VALUE(price, "mantissa", (message).field().mantissa()); \
+                                                                                                PUT_TO_JSON_VALUE(price, "exponent", (message).field().exponent()); \
+                                                                                                PUT_TO_JSON_CHILD(json, #field, price); }
 #define PUT_TO_JSON_PRICE_NON_NULL(json, message, field)  { auto v =  (message).field().mantissa(); \
                                                                                                                       if(v != (message).field().mantissaNullValue()) { \
-                                                                                                                          boost::property_tree::ptree price; \
-                                                                                                                          price.put("mantissa", v); \
-                                                                                                                          price.put("exponent", (message).field().exponent()); \
-                                                                                                                          json.put_child(#field, price); } }
-#define PUT_TO_JSON_MATCH_EVENT(json, message, field)  { boost::property_tree::ptree event; \
-                                                                                                                 event.put("lastTradeMsg", (message).field().lastTradeMsg()); \
-                                                                                                                 event.put("lastVolumeMsg", (message).field().lastVolumeMsg()); \
-                                                                                                                 event.put("lastQuoteMsg", (message).field().lastQuoteMsg()); \
-                                                                                                                 event.put("lastStatsMsg", (message).field().lastStatsMsg()); \
-                                                                                                                 event.put("lastImpliedMsg", (message).field().lastImpliedMsg()); \
-                                                                                                                 event.put("recoveryMsg", (message).field().recoveryMsg()); \
-                                                                                                                 event.put("reserved", (message).field().reserved()); \
-                                                                                                                 event.put("endOfEvent", (message).field().endOfEvent()); \
-                                                                                                                 json.put_child(#field, event); }
-#define PUT_TO_JSON_DATE(json, message, field)  { boost::property_tree::ptree date; \
+                                                                                                                          JSON_OBJ_TYPE price; \
+                                                                                                                          PUT_TO_JSON_VALUE(price, "mantissa", v); \
+                                                                                                                          PUT_TO_JSON_VALUE(price, "exponent", (message).field().exponent()); \
+                                                                                                                          PUT_TO_JSON_CHILD(json, #field, price); } }
+#define PUT_TO_JSON_MATCH_EVENT(json, message, field)  { JSON_OBJ_TYPE event; \
+                                                                                                                 PUT_TO_JSON_VALUE(event, "lastTradeMsg", (message).field().lastTradeMsg()); \
+                                                                                                                 PUT_TO_JSON_VALUE(event, "lastVolumeMsg", (message).field().lastVolumeMsg()); \
+                                                                                                                 PUT_TO_JSON_VALUE(event, "lastQuoteMsg", (message).field().lastQuoteMsg()); \
+                                                                                                                 PUT_TO_JSON_VALUE(event, "lastStatsMsg", (message).field().lastStatsMsg()); \
+                                                                                                                 PUT_TO_JSON_VALUE(event, "lastImpliedMsg", (message).field().lastImpliedMsg()); \
+                                                                                                                 PUT_TO_JSON_VALUE(event, "recoveryMsg", (message).field().recoveryMsg()); \
+                                                                                                                 PUT_TO_JSON_VALUE(event, "reserved", (message).field().reserved()); \
+                                                                                                                 PUT_TO_JSON_VALUE(event, "endOfEvent", (message).field().endOfEvent()); \
+                                                                                                                 PUT_TO_JSON_CHILD(json, #field, event); }
+#define PUT_TO_JSON_DATE(json, message, field)  { JSON_OBJ_TYPE date; \
                                                                                                 PUT_TO_JSON_NON_NULL(date, (message).field(), year); \
                                                                                                 PUT_TO_JSON_NON_NULL(date, (message).field(), month); \
                                                                                                 PUT_TO_JSON_NON_NULL(date, (message).field(), day); \
                                                                                                 PUT_TO_JSON_NON_NULL(date, (message).field(), week); \
-                                                                                                json.put_child(#field, date); }
-#define PUT_TO_JSON_SETTL_PRICE(json, message, field)  { boost::property_tree::ptree settl; \
-                                                                                                                 settl.put("finalrc", (message).field().finalrc()); \
-                                                                                                                 settl.put("actual", (message).field().actual()); \
-                                                                                                                 settl.put("rounded", (message).field().rounded()); \
-                                                                                                                 settl.put("intraday", (message).field().intraday()); \
-                                                                                                                 settl.put("reservedBits", (message).field().reservedBits()); \
-                                                                                                                 settl.put("nullValue", (message).field().nullValue()); \
-                                                                                                                 json.put_child(#field, settl); }
-#define PUT_TO_JSON_INST_ATTR(json, message, field)  { boost::property_tree::ptree attr; \
-                                                                                                         attr.put("electronicMatchEligible", (message).field().electronicMatchEligible()); \
-                                                                                                         attr.put("orderCrossEligible", (message).field().orderCrossEligible()); \
-                                                                                                         attr.put("blockTradeEligible", (message).field().blockTradeEligible()); \
-                                                                                                         attr.put("eFPEligible", (message).field().eFPEligible()); \
-                                                                                                         attr.put("eBFEligible", (message).field().eBFEligible()); \
-                                                                                                         attr.put("eFSEligible", (message).field().eFSEligible()); \
-                                                                                                         attr.put("eFREligible", (message).field().eFREligible()); \
-                                                                                                         attr.put("oTCEligible", (message).field().oTCEligible()); \
-                                                                                                         attr.put("iLinkIndicativeMassQuotingEligible", (message).field().iLinkIndicativeMassQuotingEligible()); \
-                                                                                                         attr.put("negativeStrikeEligible", (message).field().negativeStrikeEligible()); \
-                                                                                                         attr.put("negativePriceOutrightEligible", (message).field().negativePriceOutrightEligible()); \
-                                                                                                         attr.put("isFractional", (message).field().isFractional()); \
-                                                                                                         attr.put("volatilityQuotedOption", (message).field().volatilityQuotedOption()); \
-                                                                                                         attr.put("rFQCrossEligible", (message).field().rFQCrossEligible()); \
-                                                                                                         attr.put("zeroPriceOutrightEligible", (message).field().zeroPriceOutrightEligible()); \
-                                                                                                         attr.put("decayingProductEligibility", (message).field().decayingProductEligibility()); \
-                                                                                                         attr.put("variableProductEligibility", (message).field().variableProductEligibility()); \
-                                                                                                         attr.put("dailyProductEligibility", (message).field().dailyProductEligibility()); \
-                                                                                                         attr.put("gTOrdersEligibility", (message).field().gTOrdersEligibility()); \
-                                                                                                         attr.put("impliedMatchingEligibility", (message).field().impliedMatchingEligibility()); \
-                                                                                                         json.put_child(#field, attr); }
+                                                                                                PUT_TO_JSON_CHILD(json, #field, date); }
+#define PUT_TO_JSON_SETTL_PRICE(json, message, field)  { JSON_OBJ_TYPE settl; \
+                                                                                                                 PUT_TO_JSON_VALUE(settl, "finalrc", (message).field().finalrc()); \
+                                                                                                                 PUT_TO_JSON_VALUE(settl, "actual", (message).field().actual()); \
+                                                                                                                 PUT_TO_JSON_VALUE(settl, "rounded", (message).field().rounded()); \
+                                                                                                                 PUT_TO_JSON_VALUE(settl, "intraday", (message).field().intraday()); \
+                                                                                                                 PUT_TO_JSON_VALUE(settl, "reservedBits", (message).field().reservedBits()); \
+                                                                                                                 PUT_TO_JSON_VALUE(settl, "nullValue", (message).field().nullValue()); \
+                                                                                                                 PUT_TO_JSON_CHILD(json, #field, settl); }
+#define PUT_TO_JSON_INST_ATTR(json, message, field)  { JSON_OBJ_TYPE attr; \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "electronicMatchEligible", (message).field().electronicMatchEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "orderCrossEligible", (message).field().orderCrossEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "blockTradeEligible", (message).field().blockTradeEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "eFPEligible", (message).field().eFPEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "eBFEligible", (message).field().eBFEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "eFSEligible", (message).field().eFSEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "eFREligible", (message).field().eFREligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "oTCEligible", (message).field().oTCEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "iLinkIndicativeMassQuotingEligible", (message).field().iLinkIndicativeMassQuotingEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "negativeStrikeEligible", (message).field().negativeStrikeEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "negativePriceOutrightEligible", (message).field().negativePriceOutrightEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "isFractional", (message).field().isFractional()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "volatilityQuotedOption", (message).field().volatilityQuotedOption()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "rFQCrossEligible", (message).field().rFQCrossEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "zeroPriceOutrightEligible", (message).field().zeroPriceOutrightEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "decayingProductEligibility", (message).field().decayingProductEligibility()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "variableProductEligibility", (message).field().variableProductEligibility()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "dailyProductEligibility", (message).field().dailyProductEligibility()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "gTOrdersEligibility", (message).field().gTOrdersEligibility()); \
+                                                                                                         PUT_TO_JSON_VALUE(attr, "impliedMatchingEligibility", (message).field().impliedMatchingEligibility()); \
+                                                                                                         PUT_TO_JSON_CHILD(json, #field, attr); }
+
 
 namespace fh
 {
@@ -135,33 +140,33 @@ namespace message
 
     std::string SBEtoJSON::To_json(mktdata::ChannelReset4 *m)
     {
-        boost::property_tree::ptree json;
-        PUT_TO_JSON_CONSTANT(json, "type", "ChannelReset4");
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "type", "ChannelReset4");
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        boost::property_tree::ptree entities;
+        JSON_OBJ_TYPE entities;
         mktdata::ChannelReset4::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
 
-            boost::property_tree::ptree entity;
+            JSON_OBJ_TYPE entity;
             PUT_TO_JSON(entity, noMDEntries, mDUpdateAction);
             PUT_TO_JSON_CHAR(entity, noMDEntries, mDEntryType);
             PUT_TO_JSON(entity, noMDEntries, applID);
 
-            entities.push_back(std::make_pair("",entity));
+            PUT_TO_JSON_ARRAY_ITEM(entities, entity);
         }
-        json.put_child("noMDEntries", entities);
+        PUT_TO_JSON_CHILD(json, "noMDEntries", entities);
 
         return this->To_string(json);
     }
 
     std::string SBEtoJSON::To_json(mktdata::MDInstrumentDefinitionFuture27 *m)
     {
-        boost::property_tree::ptree json;
-        PUT_TO_JSON_CONSTANT(json, "type", "MDInstrumentDefinitionFuture27");
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "type", "MDInstrumentDefinitionFuture27");
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
         PUT_TO_JSON(json, *m, securityUpdateAction);
         PUT_TO_JSON(json, *m, lastUpdateTime);
@@ -208,69 +213,69 @@ namespace message
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, lowLimitPrice);
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, minPriceIncrementAmount);
 
-        boost::property_tree::ptree events;
+        JSON_OBJ_TYPE events;
         mktdata::MDInstrumentDefinitionFuture27::NoEvents& noEvents = m->noEvents();
         while (noEvents.hasNext())
         {
             noEvents.next();
 
-            boost::property_tree::ptree event;
+            JSON_OBJ_TYPE event;
             PUT_TO_JSON(event, noEvents, eventType);
             PUT_TO_JSON(event, noEvents, eventTime);
 
-            events.push_back(std::make_pair("",event));
+            PUT_TO_JSON_ARRAY_ITEM(events, event);
         }
-        json.put_child("noEvents", events);
+        PUT_TO_JSON_CHILD(json, "noEvents", events);
 
-        boost::property_tree::ptree feedTypes;
+        JSON_OBJ_TYPE feedTypes;
         mktdata::MDInstrumentDefinitionFuture27::NoMDFeedTypes& noMDFeedTypes = m->noMDFeedTypes();
         while (noMDFeedTypes.hasNext())
         {
             noMDFeedTypes.next();
 
-            boost::property_tree::ptree feedType;
+            JSON_OBJ_TYPE feedType;
             PUT_TO_JSON_STRING(feedType, noMDFeedTypes, MDFeedType);
             PUT_TO_JSON(feedType, noMDFeedTypes, marketDepth);
 
-            feedTypes.push_back(std::make_pair("",feedType));
+            PUT_TO_JSON_ARRAY_ITEM(feedTypes, feedType);
         }
-        json.put_child("noMDFeedTypes", feedTypes);
+        PUT_TO_JSON_CHILD(json, "noMDFeedTypes", feedTypes);
 
-        boost::property_tree::ptree attrs;
+        JSON_OBJ_TYPE attrs;
         mktdata::MDInstrumentDefinitionFuture27::NoInstAttrib& noInstAttrib = m->noInstAttrib();
         while (noInstAttrib.hasNext())
         {
             noInstAttrib.next();
 
-            boost::property_tree::ptree attr;
+            JSON_OBJ_TYPE attr;
             PUT_TO_JSON(attr, noInstAttrib, instAttribType);
             PUT_TO_JSON_INST_ATTR(attr, noInstAttrib, instAttribValue);
 
-            attrs.push_back(std::make_pair("",attr));
+            PUT_TO_JSON_ARRAY_ITEM(attrs, attr);
         }
-        json.put_child("noInstAttrib", attrs);
+        PUT_TO_JSON_CHILD(json, "noInstAttrib", attrs);
 
-        boost::property_tree::ptree rules;
+        JSON_OBJ_TYPE rules;
         mktdata::MDInstrumentDefinitionFuture27::NoLotTypeRules& noLotTypeRules = m->noLotTypeRules();
         while (noLotTypeRules.hasNext())
         {
             noLotTypeRules.next();
 
-            boost::property_tree::ptree rule;
+            JSON_OBJ_TYPE rule;
             PUT_TO_JSON(rule, noLotTypeRules, lotType);
             PUT_TO_JSON_PRICE(rule, noLotTypeRules, minLotSize);
 
-            rules.push_back(std::make_pair("",rule));
+            PUT_TO_JSON_ARRAY_ITEM(rules, rule);
         }
-        json.put_child("noLotTypeRules", rules);
+        PUT_TO_JSON_CHILD(json, "noLotTypeRules", rules);
 
         return this->To_string(json);
     }
 
     std::string SBEtoJSON::To_json(mktdata::MDInstrumentDefinitionSpread29 *m)
     {
-        boost::property_tree::ptree json;
-        PUT_TO_JSON_CONSTANT(json, "type", "MDInstrumentDefinitionSpread29");
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "type", "MDInstrumentDefinitionSpread29");
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
         PUT_TO_JSON(json, *m, securityUpdateAction);
         PUT_TO_JSON(json, *m, lastUpdateTime);
@@ -311,69 +316,69 @@ namespace message
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, lowLimitPrice);
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, maxPriceVariation);
 
-        boost::property_tree::ptree events;
+        JSON_OBJ_TYPE events;
         mktdata::MDInstrumentDefinitionSpread29::NoEvents& noEvents = m->noEvents();
         while (noEvents.hasNext())
         {
             noEvents.next();
 
-            boost::property_tree::ptree event;
+            JSON_OBJ_TYPE event;
             PUT_TO_JSON(event, noEvents, eventType);
             PUT_TO_JSON(event, noEvents, eventTime);
 
-            events.push_back(std::make_pair("",event));
+            PUT_TO_JSON_ARRAY_ITEM(events, event);
         }
-        json.put_child("noEvents", events);
+        PUT_TO_JSON_CHILD(json, "noEvents", events);
 
-        boost::property_tree::ptree feedTypes;
+        JSON_OBJ_TYPE feedTypes;
         mktdata::MDInstrumentDefinitionSpread29::NoMDFeedTypes& noMDFeedTypes = m->noMDFeedTypes();
         while (noMDFeedTypes.hasNext())
         {
             noMDFeedTypes.next();
 
-            boost::property_tree::ptree feedType;
+            JSON_OBJ_TYPE feedType;
             PUT_TO_JSON_STRING(feedType, noMDFeedTypes, MDFeedType);
             PUT_TO_JSON(feedType, noMDFeedTypes, marketDepth);
 
-            feedTypes.push_back(std::make_pair("",feedType));
+            PUT_TO_JSON_ARRAY_ITEM(feedTypes, feedType);
         }
-        json.put_child("noMDFeedTypes", feedTypes);
+        PUT_TO_JSON_CHILD(json, "noMDFeedTypes", feedTypes);
 
-        boost::property_tree::ptree attrs;
+        JSON_OBJ_TYPE attrs;
         mktdata::MDInstrumentDefinitionSpread29::NoInstAttrib& noInstAttrib = m->noInstAttrib();
         while (noInstAttrib.hasNext())
         {
             noInstAttrib.next();
 
-            boost::property_tree::ptree attr;
+            JSON_OBJ_TYPE attr;
             PUT_TO_JSON(attr, noInstAttrib, instAttribType);
             PUT_TO_JSON_INST_ATTR(attr, noInstAttrib, instAttribValue);
 
-            attrs.push_back(std::make_pair("",attr));
+            PUT_TO_JSON_ARRAY_ITEM(attrs, attr);
         }
-        json.put_child("noInstAttrib", attrs);
+        PUT_TO_JSON_CHILD(json, "noInstAttrib", attrs);
 
-        boost::property_tree::ptree rules;
+        JSON_OBJ_TYPE rules;
         mktdata::MDInstrumentDefinitionSpread29::NoLotTypeRules& noLotTypeRules = m->noLotTypeRules();
         while (noLotTypeRules.hasNext())
         {
             noLotTypeRules.next();
 
-            boost::property_tree::ptree rule;
+            JSON_OBJ_TYPE rule;
             PUT_TO_JSON(rule, noLotTypeRules, lotType);
             PUT_TO_JSON_PRICE(rule, noLotTypeRules, minLotSize);
 
-            rules.push_back(std::make_pair("",rule));
+            PUT_TO_JSON_ARRAY_ITEM(rules, rule);
         }
-        json.put_child("noLotTypeRules", rules);
+        PUT_TO_JSON_CHILD(json, "noLotTypeRules", rules);
 
-        boost::property_tree::ptree legs;
+        JSON_OBJ_TYPE legs;
         mktdata::MDInstrumentDefinitionSpread29::NoLegs& noLegs = m->noLegs();
         while (noLegs.hasNext())
         {
             noLegs.next();
 
-            boost::property_tree::ptree leg;
+            JSON_OBJ_TYPE leg;
             PUT_TO_JSON(leg, noLegs, legSecurityID);
             PUT_TO_JSON_CHAR(leg, noLegs, legSecurityIDSource);
             PUT_TO_JSON(leg, noLegs, legSide);
@@ -381,17 +386,17 @@ namespace message
             PUT_TO_JSON_PRICE(leg, noLegs, legOptionDelta);
             PUT_TO_JSON_PRICE_NON_NULL(leg, noLegs, legPrice);
 
-            legs.push_back(std::make_pair("",leg));
+            PUT_TO_JSON_ARRAY_ITEM(legs, leg);
         }
-        json.put_child("noLegs", legs);
+        PUT_TO_JSON_CHILD(json, "noLegs", legs);
 
         return this->To_string(json);
     }
 
     std::string SBEtoJSON::To_json(mktdata::SecurityStatus30 *m)
     {
-        boost::property_tree::ptree json;
-        PUT_TO_JSON_CONSTANT(json, "type", "SecurityStatus30");
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "type", "SecurityStatus30");
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON(json, *m, securityGroup);
         PUT_TO_JSON(json, *m, asset);
@@ -407,18 +412,18 @@ namespace message
 
     std::string SBEtoJSON::To_json(mktdata::MDIncrementalRefreshBook32 *m)
     {
-        boost::property_tree::ptree json;
-        PUT_TO_JSON_CONSTANT(json, "type", "MDIncrementalRefreshBook32");
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "type", "MDIncrementalRefreshBook32");
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        boost::property_tree::ptree entities;
+        JSON_OBJ_TYPE entities;
         mktdata::MDIncrementalRefreshBook32::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
 
-            boost::property_tree::ptree entity;
+            JSON_OBJ_TYPE entity;
             PUT_TO_JSON(entity, noMDEntries, securityID);
             PUT_TO_JSON(entity, noMDEntries, rptSeq);
             PUT_TO_JSON(entity, noMDEntries, mDPriceLevel);
@@ -428,44 +433,44 @@ namespace message
             PUT_TO_JSON_NON_NULL(entity, noMDEntries, numberOfOrders);
             PUT_TO_JSON_PRICE(entity, noMDEntries, mDEntryPx);
 
-            entities.push_back(std::make_pair("",entity));
+            PUT_TO_JSON_ARRAY_ITEM(entities, entity);
         }
-        json.put_child("noMDEntries", entities);
+        PUT_TO_JSON_CHILD(json, "noMDEntries", entities);
 
-        boost::property_tree::ptree orderIds;
+        JSON_OBJ_TYPE orderIds;
         mktdata::MDIncrementalRefreshBook32::NoOrderIDEntries& noOrderIDEntries = m->noOrderIDEntries();
         while (noOrderIDEntries.hasNext())
         {
             noOrderIDEntries.next();
 
-            boost::property_tree::ptree orderId;
+            JSON_OBJ_TYPE orderId;
             PUT_TO_JSON(orderId, noOrderIDEntries, orderID);
             PUT_TO_JSON(orderId, noOrderIDEntries, orderUpdateAction);
             PUT_TO_JSON_NON_NULL(orderId, noOrderIDEntries, mDDisplayQty);
             PUT_TO_JSON_NON_NULL(orderId, noOrderIDEntries, referenceID);
             PUT_TO_JSON_NON_NULL(orderId, noOrderIDEntries, mDOrderPriority);
 
-            orderIds.push_back(std::make_pair("",orderId));
+            PUT_TO_JSON_ARRAY_ITEM(orderIds, orderId);
         }
-        json.put_child("noOrderIDEntries", orderIds);
+        PUT_TO_JSON_CHILD(json, "noOrderIDEntries", orderIds);
 
         return this->To_string(json);
     }
 
     std::string SBEtoJSON::To_json(mktdata::MDIncrementalRefreshDailyStatistics33 *m)
     {
-        boost::property_tree::ptree json;
-        PUT_TO_JSON_CONSTANT(json, "type", "MDIncrementalRefreshDailyStatistics33");
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "type", "MDIncrementalRefreshDailyStatistics33");
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        boost::property_tree::ptree entities;
+        JSON_OBJ_TYPE entities;
         mktdata::MDIncrementalRefreshDailyStatistics33::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
 
-            boost::property_tree::ptree entity;
+            JSON_OBJ_TYPE entity;
             PUT_TO_JSON(entity, noMDEntries, securityID);
             PUT_TO_JSON(entity, noMDEntries, rptSeq);
             PUT_TO_JSON(entity, noMDEntries, tradingReferenceDate);
@@ -475,27 +480,27 @@ namespace message
             PUT_TO_JSON_NON_NULL(entity, noMDEntries, mDEntrySize);
             PUT_TO_JSON_PRICE_NON_NULL(entity, noMDEntries, mDEntryPx);
 
-            entities.push_back(std::make_pair("",entity));
+            PUT_TO_JSON_ARRAY_ITEM(entities, entity);
         }
-        json.put_child("noMDEntries", entities);
+        PUT_TO_JSON_CHILD(json, "noMDEntries", entities);
 
         return this->To_string(json);
     }
 
     std::string SBEtoJSON::To_json(mktdata::MDIncrementalRefreshLimitsBanding34 *m)
     {
-        boost::property_tree::ptree json;
-        PUT_TO_JSON_CONSTANT(json, "type", "MDIncrementalRefreshLimitsBanding34");
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "type", "MDIncrementalRefreshLimitsBanding34");
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        boost::property_tree::ptree entities;
+        JSON_OBJ_TYPE entities;
         mktdata::MDIncrementalRefreshLimitsBanding34::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
 
-            boost::property_tree::ptree entity;
+            JSON_OBJ_TYPE entity;
             PUT_TO_JSON(entity, noMDEntries, securityID);
             PUT_TO_JSON(entity, noMDEntries, rptSeq);
             PUT_TO_JSON(entity, noMDEntries, mDUpdateAction);
@@ -504,27 +509,27 @@ namespace message
             PUT_TO_JSON_PRICE_NON_NULL(entity, noMDEntries, lowLimitPrice);
             PUT_TO_JSON_PRICE_NON_NULL(entity, noMDEntries, maxPriceVariation);
 
-            entities.push_back(std::make_pair("",entity));
+            PUT_TO_JSON_ARRAY_ITEM(entities, entity);
         }
-        json.put_child("noMDEntries", entities);
+        PUT_TO_JSON_CHILD(json, "noMDEntries", entities);
 
         return this->To_string(json);
     }
 
     std::string SBEtoJSON::To_json(mktdata::MDIncrementalRefreshSessionStatistics35 *m)
     {
-        boost::property_tree::ptree json;
-        PUT_TO_JSON_CONSTANT(json, "type", "MDIncrementalRefreshSessionStatistics35");
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "type", "MDIncrementalRefreshSessionStatistics35");
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        boost::property_tree::ptree entities;
+        JSON_OBJ_TYPE entities;
         mktdata::MDIncrementalRefreshSessionStatistics35::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
 
-            boost::property_tree::ptree entity;
+            JSON_OBJ_TYPE entity;
             PUT_TO_JSON_PRICE(entity, noMDEntries, mDEntryPx);
             PUT_TO_JSON(entity, noMDEntries, securityID);
             PUT_TO_JSON(entity, noMDEntries, rptSeq);
@@ -533,27 +538,27 @@ namespace message
             PUT_TO_JSON_CHAR_ENUM(entity, noMDEntries, mDEntryType);
             PUT_TO_JSON_NON_NULL(entity, noMDEntries, mDEntrySize);
 
-            entities.push_back(std::make_pair("",entity));
+            PUT_TO_JSON_ARRAY_ITEM(entities, entity);
         }
-        json.put_child("noMDEntries", entities);
+        PUT_TO_JSON_CHILD(json, "noMDEntries", entities);
 
         return this->To_string(json);
     }
 
     std::string SBEtoJSON::To_json(mktdata::MDIncrementalRefreshTrade36 *m)
     {
-        boost::property_tree::ptree json;
-        PUT_TO_JSON_CONSTANT(json, "type", "MDIncrementalRefreshTrade36");
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "type", "MDIncrementalRefreshTrade36");
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        boost::property_tree::ptree entities;
+        JSON_OBJ_TYPE entities;
         mktdata::MDIncrementalRefreshTrade36::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
 
-            boost::property_tree::ptree entity;
+            JSON_OBJ_TYPE entity;
             PUT_TO_JSON_PRICE(entity, noMDEntries, mDEntryPx);
             PUT_TO_JSON(entity, noMDEntries, mDEntrySize);
             PUT_TO_JSON(entity, noMDEntries, securityID);
@@ -564,44 +569,44 @@ namespace message
             PUT_TO_JSON_CHAR(entity, noMDEntries, mDEntryType);
             PUT_TO_JSON_NON_NULL(entity, noMDEntries, numberOfOrders);
 
-            entities.push_back(std::make_pair("",entity));
+            PUT_TO_JSON_ARRAY_ITEM(entities, entity);
         }
-        json.put_child("noMDEntries", entities);
+        PUT_TO_JSON_CHILD(json, "noMDEntries", entities);
 
         return this->To_string(json);
     }
 
     std::string SBEtoJSON::To_json(mktdata::MDIncrementalRefreshVolume37 *m)
     {
-        boost::property_tree::ptree json;
-        PUT_TO_JSON_CONSTANT(json, "type", "MDIncrementalRefreshVolume37");
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "type", "MDIncrementalRefreshVolume37");
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        boost::property_tree::ptree entities;
+        JSON_OBJ_TYPE entities;
         mktdata::MDIncrementalRefreshVolume37::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
 
-            boost::property_tree::ptree entity;
+            JSON_OBJ_TYPE entity;
             PUT_TO_JSON(entity, noMDEntries, mDEntrySize);
             PUT_TO_JSON(entity, noMDEntries, securityID);
             PUT_TO_JSON(entity, noMDEntries, rptSeq);
             PUT_TO_JSON(entity, noMDEntries, mDUpdateAction);
             PUT_TO_JSON_CHAR(entity, noMDEntries, mDEntryType);
 
-            entities.push_back(std::make_pair("",entity));
+            PUT_TO_JSON_ARRAY_ITEM(entities, entity);
         }
-        json.put_child("noMDEntries", entities);
+        PUT_TO_JSON_CHILD(json, "noMDEntries", entities);
 
         return this->To_string(json);
     }
 
     std::string SBEtoJSON::To_json(mktdata::SnapshotFullRefresh38 *m)
     {
-        boost::property_tree::ptree json;
-        PUT_TO_JSON_CONSTANT(json, "type", "SnapshotFullRefresh38");
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "type", "SnapshotFullRefresh38");
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON(json, *m, lastMsgSeqNumProcessed);
         PUT_TO_JSON(json, *m, totNumReports);
@@ -614,13 +619,13 @@ namespace message
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, lowLimitPrice);
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, maxPriceVariation);
 
-        boost::property_tree::ptree entities;
+        JSON_OBJ_TYPE entities;
         mktdata::SnapshotFullRefresh38::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
 
-            boost::property_tree::ptree entity;
+            JSON_OBJ_TYPE entity;
             PUT_TO_JSON(entity, noMDEntries, tradingReferenceDate);
             PUT_TO_JSON(entity, noMDEntries, openCloseSettlFlag);
             PUT_TO_JSON_SETTL_PRICE(entity, noMDEntries, settlPriceType);
@@ -630,45 +635,45 @@ namespace message
             PUT_TO_JSON_NON_NULL(entity, noMDEntries, mDPriceLevel);
             PUT_TO_JSON_PRICE_NON_NULL(entity, noMDEntries, mDEntryPx);
 
-            entities.push_back(std::make_pair("",entity));
+            PUT_TO_JSON_ARRAY_ITEM(entities, entity);
         }
-        json.put_child("noMDEntries", entities);
+        PUT_TO_JSON_CHILD(json, "noMDEntries", entities);
 
         return this->To_string(json);
     }
 
     std::string SBEtoJSON::To_json(mktdata::QuoteRequest39 *m)
     {
-        boost::property_tree::ptree json;
-        PUT_TO_JSON_CONSTANT(json, "type", "QuoteRequest39");
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "type", "QuoteRequest39");
         PUT_TO_JSON(json, *m, quoteReqID);
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        boost::property_tree::ptree syms;
+        JSON_OBJ_TYPE syms;
         mktdata::QuoteRequest39::NoRelatedSym& noRelatedSym = m->noRelatedSym();
         while (noRelatedSym.hasNext())
         {
             noRelatedSym.next();
 
-            boost::property_tree::ptree sym;
+            JSON_OBJ_TYPE sym;
             PUT_TO_JSON_STRING(sym, noRelatedSym, Symbol);
             PUT_TO_JSON(sym, noRelatedSym, securityID);
             PUT_TO_JSON(sym, noRelatedSym, quoteType);
             PUT_TO_JSON_NON_NULL(sym, noRelatedSym, orderQty);
             PUT_TO_JSON_NON_NULL(sym, noRelatedSym, side);
 
-            syms.push_back(std::make_pair("",sym));
+            PUT_TO_JSON_ARRAY_ITEM(syms, sym);
         }
-        json.put_child("noRelatedSym", syms);
+        PUT_TO_JSON_CHILD(json, "noRelatedSym", syms);
 
         return this->To_string(json);
     }
 
     std::string SBEtoJSON::To_json(mktdata::MDInstrumentDefinitionOption41 *m)
     {
-        boost::property_tree::ptree json;
-        PUT_TO_JSON_CONSTANT(json, "type", "MDInstrumentDefinitionOption41");
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "type", "MDInstrumentDefinitionOption41");
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
         PUT_TO_JSON(json, *m, securityUpdateAction);
         PUT_TO_JSON(json, *m, lastUpdateTime);
@@ -713,109 +718,109 @@ namespace message
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, lowLimitPrice);
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, minPriceIncrementAmount);
 
-        boost::property_tree::ptree events;
+        JSON_OBJ_TYPE events;
         mktdata::MDInstrumentDefinitionOption41::NoEvents& noEvents = m->noEvents();
         while (noEvents.hasNext())
         {
             noEvents.next();
 
-            boost::property_tree::ptree event;
+            JSON_OBJ_TYPE event;
             PUT_TO_JSON(event, noEvents, eventType);
             PUT_TO_JSON(event, noEvents, eventTime);
 
-            events.push_back(std::make_pair("",event));
+            PUT_TO_JSON_ARRAY_ITEM(events, event);
         }
-        json.put_child("noEvents", events);
+        PUT_TO_JSON_CHILD(json, "noEvents", events);
 
-        boost::property_tree::ptree feedTypes;
+        JSON_OBJ_TYPE feedTypes;
         mktdata::MDInstrumentDefinitionOption41::NoMDFeedTypes& noMDFeedTypes = m->noMDFeedTypes();
         while (noMDFeedTypes.hasNext())
         {
             noMDFeedTypes.next();
 
-            boost::property_tree::ptree feedType;
+            JSON_OBJ_TYPE feedType;
             PUT_TO_JSON_STRING(feedType, noMDFeedTypes, MDFeedType);
             PUT_TO_JSON(feedType, noMDFeedTypes, marketDepth);
 
-            feedTypes.push_back(std::make_pair("",feedType));
+            PUT_TO_JSON_ARRAY_ITEM(feedTypes, feedType);
         }
-        json.put_child("noMDFeedTypes", feedTypes);
+        PUT_TO_JSON_CHILD(json, "noMDFeedTypes", feedTypes);
 
-        boost::property_tree::ptree attrs;
+        JSON_OBJ_TYPE attrs;
         mktdata::MDInstrumentDefinitionOption41::NoInstAttrib& noInstAttrib = m->noInstAttrib();
         while (noInstAttrib.hasNext())
         {
             noInstAttrib.next();
 
-            boost::property_tree::ptree attr;
+            JSON_OBJ_TYPE attr;
             PUT_TO_JSON(attr, noInstAttrib, instAttribType);
             PUT_TO_JSON_INST_ATTR(attr, noInstAttrib, instAttribValue);
 
-            attrs.push_back(std::make_pair("",attr));
+            PUT_TO_JSON_ARRAY_ITEM(attrs, attr);
         }
-        json.put_child("noInstAttrib", attrs);
+        PUT_TO_JSON_CHILD(json, "noInstAttrib", attrs);
 
-        boost::property_tree::ptree rules;
+        JSON_OBJ_TYPE rules;
         mktdata::MDInstrumentDefinitionOption41::NoLotTypeRules& noLotTypeRules = m->noLotTypeRules();
         while (noLotTypeRules.hasNext())
         {
             noLotTypeRules.next();
 
-            boost::property_tree::ptree rule;
+            JSON_OBJ_TYPE rule;
             PUT_TO_JSON(rule, noLotTypeRules, lotType);
             PUT_TO_JSON_PRICE(rule, noLotTypeRules, minLotSize);
 
-            rules.push_back(std::make_pair("",rule));
+            PUT_TO_JSON_ARRAY_ITEM(rules, rule);
         }
-        json.put_child("noLotTypeRules", rules);
+        PUT_TO_JSON_CHILD(json, "noLotTypeRules", rules);
 
-        boost::property_tree::ptree underlyings;
+        JSON_OBJ_TYPE underlyings;
         mktdata::MDInstrumentDefinitionOption41::NoUnderlyings& noUnderlyings = m->noUnderlyings();
         while (noUnderlyings.hasNext())
         {
             noUnderlyings.next();
 
-            boost::property_tree::ptree underlying;
+            JSON_OBJ_TYPE underlying;
             PUT_TO_JSON(underlying, noUnderlyings, underlyingSecurityID);
             PUT_TO_JSON_CHAR(underlying, noUnderlyings, underlyingSecurityIDSource);
             PUT_TO_JSON_STRING(underlying, noUnderlyings, UnderlyingSymbol);
 
-            underlyings.push_back(std::make_pair("",underlying));
+            PUT_TO_JSON_ARRAY_ITEM(underlyings, underlying);
         }
-        json.put_child("noUnderlyings", underlyings);
+        PUT_TO_JSON_CHILD(json, "noUnderlyings", underlyings);
 
-        boost::property_tree::ptree instuments;
+        JSON_OBJ_TYPE instuments;
         mktdata::MDInstrumentDefinitionOption41::NoRelatedInstruments& noRelatedInstruments = m->noRelatedInstruments();
         while (noRelatedInstruments.hasNext())
         {
             noRelatedInstruments.next();
 
-            boost::property_tree::ptree instument;
+            JSON_OBJ_TYPE instument;
             PUT_TO_JSON(instument, noRelatedInstruments, relatedSecurityID);
             PUT_TO_JSON_CHAR(instument, noRelatedInstruments, relatedSecurityIDSource);
             PUT_TO_JSON_STRING(instument, noRelatedInstruments, RelatedSymbol);
 
-            instuments.push_back(std::make_pair("",instument));
+            PUT_TO_JSON_ARRAY_ITEM(instuments, instument);
         }
-        json.put_child("noRelatedInstruments", instuments);
+        PUT_TO_JSON_CHILD(json, "noRelatedInstruments", instuments);
 
         return this->To_string(json);
     }
 
     std::string SBEtoJSON::To_json(mktdata::MDIncrementalRefreshTradeSummary42 *m)
     {
-        boost::property_tree::ptree json;
-        PUT_TO_JSON_CONSTANT(json, "type", "MDIncrementalRefreshTradeSummary42");
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "type", "MDIncrementalRefreshTradeSummary42");
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        boost::property_tree::ptree entities;
+        JSON_OBJ_TYPE entities;
         mktdata::MDIncrementalRefreshTradeSummary42::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
 
-            boost::property_tree::ptree entity;
+            JSON_OBJ_TYPE entity;
             PUT_TO_JSON_PRICE(entity, noMDEntries, mDEntryPx);
             PUT_TO_JSON(entity, noMDEntries, mDEntrySize);
             PUT_TO_JSON(entity, noMDEntries, securityID);
@@ -826,41 +831,41 @@ namespace message
             PUT_TO_JSON_NON_NULL(entity, noMDEntries, numberOfOrders);
             PUT_TO_JSON_NON_NULL(entity, noMDEntries, mDTradeEntryID);
 
-            entities.push_back(std::make_pair("",entity));
+            PUT_TO_JSON_ARRAY_ITEM(entities, entity);
         }
-        json.put_child("noMDEntries", entities);
+        PUT_TO_JSON_CHILD(json, "noMDEntries", entities);
 
-        boost::property_tree::ptree orderIds;
+        JSON_OBJ_TYPE orderIds;
         mktdata::MDIncrementalRefreshTradeSummary42::NoOrderIDEntries& noOrderIDEntries = m->noOrderIDEntries();
         while (noOrderIDEntries.hasNext())
         {
             noOrderIDEntries.next();
 
-            boost::property_tree::ptree orderId;
+            JSON_OBJ_TYPE orderId;
             PUT_TO_JSON(orderId, noOrderIDEntries, orderID);
             PUT_TO_JSON(orderId, noOrderIDEntries, lastQty);
 
-            orderIds.push_back(std::make_pair("",orderId));
+            PUT_TO_JSON_ARRAY_ITEM(orderIds, orderId);
         }
-        json.put_child("noOrderIDEntries", orderIds);
+        PUT_TO_JSON_CHILD(json, "noOrderIDEntries", orderIds);
 
         return this->To_string(json);
     }
 
     std::string SBEtoJSON::To_json(mktdata::MDIncrementalRefreshOrderBook43 *m)
     {
-        boost::property_tree::ptree json;
-        PUT_TO_JSON_CONSTANT(json, "type", "MDIncrementalRefreshOrderBook43");
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "type", "MDIncrementalRefreshOrderBook43");
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        boost::property_tree::ptree entities;
+        JSON_OBJ_TYPE entities;
         mktdata::MDIncrementalRefreshOrderBook43::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
 
-            boost::property_tree::ptree entity;
+            JSON_OBJ_TYPE entity;
             PUT_TO_JSON(entity, noMDEntries, securityID);
             PUT_TO_JSON(entity, noMDEntries, mDUpdateAction);
             PUT_TO_JSON_CHAR_ENUM(entity, noMDEntries, mDEntryType);
@@ -869,17 +874,17 @@ namespace message
             PUT_TO_JSON_NON_NULL(entity, noMDEntries, orderID);
             PUT_TO_JSON_PRICE_NON_NULL(entity, noMDEntries, mDEntryPx);
 
-            entities.push_back(std::make_pair("",entity));
+            PUT_TO_JSON_ARRAY_ITEM(entities, entity);
         }
-        json.put_child("noMDEntries", entities);
+        PUT_TO_JSON_CHILD(json, "noMDEntries", entities);
 
         return this->To_string(json);
     }
 
     std::string SBEtoJSON::To_json(mktdata::SnapshotFullRefreshOrderBook44 *m)
     {
-        boost::property_tree::ptree json;
-        PUT_TO_JSON_CONSTANT(json, "type", "SnapshotFullRefreshOrderBook44");
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "type", "SnapshotFullRefreshOrderBook44");
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON(json, *m, lastMsgSeqNumProcessed);
         PUT_TO_JSON(json, *m, totNumReports);
@@ -887,38 +892,36 @@ namespace message
         PUT_TO_JSON(json, *m, noChunks);
         PUT_TO_JSON(json, *m, currentChunk);
 
-        boost::property_tree::ptree entities;
+        JSON_OBJ_TYPE entities;
         mktdata::SnapshotFullRefreshOrderBook44::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
 
-            boost::property_tree::ptree entity;
+            JSON_OBJ_TYPE entity;
             PUT_TO_JSON(entity, noMDEntries, orderID);
             PUT_TO_JSON_PRICE(entity, noMDEntries, mDEntryPx);
             PUT_TO_JSON(entity, noMDEntries, mDDisplayQty);
             PUT_TO_JSON_CHAR_ENUM(entity, noMDEntries, mDEntryType);
             PUT_TO_JSON_NON_NULL(entity, noMDEntries, mDOrderPriority);
 
-            entities.push_back(std::make_pair("",entity));
+            PUT_TO_JSON_ARRAY_ITEM(entities, entity);
         }
-        json.put_child("noMDEntries", entities);
+        PUT_TO_JSON_CHILD(json, "noMDEntries", entities);
 
         return this->To_string(json);
     }
 
-    std::string SBEtoJSON::To_string(const boost::property_tree::ptree &json_message)
+    std::string SBEtoJSON::To_string(const JSON_OBJ_TYPE &json_message)
     {
-        boost::property_tree::ptree json;
-        json.put("market", "CME");
-        json.put("reveivedTime", m_sbe_message->received_time());
-        json.put("packetSeqNum", m_sbe_message->packet_seq_num());
-        json.put("packetSendingTime", m_sbe_message->packet_sending_time());
-        json.put_child("message", json_message);
+        JSON_OBJ_TYPE json;
+        PUT_TO_JSON_VALUE(json, "market", "CME");
+        PUT_TO_JSON_VALUE(json, "reveivedTime", m_sbe_message->received_time());
+        PUT_TO_JSON_VALUE(json, "packetSeqNum", m_sbe_message->packet_seq_num());
+        PUT_TO_JSON_VALUE(json, "packetSendingTime", m_sbe_message->packet_sending_time());
+        PUT_TO_JSON_CHILD(json, "message", json_message);
 
-        std::ostringstream buf;
-        boost::property_tree::write_json (buf, json, true);
-        return buf.str();
+        JSON_TO_STRING(json);
     }
 
 } // namespace message

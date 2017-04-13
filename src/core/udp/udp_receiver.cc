@@ -74,7 +74,7 @@ namespace udp
             return;
         }
 
-        LOG_TRACE("udp received from [", m_socket.local_endpoint().port(), "](", bytes_recieved, ")=", fh::core::assist::utility::Hex_str(m_buffer, bytes_recieved));
+        LOG_TRACE("udp received from [", m_socket.local_endpoint().address().to_string(), ":", m_socket.local_endpoint().port(), "](", bytes_recieved, ")=", fh::core::assist::utility::Hex_str(m_buffer, bytes_recieved));
         processor(m_buffer, bytes_recieved);
         this->Async_receive_from(processor);
     }

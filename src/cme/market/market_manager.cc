@@ -69,7 +69,7 @@ namespace market
         });
 
         m_saver = new  fh::cme::market::DatSaver(listener);
-        m_processor = new  fh::cme::market::DatProcessor(m_saver, m_tcp_replayer);
+        m_processor = new  fh::cme::market::DatProcessor(m_saver, m_tcp_replayer, std::bind(&MarketManager::Stop, this));
         m_definition_saver = new  fh::cme::market::RecoverySaver(true);
         m_recovery_saver = new  fh::cme::market::RecoverySaver(false);
     }
@@ -102,6 +102,12 @@ namespace market
     {
         std::for_each(m_udp_incrementals.begin(), m_udp_incrementals.end(), std::mem_fun(&fh::core::udp::UDPReceiver::Stop));
         LOG_INFO("increment udp listener stopped.");
+    }
+
+    void MarketManager::Stop_saver()
+    {
+        m_saver->Stop();
+        LOG_INFO("saver stopped.");
     }
 
     void MarketManager::Start_increment_feed(fh::core::udp::UDPReceiver *udp)
@@ -170,6 +176,7 @@ namespace market
     void MarketManager::Stop()
     {
         this->Stop_increments();
+        this->Stop_saver();
     }
 
 } // namespace market

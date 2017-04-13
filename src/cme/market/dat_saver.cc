@@ -15,7 +15,7 @@ namespace market
       m_mutex(), m_recovery_mutex(), m_datas(),
       m_definition_datas(nullptr), m_recovery_datas(nullptr),
       m_book_sender(book_sender), m_book_manager(book_sender),
-      m_recovery_first_seq(0)
+      m_recovery_first_seq(0), m_is_stopped(false)
     {
         // noop
     }
@@ -76,7 +76,7 @@ namespace market
             Process_recovery_data();
         }
 
-        while(true)
+        while(!m_is_stopped)
         {
            auto message = Pick_next_message();  // 返回：{数据内容, 有无数据}
            if(message.second)
@@ -230,6 +230,11 @@ namespace market
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_datas.erase(message);
+    }
+
+    void DatSaver::Stop()
+    {
+        m_is_stopped = true;
     }
 
     DatSaver::~DatSaver()

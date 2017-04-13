@@ -11,8 +11,8 @@ namespace cme
 namespace market
 {
 
-    DatProcessor::DatProcessor(fh::cme::market::DatSaver *saver, fh::cme::market::DatReplayer *replayer)
-    : m_arbitrator(), m_saver(saver), m_replayer(replayer)
+    DatProcessor::DatProcessor(fh::cme::market::DatSaver *saver, fh::cme::market::DatReplayer *replayer, std::function<void(void)> on_error)
+    : m_arbitrator(), m_saver(saver), m_replayer(replayer), m_on_error(on_error)
     {
         // noop
     }
@@ -88,6 +88,13 @@ namespace market
 
     void DatProcessor::Start_tcp_replay(std::uint32_t begin, std::uint32_t end)
     {
+        // TCP replayer 没有设置的话，直接调用错误处理 handle，退出
+        if(m_replayer == nullptr)
+        {
+            this->m_on_error();
+            return;
+        }
+
         std::thread t([this, begin, end]{
             m_replayer->Start_receive(
                 std::bind(&fh::cme::market::DatProcessor::Process_replay_data, std::ref(*this), std::placeholders::_1, std::placeholders::_2),
