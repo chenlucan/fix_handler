@@ -41,7 +41,7 @@ namespace udp
         const std::uint16_t listen_port
     )
     {
-        boost::asio::ip::udp::endpoint listen_endpoint(boost::asio::ip::address::from_string("0.0.0.0"), listen_port);
+        boost::asio::ip::udp::endpoint listen_endpoint(listen_address, listen_port);
         m_socket.open(listen_endpoint.protocol());
         m_socket.set_option(boost::asio::ip::udp::socket::reuse_address(true));
         m_socket.set_option(boost::asio::ip::multicast::join_group(listen_address));

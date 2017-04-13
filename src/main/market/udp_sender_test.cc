@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
         if (argc != 6 || (strcmp(argv[1], "-d") != 0 && strcmp(argv[1], "-r") != 0 && strcmp(argv[1], "-i") != 0 && strcmp(argv[1], "-a") != 0))
         {
             LOG_ERROR("Usage: udp_sender_test -d|-r|-i|-a <send_address> <send_port> <send_interval_ms> <lost_on>");
-            LOG_ERROR("Ex:    udp_sender_test -d 0.0.0.0 30001 500 13");
+            LOG_ERROR("Ex:    udp_sender_test -d 224.0.28.123 30001 500 13");
 
             return 1;
         }
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-// ./udp_sender_test -a 192.168.1.185 30001 500 10
-// ./udp_sender_test -i 192.168.1.185 30001 500 10
-// ./udp_sender_test -d 192.168.1.185 30003 500 3
-// ./udp_sender_test -r 192.168.1.185 30006 500 4
+// ./udp_sender_test -a 224.0.28.123 30001 500 10
+// ./udp_sender_test -i 224.0.28.123 30001 500 10
+// ./udp_sender_test -d 224.0.28.123 30003 500 3
+// ./udp_sender_test -r 224.0.28.123 30006 500 4
