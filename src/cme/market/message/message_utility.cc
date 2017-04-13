@@ -114,7 +114,7 @@ namespace utility
     }
 
     // convert price in sbe message to double
-    double Get_price(std::uint64_t price_mantissa)
+    double Get_price(std::int64_t price_mantissa)
     {
         return price_mantissa * 1e-7;
     }

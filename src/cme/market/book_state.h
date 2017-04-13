@@ -17,7 +17,7 @@ namespace market
     {
         std::uint32_t numberOfOrders;    // order count
         std::uint32_t mDEntrySize;    // quantity
-        std::uint64_t mDEntryPx;    // price, exponent is -7
+        std::int64_t mDEntryPx;    // price, exponent is -7
 
         std::string To_string() const
         {

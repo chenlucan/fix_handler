@@ -79,9 +79,9 @@ namespace message
         std::uint32_t lastMsgSeqNumProcessed = message->lastMsgSeqNumProcessed();
         std::uint32_t securityID = message->securityID();
         std::uint32_t rptSeq = message->rptSeq();
-        std::uint64_t highLimitPrice = message->highLimitPrice().mantissa();
-        std::uint64_t lowLimitPrice = message->lowLimitPrice().mantissa();
-        std::uint64_t maxPriceVariation = message->maxPriceVariation().mantissa();
+        std::int64_t highLimitPrice = message->highLimitPrice().mantissa();
+        std::int64_t lowLimitPrice = message->lowLimitPrice().mantissa();
+        std::int64_t maxPriceVariation = message->maxPriceVariation().mantissa();
 
         std::for_each(books.begin(), books.end(), [&](Book &b){
             b.packet_seq_num = lastMsgSeqNumProcessed;
