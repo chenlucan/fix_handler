@@ -2,7 +2,7 @@
 #ifndef __FH_CME_MARKET_CME_MARKET_H__
 #define __FH_CME_MARKET_CME_MARKET_H__
 
-#include <vector>
+#include <unordered_map>
 #include "core/global.h"
 #include "cme/market/setting/market_settings.h"
 #include "cme/market/setting/channel_settings.h"
@@ -40,6 +40,9 @@ namespace market
             // implement of MarketI
             void ReqDefinitions(std::vector<std::string> instruments) override;
 
+        public:
+            void Remove_market(const std::string &channel_id);
+
         private:
             void Initial_market(
                     fh::core::market::MarketListenerI *listener,
@@ -47,7 +50,7 @@ namespace market
                     const fh::cme::market::setting::MarketSettings &settings);
 
         private:
-            std::vector<MarketManager *> m_market_managers;
+            std::unordered_map<std::string, MarketManager *> m_market_managers;
 
         private:
             DISALLOW_COPY_AND_ASSIGN(CmeMarket);

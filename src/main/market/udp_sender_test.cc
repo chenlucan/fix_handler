@@ -11,7 +11,7 @@ std::uint32_t next_sequence(std::uint32_t index, std::uint16_t lost_on, std::uin
     if(total_number == std::numeric_limits<std::uint32_t>::max())
     {
         // incremental sequence
-        return (lost_on != 0 && index % lost_on < 3) ? 0 : index;
+        return (lost_on != 0 && index > lost_on && index % lost_on + 3 > lost_on ) ? 0 : index;
     }
     else
     {

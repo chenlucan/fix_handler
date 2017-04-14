@@ -20,7 +20,7 @@ namespace market
 
     CmeMarket::~CmeMarket()
     {
-        std::for_each(m_market_managers.cbegin(), m_market_managers.cend(), [](const MarketManager *m){ delete m;});
+        for(const auto &m : m_market_managers) { delete m.second; }
     }
 
     void CmeMarket::Initial_market(
@@ -30,17 +30,15 @@ namespace market
     {
         std::for_each(channels.cbegin(), channels.cend(), [this, &listener, &settings](const fh::cme::market::setting::Channel &c){
             LOG_DEBUG("create market ", c.id);
-            MarketManager *market = new MarketManager(listener, c, settings);
-            m_market_managers.push_back(market);
+            MarketManager *market = new MarketManager(this, listener, c, settings);
+            m_market_managers[c.id] = market;
         });
     }
 
     // implement of MarketI
     bool CmeMarket::Start()
     {
-        std::for_each(m_market_managers.begin(), m_market_managers.end(), [](MarketManager *m){
-            m->Start();
-        });
+        for(const auto &m : m_market_managers) { m.second->Start(); }
         return true;
     }
 
@@ -53,9 +51,7 @@ namespace market
     // implement of MarketI
     void CmeMarket::Stop()
     {
-        std::for_each(m_market_managers.begin(), m_market_managers.end(), [](MarketManager *m){
-            m->Stop();
-        });
+        for(const auto &m : m_market_managers) { m.second->Stop(); }
     }
 
     // implement of MarketI
@@ -74,6 +70,17 @@ namespace market
     void CmeMarket::ReqDefinitions(std::vector<std::string> instruments)
     {
         // noop
+    }
+
+    void CmeMarket::Remove_market(const std::string &channel_id)
+    {
+        m_market_managers.erase(channel_id);
+
+        if(m_market_managers.empty())
+        {
+            LOG_INFO("all market stopped. exit.");
+            exit(0);
+        }
     }
 
 } // namespace market

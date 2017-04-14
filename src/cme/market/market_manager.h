@@ -18,11 +18,13 @@ namespace cme
 {
 namespace market
 {
+    class CmeMarket;
 
     class MarketManager
     {
         public:
             MarketManager(
+                    CmeMarket *cme,
                     fh::core::market::MarketListenerI *listener,
                     const fh::cme::market::setting::Channel &channel,
                     const fh::cme::market::setting::MarketSettings &settings);
@@ -49,6 +51,8 @@ namespace market
             void Stop_saver();
 
         private:
+            CmeMarket *m_cme;
+            std::string m_channel_id;
             std::vector<fh::core::udp::UDPReceiver *> m_udp_incrementals;
             std::vector<fh::core::udp::UDPReceiver *> m_udp_recoveries;
             std::vector<fh::core::udp::UDPReceiver *> m_udp_definitions;

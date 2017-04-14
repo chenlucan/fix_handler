@@ -91,6 +91,7 @@ namespace market
         // TCP replayer 没有设置的话，直接调用错误处理 handle，退出
         if(m_replayer == nullptr)
         {
+            LOG_WARN("no tcp setting, stop");
             this->m_on_error();
             return;
         }

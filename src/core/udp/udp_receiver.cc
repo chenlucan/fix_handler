@@ -23,7 +23,7 @@ namespace udp
     // the processor will access buffer directly
     void UDPReceiver::Start_receive(std::function<void(char *, const size_t)> processor)
     {
-        LOG_DEBUG("(udp receiver start:", m_socket.local_endpoint().port(), ")");
+        LOG_DEBUG("(udp receiver start:", m_socket.local_endpoint().address().to_string(), ":", m_socket.local_endpoint().port(), ")");
         this->Async_receive_from(processor);
         m_socket.get_io_service().run();
     }
@@ -33,7 +33,7 @@ namespace udp
     {
         m_socket.cancel();
         m_io_service.stop();
-        LOG_DEBUG("(udp receiver stopped:", m_socket.local_endpoint().port(), ")");
+        LOG_DEBUG("(udp receiver stopped:", m_socket.local_endpoint().address().to_string(), ":", m_socket.local_endpoint().port(), ")");
     }
 
     void UDPReceiver::Initialize_socket(

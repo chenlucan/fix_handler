@@ -1,5 +1,6 @@
 
 #include "cme/market/market_manager.h"
+#include "cme/market/cme_market.h"
 #include "core/assist/logger.h"
 
 namespace fh
@@ -10,10 +11,11 @@ namespace market
 {
 
     MarketManager::MarketManager(
+            CmeMarket *cme,
             fh::core::market::MarketListenerI *listener,
             const fh::cme::market::setting::Channel &channel,
             const fh::cme::market::setting::MarketSettings &settings)
-    : m_udp_incrementals(), m_udp_recoveries(), m_udp_definitions(),
+    : m_cme(cme), m_channel_id(channel.id), m_udp_incrementals(), m_udp_recoveries(), m_udp_definitions(),
       m_tcp_replayer(nullptr), m_saver(nullptr),
       m_processor(nullptr), m_definition_saver(nullptr), m_recovery_saver(nullptr)
     {
@@ -45,25 +47,25 @@ namespace market
             if(c.protocol == fh::cme::market::setting::Protocol::TCP)
             {
                 // TCP replay
-                LOG_INFO("TCP:", c.host_ip, ", ", c.port, ", {", auth.first, ", ", auth.second, "}");
+                LOG_INFO("[", m_channel_id, "]TCP:", c.host_ip, ", ", c.port, ", {", auth.first, ", ", auth.second, "}");
                 m_tcp_replayer = new fh::cme::market::DatReplayer(c.host_ip, c.port, auth.first, auth.second, channel.id);
             }
             else if(c.type == fh::cme::market::setting::FeedType::I)
             {
                 // UDP Incremental
-                LOG_INFO("UDP Incremental:", c.ip, ", ", c.port);
+                LOG_INFO("[", m_channel_id, "]UDP Incremental:", c.ip, ", ", c.port);
                 m_udp_incrementals.push_back(new fh::core::udp::UDPReceiver(c.ip, c.port));
             }
             else if(c.type ==  fh::cme::market::setting::FeedType::N)
             {
                 // UDP Instrument Definition
-                LOG_INFO("UDP Definition:", c.ip, ", ", c.port);
+                LOG_INFO("[", m_channel_id, "]UDP Definition:", c.ip, ", ", c.port);
                 m_udp_definitions.push_back(new fh::core::udp::UDPReceiver(c.ip, c.port));
             }
             else if(c.type ==  fh::cme::market::setting::FeedType::S)
             {
                 // UDP Market Recovery
-                LOG_INFO("UDP Recovery:", c.ip, ", ", c.port);
+                LOG_INFO("[", m_channel_id, "]UDP Recovery:", c.ip, ", ", c.port);
                 m_udp_recoveries.push_back(new fh::core::udp::UDPReceiver(c.ip, c.port));
             }
         });
@@ -89,25 +91,25 @@ namespace market
     void MarketManager::Stop_recoveries()
     {
         std::for_each(m_udp_recoveries.begin(), m_udp_recoveries.end(), std::mem_fun(&fh::core::udp::UDPReceiver::Stop));
-        LOG_INFO("recovery udp listener stopped.");
+        LOG_INFO("[", m_channel_id, "]recovery udp listener stopped.");
     }
 
     void MarketManager::Stop_definitions()
     {
         std::for_each(m_udp_definitions.begin(), m_udp_definitions.end(), std::mem_fun(&fh::core::udp::UDPReceiver::Stop));
-        LOG_INFO("definition udp listener stopped.");
+        LOG_INFO("[", m_channel_id, "]definition udp listener stopped.");
     }
 
     void MarketManager::Stop_increments()
     {
         std::for_each(m_udp_incrementals.begin(), m_udp_incrementals.end(), std::mem_fun(&fh::core::udp::UDPReceiver::Stop));
-        LOG_INFO("increment udp listener stopped.");
+        LOG_INFO("[", m_channel_id, "]increment udp listener stopped.");
     }
 
     void MarketManager::Stop_saver()
     {
         m_saver->Stop();
-        LOG_INFO("saver stopped.");
+        LOG_INFO("[", m_channel_id, "]saver stopped.");
     }
 
     void MarketManager::Start_increment_feed(fh::core::udp::UDPReceiver *udp)
@@ -149,7 +151,7 @@ namespace market
 
     void MarketManager::On_definition_end()
     {
-        LOG_INFO("definition all received.");
+        LOG_INFO("[", m_channel_id, "]definition all received.");
         this->Stop_definitions();
 
         // start udp recoveries
@@ -159,7 +161,7 @@ namespace market
 
     void MarketManager::On_recovery_end()
     {
-        LOG_INFO("recovery all received.");
+        LOG_INFO("[", m_channel_id, "]recovery all received.");
         this->Stop_recoveries();
 
         // 此时将接受到的恢复数据设置到 saver
@@ -168,7 +170,7 @@ namespace market
 
     void MarketManager::Start_save()
     {
-        LOG_INFO("start data saver.");
+        LOG_INFO("[", m_channel_id, "]start data saver.");
         std::thread t(&DatSaver::Start_save, m_saver);
         t.detach();
     }
@@ -177,6 +179,7 @@ namespace market
     {
         this->Stop_increments();
         this->Stop_saver();
+        m_cme->Remove_market(m_channel_id);
     }
 
 } // namespace market
