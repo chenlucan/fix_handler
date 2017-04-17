@@ -36,7 +36,6 @@ TSENDER_TARGET = $(BIN_PATH)/tcp_sender_test
 MARKET_TARGET = $(BIN_PATH)/market_test
 SBE_TARGET = $(BIN_PATH)/sbe_test
 PACKET_TARGET = $(BIN_PATH)/packet_test
-ZMQ_TARGET = $(BIN_PATH)/zmq_receiver_test
 EXCHANGE_SERVER_TARGET = $(BIN_PATH)/exchange_server_test
 STRATEGY_TARGET = $(BIN_PATH)/strategy_test
 EXCHANGE_CLIENT_TARGET = $(BIN_PATH)/exchange_client_test
@@ -48,7 +47,7 @@ default: all;
     
 include objs.mk
     
-all: createdir usender tsender market sbe ptest zmqrec eserver strategy eclient copyfile original orgsend
+all: createdir usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend
  
 createdir:
 	mkdir -p ${BIN_PATH}
@@ -71,11 +70,8 @@ market: $(BIN_PATH)/market_test.o $(BIN_PATH)/dat_processor.o $(BIN_PATH)/udp_re
 sbe: $(BIN_PATH)/sbe_test.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(SBE_TARGET) $?
 
-ptest: $(BIN_PATH)/packet_test.o $(BIN_PATH)/mdp_receiver.o $(COMM_OBJS) 
+ptest: $(BIN_PATH)/packet_test.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(PACKET_TARGET) $?
-
-zmqrec: $(BIN_PATH)/mdp_receiver.o $(BIN_PATH)/mdp_saver.o $(BIN_PATH)/zmq_receiver_test.o $(BIN_PATH)/market_settings.o $(COMM_OBJS) 
-	$(COMPILE_COMMAND) -o $(ZMQ_TARGET) $?
 
 eserver: $(BIN_PATH)/exchange_server_test.o $(BIN_PATH)/server_application.o $(BIN_PATH)/server_market.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(EXCHANGE_SERVER_TARGET) $?

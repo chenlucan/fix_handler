@@ -62,12 +62,6 @@ $(BIN_PATH)/message_parser_x.o: $(SRC_PATH)/cme/market/message/message_parser_x.
 $(BIN_PATH)/mdp_message.o: $(SRC_PATH)/cme/market/message/mdp_message.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
-$(BIN_PATH)/mdp_receiver.o: $(SRC_PATH)/cme/market/persist/mdp_receiver.cc
-	$(COMPILE_COMMAND) -c -o $@ $<
-
-$(BIN_PATH)/mdp_saver.o: $(SRC_PATH)/cme/market/persist/mdp_saver.cc
-	$(COMPILE_COMMAND) -c -o $@ $<
-
 $(BIN_PATH)/message_utility.o: $(SRC_PATH)/cme/market/message/message_utility.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
@@ -129,9 +123,6 @@ $(BIN_PATH)/zmq_receiver.o: $(SRC_PATH)/core/zmq/zmq_receiver.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/zmq_sender.o: $(SRC_PATH)/core/zmq/zmq_sender.cc
-	$(COMPILE_COMMAND) -c -o $@ $<
-
-$(BIN_PATH)/zmq_receiver_test.o: $(SRC_PATH)/main/market/zmq_receiver_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/market_test.o: $(SRC_PATH)/main/market/market_test.cc

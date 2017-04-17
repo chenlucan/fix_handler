@@ -30,21 +30,6 @@ namespace setting
         return {m_settings.Get("zeromq.org_url"), m_settings.Get("zeromq.book_url")};
     }
 
-    const std::string MarketSettings::Get_persist_receive_url() const
-    {
-        return m_settings.Get("persist.receive_url");
-    }
-
-    const std::string MarketSettings::Get_db_url() const
-    {
-        return m_settings.Get("persist.db_url");
-    }
-
-    const std::pair<std::string, std::string> MarketSettings::Get_save_collection() const
-    {
-        return {m_settings.Get("persist.db_name"), m_settings.Get("persist.collection_name")};
-    }
-
 } // namespace setting
 } // namespace market
 } // namespace cme
