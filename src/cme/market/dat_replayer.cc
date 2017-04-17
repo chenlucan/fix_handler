@@ -25,9 +25,17 @@ namespace market
     // request data([begin, end)) from tcp receiver, and process it with processor
     void DatReplayer::Start_receive(std::function<void(char *, const size_t)> processor, std::uint32_t begin, std::uint32_t end)
     {
-        fh::core::tcp::TCPReceiver tcp_receiver(m_endpoint);
-        this->Send_Logon(tcp_receiver, processor, begin, end - 1); // convert [begin, end) to [begin, end - 1]
-        tcp_receiver.Start_receive();
+        try
+        {
+            fh::core::tcp::TCPReceiver tcp_receiver(m_endpoint);
+            this->Send_Logon(tcp_receiver, processor, begin, end - 1); // convert [begin, end) to [begin, end - 1]
+            tcp_receiver.Start_receive();
+        }
+        catch(std::exception &e)
+        {
+            LOG_WARN("tcp replay error: ", e.what());
+            processor(nullptr, 0);
+        }
     }
 
     void DatReplayer::Send_Logon(
@@ -59,14 +67,22 @@ namespace market
             std::function<void(char *, const size_t)> processor,
             std::uint32_t begin, std::uint32_t end)
     {
-        std::string recovery_request_message = fh::cme::market::message::utility::Make_fix_recovery_request_message(
-                m_channel_id, std::to_string(fh::core::assist::utility::Current_time_ns()), begin, end);
-        tcp_receiver.Send(
-                [this, &tcp_receiver, processor](char *buffer, const size_t length){
-                    this->On_recovery_data(tcp_receiver, processor, buffer, length);
-                },
-                recovery_request_message);
-        LOG_INFO("tcp replayer send data: ", recovery_request_message);
+        try
+        {
+            std::string recovery_request_message = fh::cme::market::message::utility::Make_fix_recovery_request_message(
+                    m_channel_id, std::to_string(fh::core::assist::utility::Current_time_ns()), begin, end);
+            tcp_receiver.Send(
+                    [this, &tcp_receiver, processor](char *buffer, const size_t length){
+                        this->On_recovery_data(tcp_receiver, processor, buffer, length);
+                    },
+                    recovery_request_message);
+            LOG_INFO("tcp replayer send data: ", recovery_request_message);
+        }
+        catch(std::exception &e)
+        {
+            LOG_WARN("tcp send recovery request error: ", e.what());
+            processor(nullptr, 0);
+        }
     }
 
     void DatReplayer::On_recovery_data(

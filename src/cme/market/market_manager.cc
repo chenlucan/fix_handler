@@ -24,10 +24,11 @@ namespace market
 
     MarketManager::~MarketManager()
     {
-        auto release_udp = [](const fh::core::udp::UDPReceiver *r){ delete r;};
-        std::for_each(m_udp_incrementals.cbegin(), m_udp_incrementals.cend(), release_udp);
-        std::for_each(m_udp_recoveries.cbegin(), m_udp_recoveries.cend(), release_udp);
-        std::for_each(m_udp_definitions.cbegin(), m_udp_definitions.cend(), release_udp);
+        // TODO 这里释放的话，在 stop 一个 channel 时会有 signal 11 中断，暂时未调查
+        //auto release_udp = [](const fh::core::udp::UDPReceiver *r){ delete r;};
+        //std::for_each(m_udp_incrementals.cbegin(), m_udp_incrementals.cend(), release_udp);
+        //std::for_each(m_udp_recoveries.cbegin(), m_udp_recoveries.cend(), release_udp);
+        //std::for_each(m_udp_definitions.cbegin(), m_udp_definitions.cend(), release_udp);
         delete m_tcp_replayer;
         delete m_processor;
         delete m_saver;

@@ -25,6 +25,14 @@ namespace market
     // process tcp replay data to mdp messages and save it
     void DatProcessor::Process_replay_data(char *buffer, const size_t data_length)
     {
+        if(buffer == nullptr)
+        {
+            // 说明 TCP 发生了错误
+            LOG_WARN("tcp error happened, stop");
+            this->m_on_error();
+            return;
+        }
+
         // check if packet is valid by first 4 bytes(packet sqquence number)
         std::uint32_t packet_seq_num = *((std::uint32_t *)buffer);
         std::uint32_t status = m_arbitrator.Check_replay_packet(packet_seq_num);
@@ -53,13 +61,13 @@ namespace market
             return;
         }
 
+        Process_data(buffer, data_length);
+
         if(status > 0)
         {
             // gap detected, should start tcp replay
             Start_tcp_replay(status, packet_seq_num);
         }
-
-        Process_data(buffer, data_length);
     }
 
     // process packet data to mdp messages and save it
