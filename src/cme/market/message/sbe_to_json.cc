@@ -1,5 +1,6 @@
 
 #include "cme/market/message/sbe_to_json.h"
+#include "core/assist/utility.h"
 #include <bsoncxx/json.hpp>
 
 #define PUT_TO_JSON_VALUE(json, key, value)  json.append(bsoncxx::builder::basic::kvp(key, T(value)))
@@ -81,7 +82,7 @@ namespace message
 
     template <typename IntType>
     inline std::string T(IntType v){return std::to_string(v);}
-    inline std::string T(const std::string &v){return v;}
+    inline std::string T(const std::string &v){return fh::core::assist::utility::Trim_null(v);}
     inline std::string T(const char *v){return std::string(v);}
 
     SBEtoJSON::SBEtoJSON(const MdpMessage *sbe_message) : m_sbe_message(sbe_message)

@@ -102,6 +102,8 @@ namespace utility
     // 把 protobuf 的时间格式整理成可读字符串
     std::string Format_pb_timestamp(const pb::ems::Timestamp &time);
 
+    // 把一个字符串中的第一个 null(\0) 以及后面的字符都删除掉
+    std::string Trim_null(const std::string &str);
 } // namespace utility
 } // namespace assist
 } // namespace core

@@ -1,5 +1,6 @@
 
 #include "core/assist/logger.h"
+#include "core/assist/utility.h"
 #include "cme/market/message/message_parser_d.h"
 
 namespace fh
@@ -76,7 +77,7 @@ namespace message
         i.depthGBI = 0;
         i.depthGBX = 0;
         i.securityUpdateAction = message->securityUpdateAction();
-        i.symbol = message->getSymbolAsString();
+        i.symbol = fh::core::assist::utility::Trim_null(message->getSymbolAsString());
         i.minPriceIncrement = message->minPriceIncrement().mantissa();
         i.highLimitPrice = message->highLimitPrice().mantissa();
         i.lowLimitPrice = message->lowLimitPrice().mantissa();

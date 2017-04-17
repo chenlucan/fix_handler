@@ -335,6 +335,14 @@ namespace utility
         return oss.str();
     }
 
+    // 把一个字符串中的第一个 null(\0) 以及后面的字符都删除掉
+    std::string Trim_null(const std::string &str)
+    {
+        auto pos = str.find('\0');
+        if(pos == std::string::npos) return str;
+        return str.substr(0, pos);
+    }
+
 } // namespace utility
 } // namespace assist
 } // namespace core
