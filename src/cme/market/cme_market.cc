@@ -74,11 +74,15 @@ namespace market
 
     void CmeMarket::Remove_market(const std::string &channel_id)
     {
+        MarketManager *m = m_market_managers.at(channel_id);
+        delete m;
         m_market_managers.erase(channel_id);
+
+        LOG_INFO("active channel count: ", m_market_managers.size());
 
         if(m_market_managers.empty())
         {
-            LOG_INFO("all market stopped. exit.");
+            LOG_INFO("all channel stopped. exit.");
             exit(0);
         }
     }

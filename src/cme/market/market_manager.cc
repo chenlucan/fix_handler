@@ -179,6 +179,8 @@ namespace market
     {
         this->Stop_increments();
         this->Stop_saver();
+
+        LOG_INFO("[", m_channel_id, "]stopped.");
         m_cme->Remove_market(m_channel_id);
     }
 
