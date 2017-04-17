@@ -1,4 +1,5 @@
 
+#include <stdexcept>
 #include "core/zmq/zmq_sender.h"
 #include "core/assist/utility.h"
 #include "core/assist/logger.h"
@@ -12,7 +13,15 @@ namespace zmq
 
     ZmqSender::ZmqSender(const std::string &url) : m_context(1), m_sender(m_context, ZMQ_PUSH)
     {
-        m_sender.bind(url);
+        try
+        {
+            m_sender.bind(url);
+        }
+        catch(std::exception& e)
+        {
+            LOG_ERROR("bind to ", url, " error: ", e.what());
+            throw std::invalid_argument("bind error, exit");
+        }
     }
 
     ZmqSender::~ZmqSender()

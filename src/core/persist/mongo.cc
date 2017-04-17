@@ -28,16 +28,23 @@ namespace persist
     {
         LOG_DEBUG("insert: ", json);
 
-        auto doc = bsoncxx::from_json(json);
-        auto result = m_collection.insert_one(doc.view());
+        try
+        {
+            auto doc = bsoncxx::from_json(json);
+            auto result = m_collection.insert_one(doc.view());
 
-        if(result)
-        {
-            LOG_DEBUG("insert success.");
+            if(result)
+            {
+                LOG_DEBUG("insert success.");
+            }
+            else
+            {
+                LOG_WARN("insert error.");
+            }
         }
-        else
+        catch(std::exception &e)
         {
-            LOG_WARN("insert error.");
+            LOG_ERROR(e.what());
         }
     }
 
