@@ -1,12 +1,11 @@
 
-#include <sstream>
-#include <boost/property_tree/json_parser.hpp>
 #include "cme/market/message/sbe_to_json.h"
+#include <bsoncxx/json.hpp>
 
-#define PUT_TO_JSON_VALUE(json, key, value)  json.put(key, value)
-#define PUT_TO_JSON_CHILD(json, key, child) json.put_child(key, child)
-#define PUT_TO_JSON_ARRAY_ITEM(json, item) json.push_back(std::make_pair("", item));
-#define JSON_TO_STRING(json)  std::ostringstream buf;  boost::property_tree::write_json (buf, json, true); return buf.str();
+#define PUT_TO_JSON_VALUE(json, key, value)  json.append(bsoncxx::builder::basic::kvp(key, T(value)))
+#define PUT_TO_JSON_CHILD(json, key, child) json.append(bsoncxx::builder::basic::kvp(key, child))
+#define PUT_TO_JSON_ARRAY_ITEM(json, item) json.append(item);
+#define JSON_TO_STRING(json)  bsoncxx::to_json(json.view());
 
 #define PUT_TO_JSON(json, message, field) PUT_TO_JSON_VALUE(json, #field, (message).field())
 #define PUT_TO_JSON_CHAR(json, message, field)  PUT_TO_JSON_VALUE(json, #field, (message).field(0))
@@ -23,52 +22,52 @@
                                                                                                                           PUT_TO_JSON_VALUE(price, "mantissa", v); \
                                                                                                                           PUT_TO_JSON_VALUE(price, "exponent", (message).field().exponent()); \
                                                                                                                           PUT_TO_JSON_CHILD(json, #field, price); } }
-#define PUT_TO_JSON_MATCH_EVENT(json, message, field)  { JSON_OBJ_TYPE event; \
-                                                                                                                 PUT_TO_JSON_VALUE(event, "lastTradeMsg", (message).field().lastTradeMsg()); \
-                                                                                                                 PUT_TO_JSON_VALUE(event, "lastVolumeMsg", (message).field().lastVolumeMsg()); \
-                                                                                                                 PUT_TO_JSON_VALUE(event, "lastQuoteMsg", (message).field().lastQuoteMsg()); \
-                                                                                                                 PUT_TO_JSON_VALUE(event, "lastStatsMsg", (message).field().lastStatsMsg()); \
-                                                                                                                 PUT_TO_JSON_VALUE(event, "lastImpliedMsg", (message).field().lastImpliedMsg()); \
-                                                                                                                 PUT_TO_JSON_VALUE(event, "recoveryMsg", (message).field().recoveryMsg()); \
-                                                                                                                 PUT_TO_JSON_VALUE(event, "reserved", (message).field().reserved()); \
-                                                                                                                 PUT_TO_JSON_VALUE(event, "endOfEvent", (message).field().endOfEvent()); \
+#define PUT_TO_JSON_MATCH_EVENT(json, message, field)  { JSON_OBJ_TYPE event; auto f = (message).field(); \
+                                                                                                                 PUT_TO_JSON_VALUE(event, "lastTradeMsg", f.lastTradeMsg()); \
+                                                                                                                 PUT_TO_JSON_VALUE(event, "lastVolumeMsg", f.lastVolumeMsg()); \
+                                                                                                                 PUT_TO_JSON_VALUE(event, "lastQuoteMsg", f.lastQuoteMsg()); \
+                                                                                                                 PUT_TO_JSON_VALUE(event, "lastStatsMsg", f.lastStatsMsg()); \
+                                                                                                                 PUT_TO_JSON_VALUE(event, "lastImpliedMsg", f.lastImpliedMsg()); \
+                                                                                                                 PUT_TO_JSON_VALUE(event, "recoveryMsg", f.recoveryMsg()); \
+                                                                                                                 PUT_TO_JSON_VALUE(event, "reserved", f.reserved()); \
+                                                                                                                 PUT_TO_JSON_VALUE(event, "endOfEvent", f.endOfEvent()); \
                                                                                                                  PUT_TO_JSON_CHILD(json, #field, event); }
-#define PUT_TO_JSON_DATE(json, message, field)  { JSON_OBJ_TYPE date; \
-                                                                                                PUT_TO_JSON_NON_NULL(date, (message).field(), year); \
-                                                                                                PUT_TO_JSON_NON_NULL(date, (message).field(), month); \
-                                                                                                PUT_TO_JSON_NON_NULL(date, (message).field(), day); \
-                                                                                                PUT_TO_JSON_NON_NULL(date, (message).field(), week); \
+#define PUT_TO_JSON_DATE(json, message, field)  { JSON_OBJ_TYPE date; auto f = (message).field(); \
+                                                                                                PUT_TO_JSON_NON_NULL(date, f, year); \
+                                                                                                PUT_TO_JSON_NON_NULL(date, f, month); \
+                                                                                                PUT_TO_JSON_NON_NULL(date, f, day); \
+                                                                                                PUT_TO_JSON_NON_NULL(date, f, week); \
                                                                                                 PUT_TO_JSON_CHILD(json, #field, date); }
-#define PUT_TO_JSON_SETTL_PRICE(json, message, field)  { JSON_OBJ_TYPE settl; \
-                                                                                                                 PUT_TO_JSON_VALUE(settl, "finalrc", (message).field().finalrc()); \
-                                                                                                                 PUT_TO_JSON_VALUE(settl, "actual", (message).field().actual()); \
-                                                                                                                 PUT_TO_JSON_VALUE(settl, "rounded", (message).field().rounded()); \
-                                                                                                                 PUT_TO_JSON_VALUE(settl, "intraday", (message).field().intraday()); \
-                                                                                                                 PUT_TO_JSON_VALUE(settl, "reservedBits", (message).field().reservedBits()); \
-                                                                                                                 PUT_TO_JSON_VALUE(settl, "nullValue", (message).field().nullValue()); \
+#define PUT_TO_JSON_SETTL_PRICE(json, message, field)  { JSON_OBJ_TYPE settl; auto f = (message).field(); \
+                                                                                                                 PUT_TO_JSON_VALUE(settl, "finalrc", f.finalrc()); \
+                                                                                                                 PUT_TO_JSON_VALUE(settl, "actual", f.actual()); \
+                                                                                                                 PUT_TO_JSON_VALUE(settl, "rounded", f.rounded()); \
+                                                                                                                 PUT_TO_JSON_VALUE(settl, "intraday", f.intraday()); \
+                                                                                                                 PUT_TO_JSON_VALUE(settl, "reservedBits", f.reservedBits()); \
+                                                                                                                 PUT_TO_JSON_VALUE(settl, "nullValue", f.nullValue()); \
                                                                                                                  PUT_TO_JSON_CHILD(json, #field, settl); }
-#define PUT_TO_JSON_INST_ATTR(json, message, field)  { JSON_OBJ_TYPE attr; \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "electronicMatchEligible", (message).field().electronicMatchEligible()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "orderCrossEligible", (message).field().orderCrossEligible()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "blockTradeEligible", (message).field().blockTradeEligible()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "eFPEligible", (message).field().eFPEligible()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "eBFEligible", (message).field().eBFEligible()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "eFSEligible", (message).field().eFSEligible()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "eFREligible", (message).field().eFREligible()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "oTCEligible", (message).field().oTCEligible()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "iLinkIndicativeMassQuotingEligible", (message).field().iLinkIndicativeMassQuotingEligible()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "negativeStrikeEligible", (message).field().negativeStrikeEligible()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "negativePriceOutrightEligible", (message).field().negativePriceOutrightEligible()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "isFractional", (message).field().isFractional()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "volatilityQuotedOption", (message).field().volatilityQuotedOption()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "rFQCrossEligible", (message).field().rFQCrossEligible()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "zeroPriceOutrightEligible", (message).field().zeroPriceOutrightEligible()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "decayingProductEligibility", (message).field().decayingProductEligibility()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "variableProductEligibility", (message).field().variableProductEligibility()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "dailyProductEligibility", (message).field().dailyProductEligibility()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "gTOrdersEligibility", (message).field().gTOrdersEligibility()); \
-                                                                                                         PUT_TO_JSON_VALUE(attr, "impliedMatchingEligibility", (message).field().impliedMatchingEligibility()); \
-                                                                                                         PUT_TO_JSON_CHILD(json, #field, attr); }
+#define PUT_TO_JSON_INST_ATTR(json, message, field)  { JSON_OBJ_TYPE ia; auto f = (message).field();\
+                                                                                                         PUT_TO_JSON_VALUE(ia, "electronicMatchEligible", f.electronicMatchEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "orderCrossEligible", f.orderCrossEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "blockTradeEligible", f.blockTradeEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "eFPEligible", f.eFPEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "eBFEligible", f.eBFEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "eFSEligible", f.eFSEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "eFREligible", f.eFREligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "oTCEligible", f.oTCEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "iLinkIndicativeMassQuotingEligible", f.iLinkIndicativeMassQuotingEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "negativeStrikeEligible", f.negativeStrikeEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "negativePriceOutrightEligible", f.negativePriceOutrightEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "isFractional", f.isFractional()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "volatilityQuotedOption", f.volatilityQuotedOption()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "rFQCrossEligible", f.rFQCrossEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "zeroPriceOutrightEligible", f.zeroPriceOutrightEligible()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "decayingProductEligibility", f.decayingProductEligibility()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "variableProductEligibility", f.variableProductEligibility()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "dailyProductEligibility", f.dailyProductEligibility()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "gTOrdersEligibility", f.gTOrdersEligibility()); \
+                                                                                                         PUT_TO_JSON_VALUE(ia, "impliedMatchingEligibility", f.impliedMatchingEligibility()); \
+                                                                                                         PUT_TO_JSON_CHILD(json, #field, ia); }
 
 
 namespace fh
@@ -79,6 +78,11 @@ namespace market
 {
 namespace message
 {
+
+    template <typename IntType>
+    inline std::string T(IntType v){return std::to_string(v);}
+    inline std::string T(const std::string &v){return v;}
+    inline std::string T(const char *v){return std::string(v);}
 
     SBEtoJSON::SBEtoJSON(const MdpMessage *sbe_message) : m_sbe_message(sbe_message)
     {
@@ -145,7 +149,7 @@ namespace message
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        JSON_OBJ_TYPE entities;
+        JSON_ARRAY_TYPE entities;
         mktdata::ChannelReset4::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
@@ -168,7 +172,7 @@ namespace message
         JSON_OBJ_TYPE json;
         PUT_TO_JSON_VALUE(json, "type", "MDInstrumentDefinitionFuture27");
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
-        PUT_TO_JSON(json, *m, securityUpdateAction);
+        PUT_TO_JSON_CHAR_ENUM(json, *m, securityUpdateAction);
         PUT_TO_JSON(json, *m, lastUpdateTime);
         PUT_TO_JSON(json, *m, mDSecurityTradingStatus);
         PUT_TO_JSON(json, *m, applID);
@@ -213,7 +217,7 @@ namespace message
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, lowLimitPrice);
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, minPriceIncrementAmount);
 
-        JSON_OBJ_TYPE events;
+        JSON_ARRAY_TYPE events;
         mktdata::MDInstrumentDefinitionFuture27::NoEvents& noEvents = m->noEvents();
         while (noEvents.hasNext())
         {
@@ -227,7 +231,7 @@ namespace message
         }
         PUT_TO_JSON_CHILD(json, "noEvents", events);
 
-        JSON_OBJ_TYPE feedTypes;
+        JSON_ARRAY_TYPE feedTypes;
         mktdata::MDInstrumentDefinitionFuture27::NoMDFeedTypes& noMDFeedTypes = m->noMDFeedTypes();
         while (noMDFeedTypes.hasNext())
         {
@@ -241,7 +245,7 @@ namespace message
         }
         PUT_TO_JSON_CHILD(json, "noMDFeedTypes", feedTypes);
 
-        JSON_OBJ_TYPE attrs;
+        JSON_ARRAY_TYPE attrs;
         mktdata::MDInstrumentDefinitionFuture27::NoInstAttrib& noInstAttrib = m->noInstAttrib();
         while (noInstAttrib.hasNext())
         {
@@ -253,9 +257,10 @@ namespace message
 
             PUT_TO_JSON_ARRAY_ITEM(attrs, attr);
         }
+
         PUT_TO_JSON_CHILD(json, "noInstAttrib", attrs);
 
-        JSON_OBJ_TYPE rules;
+        JSON_ARRAY_TYPE rules;
         mktdata::MDInstrumentDefinitionFuture27::NoLotTypeRules& noLotTypeRules = m->noLotTypeRules();
         while (noLotTypeRules.hasNext())
         {
@@ -277,7 +282,7 @@ namespace message
         JSON_OBJ_TYPE json;
         PUT_TO_JSON_VALUE(json, "type", "MDInstrumentDefinitionSpread29");
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
-        PUT_TO_JSON(json, *m, securityUpdateAction);
+        PUT_TO_JSON_CHAR_ENUM(json, *m, securityUpdateAction);
         PUT_TO_JSON(json, *m, lastUpdateTime);
         PUT_TO_JSON(json, *m, mDSecurityTradingStatus);
         PUT_TO_JSON(json, *m, applID);
@@ -316,7 +321,7 @@ namespace message
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, lowLimitPrice);
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, maxPriceVariation);
 
-        JSON_OBJ_TYPE events;
+        JSON_ARRAY_TYPE events;
         mktdata::MDInstrumentDefinitionSpread29::NoEvents& noEvents = m->noEvents();
         while (noEvents.hasNext())
         {
@@ -330,7 +335,7 @@ namespace message
         }
         PUT_TO_JSON_CHILD(json, "noEvents", events);
 
-        JSON_OBJ_TYPE feedTypes;
+        JSON_ARRAY_TYPE feedTypes;
         mktdata::MDInstrumentDefinitionSpread29::NoMDFeedTypes& noMDFeedTypes = m->noMDFeedTypes();
         while (noMDFeedTypes.hasNext())
         {
@@ -344,7 +349,7 @@ namespace message
         }
         PUT_TO_JSON_CHILD(json, "noMDFeedTypes", feedTypes);
 
-        JSON_OBJ_TYPE attrs;
+        JSON_ARRAY_TYPE attrs;
         mktdata::MDInstrumentDefinitionSpread29::NoInstAttrib& noInstAttrib = m->noInstAttrib();
         while (noInstAttrib.hasNext())
         {
@@ -358,7 +363,7 @@ namespace message
         }
         PUT_TO_JSON_CHILD(json, "noInstAttrib", attrs);
 
-        JSON_OBJ_TYPE rules;
+        JSON_ARRAY_TYPE rules;
         mktdata::MDInstrumentDefinitionSpread29::NoLotTypeRules& noLotTypeRules = m->noLotTypeRules();
         while (noLotTypeRules.hasNext())
         {
@@ -372,7 +377,7 @@ namespace message
         }
         PUT_TO_JSON_CHILD(json, "noLotTypeRules", rules);
 
-        JSON_OBJ_TYPE legs;
+        JSON_ARRAY_TYPE legs;
         mktdata::MDInstrumentDefinitionSpread29::NoLegs& noLegs = m->noLegs();
         while (noLegs.hasNext())
         {
@@ -417,7 +422,7 @@ namespace message
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        JSON_OBJ_TYPE entities;
+        JSON_ARRAY_TYPE entities;
         mktdata::MDIncrementalRefreshBook32::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
@@ -437,7 +442,7 @@ namespace message
         }
         PUT_TO_JSON_CHILD(json, "noMDEntries", entities);
 
-        JSON_OBJ_TYPE orderIds;
+        JSON_ARRAY_TYPE orderIds;
         mktdata::MDIncrementalRefreshBook32::NoOrderIDEntries& noOrderIDEntries = m->noOrderIDEntries();
         while (noOrderIDEntries.hasNext())
         {
@@ -464,7 +469,7 @@ namespace message
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        JSON_OBJ_TYPE entities;
+        JSON_ARRAY_TYPE entities;
         mktdata::MDIncrementalRefreshDailyStatistics33::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
@@ -494,7 +499,7 @@ namespace message
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        JSON_OBJ_TYPE entities;
+        JSON_ARRAY_TYPE entities;
         mktdata::MDIncrementalRefreshLimitsBanding34::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
@@ -523,7 +528,7 @@ namespace message
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        JSON_OBJ_TYPE entities;
+        JSON_ARRAY_TYPE entities;
         mktdata::MDIncrementalRefreshSessionStatistics35::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
@@ -552,7 +557,7 @@ namespace message
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        JSON_OBJ_TYPE entities;
+        JSON_ARRAY_TYPE entities;
         mktdata::MDIncrementalRefreshTrade36::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
@@ -583,7 +588,7 @@ namespace message
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        JSON_OBJ_TYPE entities;
+        JSON_ARRAY_TYPE entities;
         mktdata::MDIncrementalRefreshVolume37::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
@@ -619,7 +624,7 @@ namespace message
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, lowLimitPrice);
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, maxPriceVariation);
 
-        JSON_OBJ_TYPE entities;
+        JSON_ARRAY_TYPE entities;
         mktdata::SnapshotFullRefresh38::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
@@ -650,7 +655,7 @@ namespace message
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        JSON_OBJ_TYPE syms;
+        JSON_ARRAY_TYPE syms;
         mktdata::QuoteRequest39::NoRelatedSym& noRelatedSym = m->noRelatedSym();
         while (noRelatedSym.hasNext())
         {
@@ -675,7 +680,7 @@ namespace message
         JSON_OBJ_TYPE json;
         PUT_TO_JSON_VALUE(json, "type", "MDInstrumentDefinitionOption41");
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
-        PUT_TO_JSON(json, *m, securityUpdateAction);
+        PUT_TO_JSON_CHAR_ENUM(json, *m, securityUpdateAction);
         PUT_TO_JSON(json, *m, lastUpdateTime);
         PUT_TO_JSON(json, *m, mDSecurityTradingStatus);
         PUT_TO_JSON(json, *m, applID);
@@ -718,7 +723,7 @@ namespace message
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, lowLimitPrice);
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, minPriceIncrementAmount);
 
-        JSON_OBJ_TYPE events;
+        JSON_ARRAY_TYPE events;
         mktdata::MDInstrumentDefinitionOption41::NoEvents& noEvents = m->noEvents();
         while (noEvents.hasNext())
         {
@@ -732,7 +737,7 @@ namespace message
         }
         PUT_TO_JSON_CHILD(json, "noEvents", events);
 
-        JSON_OBJ_TYPE feedTypes;
+        JSON_ARRAY_TYPE feedTypes;
         mktdata::MDInstrumentDefinitionOption41::NoMDFeedTypes& noMDFeedTypes = m->noMDFeedTypes();
         while (noMDFeedTypes.hasNext())
         {
@@ -746,7 +751,7 @@ namespace message
         }
         PUT_TO_JSON_CHILD(json, "noMDFeedTypes", feedTypes);
 
-        JSON_OBJ_TYPE attrs;
+        JSON_ARRAY_TYPE attrs;
         mktdata::MDInstrumentDefinitionOption41::NoInstAttrib& noInstAttrib = m->noInstAttrib();
         while (noInstAttrib.hasNext())
         {
@@ -760,7 +765,7 @@ namespace message
         }
         PUT_TO_JSON_CHILD(json, "noInstAttrib", attrs);
 
-        JSON_OBJ_TYPE rules;
+        JSON_ARRAY_TYPE rules;
         mktdata::MDInstrumentDefinitionOption41::NoLotTypeRules& noLotTypeRules = m->noLotTypeRules();
         while (noLotTypeRules.hasNext())
         {
@@ -774,7 +779,7 @@ namespace message
         }
         PUT_TO_JSON_CHILD(json, "noLotTypeRules", rules);
 
-        JSON_OBJ_TYPE underlyings;
+        JSON_ARRAY_TYPE underlyings;
         mktdata::MDInstrumentDefinitionOption41::NoUnderlyings& noUnderlyings = m->noUnderlyings();
         while (noUnderlyings.hasNext())
         {
@@ -789,7 +794,7 @@ namespace message
         }
         PUT_TO_JSON_CHILD(json, "noUnderlyings", underlyings);
 
-        JSON_OBJ_TYPE instuments;
+        JSON_ARRAY_TYPE instuments;
         mktdata::MDInstrumentDefinitionOption41::NoRelatedInstruments& noRelatedInstruments = m->noRelatedInstruments();
         while (noRelatedInstruments.hasNext())
         {
@@ -814,7 +819,7 @@ namespace message
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        JSON_OBJ_TYPE entities;
+        JSON_ARRAY_TYPE entities;
         mktdata::MDIncrementalRefreshTradeSummary42::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
@@ -835,7 +840,7 @@ namespace message
         }
         PUT_TO_JSON_CHILD(json, "noMDEntries", entities);
 
-        JSON_OBJ_TYPE orderIds;
+        JSON_ARRAY_TYPE orderIds;
         mktdata::MDIncrementalRefreshTradeSummary42::NoOrderIDEntries& noOrderIDEntries = m->noOrderIDEntries();
         while (noOrderIDEntries.hasNext())
         {
@@ -859,7 +864,7 @@ namespace message
         PUT_TO_JSON(json, *m, transactTime);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
 
-        JSON_OBJ_TYPE entities;
+        JSON_ARRAY_TYPE entities;
         mktdata::MDIncrementalRefreshOrderBook43::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
@@ -892,7 +897,7 @@ namespace message
         PUT_TO_JSON(json, *m, noChunks);
         PUT_TO_JSON(json, *m, currentChunk);
 
-        JSON_OBJ_TYPE entities;
+        JSON_ARRAY_TYPE entities;
         mktdata::SnapshotFullRefreshOrderBook44::NoMDEntries& noMDEntries = m->noMDEntries();
         while (noMDEntries.hasNext())
         {
@@ -921,7 +926,7 @@ namespace message
         PUT_TO_JSON_VALUE(json, "packetSendingTime", m_sbe_message->packet_sending_time());
         PUT_TO_JSON_CHILD(json, "message", json_message);
 
-        JSON_TO_STRING(json);
+        return JSON_TO_STRING(json);
     }
 
 } // namespace message

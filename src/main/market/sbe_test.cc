@@ -270,8 +270,11 @@ int main(int argc, char* argv[])
         LOG_INFO("");
 
         fh::cme::market::message::MdpMessage mdp(encoded.first, encoded.second, 1000, 1, 12345678);
-        LOG_INFO(mdp.Serialize());
-        LOG_INFO(t.Elapsed_nanoseconds(), "ns");
+        t.Restart();
+        std::string m = mdp.Serialize();
+        auto time = t.Elapsed_nanoseconds();
+        LOG_INFO(m);
+        LOG_INFO(time, "ns");
     }
     catch (std::exception& e)
     {

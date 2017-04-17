@@ -2,14 +2,14 @@
 #ifndef __FH_CME_MARKET_MESSAGE_SBE_TO_JSON_H__
 #define __FH_CME_MARKET_MESSAGE_SBE_TO_JSON_H__
 
-#include <memory>
-#include <boost/property_tree/ptree.hpp>
+#include <bsoncxx/builder/basic/array.hpp>
+#include <bsoncxx/builder/basic/document.hpp>
 #include "core/global.h"
 #include "cme/market/message/mktdata.h"
 #include "cme/market/message/mdp_message.h"
 
-
-#define JSON_OBJ_TYPE boost::property_tree::ptree
+#define JSON_OBJ_TYPE bsoncxx::builder::basic::document
+#define JSON_ARRAY_TYPE bsoncxx::builder::basic::array
 
 namespace fh
 {

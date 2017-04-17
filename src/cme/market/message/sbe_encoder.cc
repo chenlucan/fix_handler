@@ -709,15 +709,15 @@ namespace message
 		mktdata::MDInstrumentDefinitionOption41::NoUnderlyings& us = message.noUnderlyingsCount(2);
 		mktdata::MDInstrumentDefinitionOption41::NoUnderlyings& ts1 = us.next();
         ts1.underlyingSecurityID(81).underlyingSecurityIDSource(fh::core::assist::utility::Random_number(0, 1));
-		ts1.underlyingSymbol(10,15);
+		ts1.putUnderlyingSymbol("abcde1");
 		mktdata::MDInstrumentDefinitionOption41::NoUnderlyings& ts2 =  us.next();
         ts2.underlyingSecurityID(45).underlyingSecurityIDSource(fh::core::assist::utility::Random_number(0, 1));
-		ts2.underlyingSymbol(10,12);
+        ts1.putUnderlyingSymbol("abcde2");
 
 		mktdata::MDInstrumentDefinitionOption41::NoRelatedInstruments& tts = message.noRelatedInstrumentsCount(1);
 		mktdata::MDInstrumentDefinitionOption41::NoRelatedInstruments& tts1 = tts.next();
         tts1.relatedSecurityID(253).relatedSecurityIDSource(fh::core::assist::utility::Random_number(0, 1));	
-        tts1.relatedSymbol(10,12);		
+        tts1.putRelatedSymbol("xyz123");
         return message.encodedLength();
     }		
 	
