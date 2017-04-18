@@ -78,9 +78,9 @@ namespace message
         i.depthGBX = 0;
         i.securityUpdateAction = message->securityUpdateAction();
         i.symbol = fh::core::assist::utility::Trim_null(message->getSymbolAsString());
-        i.minPriceIncrement = message->minPriceIncrement().mantissa();
-        i.highLimitPrice = message->highLimitPrice().mantissa();
-        i.lowLimitPrice = message->lowLimitPrice().mantissa();
+        i.minPriceIncrement = {message->minPriceIncrement().mantissa(), message->minPriceIncrement().exponent()};
+        i.highLimitPrice = {message->highLimitPrice().mantissa(), message->highLimitPrice().exponent()};
+        i.lowLimitPrice = {message->lowLimitPrice().mantissa(), message->lowLimitPrice().exponent()};
 
         // 重要：必须要跳过下面这个 group 后才能正确取到 NoMDFeedTypes 字段值
         auto noEvents = message->noEvents();

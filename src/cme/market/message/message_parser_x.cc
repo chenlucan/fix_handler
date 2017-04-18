@@ -95,7 +95,7 @@ namespace message
         {
             noMDEntries.next();
             Book b = {};
-            b.mDEntryPx = noMDEntries.mDEntryPx().mantissa();
+            b.mDEntryPx = {noMDEntries.mDEntryPx().mantissa(), noMDEntries.mDEntryPx().exponent()};
             b.mDEntrySize = noMDEntries.mDEntrySize();
             b.securityID = noMDEntries.securityID();
             b.rptSeq = noMDEntries.rptSeq();
@@ -117,7 +117,7 @@ namespace message
         {
             noMDEntries.next();
             Book b = {};
-            b.mDEntryPx = noMDEntries.mDEntryPx().mantissa();
+            b.mDEntryPx = {noMDEntries.mDEntryPx().mantissa(), noMDEntries.mDEntryPx().exponent()};
             b.mDEntrySize = noMDEntries.mDEntrySize();
             b.securityID = noMDEntries.securityID();
             b.rptSeq = noMDEntries.rptSeq();
@@ -147,9 +147,9 @@ namespace message
         {
             noMDEntries.next();
             Book b = {};
-            b.highLimitPrice = noMDEntries.highLimitPrice().mantissa();
-            b.lowLimitPrice = noMDEntries.lowLimitPrice().mantissa();
-            b.maxPriceVariation = noMDEntries.maxPriceVariation().mantissa();
+            b.highLimitPrice = {noMDEntries.highLimitPrice().mantissa(), noMDEntries.highLimitPrice().exponent()};
+            b.lowLimitPrice = {noMDEntries.lowLimitPrice().mantissa(), noMDEntries.lowLimitPrice().exponent()};
+            b.maxPriceVariation = {noMDEntries.maxPriceVariation().mantissa(), noMDEntries.maxPriceVariation().exponent()};
             b.securityID = noMDEntries.securityID();
             b.rptSeq = noMDEntries.rptSeq();
             b.mDUpdateAction = mktdata::MDUpdateAction::get(noMDEntries.mDUpdateAction());
@@ -168,7 +168,7 @@ namespace message
         {
             noMDEntries.next();
             Book b = {};
-            b.mDEntryPx = noMDEntries.mDEntryPx().mantissa();
+            b.mDEntryPx = {noMDEntries.mDEntryPx().mantissa(), noMDEntries.mDEntryPx().exponent()};
             b.securityID = noMDEntries.securityID();
             b.rptSeq = noMDEntries.rptSeq();
             b.openCloseSettlFlag = mktdata::OpenCloseSettlFlag::get(noMDEntries.openCloseSettlFlag());
@@ -189,7 +189,7 @@ namespace message
         {
             noMDEntries.next();
             Book b = {};
-            b.mDEntryPx = noMDEntries.mDEntryPx().mantissa();
+            b.mDEntryPx = {noMDEntries.mDEntryPx().mantissa(), noMDEntries.mDEntryPx().exponent()};
             b.mDEntrySize = noMDEntries.mDEntrySize();
             b.securityID = noMDEntries.securityID();
             b.rptSeq = noMDEntries.rptSeq();
@@ -231,7 +231,7 @@ namespace message
         {
             noMDEntries.next();
             Book b = {};
-            b.mDEntryPx = noMDEntries.mDEntryPx().mantissa();
+            b.mDEntryPx = {noMDEntries.mDEntryPx().mantissa(), noMDEntries.mDEntryPx().exponent()};
             b.mDEntrySize = noMDEntries.mDEntrySize();
             b.securityID = noMDEntries.securityID();
             b.rptSeq = noMDEntries.rptSeq();
@@ -256,7 +256,7 @@ namespace message
             Book b = {};
             b.orderID = noMDEntries.orderID();
             b.mDOrderPriority = noMDEntries.mDOrderPriority();
-            b.mDEntryPx = noMDEntries.mDEntryPx().mantissa();
+            b.mDEntryPx = {noMDEntries.mDEntryPx().mantissa(), noMDEntries.mDEntryPx().exponent()};
             b.mDDisplayQty = noMDEntries.mDDisplayQty();
             b.securityID = noMDEntries.securityID();
             b.mDUpdateAction = mktdata::MDUpdateAction::get(noMDEntries.mDUpdateAction());

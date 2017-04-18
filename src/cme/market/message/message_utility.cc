@@ -114,9 +114,10 @@ namespace utility
     }
 
     // convert price in sbe message to double
-    double Get_price(std::int64_t price_mantissa)
+    double Get_price(std::pair<std::int64_t, std::int8_t> price_mantissa)
     {
-        return price_mantissa * 1e-7;
+        // first is mantissa, second is exponent
+        return price_mantissa.first * std::pow(10, price_mantissa.second);
     }
 
 } // namespace utility

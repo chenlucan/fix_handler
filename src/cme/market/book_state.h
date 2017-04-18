@@ -17,7 +17,7 @@ namespace market
     {
         std::uint32_t numberOfOrders;    // order count
         std::uint32_t mDEntrySize;    // quantity
-        std::int64_t mDEntryPx;    // price, exponent is -7
+        std::pair<std::int64_t, std::int8_t> mDEntryPx;    // price
 
         std::string To_string() const
         {
@@ -25,7 +25,7 @@ namespace market
             os << "price:";
             os << " count=" << numberOfOrders;
             os << " quantity=" << mDEntrySize;
-            os << " price=" << mDEntryPx;
+            os << " price={" << mDEntryPx.first << "," << (int)mDEntryPx.second << "}";
 
             return os.str();
         }

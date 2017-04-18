@@ -189,7 +189,7 @@ namespace market
         else
         {
             // 否则在最后一行和要插入的位置之间要填充空行
-            target.resize(b.mDPriceLevel - 1, {0, 0, 0});
+            target.resize(b.mDPriceLevel - 1, {0, 0, {0,0}});
             target.insert(target.end(), new_price);
             new_size = b.mDPriceLevel;
         }
@@ -200,7 +200,7 @@ namespace market
             target.erase(target.begin() + depth, target.end());
         }
 
-        LOG_INFO("new price: order-number=", b.numberOfOrders, ", count=", b.mDEntrySize, ", price=", b.mDEntryPx);
+        LOG_INFO("new price: order-number=", b.numberOfOrders, ", count=", b.mDEntrySize, ", price={", b.mDEntryPx.first, ",", (int)b.mDEntryPx.second, "}");
         return true;
     }
 
@@ -226,7 +226,7 @@ namespace market
         price.mDEntrySize = b.mDEntrySize;
         price.mDEntryPx = b.mDEntryPx;
 
-        LOG_INFO("new price: order-number=", b.numberOfOrders, ", count=", b.mDEntrySize, ", price=", b.mDEntryPx);
+        LOG_INFO("new price: order-number=", b.numberOfOrders, ", count=", b.mDEntrySize, ", price={", b.mDEntryPx.first, ",", (int)b.mDEntryPx.second, "}");
         return true;
     }
 

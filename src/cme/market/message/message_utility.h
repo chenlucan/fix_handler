@@ -34,7 +34,7 @@ namespace utility
     std::size_t Make_packet(char *buffer, std::uint32_t packet_seq_num, std::uint32_t *ids, size_t len);
 
     // convert price in sbe message to double
-    double Get_price(std::int64_t price_mantissa);
+    double Get_price(std::pair<std::int64_t, std::int8_t> price_mantissa);
 } // namespace utility
 } // namespace message
 } // namespace market

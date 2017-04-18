@@ -21,9 +21,9 @@ namespace message
         char securityUpdateAction;      // A: add  D: delete  M:modify
         std::uint32_t securityID;
         std::string symbol;
-        std::int64_t minPriceIncrement;
-        std::int64_t highLimitPrice;
-        std::int64_t lowLimitPrice;
+        std::pair<std::int64_t, std::int8_t> minPriceIncrement;
+        std::pair<std::int64_t, std::int8_t> highLimitPrice;
+        std::pair<std::int64_t, std::int8_t> lowLimitPrice;
         std::uint8_t depthGBX;    // GBX- Real Book depth
         std::uint8_t depthGBI;        // GBI-Implied Book depth
 
@@ -36,9 +36,9 @@ namespace message
             os << "securityID=" << securityID << " ";
             os << "symbol=" << symbol << " ";
             os << "securityUpdateAction=" << securityUpdateAction << " ";
-            os << "minPriceIncrement=" << minPriceIncrement << " ";
-            os << "highLimitPrice=" << highLimitPrice << " ";
-            os << "lowLimitPrice=" << lowLimitPrice << " ";
+            os << "minPriceIncrement={" << minPriceIncrement.first << "," << (int)minPriceIncrement.second << "} ";
+            os << "highLimitPrice={" << highLimitPrice.first << "," << (int)highLimitPrice.second << "} ";
+            os << "lowLimitPrice={" << lowLimitPrice.first << "," << (int)lowLimitPrice.second << "} ";
             os << "depthGBX=" << (int)depthGBX << " ";
             os << "depthGBI=" << (int)depthGBI << "}";
 

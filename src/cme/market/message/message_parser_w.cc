@@ -56,7 +56,7 @@ namespace message
         {
             noMDEntries.next();
             Book b = {};
-            b.mDEntryPx = noMDEntries.mDEntryPx().mantissa();
+            b.mDEntryPx = {noMDEntries.mDEntryPx().mantissa(), noMDEntries.mDEntryPx().exponent()};
             b.mDEntrySize = noMDEntries.mDEntrySize();
             b.numberOfOrders = noMDEntries.numberOfOrders();
             b.mDPriceLevel = noMDEntries.mDPriceLevel();
@@ -79,9 +79,9 @@ namespace message
         std::uint32_t lastMsgSeqNumProcessed = message->lastMsgSeqNumProcessed();
         std::uint32_t securityID = message->securityID();
         std::uint32_t rptSeq = message->rptSeq();
-        std::int64_t highLimitPrice = message->highLimitPrice().mantissa();
-        std::int64_t lowLimitPrice = message->lowLimitPrice().mantissa();
-        std::int64_t maxPriceVariation = message->maxPriceVariation().mantissa();
+        std::pair<std::int64_t, std::int8_t> highLimitPrice{message->highLimitPrice().mantissa(), message->highLimitPrice().exponent()};
+        std::pair<std::int64_t, std::int8_t> lowLimitPrice{message->lowLimitPrice().mantissa(), message->lowLimitPrice().exponent()};
+        std::pair<std::int64_t, std::int8_t> maxPriceVariation{message->maxPriceVariation().mantissa(), message->maxPriceVariation().exponent()};
 
         std::for_each(books.begin(), books.end(), [&](Book &b){
             b.packet_seq_num = lastMsgSeqNumProcessed;
@@ -102,7 +102,7 @@ namespace message
             Book b = {};
             b.orderID = noMDEntries.orderID();
             b.mDOrderPriority = noMDEntries.mDOrderPriority();
-            b.mDEntryPx = noMDEntries.mDEntryPx().mantissa();
+            b.mDEntryPx = {noMDEntries.mDEntryPx().mantissa(), noMDEntries.mDEntryPx().exponent()};
             b.mDDisplayQty = noMDEntries.mDDisplayQty();
             b.mDEntryType = mktdata::MDEntryType::get(noMDEntries.mDEntryType());
             books.push_back(std::move(b));
