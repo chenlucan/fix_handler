@@ -71,6 +71,8 @@ void CFemasMarket::Stop()
      }
 	 
      m_pUstpFtdcMduserApi->Release();
+     delete m_FemasMarkrtManager;	
+     delete m_pFileConfig;	 
 }
 // implement of MarketI
 void CFemasMarket::Subscribe(std::vector<std::string> instruments)

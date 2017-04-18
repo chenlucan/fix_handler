@@ -30,6 +30,7 @@ class CFemasMarkrtManager : public CUstpFtdcMduserSpi
                         delete m_pFileConfig;
 			   m_pFileConfig = NULL;
 		    }
+	           delete m_pFemasBookManager;			  
 		}
 
 		void OnFrontConnected();
