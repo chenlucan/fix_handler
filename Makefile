@@ -7,29 +7,39 @@ TEST_PATH = $(ROOT)/test
 BIN_PATH = $(ROOT)/bin
 VENDOR_PATH = $(realpath $(ROOT)/vendor)
 
+#define lcov
+TMP_DIR = $(BIN_PATH)
+LCOV := $(VENDOR_PATH)/lcov/lcov
+GENHTML := $(VENDOR_PATH)/lcov/genhtml
+
+INCLUDE_TEST_PATH = -I$(TEST_PATH)
 INCLUDE_PATH = -I$(SRC_PATH) -I$(VENDOR_PATH)/boost/include -I$(VENDOR_PATH)/gtest/include  -I$(VENDOR_PATH)/mongodb/include  \
 								-I$(VENDOR_PATH)/protobuf/include -I$(VENDOR_PATH)/quickfix/include -I$(VENDOR_PATH)/sbe/include -I$(VENDOR_PATH)/zeromq/include \
 								 -I$(VENDOR_PATH)/mongodb/include/bsoncxx/v_noabi -I$(VENDOR_PATH)/mongodb/include/mongocxx/v_noabi
 LIBS_PATH = -L$(VENDOR_PATH)/boost/libs -L$(VENDOR_PATH)/gtest/libs  -L$(VENDOR_PATH)/mongodb/libs  \
 								-L$(VENDOR_PATH)/protobuf/libs -L$(VENDOR_PATH)/quickfix/libs -L$(VENDOR_PATH)/sbe/libs -L$(VENDOR_PATH)/zeromq/libs
 EXEC_LIBS_PATH = -Wl,-rpath,$(VENDOR_PATH)/boost/libs:$(VENDOR_PATH)/gtest/libs:$(VENDOR_PATH)/mongodb/libs:$(VENDOR_PATH)/protobuf/libs:$(VENDOR_PATH)/quickfix/libs:$(VENDOR_PATH)/sbe/libs:$(VENDOR_PATH)/zeromq/libs
-LIBS = -lpthread -lboost_system -lzmq -lstdc++ -lquickfix -lmongocxx -lbsoncxx -lmongoc -lbson -lprotobuf
+LIBS = -lpthread -lboost_system -lzmq -lstdc++ -lquickfix -lmongocxx -lbsoncxx -lmongoc -lbson -lprotobuf -lgcov
 TEST_LIBS = -lgmock
 RELEASE_FLAGS = -O3 -DNDEBUG -Ofast
 DBG_FLAGS = -g -rdynamic
-FLAGS = -std=c++11 -Wall -Wno-pragmas $(DBG_FLAGS)
+COV_FLAG := -fprofile-arcs -ftest-coverage
+FLAGS = -std=c++11 -Wall -Wno-pragmas $(DBG_FLAGS) $(COV_FLAG)
 COMPILE_COMMAND = $(COMPILER) $(INCLUDE_PATH) $(LIBS_PATH) $(EXEC_LIBS_PATH) $(LIBS) $(FLAGS)
+TEST_COMPILE_COMMAND = $(COMPILER) $(INCLUDE_PATH) $(INCLUDE_TEST_PATH) $(LIBS_PATH) $(EXEC_LIBS_PATH) $(LIBS) $(FLAGS)
 LINT_COMMAND = $(TEST_PATH)/cpplint.py
 
 SETTINGS = $(BIN_PATH)/market_config.xml $(BIN_PATH)/market_settings.ini  $(BIN_PATH)/exchange_server.cfg \
 					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg $(BIN_PATH)/original_saver_settings.ini
 ALL_OBJS =  $(filter-out $(wildcard $(BIN_PATH)/*_test.o), $(wildcard $(BIN_PATH)/*.o)) 
-TEST_OBJS = $(BIN_PATH)/utility_unittest.o
+TEST_OBJS = $(BIN_PATH)/utility_unittest.o $(BIN_PATH)/mut_book_sender.o
 COMM_OBJS = $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/utility.o $(BIN_PATH)/message_utility.o $(BIN_PATH)/logger.o \
 						   $(BIN_PATH)/mdp_message.o $(BIN_PATH)/sbe_to_json.o $(BIN_PATH)/sbe_decoder.o $(BIN_PATH)/settings.o \
 						   $(BIN_PATH)/time_measurer.o $(BIN_PATH)/zmq_sender.o $(BIN_PATH)/zmq_receiver.o \
 						   $(BIN_PATH)/ems.pb.o $(BIN_PATH)/dms.pb.o
-ALL_FILES = $(shell find $(SRC_PATH) -name '*.h' -or -name '*.cc')						   
+ALL_FILES = $(shell find $(SRC_PATH) -name '*.h' -or -name '*.cc')
+SRC_PATH_TEST = $(realpath $(ROOT)/src)						   
+ALL_CXXFILES = $(shell find $(SRC_PATH_TEST) -name '*.cc')	
 						   
 SENDER_TARGET = $(BIN_PATH)/udp_sender_test
 TSENDER_TARGET = $(BIN_PATH)/tcp_sender_test
@@ -51,7 +61,7 @@ all: createdir usender tsender market sbe ptest eserver strategy eclient copyfil
  
 createdir:
 	mkdir -p ${BIN_PATH}
-
+	mkdir -p ${BIN_PATH}/result
 usender: $(BIN_PATH)/udp_sender_test.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(SENDER_TARGET) $?
 
@@ -94,12 +104,15 @@ orgsend: $(BIN_PATH)/original_sender_test.o $(COMM_OBJS)
 copyfile: $(SETTINGS)
 
 test: $(ALL_OBJS) $(TEST_OBJS)
-	$(COMPILE_COMMAND) $(TEST_LIBS) -o $(TEST_TARGET) $^
+	$(TEST_COMPILE_COMMAND) $(TEST_LIBS) -o $(TEST_TARGET) $^
+html:
+	cd $(BIN_PATH) && gcov $(ALL_CXXFILES) -o ./ && $(LCOV) -c -d ./ -o coverage.info \
+	&& $(GENHTML) -o ./result ./coverage.info
 
 lint:
 	$(LINT_COMMAND) --root=$(SRC_PATH) --linelength=200 --filter=-legal/copyright --extensions=cc,h  $(ALL_FILES)
 	
 clean:
-	-rm -f $(BIN_PATH)/* 
+	@rm -rf $(BIN_PATH)/* 
 
 	
