@@ -39,8 +39,9 @@ namespace market
             std::vector<fh::cme::market::message::Book> Parse_increment(const fh::cme::market::message::MdpMessage &message);
             void Merge_with_recovery(std::uint32_t message_seq, std::vector<fh::cme::market::message::Book> &increment_books);
             void On_definition_changed(const fh::cme::market::message::Instrument &instrument);
-            void Send(const fh::cme::market::BookState *state);
+            void Send(bool is_bbo_changed, const fh::cme::market::BookState *state);
             void Send(const fh::cme::market::message::Book *trade_book);
+            bool Is_BBO_changed(const fh::cme::market::message::Book &b);
 
         private:
             // 保存 revocery message 解析出的 books 情报

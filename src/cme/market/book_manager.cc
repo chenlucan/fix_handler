@@ -68,15 +68,15 @@ namespace market
                 [this, &t](const fh::cme::market::message::Book &b)
                 {
                     auto changed_state_or_trade = m_book_state_controller.Modify_state(b);
-                    std::uint8_t flag = changed_state_or_trade.first;   // 0: no data  changed 1: reset  2: book state  3: trade state
+                    std::uint8_t flag = changed_state_or_trade.first;   // 0: no data  changed 1: reset  2: book state changed  3: trade info
                     const void *data = changed_state_or_trade.second;
                     if(flag == 1)
                     {
-                        // TODO reset 后如果通知策略端
+                        // TODO reset 后要不要通知策略端
                     }
                     else if(flag == 2 && data != nullptr)
                     {
-                        this->Send(static_cast<const fh::cme::market::BookState *>(data));
+                        this->Send(this->Is_BBO_changed(b), static_cast<const fh::cme::market::BookState *>(data));
                         LOG_INFO("send to zmq(book state): ", t.Elapsed_nanoseconds(), "ns");
                     }
                     else if(flag == 3 && data != nullptr)
@@ -88,7 +88,7 @@ namespace market
         );
     }
 
-    void BookManager::Send(const fh::cme::market::BookState *state)
+    void BookManager::Send(bool is_bbo_changed, const fh::cme::market::BookState *state)
     {
         // 发送二级行情
         pb::dms::L2 l2_info;
@@ -105,6 +105,12 @@ namespace market
         });
 
         m_book_sender->OnL2(l2_info);
+
+        if(!is_bbo_changed)
+        {
+            LOG_DEBUG("BBO not changed.");
+            return;
+        }
 
         // 发送最优价位
         bool is_bid_empty = state->bid.empty();
@@ -260,6 +266,27 @@ namespace market
     {
         // 根据更新的产品信息修正对应的 book state 情报
         m_book_state_controller.Create_or_shrink(instrument);
+    }
+
+    // 指定的 book 情报会不会引起 BBO 的变化
+    bool BookManager::Is_BBO_changed(const fh::cme::market::message::Book &b)
+    {
+        // 恢复数据中的 book 当作 new 来处理的
+        if(b.type == 'W') return b.mDPriceLevel == 1;
+        if(b.type == 'X')
+        {
+            switch(b.mDUpdateAction)
+            {
+                case mktdata::MDUpdateAction::Value::New:
+                case mktdata::MDUpdateAction::Value::Change:
+                case mktdata::MDUpdateAction::Value::Delete: return b.mDPriceLevel == 1;
+                case mktdata::MDUpdateAction::Value::DeleteThru:
+                case mktdata::MDUpdateAction::Value::DeleteFrom: return true;
+                default: return false;
+            }
+        }
+
+        return false;
     }
 
 } // namespace market
