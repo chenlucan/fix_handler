@@ -23,6 +23,7 @@ namespace udp
     // the processor will access buffer directly
     void UDPReceiver::Start_receive(std::function<void(char *, const size_t)> processor)
     {
+        LOG_DEBUG("(udp receiver start:", m_socket.local_endpoint().address().to_string(), ":", m_socket.local_endpoint().port(), ")");
         this->Async_receive_from(processor);
         m_socket.get_io_service().run();
     }
@@ -32,7 +33,7 @@ namespace udp
     {
         m_socket.cancel();
         m_io_service.stop();
-        LOG_DEBUG("(udp receiver stopped)");
+        LOG_DEBUG("(udp receiver stopped:", m_socket.local_endpoint().address().to_string(), ":", m_socket.local_endpoint().port(), ")");
     }
 
     void UDPReceiver::Initialize_socket(
@@ -40,7 +41,7 @@ namespace udp
         const std::uint16_t listen_port
     )
     {
-        boost::asio::ip::udp::endpoint listen_endpoint(boost::asio::ip::address::from_string("0.0.0.0"), listen_port);
+        boost::asio::ip::udp::endpoint listen_endpoint(listen_address, listen_port);
         m_socket.open(listen_endpoint.protocol());
         m_socket.set_option(boost::asio::ip::udp::socket::reuse_address(true));
         m_socket.set_option(boost::asio::ip::multicast::join_group(listen_address));
@@ -73,7 +74,7 @@ namespace udp
             return;
         }
 
-        LOG_TRACE("udp received:(", bytes_recieved, ")=", fh::core::assist::utility::Hex_str(m_buffer, bytes_recieved));
+        LOG_TRACE("udp received from [", m_socket.local_endpoint().address().to_string(), ":", m_socket.local_endpoint().port(), "](", bytes_recieved, ")=", fh::core::assist::utility::Hex_str(m_buffer, bytes_recieved));
         processor(m_buffer, bytes_recieved);
         this->Async_receive_from(processor);
     }

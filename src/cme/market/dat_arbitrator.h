@@ -23,8 +23,6 @@ namespace market
             std::uint32_t Check_feed_packet(std::uint32_t packet_seq_num);
             // check whether a packet from tcp replayer is valid
             std::uint32_t Check_replay_packet(std::uint32_t packet_seq_num);
-            // set whether start join in middle week
-            void Set_later_join(bool is_lj);
 
         private:
             std::uint32_t m_current_sequence;

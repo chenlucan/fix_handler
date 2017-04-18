@@ -44,9 +44,25 @@ namespace setting
         // noop
     }
 
-    const fh::cme::market::setting::Channel ChannelSettings::Get_channel(const std::string &channel_id) const
+    boost::optional<const fh::cme::market::setting::Channel> ChannelSettings::Get_channel(const std::string &channel_id) const
     {
-        return m_channels.at(channel_id);
+        auto channel = m_channels.find(channel_id);
+        if(channel == m_channels.cend())
+        {
+            return boost::none;
+        }
+        return channel->second;
+    }
+
+    std::vector<fh::cme::market::setting::Channel> ChannelSettings::All_channels() const
+    {
+        std::vector<fh::cme::market::setting::Channel> v;
+        v.reserve(m_channels.size());
+        for (const auto &s : m_channels)
+        {
+           v.push_back(s.second);
+        }
+        return v;
     }
 
     void ChannelSettings::Read_channels(const std::string &channel_setting_file)

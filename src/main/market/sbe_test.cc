@@ -3,6 +3,7 @@
 #include "cme/market/message/mktdata.h"
 #include "cme/market/message/sbe_encoder.h"
 #include "cme/market/message/sbe_decoder.h"
+#include "cme/market/message/mdp_message.h"
 #include "core/assist/time_measurer.h"
 #include "core/assist/logger.h"
 
@@ -266,6 +267,14 @@ int main(int argc, char* argv[])
         }
 
         LOG_INFO(t.Elapsed_nanoseconds(), "ns");
+        LOG_INFO("");
+
+        fh::cme::market::message::MdpMessage mdp(encoded.first, encoded.second, 1000, 1, 12345678);
+        t.Restart();
+        std::string m = mdp.Serialize();
+        auto time = t.Elapsed_nanoseconds();
+        LOG_INFO(m);
+        LOG_INFO(time, "ns");
     }
     catch (std::exception& e)
     {

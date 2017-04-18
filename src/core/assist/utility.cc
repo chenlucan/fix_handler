@@ -103,6 +103,12 @@ namespace utility
         return Format_fix_message(message.toString());
     }
 
+    // 判断指定的 session 是否已经准备就绪
+    bool Is_fix_session_exist(const FIX::SessionID& sessionID)
+    {
+        return FIX::Session::lookupSession(sessionID) != nullptr;
+    }
+
     // 取得 quickfix 保存的当前处理掉的最后一个服务器端序号
     std::string Last_processed_seq_num(const FIX::SessionID& sessionID)
     {
@@ -327,6 +333,14 @@ namespace utility
         oss << dt.time().micros();
 
         return oss.str();
+    }
+
+    // 把一个字符串中的第一个 null(\0) 以及后面的字符都删除掉
+    std::string Trim_null(const std::string &str)
+    {
+        auto pos = str.find('\0');
+        if(pos == std::string::npos) return str;
+        return str.substr(0, pos);
     }
 
 } // namespace utility

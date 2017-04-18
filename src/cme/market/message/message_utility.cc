@@ -80,7 +80,7 @@ namespace utility
 
         std::size_t message_size = encoded.second + 2;  // 长度要包括本身这 2 个字节
         std::memcpy(position, &message_size, 2);
-        std::memcpy(position + 2, encoded.first, message_size);
+        std::memcpy(position + 2, encoded.first, encoded.second);
 
         LOG_DEBUG("make message: size=", message_size, " msg=", fh::core::assist::utility::Hex_str(encoded.first, message_size));
 
@@ -114,9 +114,10 @@ namespace utility
     }
 
     // convert price in sbe message to double
-    double Get_price(std::uint64_t price_mantissa)
+    double Get_price(std::pair<std::int64_t, std::int8_t> price_mantissa)
     {
-        return price_mantissa * 1e-7;
+        // first is mantissa, second is exponent
+        return price_mantissa.first * std::pow(10, price_mantissa.second);
     }
 
 } // namespace utility

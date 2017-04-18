@@ -168,6 +168,12 @@ namespace market
     {
         LOG_INFO("create price: level=", (int)b.mDPriceLevel, ", securityID=", b.securityID, ", type=", (char)b.mDEntryType);
 
+        if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
+        {
+            LOG_WARN("price level invalid, ignore:", (int)b.mDPriceLevel);
+            return false;
+        }
+
         std::uint8_t depth = book_state.marketDepth;
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
         BookPrice new_price = {b.numberOfOrders, b.mDEntrySize, b.mDEntryPx};
@@ -183,7 +189,7 @@ namespace market
         else
         {
             // 否则在最后一行和要插入的位置之间要填充空行
-            target.resize(b.mDPriceLevel - 1, {0, 0, 0});
+            target.resize(b.mDPriceLevel - 1, {0, 0, {0,0}});
             target.insert(target.end(), new_price);
             new_size = b.mDPriceLevel;
         }
@@ -194,13 +200,19 @@ namespace market
             target.erase(target.begin() + depth, target.end());
         }
 
-        LOG_INFO("new price: order-number=", b.numberOfOrders, ", count=", b.mDEntrySize, ", price=", b.mDEntryPx);
+        LOG_INFO("new price: order-number=", b.numberOfOrders, ", count=", b.mDEntrySize, ", price={", b.mDEntryPx.first, ",", (int)b.mDEntryPx.second, "}");
         return true;
     }
 
     bool BookStateController::Change_price(const fh::cme::market::message::Book &b, BookState &book_state)
     {
         LOG_INFO("change price: level=", (int)b.mDPriceLevel, ", securityID=", b.securityID, ", type=", (char)b.mDEntryType);
+
+        if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
+        {
+            LOG_WARN("price level invalid, ignore:", (int)b.mDPriceLevel);
+            return false;
+        }
 
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
         if(target.size() < (std::size_t)b.mDPriceLevel)
@@ -214,13 +226,19 @@ namespace market
         price.mDEntrySize = b.mDEntrySize;
         price.mDEntryPx = b.mDEntryPx;
 
-        LOG_INFO("new price: order-number=", b.numberOfOrders, ", count=", b.mDEntrySize, ", price=", b.mDEntryPx);
+        LOG_INFO("new price: order-number=", b.numberOfOrders, ", count=", b.mDEntrySize, ", price={", b.mDEntryPx.first, ",", (int)b.mDEntryPx.second, "}");
         return true;
     }
 
     bool BookStateController::Delete_price(const fh::cme::market::message::Book &b, BookState &book_state)
     {
         LOG_INFO("delete price: level=", (int)b.mDPriceLevel, ", securityID=", b.securityID, ", type=", (char)b.mDEntryType);
+
+        if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
+        {
+            LOG_WARN("price level invalid, ignore:", (int)b.mDPriceLevel);
+            return false;
+        }
 
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
         if(target.size() < (std::size_t)b.mDPriceLevel)
@@ -249,6 +267,12 @@ namespace market
     bool BookStateController::Delete_top_price(const fh::cme::market::message::Book &b, BookState &book_state)
     {
         LOG_INFO("delete top price: level=", (int)b.mDPriceLevel, ", securityID=", b.securityID, ", type=", (char)b.mDEntryType);
+
+        if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
+        {
+            LOG_WARN("price level invalid, ignore:", (int)b.mDPriceLevel);
+            return false;
+        }
 
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
         target.erase(target.begin(), target.begin() + std::min((std::size_t)b.mDPriceLevel, target.size()));

@@ -55,7 +55,7 @@ namespace message
                 this->Parse_42((mktdata::MDIncrementalRefreshTradeSummary42 *)body, books);
                 break;
             case 43:    // MDIncrementalRefreshOrderBook43
-                this->Parse_43((mktdata::MDIncrementalRefreshOrderBook43 *)body, books);
+                LOG_INFO("MDIncrementalRefreshOrderBook43 is for market by order, ignore.");
                 break;
             default:
                 break;
@@ -77,7 +77,7 @@ namespace message
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
-            Book b;
+            Book b = {};
             b.mDUpdateAction = mktdata::MDUpdateAction::get(noMDEntries.mDUpdateAction());
             b.mDEntryType = mktdata::MDEntryType::get(noMDEntries.mDEntryType(0));
             b.applID = noMDEntries.applID();
@@ -94,8 +94,8 @@ namespace message
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
-            Book b;
-            b.mDEntryPx = noMDEntries.mDEntryPx().mantissa();
+            Book b = {};
+            b.mDEntryPx = {noMDEntries.mDEntryPx().mantissa(), noMDEntries.mDEntryPx().exponent()};
             b.mDEntrySize = noMDEntries.mDEntrySize();
             b.securityID = noMDEntries.securityID();
             b.rptSeq = noMDEntries.rptSeq();
@@ -116,8 +116,8 @@ namespace message
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
-            Book b;
-            b.mDEntryPx = noMDEntries.mDEntryPx().mantissa();
+            Book b = {};
+            b.mDEntryPx = {noMDEntries.mDEntryPx().mantissa(), noMDEntries.mDEntryPx().exponent()};
             b.mDEntrySize = noMDEntries.mDEntrySize();
             b.securityID = noMDEntries.securityID();
             b.rptSeq = noMDEntries.rptSeq();
@@ -146,10 +146,10 @@ namespace message
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
-            Book b;
-            b.highLimitPrice = noMDEntries.highLimitPrice().mantissa();
-            b.lowLimitPrice = noMDEntries.lowLimitPrice().mantissa();
-            b.maxPriceVariation = noMDEntries.maxPriceVariation().mantissa();
+            Book b = {};
+            b.highLimitPrice = {noMDEntries.highLimitPrice().mantissa(), noMDEntries.highLimitPrice().exponent()};
+            b.lowLimitPrice = {noMDEntries.lowLimitPrice().mantissa(), noMDEntries.lowLimitPrice().exponent()};
+            b.maxPriceVariation = {noMDEntries.maxPriceVariation().mantissa(), noMDEntries.maxPriceVariation().exponent()};
             b.securityID = noMDEntries.securityID();
             b.rptSeq = noMDEntries.rptSeq();
             b.mDUpdateAction = mktdata::MDUpdateAction::get(noMDEntries.mDUpdateAction());
@@ -167,8 +167,8 @@ namespace message
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
-            Book b;
-            b.mDEntryPx = noMDEntries.mDEntryPx().mantissa();
+            Book b = {};
+            b.mDEntryPx = {noMDEntries.mDEntryPx().mantissa(), noMDEntries.mDEntryPx().exponent()};
             b.securityID = noMDEntries.securityID();
             b.rptSeq = noMDEntries.rptSeq();
             b.openCloseSettlFlag = mktdata::OpenCloseSettlFlag::get(noMDEntries.openCloseSettlFlag());
@@ -188,8 +188,8 @@ namespace message
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
-            Book b;
-            b.mDEntryPx = noMDEntries.mDEntryPx().mantissa();
+            Book b = {};
+            b.mDEntryPx = {noMDEntries.mDEntryPx().mantissa(), noMDEntries.mDEntryPx().exponent()};
             b.mDEntrySize = noMDEntries.mDEntrySize();
             b.securityID = noMDEntries.securityID();
             b.rptSeq = noMDEntries.rptSeq();
@@ -211,7 +211,7 @@ namespace message
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
-            Book b;
+            Book b = {};
             b.mDEntrySize = noMDEntries.mDEntrySize();
             b.securityID = noMDEntries.securityID();
             b.rptSeq = noMDEntries.rptSeq();
@@ -230,8 +230,8 @@ namespace message
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
-            Book b;
-            b.mDEntryPx = noMDEntries.mDEntryPx().mantissa();
+            Book b = {};
+            b.mDEntryPx = {noMDEntries.mDEntryPx().mantissa(), noMDEntries.mDEntryPx().exponent()};
             b.mDEntrySize = noMDEntries.mDEntrySize();
             b.securityID = noMDEntries.securityID();
             b.rptSeq = noMDEntries.rptSeq();
@@ -253,10 +253,10 @@ namespace message
         while (noMDEntries.hasNext())
         {
             noMDEntries.next();
-            Book b;
+            Book b = {};
             b.orderID = noMDEntries.orderID();
             b.mDOrderPriority = noMDEntries.mDOrderPriority();
-            b.mDEntryPx = noMDEntries.mDEntryPx().mantissa();
+            b.mDEntryPx = {noMDEntries.mDEntryPx().mantissa(), noMDEntries.mDEntryPx().exponent()};
             b.mDDisplayQty = noMDEntries.mDDisplayQty();
             b.securityID = noMDEntries.securityID();
             b.mDUpdateAction = mktdata::MDUpdateAction::get(noMDEntries.mDUpdateAction());

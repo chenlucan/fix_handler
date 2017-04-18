@@ -13,9 +13,8 @@ namespace cme
 namespace exchange
 {
 
-    OrderManager::OrderManager(
-            const fh::cme::exchange::ExchangeSettings &app_settings,
-            bool is_week_begin) : m_is_week_begin(is_week_begin)
+    OrderManager::OrderManager(const fh::cme::exchange::ExchangeSettings &app_settings)
+    : m_current_received_seq()
     {
         auto target_id = app_settings.Get_target_id();
         auto sender_id = app_settings.Get_sender_id();
@@ -50,12 +49,7 @@ namespace exchange
 
     void OrderManager::onCreate(const FIX::SessionID& sessionID)
     {
-        LOG_DEBUG("on create: ", sessionID, m_is_week_begin ? " (reset seq num)" : "");
-
-        if(m_is_week_begin)
-        {
-            fh::core::assist::utility::Reset_seq_num(sessionID);
-        }
+        LOG_DEBUG("on create: ", sessionID);
     }
 
     void OrderManager::onLogon(const FIX::SessionID& sessionID)
@@ -78,6 +72,10 @@ namespace exchange
 
     void OrderManager::toAdmin(FIX::Message& message, const FIX::SessionID& sessionID)
     {
+        // session 还没有创建的时候，直接返回
+        // 对应服务器端还没有能够接受连接请求的时间段的启动
+        if(!fh::core::assist::utility::Is_fix_session_exist(sessionID)) return;
+
         auto type = fh::core::assist::utility::Fix_message_type(message);
 
         // Logon message 的场合需要添加一些字段
@@ -93,7 +91,6 @@ namespace exchange
         // Resend request message 的场合需要添加一些字段
         else if( type == "2" )
         {
-            // TODO CME 要求一次最大请求的消息数是 2500，大于这个数字的话需要分段请求
             this->appendResendRequestField(message, sessionID);
         }
 
@@ -115,6 +112,7 @@ namespace exchange
         throw (FIX::FieldNotFound, FIX::IncorrectDataFormat, FIX::IncorrectTagValue, FIX::RejectLogon)
     {
         crack(message, sessionID);
+        this->setCurrentReceivedSeq(message, sessionID);
         LOG_DEBUG("from admin: ", sessionID, " - ", fh::core::assist::utility::Format_fix_message(message));
     }
 
@@ -122,6 +120,7 @@ namespace exchange
         throw (FIX::FieldNotFound, FIX::IncorrectDataFormat, FIX::IncorrectTagValue, FIX::UnsupportedMessageType)
     {
         crack(message, sessionID);
+        this->setCurrentReceivedSeq(message, sessionID);
         LOG_DEBUG("from app: ", sessionID, " - ", fh::core::assist::utility::Format_fix_message(message));
     }
 
@@ -347,7 +346,7 @@ namespace exchange
     {
         fh::cme::exchange::MassOrder mass_order;
         mass_order.mass_status_req_id = "S" + std::to_string(fh::core::assist::utility::Current_time_ns());   // 使用 "S + 当前时间" 作为 ID
-        mass_order.mass_status_req_type = 7;    //  7: All Orders
+        mass_order.mass_status_req_type = 7;    //  1: Instrument  3: Instrument Group  7: All Orders
         bool isSuccess = this->sendOrderMassStatusRequest(mass_order);
         LOG_INFO("mass order status processed:", isSuccess);
 
@@ -541,10 +540,10 @@ namespace exchange
     {
         cme::exchange::message::OrderMassStatusRequest orderMassStatus;
         orderMassStatus.set(FIX::MassStatusReqID(mass_status_req_id));
-        orderMassStatus.set(FIX::MassStatusReqType(mass_status_req_type));
+        orderMassStatus.set(FIX::MassStatusReqType(mass_status_req_type));  // 1: Instrument  3: Instrument Group  7: All Orders
         //orderMassStatus.set(FIX::Account(account));       // 目前不需要设置
-        //orderMassStatus.set(FIX::Symbol(symbol));      // 目前不需要设置
-        //orderMassStatus.set(FIX::SecurityDesc(security_desc));      // 目前不需要设置
+        if(mass_status_req_type == 3) orderMassStatus.set(FIX::Symbol(symbol));
+        if(mass_status_req_type == 1) orderMassStatus.set(FIX::SecurityDesc(security_desc));
 
         // 下面的 tag，目前 quickfix 不支持，所以用下面这种方式设置：目前不需要设置
         //orderMassStatus.setField(fh::cme::exchange::CmeFixField::OrdStatusReqType, std::to_string(ord_status_req_type));
@@ -597,6 +596,20 @@ namespace exchange
         return orderMassAction;
     }
 
+    void OrderManager::setCurrentReceivedSeq(const FIX::Message& message, const FIX::SessionID& sessionID)
+    {
+        FIX::MsgSeqNum seq;
+        message.getHeader().getField(seq);
+        m_current_received_seq[sessionID.toString()] = seq.getValue();
+    }
+
+    std::uint32_t OrderManager::getCurrentReceivedSeq(const FIX::SessionID& sessionID)
+    {
+        auto index = m_current_received_seq.find(sessionID.toString());
+        if(index == m_current_received_seq.end()) return 0;
+        return index->second;
+    }
+
     void OrderManager::setHeader(FIX::Header& header)
     {
         // 下面这两个要设置上去才能确定 session id
@@ -625,6 +638,17 @@ namespace exchange
 
     void OrderManager::appendResendRequestField(FIX::Message& message, const FIX::SessionID& sessionID)
     {
+        // CME 要求一次最大请求的消息数是 2500，大于这个数字的话先只发送 2500 个（设置 EndSeqNo）
+        FIX::BeginSeqNo b;
+        message.getField(b);
+        int begin = b.getValue();
+        int end = this->getCurrentReceivedSeq(sessionID);
+
+        if(end - begin  > MAX_RESEND_SIZE)
+        {
+            message.setField(FIX::EndSeqNo(begin + MAX_RESEND_SIZE - 1));
+        }
+
         // 在配置文件中通过设定 SendRedundantResendRequests 来控制是否发送重复的 resend request，
         // CME 要求每次都发送这些重复的 resend request，所以该配置项设置成了 Y，但是需要带上 PossDupFlag = Y 发送到服务器；
         // 目前 quickfix 中重复发送的时候没有带上 PossDupFlag，所以在这里加上去

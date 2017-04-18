@@ -1,5 +1,5 @@
 
-#include "cme/market/persist/mdp_saver.h"
+#include "core/persist/original_saver.h"
 #include "core/assist/logger.h"
 
 int main(int argc, char* argv[])
@@ -8,14 +8,14 @@ int main(int argc, char* argv[])
     {
         if (argc != 1)
         {
-            LOG_ERROR("Usage: zmq_receiver_test");
-            LOG_ERROR("Ex:       zmq_receiver_test");
+            LOG_ERROR("Usage: original_saver_test");
+            LOG_ERROR("Ex:       original_saver_test");
 
             return 1;
         }
 
-        fh::cme::market::persist::MdpSaver r;
-        r.Start_save();
+        fh::core::persist::OriginalSaver r;
+        r.Start();
     }
     catch (std::exception& e)
     {
@@ -25,4 +25,4 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-// ./zmq_receiver_test
+// ./original_saver_test

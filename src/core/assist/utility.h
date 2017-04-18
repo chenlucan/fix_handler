@@ -45,6 +45,9 @@ namespace utility
     // format fix message to display well
     std::string Format_fix_message(const FIX::Message &message);
 
+    // 判断指定的 session 是否已经准备就绪
+    bool Is_fix_session_exist(const FIX::SessionID& sessionID);
+
     // 取得 quickfix 保存的当前处理掉的最后一个服务器端序号
     std::string Last_processed_seq_num(const FIX::SessionID& sessionID);
 
@@ -99,6 +102,8 @@ namespace utility
     // 把 protobuf 的时间格式整理成可读字符串
     std::string Format_pb_timestamp(const pb::ems::Timestamp &time);
 
+    // 把一个字符串中的第一个 null(\0) 以及后面的字符都删除掉
+    std::string Trim_null(const std::string &str);
 } // namespace utility
 } // namespace assist
 } // namespace core

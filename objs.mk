@@ -2,6 +2,9 @@
 $(BIN_PATH)/market_application.o: $(SRC_PATH)/cme/market/market_application.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
+$(BIN_PATH)/cme_market.o: $(SRC_PATH)/cme/market/cme_market.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/market_manager.o: $(SRC_PATH)/cme/market/market_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
@@ -23,13 +26,16 @@ $(BIN_PATH)/recovery_saver.o: $(SRC_PATH)/cme/market/recovery_saver.cc
 $(BIN_PATH)/book_manager.o: $(SRC_PATH)/cme/market/book_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
-$(BIN_PATH)/book_sender.o: $(SRC_PATH)/cme/market/book_sender.cc
-	$(COMPILE_COMMAND) -c -o $@ $<
-
 $(BIN_PATH)/definition_manager.o: $(SRC_PATH)/cme/market/definition_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
+$(BIN_PATH)/status_manager.o: $(SRC_PATH)/cme/market/status_manager.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/book_state_controller.o: $(SRC_PATH)/cme/market/book_state_controller.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/sbe_to_json.o: $(SRC_PATH)/cme/market/message/sbe_to_json.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/sbe_decoder.o: $(SRC_PATH)/cme/market/message/sbe_decoder.cc
@@ -54,12 +60,6 @@ $(BIN_PATH)/message_parser_x.o: $(SRC_PATH)/cme/market/message/message_parser_x.
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/mdp_message.o: $(SRC_PATH)/cme/market/message/mdp_message.cc
-	$(COMPILE_COMMAND) -c -o $@ $<
-
-$(BIN_PATH)/mdp_receiver.o: $(SRC_PATH)/cme/market/persist/mdp_receiver.cc
-	$(COMPILE_COMMAND) -c -o $@ $<
-
-$(BIN_PATH)/mdp_saver.o: $(SRC_PATH)/cme/market/persist/mdp_saver.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/message_utility.o: $(SRC_PATH)/cme/market/message/message_utility.cc
@@ -100,6 +100,18 @@ $(BIN_PATH)/settings.o: $(SRC_PATH)/core/assist/settings.cc
 
 $(BIN_PATH)/utility.o: $(SRC_PATH)/core/assist/utility.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
+	
+$(BIN_PATH)/book_sender.o: $(SRC_PATH)/core/book/book_sender.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/original_receiver.o: $(SRC_PATH)/core/persist/original_receiver.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/mongo.o: $(SRC_PATH)/core/persist/mongo.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/original_saver.o: $(SRC_PATH)/core/persist/original_saver.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/tcp_receiver.o: $(SRC_PATH)/core/tcp/tcp_receiver.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
@@ -113,10 +125,7 @@ $(BIN_PATH)/zmq_receiver.o: $(SRC_PATH)/core/zmq/zmq_receiver.cc
 $(BIN_PATH)/zmq_sender.o: $(SRC_PATH)/core/zmq/zmq_sender.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
-$(BIN_PATH)/zmq_receiver_test.o: $(SRC_PATH)/main/market/zmq_receiver_test.cc
-	$(COMPILE_COMMAND) -c -o $@ $<
-
-$(BIN_PATH)/udp_receiver_test.o: $(SRC_PATH)/main/market/udp_receiver_test.cc
+$(BIN_PATH)/market_test.o: $(SRC_PATH)/main/market/market_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/udp_sender_test.o: $(SRC_PATH)/main/market/udp_sender_test.cc
@@ -129,6 +138,12 @@ $(BIN_PATH)/sbe_test.o: $(SRC_PATH)/main/market/sbe_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/packet_test.o: $(SRC_PATH)/main/market/packet_test.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/original_sender_test.o: $(SRC_PATH)/main/persist/original_sender_test.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/original_saver_test.o: $(SRC_PATH)/main/persist/original_saver_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/exchange_server_test.o: $(SRC_PATH)/main/exchange/server/exchange_server_test.cc

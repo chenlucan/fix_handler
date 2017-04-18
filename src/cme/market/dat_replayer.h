@@ -25,6 +25,7 @@ namespace market
         public:
             // request data([begin, end)) from tcp receiver, and process it with processor
             void Start_receive(std::function<void(char *, const size_t)> processor, std::uint32_t begin, std::uint32_t end);
+            void Stop();
 
         private:
             void Send_Logon(

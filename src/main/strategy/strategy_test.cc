@@ -145,31 +145,42 @@ class OrderResultReceiver : public fh::core::zmq::ZmqReceiver
 
 std::string make_order()
 {
-    std::uint32_t r = fh::core::assist::utility::Random_number(0, 3);
+    std::uint32_t r = fh::core::assist::utility::Random_number(0, 5);
+    char type = '1' + r;     // 1:D 2:F 3:G 4:H 5:AF 6:CA
 
-    pb::ems::Order order;
-    order.set_client_order_id("TEST-1");
-    order.set_account("YYC");
-    order.set_contract("ES987");
-    order.set_buy_sell(pb::ems::BuySell::BS_Buy);
-    order.set_price(std::to_string(100 + r));
-    order.set_quantity(r);
-    order.set_tif(pb::ems::TimeInForce::TIF_GFD);
-    order.set_order_type(pb::ems::OrderType::OT_Limit);
-    order.set_exchange_order_id("CME-1");
-    order.set_status(pb::ems::OrderStatus::OS_Pending);
-    order.set_working_price(std::to_string(100 - r));
-    order.set_working_quantity(r / 2);
-    order.set_filled_quantity(r - r / 2);
-    order.set_message("test information in order");
-    //order.set_submit_time();
+    if(r <= 3)
+    {
+        pb::ems::Order order;
+        order.set_client_order_id("X" + std::to_string(fh::core::assist::utility::Current_time_ns()));
+        order.set_account("YYC");   // unuse
+        order.set_contract("1EHV8");
+        order.set_buy_sell(pb::ems::BuySell::BS_Buy);
+        order.set_price(std::to_string(398));
+        order.set_quantity(r+20);
+        order.set_tif(pb::ems::TimeInForce::TIF_GFD);
+        order.set_order_type(pb::ems::OrderType::OT_Limit);
+        order.set_exchange_order_id("9923898474");
+        order.set_status(pb::ems::OrderStatus::OS_Pending);
+        order.set_working_price("398");
+        order.set_working_quantity(r / 2+ 10);
+        order.set_filled_quantity(r - r / 2 + 10);
+        order.set_message("cme test order");
+        //order.set_submit_time();
 
-    char type = '1' + r;     // 1:D 2:F 3:G 4:H
+        LOG_INFO("send order:  (", type, ")", fh::core::assist::utility::Format_pb_message(order));
 
-    LOG_INFO("send order:  (", type, ")", fh::core::assist::utility::Format_pb_message(order));
-
-    std::string str = order.SerializeAsString();
-    return str.insert(0, 1, type);
+        std::string str = order.SerializeAsString();
+        return str.insert(0, 1, type);
+    }
+    else
+    {
+        std::string id = "X" + std::to_string(fh::core::assist::utility::Current_time_ns());
+        std::string order_type = "3";   // 1: Instrument  3: Instrument Group  7: All Orders
+        std::string name = "07";
+        std::string mass_order = id + order_type + name;
+        LOG_INFO("send mass order:  (", type, ")", mass_order);
+        return mass_order.insert(0, 1, type);
+    }
 }
 
 
@@ -205,6 +216,8 @@ int main(int argc, char* argv[])
         auto send_interval_ms = boost::lexical_cast<std::uint16_t>(argv[4]);
         std::string host = std::string("tcp://*:") + argv[1];
         fh::core::zmq::ZmqSender sender(host);
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
         while(true)
         {
             std::string order = make_order();

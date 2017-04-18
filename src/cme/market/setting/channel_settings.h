@@ -3,6 +3,7 @@
 #define __FH_CME_MARKET_SETTING_CHANNEL_SETTINGS_H__
 
 #include <unordered_map>
+#include <boost/optional.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include "core/global.h"
 #include "cme/market/setting/channel.h"
@@ -22,7 +23,8 @@ namespace setting
             virtual ~ChannelSettings();
 
         public:
-            const fh::cme::market::setting::Channel Get_channel(const std::string &channel_id) const;
+            boost::optional<const fh::cme::market::setting::Channel> Get_channel(const std::string &channel_id) const;
+            std::vector<fh::cme::market::setting::Channel> All_channels() const;
 
         private:
             static const std::unordered_map<std::string, fh::cme::market::setting::FeedType> FEED_TYPES;

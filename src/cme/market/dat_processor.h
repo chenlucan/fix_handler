@@ -17,7 +17,7 @@ namespace market
     class DatProcessor
     {
         public:
-            DatProcessor(fh::cme::market::DatSaver &, fh::cme::market::DatReplayer &);
+            DatProcessor(fh::cme::market::DatSaver *, fh::cme::market::DatReplayer *, std::function<void(void)> on_error);
             virtual ~DatProcessor();
 
         public:
@@ -25,8 +25,6 @@ namespace market
             virtual void Process_feed_data(char *buffer, const size_t data_length);
             // process tcp replay data to mdp messages and save it
             virtual void Process_replay_data(char *buffer, const size_t data_length);
-            // set whether start join in middle week
-            void Set_later_join(bool is_lj);
 
         private:
             void Process_data(char *buffer, const size_t data_length);
@@ -37,6 +35,7 @@ namespace market
             fh::cme::market::DatArbitrator m_arbitrator;
             fh::cme::market::DatSaver *m_saver;
             fh::cme::market::DatReplayer *m_replayer;
+            std::function<void(void)> m_on_error;
 
         private:
             DISALLOW_COPY_AND_ASSIGN(DatProcessor);

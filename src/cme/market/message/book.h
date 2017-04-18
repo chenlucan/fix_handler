@@ -34,17 +34,17 @@ namespace message
 
         mktdata::AggressorSide::Value aggressorSide;
         std::uint16_t applID;
-        std::uint64_t highLimitPrice;    // exponent is -7
-        std::uint64_t lowLimitPrice;    // exponent is -7
+        std::pair<std::int64_t, std::int8_t> highLimitPrice;
+        std::pair<std::int64_t, std::int8_t> lowLimitPrice;
         std::uint32_t mDDisplayQty;
-        std::uint64_t mDEntryPx;    // tag 270, exponent is -7
+        std::pair<std::int64_t, std::int8_t> mDEntryPx;    // tag 270
         std::uint32_t mDEntrySize;    // tag 271
         mktdata::MDEntryType::Value mDEntryType;    // tag 269
         std::uint64_t mDOrderPriority;
         std::uint8_t mDPriceLevel;    // tag 1023
         std::uint32_t mDTradeEntryID;
         mktdata::MDUpdateAction::Value mDUpdateAction;    // tag 279
-        std::uint64_t maxPriceVariation;    // exponent is -7
+        std::pair<std::int64_t, std::int8_t> maxPriceVariation;
         std::uint32_t numberOfOrders;    // tag 346
         mktdata::OpenCloseSettlFlag::Value openCloseSettlFlag;
         std::uint64_t orderID;

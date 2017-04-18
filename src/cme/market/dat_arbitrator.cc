@@ -10,7 +10,7 @@ namespace market
 {
 
     DatArbitrator::DatArbitrator()
-    : m_current_sequence(0), m_lost_sequences(), m_mutex()
+    : m_current_sequence(std::numeric_limits<std::uint32_t>::max()), m_lost_sequences(), m_mutex()
     {
         // noop
     }
@@ -18,19 +18,6 @@ namespace market
     DatArbitrator::~DatArbitrator()
     {
         // noop
-    }
-
-    void DatArbitrator::Set_later_join(bool is_lj)
-    {
-        if(is_lj)
-        {
-            // use max value as initial value
-            m_current_sequence = std::numeric_limits<std::uint32_t>::max();
-        }
-        else
-        {
-            m_current_sequence = 0;
-        }
     }
 
     // check whether a packet from udp feed is valid
@@ -43,7 +30,7 @@ namespace market
 
         if(m_current_sequence == std::numeric_limits<std::uint32_t>::max())
         {
-            // later joiner's first packet is treated as normal packet
+            // first packet is treated as normal packet
             m_current_sequence = packet_seq_num;
             return 0;
         }
