@@ -3,7 +3,7 @@
 #include "pb/dms/dms.pb.h"
 #include "cme/market/message/instrument.h"
 
-#include "cme/market/book_sender.h"
+#include "core/book/book_sender.h"
 
 #include "../../core/market/mock_marketi.h"
 
@@ -28,13 +28,14 @@ namespace market
 
     void MutBookSender::OnMarketDisconnect_Test001()
     {
-        BookSender *book_sender = nullptr;
-        book_sender = new BookSender("tcp://*:5557", "tcp://*:5558");        
+        fh::core::book::BookSender *book_sender = nullptr;
+        //book_sender = new BookSender("tcp://*:5557", "tcp://*:5558");      
+        book_sender = new fh::core::book::BookSender("tcp://*:2000", "tcp://*:2001");             
         if(book_sender!=nullptr)
         {
-             delete book_sender;
+            delete book_sender;
             book_sender = nullptr;
-        }        
+        }
     }
         
     //BookSender::OnMarketDisconnect case
@@ -46,8 +47,9 @@ namespace market
     // BookSender::OnContractDefinition case, desc:check const parameter after it is called 
     TEST_F(MutBookSender, OnContractDefinition_Test001) 
     {
-        BookSender *book_sender = nullptr;
-        book_sender = new BookSender("tcp://*:5557", "tcp://*:5558");        
+        fh::core::book::BookSender *book_sender = nullptr;
+        //book_sender = new BookSender("tcp://*:5557", "tcp://*:5558");     
+        book_sender = new fh::core::book::BookSender("tcp://*:2000", "tcp://*:2001");         
         if(book_sender!=nullptr)
         {
             pb::dms::Contract contract;
@@ -65,8 +67,9 @@ namespace market
     // BookSender::OnBBO case
     TEST_F(MutBookSender, OnBBO_Test001) 
     {
-        BookSender *book_sender = nullptr;
-        book_sender = new BookSender("tcp://*:5557", "tcp://*:5558");        
+        fh::core::book::BookSender *book_sender = nullptr;
+        //book_sender = new BookSender("tcp://*:5557", "tcp://*:5558"); 
+        book_sender = new fh::core::book::BookSender("tcp://*:2000", "tcp://*:2001"); 
         if(book_sender!=nullptr)
         {
             pb::dms::BBO bbo_info;
