@@ -29,7 +29,9 @@ CFemasMarketApp::CFemasMarketApp(CFemasMarket *pFemasMarket)
 
 CFemasMarketApp::~CFemasMarketApp()
 {
-
+      delete m_book_sender;
+      delete m_pFemasMarket;  
+      delete m_pFileConfig;	  
 }
 
 
