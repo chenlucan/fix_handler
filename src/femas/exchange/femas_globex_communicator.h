@@ -37,8 +37,10 @@ namespace exchange
 		   virtual void OnRspOrderInsert(CUstpFtdcInputOrderField  *pInputOrder, CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast);
 		   virtual void OnRtnOrder(CUstpFtdcOrderField  *pOrder);
 		   virtual void OnRspError(CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast);
+		   void SetFileConfigData(std::string &FileConfig);	
         private:
-		   CUstpFtdcTraderApi *m_pUserApi;	
+		   CUstpFtdcTraderApi *m_pUserApi;
+		   fh::core::assist::Settings *m_pFileConfig;
     };
 
     class CFemasGlobexCommunicator : public core::exchange::ExchangeI
