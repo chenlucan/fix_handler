@@ -82,6 +82,7 @@ namespace message
 
     template <typename IntType>
     inline std::string T(IntType v){return std::to_string(v);}
+    inline std::string T(char v){return std::string(1, v);}
     inline std::string T(const std::string &v){return fh::core::assist::utility::Trim_null(v);}
     inline std::string T(const char *v){return std::string(v);}
 
@@ -404,8 +405,8 @@ namespace message
         JSON_OBJ_TYPE json;
         PUT_TO_JSON_VALUE(json, "type", "SecurityStatus30");
         PUT_TO_JSON(json, *m, transactTime);
-        PUT_TO_JSON(json, *m, securityGroup);
-        PUT_TO_JSON(json, *m, asset);
+        PUT_TO_JSON_STRING(json, *m, SecurityGroup);
+        PUT_TO_JSON_STRING(json, *m, Asset);
         PUT_TO_JSON(json, *m, tradeDate);
         PUT_TO_JSON_MATCH_EVENT(json, *m, matchEventIndicator);
         PUT_TO_JSON(json, *m, securityTradingStatus);
