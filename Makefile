@@ -61,7 +61,7 @@ default: all;
 include objs.mk
 include femas.mk
     
-all: femas_exchange_test femas_market createdir usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender
+all: createdir femas_exchange_test femas_market usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender
  
 femas_exchange_test: $(BIN_PATH)/femas_exchange_main.o $(BIN_PATH)/femas_exchange_application.o $(BIN_PATH)/femas_globex_communicator.o \
 			 $(COMM_OBJS) 
