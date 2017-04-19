@@ -1,4 +1,8 @@
 
+#include "gmock/gmock.h"
+
+#include <boost/algorithm/string.hpp>
+
 #include "cme/market/market_manager.h"
 #include "core/book/book_sender.h"
 #include "cme/market/book_manager.h"
@@ -8,7 +12,7 @@
 #include "core/assist/utility.h"
 #include "pb/dms/dms.pb.h"
 
-
+#include "../../core/assist/mut_common.h"
 #include "../../core/market/mock_marketi.h"
 #include "../../core/market/mock_marketlisteneri.h"
 
@@ -16,6 +20,8 @@
 
 using ::testing::AtLeast;  
 using ::testing::Return;  
+using ::testing::Mock;
+using ::testing::AnyNumber;
 
 namespace fh
 {
@@ -44,7 +50,7 @@ namespace market
     }
     
     //BookManager case,  desc: define message, mock MarketListenerI
-    TEST_F(MutBookManager, BookManager_Test001) 
+    TEST_F(MutBookManager, BookManager_Test001)
     {    
         fh::core::market::MockMarketListenerI *mock_market_listener = nullptr;   // 
         fh::cme::market::BookManager *book_manager = nullptr;        
@@ -70,6 +76,7 @@ namespace market
                 LOG_ERROR("----- book_manager is nullptr, malloc failed! ------");       
                 delete mock_market_listener;
                 mock_market_listener = nullptr;
+                return;
             }            
             
             // 组包 make a mdp packet for test
@@ -134,10 +141,13 @@ namespace market
             delete book_manager;
             book_manager = nullptr;
             
-            //Mock::VerifyAndClearExpectations(&mock_market_listener);
             
             delete mock_market_listener;
             mock_market_listener = nullptr;
+            
+            bool bRet = Mock::VerifyAndClearExpectations(mock_market_listener);
+            //Mock::VerifyAndClear(mock_market_listener);
+            ASSERT_TRUE(bRet);
         }       
         
     }
@@ -163,6 +173,7 @@ namespace market
                 LOG_ERROR("----- book_manager is nullptr, malloc failed! ------");       
                 delete book_sender;
                 book_sender = nullptr;
+                return;
             }
             
             
@@ -252,6 +263,8 @@ namespace market
             {                
                 delete book_sender;
                 book_sender = nullptr;
+                
+                return;
             }
             
             
@@ -337,6 +350,8 @@ namespace market
             {                
                 delete book_sender;
                 book_sender = nullptr;
+                
+                return;
             }
             
             
@@ -420,6 +435,8 @@ namespace market
             {                
                 delete book_sender;
                 book_sender = nullptr;
+                
+                return;
             }
             
             for(int i=0; i<5; i++)
@@ -505,6 +522,8 @@ namespace market
             {                
                 delete book_sender;
                 book_sender = nullptr;
+                
+                return;
             }
             
             // 1. define message
@@ -620,16 +639,16 @@ namespace market
         std::string zeromq_book_url = "tcp://*:2001";
         mock_market_listener = new fh::core::market::MockMarketListenerI();        
         
-        /*EXPECT_CALL(
+        EXPECT_CALL(
             *mock_market_listener,
-            OnContractDefinition(testing::_) // 被mock的方法，参数为占位符
-            ).Times(1).WillOnce(testing::Return());            
-        */
-        /*EXPECT_CALL(
+            OnContractDefinition(testing::_)
+            ).WillRepeatedly(testing::Return());
+        
+        EXPECT_CALL(
             *mock_market_listener,
-            OnTrade(testing::_) // 被mock的方法，参数为占位符
-            ).Times(1).WillOnce(testing::Return()); 
-        */    
+            OnTrade(testing::_)
+            ).Times(AnyNumber()); 
+            
         if(mock_market_listener!=nullptr)
         {
             book_manager = new BookManager(mock_market_listener);
@@ -637,6 +656,8 @@ namespace market
             {                
                 delete mock_market_listener;
                 mock_market_listener = nullptr;
+                
+                return;
             }
             
             // 1. define message
@@ -772,7 +793,98 @@ namespace market
             
             delete mock_market_listener;
             mock_market_listener = nullptr;
+            
+            bool bRet = Mock::VerifyAndClearExpectations(mock_market_listener);
+            //Mock::VerifyAndClear(mock_market_listener);
+            ASSERT_TRUE(bRet);
         }
+    }
+           
+    //BookManager::
+    TEST_F(MutBookManager, BookManager_Test008)
+    {
+        fh::core::market::MockMarketListenerI *mock_market_listener = nullptr; 
+        fh::cme::market::BookManager *book_manager = nullptr;  
+        
+        mock_market_listener = new fh::core::market::MockMarketListenerI();        
+        
+            
+        if(mock_market_listener!=nullptr)
+        {
+            book_manager = new BookManager(mock_market_listener);
+            if(nullptr == book_manager)
+            {                
+                delete mock_market_listener;
+                mock_market_listener = nullptr;
+                
+                return;
+            }
+        }
+        std::string file;
+        fh::core::assist::common::getAbsolutePath(file);        
+        file +="test_cmemarket.txt";
+        std::ifstream input(file);
+        std::string line;
+        while (std::getline(input, line))
+        {
+            auto pos = line.find("udp received from ");
+            if(pos != std::string::npos)
+            {
+                auto start = line.find(")=", pos);
+                if(start != std::string::npos)
+                {
+                    //show_message(line.substr(start+2));
+                    std::string hex_message(line.substr(start+2));
+                    
+                    std::vector<std::string> tokens;
+                    std::istringstream iss(hex_message);
+                    std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter(tokens));
+
+                    std::vector<char> bytes;
+                    int index = 0;
+                    std::ostringstream byte_line;
+                    std::for_each(tokens.begin(), tokens.end(), [&bytes, &index, &byte_line](std::string &s){
+                        boost::trim_right(s);
+                        boost::trim_left(s);
+                        if(s != "")
+                        {
+                            char x = (char) strtol(s.c_str(), nullptr, 16);
+                            bytes.push_back(x);
+
+                            index ++;
+                            std::string dec;
+                            if(index % 40 == 0) dec = "\n";
+                            else if(index % 20 == 0) dec = "    ";
+                            else if(index % 10 == 0) dec = "  ";
+                            else dec = " ";
+                            byte_line << s << dec;
+                        }
+                    });
+
+                    LOG_INFO("hex message: size=", bytes.size(), "\n", byte_line.str());
+
+                    // decode
+                    std::vector<fh::cme::market::message::MdpMessage> message;
+                    std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(bytes.data(), bytes.size(), message);
+
+                    LOG_INFO("seq=", seq, ", message count=", message.size());
+
+                    std::for_each(message.cbegin(), message.cend(), [](const fh::cme::market::message::MdpMessage &m){
+                        std::string  s = m.Serialize();
+                        //LOG_INFO(s);
+                    });
+                    
+                   // logic                       
+
+                }
+            }
+        }
+        
+        delete book_manager;
+        book_manager = nullptr;
+        
+        delete mock_market_listener;
+        mock_market_listener = nullptr;
     }
 
 } // namespace market
