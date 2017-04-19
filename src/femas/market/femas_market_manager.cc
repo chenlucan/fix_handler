@@ -33,9 +33,6 @@ namespace market
 	   
 	CUstpFtdcReqUserLoginField reqUserLogin;
 	strcpy(reqUserLogin.TradingDay, m_pUserApi->GetTradingDay());
-	//strcpy(reqUserLogin.BrokerID, "0135");
-	//strcpy(reqUserLogin.UserID, "000101");
-	//strcpy(reqUserLogin.Password, "111111");
 	std::string BrokerIDstr = m_pFileConfig->Get("femas-market.BrokerID");
 	std::string UserIDstr = m_pFileConfig->Get("femas-market.UserID");
 	std::string Passwordstr = m_pFileConfig->Get("femas-market.Password");
@@ -77,29 +74,12 @@ namespace market
 	
       char *contracts[1];
       contracts[0] = new char[100];
-      //contracts[1] = new char[100];
-     // contracts[2] = new char[100];
       memset(contracts[0],0,100);
-      //memset(contracts[1],0,100);
-      //memset(contracts[2],0,100);
-      strcpy(contracts[0], "*");
-      //strcpy(contracts[0], "pb1705");
-      //strcpy(contracts[1], "cu1709C45000");
-      //strcpy(contracts[2], "rb1710");	  
+      strcpy(contracts[0], "*");  
 
 	m_pUserApi->SubMarketData(contracts, 1);
 
 	delete []contracts[0];
-       //delete []contracts[1];
-       //delete []contracts[2];
-
-//	char * uncontracts[2]={"",""};
-//	uncontracts[0]="IF1211";
-//	uncontracts[1]="IF1212";
-//	m_pUserApi->UnSubMarketData(uncontracts, 2);
-
-       
-
        return;
 }
 

@@ -42,11 +42,15 @@ CFemasGlobexCommunicator::CFemasGlobexCommunicator(core::exchange::ExchangeListe
 	                                                                                                  :core::exchange::ExchangeI(strategy), m_strategy(strategy)
 {
 
+     m_pFileConfig = new fh::core::assist::Settings(config_file);
+     m_pUserApi = CUstpFtdcTraderApi::CreateFtdcTraderApi();	 
+     m_pUstpFtdcTraderManger = new CUstpFtdcTraderManger(m_pUserApi);
+     m_pUserApi->RegisterSpi(m_pUstpFtdcTraderManger);	 
 }
 
 CFemasGlobexCommunicator::~CFemasGlobexCommunicator()
 {
-
+     delete m_pFileConfig;
 }
 
 
