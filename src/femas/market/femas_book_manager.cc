@@ -199,5 +199,5 @@ void CFemasBookManager::SendFemasarketData(CUstpFtdcDepthMarketDataField *pMarke
 
 	
 } // namespace market
-} // namespace cme
+} // namespace femas
 } // namespace fh
