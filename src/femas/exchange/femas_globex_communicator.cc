@@ -10,8 +10,44 @@ namespace exchange
 {
 
 
+void CUstpFtdcTraderManger::OnFrontConnected()
+{
+
+}
+void CUstpFtdcTraderManger::OnFrontDisconnected(int nReason)
+{
+
+}
+void CUstpFtdcTraderManger::OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserLogin, CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast)
+{
+
+}	
+void CUstpFtdcTraderManger::OnRspOrderInsert(CUstpFtdcInputOrderField  *pInputOrder, CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast)
+{
+
+}
+void CUstpFtdcTraderManger::OnRtnOrder(CUstpFtdcOrderField  *pOrder)
+{
+
+}
+void CUstpFtdcTraderManger::OnRspError(CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast)
+{
+
+}
 
 
+
+
+CFemasGlobexCommunicator::CFemasGlobexCommunicator(core::exchange::ExchangeListenerI *strategy,const std::string &config_file)
+	                                                                                                  :core::exchange::ExchangeI(strategy), m_strategy(strategy)
+{
+
+}
+
+CFemasGlobexCommunicator::~CFemasGlobexCommunicator()
+{
+
+}
 
 
 }

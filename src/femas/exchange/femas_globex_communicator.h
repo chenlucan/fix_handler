@@ -43,12 +43,19 @@ namespace exchange
     class CFemasGlobexCommunicator : public core::exchange::ExchangeI
     {
         public:
-		   CFemasGlobexCommunicator(
-                    core::exchange::ExchangeListenerI *strategy,
-                    const std::string &config_file);
+		   CFemasGlobexCommunicator(core::exchange::ExchangeListenerI *strategy,const std::string &config_file);
                  virtual ~CFemasGlobexCommunicator();
 	  public:			 
                  CUstpFtdcTraderManger* m_pUstpFtdcTraderManger;
+
+	  private:
+                 core::exchange::ExchangeListenerI *m_strategy;
+				 
+		   std::vector<::pb::ems::Order> m_init_orders;		 
+
+	  private:
+	  	
+                 //DISALLOW_COPY_AND_ASSIGN(CFemasGlobexCommunicator);			 
 
 			
     };
