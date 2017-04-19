@@ -647,7 +647,19 @@ namespace market
         EXPECT_CALL(
             *mock_market_listener,
             OnTrade(testing::_)
+            ).Times(AnyNumber());
+            
+            
+        EXPECT_CALL(
+            *mock_market_listener,
+            OnL2(testing::_)
             ).Times(AnyNumber()); 
+            
+        EXPECT_CALL(
+            *mock_market_listener,
+            OnBBO(testing::_)
+            ).Times(AnyNumber()); 
+        
             
         if(mock_market_listener!=nullptr)
         {
