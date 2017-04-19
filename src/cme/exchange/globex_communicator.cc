@@ -1,6 +1,7 @@
 
 #include "core/assist/utility.h"
 #include "core/assist/logger.h"
+#include "core/strategy/invalid_order.h"
 #include "cme/exchange/globex_communicator.h"
 #include "cme/exchange/order.h"
 
@@ -250,7 +251,7 @@ namespace exchange
             case pb::ems::TimeInForce::TIF_GTC:
                 return '1';
             default:
-                throw fh::cme::exchange::InvalidOrder("invalid tif");
+                throw fh::core::strategy::InvalidOrder("invalid tif");
         }
     }
 
@@ -278,7 +279,7 @@ namespace exchange
             case pb::ems::OrderType::OT_Market:
                 return '1';
             default:
-                throw fh::cme::exchange::InvalidOrder("invalid order type");
+                throw fh::core::strategy::InvalidOrder("invalid order type");
         }
     }
 
@@ -304,7 +305,7 @@ namespace exchange
             case pb::ems::BuySell::BS_Sell:
                 return '2';
             default:
-                throw fh::cme::exchange::InvalidOrder("invalid buy sell type");
+                throw fh::core::strategy::InvalidOrder("invalid buy sell type");
         }
     }
 

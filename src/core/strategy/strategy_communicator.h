@@ -1,6 +1,6 @@
 
-#ifndef __FH_CME_EXCHANGE_STRATEGY_COMMUNICATOR_H__
-#define __FH_CME_EXCHANGE_STRATEGY_COMMUNICATOR_H__
+#ifndef __FH_CORE_STRATEGY_STRATEGY_COMMUNICATOR_H__
+#define __FH_CORE_STRATEGY_STRATEGY_COMMUNICATOR_H__
 
 #include "core/global.h"
 #include "core/zmq/zmq_receiver.h"
@@ -11,9 +11,9 @@
 
 namespace fh
 {
-namespace cme
+namespace core
 {
-namespace exchange
+namespace strategy
 {
     class StrategyReceiver : public fh::core::zmq::ZmqReceiver
     {
@@ -71,8 +71,8 @@ namespace exchange
         private:
             DISALLOW_COPY_AND_ASSIGN(StrategyCommunicator);
     };
-} // namespace exchange
-} // namespace cme
+} // namespace strategy
+} // namespace core
 } // namespace fh
 
-#endif     // __FH_CME_EXCHANGE_STRATEGY_COMMUNICATOR_H__
+#endif     // __FH_CORE_STRATEGY_STRATEGY_COMMUNICATOR_H__

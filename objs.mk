@@ -86,9 +86,6 @@ $(BIN_PATH)/globex_logger.o: $(SRC_PATH)/cme/exchange/globex_logger.cc
 $(BIN_PATH)/order_manager.o: $(SRC_PATH)/cme/exchange/order_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
-$(BIN_PATH)/strategy_communicator.o: $(SRC_PATH)/cme/exchange/strategy_communicator.cc
-	$(COMPILE_COMMAND) -c -o $@ $<
-
 $(BIN_PATH)/exchange_settings.o: $(SRC_PATH)/cme/exchange/exchange_settings.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
@@ -105,6 +102,9 @@ $(BIN_PATH)/utility.o: $(SRC_PATH)/core/assist/utility.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 	
 $(BIN_PATH)/book_sender.o: $(SRC_PATH)/core/book/book_sender.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/strategy_communicator.o: $(SRC_PATH)/core/strategy/strategy_communicator.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/original_receiver.o: $(SRC_PATH)/core/persist/original_receiver.cc

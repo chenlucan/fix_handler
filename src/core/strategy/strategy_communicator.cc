@@ -1,14 +1,14 @@
 
 #include "core/assist/logger.h"
-#include "cme/exchange/strategy_communicator.h"
 #include "core/assist/time_measurer.h"
-#include "cme/exchange/order.h"
+#include "core/strategy/invalid_order.h"
+#include "core/strategy/strategy_communicator.h"
 
 namespace fh
 {
-namespace cme
+namespace core
 {
-namespace exchange
+namespace strategy
 {
 
     StrategyReceiver::StrategyReceiver(const std::string &url) : fh::core::zmq::ZmqReceiver(url)
@@ -69,7 +69,7 @@ namespace exchange
         pb::ems::Order strategy_order;
         if(!strategy_order.ParseFromArray(data, size))
         {
-            throw fh::cme::exchange::InvalidOrder("order parse error");
+            throw InvalidOrder("order parse error");
         }
 
         return strategy_order;
@@ -105,7 +105,7 @@ namespace exchange
                     LOG_WARN("unknow order message type: ", msg_type);
             }
         }
-        catch(fh::cme::exchange::InvalidOrder &error)
+        catch(InvalidOrder &error)
         {
             LOG_ERROR("invalid order: ", error.what());
         }
@@ -155,6 +155,6 @@ namespace exchange
         LOG_INFO("contract[", contract, "] status update [Trading]");
     }
 
-} // namespace exchange
-} // namespace cme
+} // namespace strategy
+} // namespace core
 } // namespace fh
