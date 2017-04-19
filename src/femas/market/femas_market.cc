@@ -36,12 +36,10 @@ bool CFemasMarket::Start()
       
 
     m_pUstpFtdcMduserApi->RegisterSpi(m_FemasMarkrtManager);
-    //m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (21001, USTP_TERT_RESUME);
-    //m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (3101, USTP_TERT_RESTART);
+
 
     m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (21001, USTP_TERT_RESUME);
-//    m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (3101, USTP_TERT_RESTART);	
-    //m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (100, USTP_TERT_RESUME);
+
 	 
     std::string tmpurl = m_pFileConfig->Get("femas-market.url");
     printf("femas url = %s \n",tmpurl.c_str());

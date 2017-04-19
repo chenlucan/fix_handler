@@ -9,6 +9,7 @@
 #include "USTPFtdcTraderApi.h"
 #include "core/exchange/exchangei.h"
 #include "pb/ems/ems.pb.h"
+#include "core/assist/settings.h"
 
 namespace fh
 {
@@ -47,6 +48,9 @@ namespace exchange
                  virtual ~CFemasGlobexCommunicator();
 	  public:			 
                  CUstpFtdcTraderManger* m_pUstpFtdcTraderManger;
+                 fh::core::assist::Settings *m_pFileConfig;
+		   CUstpFtdcTraderApi *m_pUserApi;
+  
 
 	  private:
                  core::exchange::ExchangeListenerI *m_strategy;
