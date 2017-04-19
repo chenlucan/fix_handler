@@ -43,7 +43,7 @@ namespace message
         std::for_each(books.begin(), books.end(), [&message, template_id](Book &b){
             b.template_id = template_id;
             b.type = 'W';
-            LOG_DEBUG("  LastMsgSeqNumProcessed=", b.packet_seq_num);
+            LOG_DEBUG("  LastMsgSeqNumProcessed=", b.packet_seq_num, " security id =", b.securityID);
         });
 
         LOG_DEBUG("message type is W, template id is ", template_id, " done.");

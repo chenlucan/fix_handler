@@ -73,7 +73,7 @@ market: $(BIN_PATH)/market_test.o $(BIN_PATH)/dat_processor.o $(BIN_PATH)/udp_re
                $(BIN_PATH)/recovery_saver.o $(BIN_PATH)/dat_replayer.o $(BIN_PATH)/book_manager.o $(BIN_PATH)/book_state_controller.o \
                $(BIN_PATH)/message_parser_d.o $(BIN_PATH)/message_parser_f.o $(BIN_PATH)/message_parser_r.o $(BIN_PATH)/channel_settings.o \
                $(BIN_PATH)/message_parser_x.o $(BIN_PATH)/message_parser_w.o $(BIN_PATH)/definition_manager.o $(BIN_PATH)/status_manager.o \
-               $(BIN_PATH)/cme_market.o $(BIN_PATH)/market_manager.o $(BIN_PATH)/book_sender.o \
+               $(BIN_PATH)/cme_market.o $(BIN_PATH)/market_manager.o $(BIN_PATH)/book_sender.o $(BIN_PATH)/recovery_manager.o \
                $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(MARKET_TARGET) $?
 

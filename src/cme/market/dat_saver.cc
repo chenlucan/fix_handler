@@ -197,7 +197,7 @@ namespace market
         if(message->packet_seq_num() <= m_recovery_first_seq)
         {
             // drop the message before first recovery's message's 369-LastMsgSeqNumProcessed
-            LOG_INFO("this message is before irst recovery's message, discard it");
+            LOG_INFO("this message is before first recovery's message(", m_recovery_first_seq, "), discard it");
             return false;
         }
 

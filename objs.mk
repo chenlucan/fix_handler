@@ -29,6 +29,9 @@ $(BIN_PATH)/book_manager.o: $(SRC_PATH)/cme/market/book_manager.cc
 $(BIN_PATH)/definition_manager.o: $(SRC_PATH)/cme/market/definition_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
+$(BIN_PATH)/recovery_manager.o: $(SRC_PATH)/cme/market/recovery_manager.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/status_manager.o: $(SRC_PATH)/cme/market/status_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
