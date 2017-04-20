@@ -30,7 +30,8 @@ TEST_COMPILE_COMMAND = $(COMPILER) $(INCLUDE_PATH) $(INCLUDE_TEST_PATH) $(LIBS_P
 LINT_COMMAND = $(TEST_PATH)/cpplint.py
 
 SETTINGS = $(BIN_PATH)/market_config.xml $(BIN_PATH)/market_settings.ini  $(BIN_PATH)/exchange_server.cfg \
-					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg $(BIN_PATH)/original_saver_settings.ini
+					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg $(BIN_PATH)/original_saver_settings.ini \
+					  $(BIN_PATH)/mut_cmemarket_revbuf.log
 ALL_OBJS =  $(filter-out $(wildcard $(BIN_PATH)/*_test.o), $(wildcard $(BIN_PATH)/*.o)) 
 TEST_OBJS = $(BIN_PATH)/utility_unittest.o $(BIN_PATH)/mut_book_sender.o $(BIN_PATH)/mut_book_manager.o $(BIN_PATH)/mut_common.o
 COMM_OBJS = $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/utility.o $(BIN_PATH)/message_utility.o $(BIN_PATH)/logger.o \
