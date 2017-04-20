@@ -23,6 +23,9 @@ namespace utility
     // get current time in "yyyy-MM-dd HH:mm:ss.ssssss" format
     std::string Current_time_str();
 
+    // convert time to "yyyy-MM-dd HH:mm:ss.ssssss" format
+    std::string To_time_str(std::uint64_t nanoseconds);
+
     // translate each char in buffer to hex format for display
     // ex: "abc" -> "61 62 63 "
     std::string Hex_str(const char *buffer, std::size_t length);

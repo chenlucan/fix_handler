@@ -923,9 +923,11 @@ namespace message
     {
         JSON_OBJ_TYPE json;
         PUT_TO_JSON_VALUE(json, "market", "CME");
-        PUT_TO_JSON_VALUE(json, "reveivedTime", m_sbe_message->received_time());
+        PUT_TO_JSON_VALUE(json, "insertTime", std::to_string(fh::core::assist::utility::Current_time_ns()));
+        PUT_TO_JSON_VALUE(json, "sendingTime", m_sbe_message->packet_sending_time());
+        PUT_TO_JSON_VALUE(json, "sendingTimeStr",  fh::core::assist::utility::To_time_str(m_sbe_message->packet_sending_time()));
+        PUT_TO_JSON_VALUE(json, "receivedTime", m_sbe_message->received_time());
         PUT_TO_JSON_VALUE(json, "packetSeqNum", m_sbe_message->packet_seq_num());
-        PUT_TO_JSON_VALUE(json, "packetSendingTime", m_sbe_message->packet_sending_time());
         PUT_TO_JSON_CHILD(json, "message", json_message);
 
         return JSON_TO_STRING(json);

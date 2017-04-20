@@ -35,6 +35,20 @@ namespace utility
         return ss.str();
     }
 
+    // convert time to "yyyy-MM-dd HH:mm:ss.ssssss" format
+    std::string To_time_str(std::uint64_t nanoseconds)
+    {
+        boost::posix_time::ptime time_epoch(boost::gregorian::date(1970, 1, 1));
+        boost::posix_time::ptime date(time_epoch + boost::posix_time::microseconds(nanoseconds / 1000));
+
+        std::ostringstream ss;
+        auto *facet = new boost::posix_time::time_facet("%Y-%m-%d %H:%M:%S.%f");    // not required to delete it
+        ss.imbue(std::locale(ss.getloc(), facet));
+        ss << date;
+
+        return ss.str();
+    }
+
     // translate each char in buffer to hex format for display
     // ex: "abc" -> "61 62 63 "
     std::string Hex_str(const char *buffer, std::size_t length)
