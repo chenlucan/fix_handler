@@ -36,7 +36,7 @@ namespace utility
     std::size_t Make_packet(char *buffer, std::uint32_t packet_seq_num, std::uint32_t *ids, size_t len);
 
     // read mdp packets from file(one packet per line) for test
-    std::vector<std::string> Read_packets(const std::string &filename, const std::string &packet_start_indicate = "=");
+    std::vector<std::pair<std::string, std::string>> Read_packets(const std::string &filename, const std::string &packet_start_indicate = "=");
 
     // convert price in sbe message to double
     double Get_price(std::pair<std::int64_t, std::int8_t> price_mantissa);

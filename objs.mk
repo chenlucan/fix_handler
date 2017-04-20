@@ -134,6 +134,9 @@ $(BIN_PATH)/market_test.o: $(SRC_PATH)/main/market/market_test.cc
 $(BIN_PATH)/udp_sender_test.o: $(SRC_PATH)/main/market/udp_sender_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
+$(BIN_PATH)/udp_file_sender_test.o: $(SRC_PATH)/main/market/udp_file_sender_test.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/tcp_sender_test.o: $(SRC_PATH)/main/market/tcp_sender_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 

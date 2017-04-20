@@ -42,6 +42,7 @@ SRC_PATH_TEST = $(realpath $(ROOT)/src)
 ALL_CXXFILES = $(shell find $(SRC_PATH_TEST) -name '*.cc')	
 						   
 SENDER_TARGET = $(BIN_PATH)/udp_sender_test
+F_SENDER_TARGET = $(BIN_PATH)/udp_file_sender_test
 TSENDER_TARGET = $(BIN_PATH)/tcp_sender_test
 MARKET_TARGET = $(BIN_PATH)/market_test
 SBE_TARGET = $(BIN_PATH)/sbe_test
@@ -57,13 +58,17 @@ default: all;
     
 include objs.mk
     
-all: createdir usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend
+all: createdir usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender
  
 createdir:
 	mkdir -p ${BIN_PATH}
 	mkdir -p ${BIN_PATH}/result
+	
 usender: $(BIN_PATH)/udp_sender_test.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(SENDER_TARGET) $?
+
+ufsender: $(BIN_PATH)/udp_file_sender_test.o $(COMM_OBJS) 
+	$(COMPILE_COMMAND) -o $(F_SENDER_TARGET) $?
 
 tsender: $(BIN_PATH)/tcp_sender_test.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(TSENDER_TARGET) $?
