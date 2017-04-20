@@ -24,7 +24,7 @@ class CFemasMarket : public fh::core::market::MarketI
 {
        public:
              CFemasMarket(fh::core::market::MarketListenerI *listener);
-            virtual ~CFemasMarket(){}
+            virtual ~CFemasMarket();
 
         public:
             // implement of MarketI

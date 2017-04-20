@@ -16,15 +16,17 @@ namespace exchange
     {
 
         public:
-                    explicit CFemasExchangeApp(
-                    const std::string &fix_setting_file = "exchange_client.cfg",
-                    const std::string &app_setting_file = "exchange_settings.ini");
+                    explicit CFemasExchangeApp(const std::string &app_setting_file = "femas_config.ini");
                     virtual ~CFemasExchangeApp();
 
 	 public:
 
 		      bool Start();
 		      void Stop();
+
+
+	  public:
+	  	      CFemasGlobexCommunicator* m_pCFemasGlobexCommunicator;
 
 	  private:
             DISALLOW_COPY_AND_ASSIGN(CFemasExchangeApp);		  

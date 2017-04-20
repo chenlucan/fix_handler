@@ -13,7 +13,7 @@
 #include "femas/market/femas_market_application.h"
 
 
-
+bool stop_all=false;
 void handler(int sig) 
 {
 #ifdef __unix__
@@ -30,9 +30,38 @@ void handler(int sig)
 #endif
 }
 
+
+void onsignal(int sig)
+{
+    switch (sig)
+    {
+        case SIGINT:
+            stop_all = true;
+            break;
+
+        case SIGTRAP:
+            //printf("\r\n SIGTRAP\n");
+            break;
+
+        case SIGPIPE:
+            //printf("\r\n SIGPIPE\n");
+            break;
+    }
+
+    return;
+}
+
+int set_SignalProc()
+{
+    signal(SIGINT,  &onsignal);
+    signal(SIGTRAP, &onsignal);
+    signal(SIGPIPE, &onsignal);
+    return 0;
+}
+
 int main_loop()
 {
-        while(1)
+        while(!stop_all)
        {
            printf("========================runing=========================\n");
 	    sleep(10);	 
@@ -43,8 +72,8 @@ int main_loop()
 int main(int argc, char* argv[])
 {
 
-     signal(SIGSEGV, handler);
-
+     //signal(SIGSEGV, handler);
+     set_SignalProc();
      printf("main() start\n");
      //¶ÁÈ¡ÅäÖÃÎÄ¼þ
      std::string FileConfigstr= "femas_config.ini";
@@ -61,9 +90,9 @@ int main(int argc, char* argv[])
 
       main_loop();
 	  
-      //pFemasMarletApp->Stop();
+      pFemasMarletApp->Stop();
 
-
+      delete pFemasMarletApp;
 
       printf("femas-market pross stop! \n");
       return 0;

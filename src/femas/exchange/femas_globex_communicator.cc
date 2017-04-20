@@ -15,15 +15,15 @@ void CUstpFtdcTraderManger::OnFrontConnected()
     printf("CUstpFtdcTraderManger::OnFrontConnected\n");
     CUstpFtdcReqUserLoginField reqUserLogin;
 
-    std::string BrokerIDstr = m_pFileConfig->Get("femas-market.BrokerID");
-    std::string UserIDstr = m_pFileConfig->Get("femas-market.UserID");
-    std::string Passwordstr = m_pFileConfig->Get("femas-market.Password");
+    std::string BrokerIDstr = m_pFileConfig->Get("femas-user.BrokerID");
+    std::string UserIDstr = m_pFileConfig->Get("femas-user.UserID");
+    std::string Passwordstr = m_pFileConfig->Get("femas-user.Password");
     strcpy(reqUserLogin.BrokerID, BrokerIDstr.c_str());
-    printf("femas-market.BrokerID = %s.\n",reqUserLogin.BrokerID);
+    printf("femas-user.BrokerID = %s.\n",reqUserLogin.BrokerID);
     strcpy(reqUserLogin.UserID, UserIDstr.c_str());
-    printf("femas-market.UserID = %s.\n",reqUserLogin.UserID);
+    printf("femas-user.UserID = %s.\n",reqUserLogin.UserID);
     strcpy(reqUserLogin.Password, Passwordstr.c_str());
-    printf("femas-market.Passwor = %s.\n",reqUserLogin.Password);
+    printf("femas-user.Passwor = %s.\n",reqUserLogin.Password);
     m_pUserApi->ReqUserLogin(&reqUserLogin, 0);	
 	
 }
@@ -84,13 +84,93 @@ CFemasGlobexCommunicator::CFemasGlobexCommunicator(core::exchange::ExchangeListe
      m_pFileConfig = new fh::core::assist::Settings(config_file);
      m_pUserApi = CUstpFtdcTraderApi::CreateFtdcTraderApi();	 
      m_pUstpFtdcTraderManger = new CUstpFtdcTraderManger(m_pUserApi);
-     m_pUserApi->RegisterSpi(m_pUstpFtdcTraderManger);	 
+     m_pUserApi->RegisterSpi(m_pUstpFtdcTraderManger);	
+     m_pUserApi->SubscribePrivateTopic(USTP_TERT_RESUME);	 
+     m_pUserApi->SubscribePublicTopic(USTP_TERT_RESUME);
+
+     std::string tmpurl = m_pFileConfig->Get("femas-exchange.url");
+     printf("femas exchange url = %s \n",tmpurl.c_str());	 
+     m_pUserApi->RegisterFront((char*)(tmpurl.c_str()));	
+
+     m_pUserApi->Init();	 
 }
 
 CFemasGlobexCommunicator::~CFemasGlobexCommunicator()
 {
-     delete m_pFileConfig;
+     
+     delete m_pFileConfig;	 
+     m_pUserApi->Release();	 
 }
+
+bool CFemasGlobexCommunicator::Start(const std::vector<::pb::ems::Order> &init_orders)
+{
+
+     return true;
+}
+
+void CFemasGlobexCommunicator::Stop()
+{
+
+    CUstpFtdcReqUserLogoutField reqUserLogout;
+
+    std::string BrokerIDstr = m_pFileConfig->Get("femas-user.BrokerID");
+    std::string UserIDstr = m_pFileConfig->Get("femas-user.UserID");
+    strcpy(reqUserLogout.BrokerID, BrokerIDstr.c_str());
+    printf("femas-user.BrokerID = %s.\n",reqUserLogout.BrokerID);
+    strcpy(reqUserLogout.UserID, UserIDstr.c_str());
+    printf("femas-user.UserID = %s.\n",reqUserLogout.UserID);
+	
+    
+    m_pUserApi->ReqUserLogout(&reqUserLogout,0);
+    return;
+}
+
+
+void CFemasGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contracts)
+{
+        // noop
+}
+
+void CFemasGlobexCommunicator::Add(const ::pb::ems::Order& order)
+{
+        return;
+}
+
+void CFemasGlobexCommunicator::Change(const ::pb::ems::Order& order)
+{
+        return;
+}
+
+void CFemasGlobexCommunicator::Delete(const ::pb::ems::Order& order)
+{
+        return;
+}
+
+void CFemasGlobexCommunicator::Query(const ::pb::ems::Order& order)
+{
+        return;
+}
+
+void CFemasGlobexCommunicator::Query_mass(const char *data, size_t size)
+{
+        return;
+}
+
+void CFemasGlobexCommunicator::Delete_mass(const char *data, size_t size)
+{
+        return;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
