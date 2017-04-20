@@ -23,7 +23,7 @@ class CFemasMarkrtManager : public CUstpFtdcMduserSpi
 {
     public:
 		CFemasMarkrtManager(CUstpFtdcMduserApi *pUserApi) : m_pUserApi(pUserApi) {m_pFileConfig = NULL;}
-		~CFemasMarkrtManager()
+		virtual ~CFemasMarkrtManager()
 		{
                   if(NULL != m_pFileConfig)
                   {

@@ -33,15 +33,15 @@ namespace market
 	   
 	CUstpFtdcReqUserLoginField reqUserLogin;
 	strcpy(reqUserLogin.TradingDay, m_pUserApi->GetTradingDay());
-	std::string BrokerIDstr = m_pFileConfig->Get("femas-market.BrokerID");
-	std::string UserIDstr = m_pFileConfig->Get("femas-market.UserID");
-	std::string Passwordstr = m_pFileConfig->Get("femas-market.Password");
+	std::string BrokerIDstr = m_pFileConfig->Get("femas-user.BrokerID");
+	std::string UserIDstr = m_pFileConfig->Get("femas-user.UserID");
+	std::string Passwordstr = m_pFileConfig->Get("femas-user.Password");
        strcpy(reqUserLogin.BrokerID, BrokerIDstr.c_str());
-	printf("femas-market.BrokerID = %s.\n",reqUserLogin.BrokerID);
+	printf("femas-user.BrokerID = %s.\n",reqUserLogin.BrokerID);
 	strcpy(reqUserLogin.UserID, UserIDstr.c_str());
-	printf("femas-market.UserID = %s.\n",reqUserLogin.UserID);
+	printf("femas-user.UserID = %s.\n",reqUserLogin.UserID);
 	strcpy(reqUserLogin.Password, Passwordstr.c_str());
-	printf("femas-market.Passwor = %s.\n",reqUserLogin.Password);
+	printf("femas-user.Passwor = %s.\n",reqUserLogin.Password);
 	
 	int ret = m_pUserApi->ReqUserLogin(&reqUserLogin, 0);
 

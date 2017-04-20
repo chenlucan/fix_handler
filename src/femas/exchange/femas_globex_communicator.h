@@ -45,9 +45,32 @@ namespace exchange
 
     class CFemasGlobexCommunicator : public core::exchange::ExchangeI
     {
-        public:
+          public:
 		   CFemasGlobexCommunicator(core::exchange::ExchangeListenerI *strategy,const std::string &config_file);
                  virtual ~CFemasGlobexCommunicator();
+          public:
+                 // implement of ExchangeI
+                bool Start(const std::vector<::pb::ems::Order> &init_orders) override;
+                // implement of ExchangeI
+                void Stop() override;
+
+         public:
+                // implement of ExchangeI
+                void Initialize(std::vector<::pb::dms::Contract> contracts) override;
+                // implement of ExchangeI
+                void Add(const ::pb::ems::Order& order) override;
+                 // implement of ExchangeI
+                void Change(const ::pb::ems::Order& order) override;
+                // implement of ExchangeI
+                void Delete(const ::pb::ems::Order& order) override;
+                // implement of ExchangeI
+                void Query(const ::pb::ems::Order& order) override;
+                // implement of ExchangeI
+                void Query_mass(const char *data, size_t size) override;
+                // implement of ExchangeI
+                void Delete_mass(const char *data, size_t size) override;
+
+				 
 	  public:			 
                  CUstpFtdcTraderManger* m_pUstpFtdcTraderManger;
                  fh::core::assist::Settings *m_pFileConfig;

@@ -24,6 +24,12 @@ CFemasMarket::CFemasMarket(fh::core::market::MarketListenerI *listener)
     m_FemasMarkrtManager->CreateFemasBookManager(listener);	
 }
 
+CFemasMarket::~CFemasMarket()
+{
+    delete m_FemasMarkrtManager;	
+    delete m_pFileConfig;	
+}
+
 // implement of MarketI
 bool CFemasMarket::Start()
 {
@@ -42,7 +48,7 @@ bool CFemasMarket::Start()
 
 	 
     std::string tmpurl = m_pFileConfig->Get("femas-market.url");
-    printf("femas url = %s \n",tmpurl.c_str());
+    printf("femas market url = %s \n",tmpurl.c_str());
 	 
     m_pUstpFtdcMduserApi->RegisterFront((char*)(tmpurl.c_str()));
 
@@ -67,10 +73,21 @@ void CFemasMarket::Stop()
           printf("Error m_pUstpFtdcMduserApi is NULL \n");
 	   return;	  
      }
+
+     CUstpFtdcReqUserLogoutField reqUserLogout;
+
+     std::string BrokerIDstr = m_pFileConfig->Get("femas-user.BrokerID");
+     std::string UserIDstr = m_pFileConfig->Get("femas-user.UserID");
+     strcpy(reqUserLogout.BrokerID, BrokerIDstr.c_str());
+     printf("femas-user.BrokerID = %s.\n",reqUserLogout.BrokerID);
+     strcpy(reqUserLogout.UserID, UserIDstr.c_str());
+     printf("femas-user.UserID = %s.\n",reqUserLogout.UserID);
+	 
+	
+     m_pUstpFtdcMduserApi->ReqUserLogout(&reqUserLogout,0);	 
 	 
      m_pUstpFtdcMduserApi->Release();
-     delete m_FemasMarkrtManager;	
-     delete m_pFileConfig;	 
+      
 }
 // implement of MarketI
 void CFemasMarket::Subscribe(std::vector<std::string> instruments)
