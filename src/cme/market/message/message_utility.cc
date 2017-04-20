@@ -84,7 +84,7 @@ namespace utility
         std::memcpy(position, &message_size, 2);
         std::memcpy(position + 2, encoded.first, encoded.second);
 
-        LOG_DEBUG("make message: size=", message_size, " msg=", fh::core::assist::utility::Hex_str(encoded.first, message_size));
+        LOG_DEBUG("make message: size= 2 + ", encoded.second, " msg=", fh::core::assist::utility::Hex_str(encoded.first, encoded.second));
 
         return message_size;
     }
