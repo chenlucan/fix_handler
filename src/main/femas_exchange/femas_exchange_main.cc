@@ -11,7 +11,7 @@
 
 
 #include "femas/exchange/femas_exchange_application.h"
-
+bool stop_all=false;
 
 void handler(int sig) 
 {
@@ -29,24 +29,59 @@ void handler(int sig)
 #endif
 }
 
+void onsignal(int sig)
+{
+    switch (sig)
+    {
+        case SIGINT:
+            stop_all = true;
+            break;
+
+        case SIGTRAP:
+            //printf("\r\n SIGTRAP\n");
+            break;
+
+        case SIGPIPE:
+            //printf("\r\n SIGPIPE\n");
+            break;
+    }
+
+    return;
+}
+
+int set_SignalProc()
+{
+    signal(SIGINT,  &onsignal);
+    signal(SIGTRAP, &onsignal);
+    signal(SIGPIPE, &onsignal);
+    return 0;
+}
 
 int main_loop()
 {
-     while (1)
-    {
-        printf("==========================exchange ruing================================\n");
-	 sleep(10);	
-    }
-    return 0;	 
+        while(!stop_all)
+       {
+           printf("========================exchange runing=========================\n");
+	    sleep(10);	 
+       }
+	return 0;
 }
+
 
 int main(int argc, char* argv[])
 {
 
-     signal(SIGSEGV, handler);
-
+     //signal(SIGSEGV, handler);
+     set_SignalProc();
      printf("exchange main() start\n");
 
+     //¶ÁÈ¡ÅäÖÃÎÄ¼þ
+     std::string FileConfigstr= "femas_config.ini";
+  
+     printf("FileConfigstr : %s \n",FileConfigstr.c_str());
+     fh::femas::exchange::CFemasExchangeApp *pFemasExchangeApp = new fh::femas::exchange::CFemasExchangeApp(FileConfigstr);
+     pFemasExchangeApp->Start();
+	 
      main_loop();
 
      return 0;	 
