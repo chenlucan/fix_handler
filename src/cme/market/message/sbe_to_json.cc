@@ -928,6 +928,7 @@ namespace message
         PUT_TO_JSON_VALUE(json, "sendingTimeStr",  fh::core::assist::utility::To_time_str(m_sbe_message->packet_sending_time()));
         PUT_TO_JSON_VALUE(json, "receivedTime", m_sbe_message->received_time());
         PUT_TO_JSON_VALUE(json, "packetSeqNum", m_sbe_message->packet_seq_num());
+        PUT_TO_JSON_VALUE(json, "sbeType", m_sbe_message->message_type());
         PUT_TO_JSON_CHILD(json, "message", json_message);
 
         return JSON_TO_STRING(json);

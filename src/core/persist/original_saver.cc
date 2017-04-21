@@ -27,7 +27,7 @@ namespace persist
         std::string receive_url = m_settings.Get("persist.receive_url");
         std::string db_url = m_settings.Get("persist.db_url");
         std::string db_name = m_settings.Get("persist.db_name");
-        std::uint32_t page_size = std::atoi(m_settings.Get("persist.page_size").c_str());
+        std::uint32_t page_size = std::stoi(m_settings.Get("persist.page_size"));
 
         m_db = new fh::core::persist::Mongo(db_url, db_name, page_size);
         m_receiver = new fh::core::persist::OriginalReceiver(receive_url,
