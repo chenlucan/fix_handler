@@ -24,11 +24,11 @@ namespace exchange
 		   CUstpFtdcTraderManger(CUstpFtdcTraderApi *pUserApi) :
                                                                   m_pUserApi (pUserApi) 
 		   {
-
+                      mIConnet = -1;
 		   }
 	          ~CUstpFtdcTraderManger ()
 	          {
-
+                      delete m_pFileConfig;
 		   }
 	 public:
 	 	   virtual void OnFrontConnected();
@@ -38,9 +38,12 @@ namespace exchange
 		   virtual void OnRtnOrder(CUstpFtdcOrderField  *pOrder);
 		   virtual void OnRspError(CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast);
 		   void SetFileConfigData(std::string &FileConfig);	
+		   int mIConnet;
+		   
         private:
 		   CUstpFtdcTraderApi *m_pUserApi;
 		   fh::core::assist::Settings *m_pFileConfig;
+		   
     };
 
     class CFemasGlobexCommunicator : public core::exchange::ExchangeI
@@ -75,6 +78,7 @@ namespace exchange
                  CUstpFtdcTraderManger* m_pUstpFtdcTraderManger;
                  fh::core::assist::Settings *m_pFileConfig;
 		   CUstpFtdcTraderApi *m_pUserApi;
+		   int m_itimeout;
   
 
 	  private:

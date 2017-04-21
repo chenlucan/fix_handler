@@ -1,3 +1,5 @@
+#include <unistd.h>
+#include <time.h>
 #include "femas_globex_communicator.h"
 
 
@@ -42,8 +44,10 @@ void CUstpFtdcTraderManger::OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserL
     {
 		// 端登失败，客户端需进行错误处理
          printf("Failed to login, errorcode=%d errormsg=%s	requestid=%d chain=%d", pRspInfo->ErrorID, pRspInfo->ErrorMsg,nRequestID, bIsLast);
-	  exit(-1);
+	  //exit(-1);
+	  mIConnet = 1;
     }
+    mIConnet = 0;	
 }	
 void CUstpFtdcTraderManger::OnRspOrderInsert(CUstpFtdcInputOrderField  *pInputOrder, CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast)
 {
@@ -85,14 +89,8 @@ CFemasGlobexCommunicator::CFemasGlobexCommunicator(core::exchange::ExchangeListe
      m_pUserApi = CUstpFtdcTraderApi::CreateFtdcTraderApi();	 
      m_pUstpFtdcTraderManger = new CUstpFtdcTraderManger(m_pUserApi);
      m_pUserApi->RegisterSpi(m_pUstpFtdcTraderManger);	
-     m_pUserApi->SubscribePrivateTopic(USTP_TERT_RESUME);	 
-     m_pUserApi->SubscribePublicTopic(USTP_TERT_RESUME);
-
-     std::string tmpurl = m_pFileConfig->Get("femas-exchange.url");
-     printf("femas exchange url = %s \n",tmpurl.c_str());	 
-     m_pUserApi->RegisterFront((char*)(tmpurl.c_str()));	
-
-     m_pUserApi->Init();	 
+     m_itimeout = 10;
+      
 }
 
 CFemasGlobexCommunicator::~CFemasGlobexCommunicator()
@@ -129,6 +127,28 @@ void CFemasGlobexCommunicator::Stop()
 void CFemasGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contracts)
 {
         // noop
+        m_pUserApi->SubscribePrivateTopic(USTP_TERT_RESUME);	 
+        m_pUserApi->SubscribePublicTopic(USTP_TERT_RESUME);
+
+        std::string tmpurl = m_pFileConfig->Get("femas-exchange.url");
+        printf("femas exchange url = %s \n",tmpurl.c_str());	 
+        m_pUserApi->RegisterFront((char*)(tmpurl.c_str()));	
+
+        m_pUserApi->Init();
+
+	 time_t tmtimeout = time(NULL);
+        while(0 != m_pUstpFtdcTraderManger->mIConnet)
+        {
+             if(time(NULL)-tmtimeout>m_itimeout)
+	      {
+                  printf("CFemasGlobexCommunicator::mIConnet tiomeout \n");
+	           return;		  
+	      }
+             sleep(0.1);    
+         }	 
+         printf("CFemasGlobexCommunicator::mIConnet is ok \n");	 
+
+         return;	
 }
 
 void CFemasGlobexCommunicator::Add(const ::pb::ems::Order& order)

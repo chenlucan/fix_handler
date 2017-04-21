@@ -21,7 +21,7 @@ namespace exchange
 
 	 public:
 
-		      bool Start();
+		      bool Start(const std::vector<::pb::ems::Order> &init_orders);
 		      void Stop();
 
                     void Initialize(std::vector<::pb::dms::Contract> contracts);

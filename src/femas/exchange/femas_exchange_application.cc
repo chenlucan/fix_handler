@@ -23,14 +23,13 @@ CFemasExchangeApp::~CFemasExchangeApp()
     return;
 }
 
-bool CFemasExchangeApp::Start()
+bool CFemasExchangeApp::Start(const std::vector<::pb::ems::Order> &init_orders)
 {
      if(NULL == m_pCFemasGlobexCommunicator)
      {
          return false;
      }
-     //m_pCFemasGlobexCommunicator->Start();	 
-     return true;
+     return m_pCFemasGlobexCommunicator->Start(init_orders);	 
 }
 
 void CFemasExchangeApp::Stop()
@@ -46,6 +45,8 @@ void CFemasExchangeApp::Stop()
 void CFemasExchangeApp::Initialize(std::vector<::pb::dms::Contract> contracts)
 {
         // noop
+        m_pCFemasGlobexCommunicator->Initialize(contracts);
+        return;
 }
 
 void CFemasExchangeApp::Add(const ::pb::ems::Order& order)
