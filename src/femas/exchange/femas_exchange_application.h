@@ -24,6 +24,19 @@ namespace exchange
 		      bool Start();
 		      void Stop();
 
+                    void Initialize(std::vector<::pb::dms::Contract> contracts);
+
+                    void Add(const ::pb::ems::Order& order);
+
+                    void Change(const ::pb::ems::Order& order);
+
+                    void Delete(const ::pb::ems::Order& order);
+
+                    void Query(const ::pb::ems::Order& order);
+
+                    void Query_mass(const char *data, size_t size);
+
+                    void Delete_mass(const char *data, size_t size);
 
 	  public:
 	  	      CFemasGlobexCommunicator* m_pCFemasGlobexCommunicator;

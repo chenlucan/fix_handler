@@ -1,4 +1,5 @@
-
+#include <unistd.h>
+#include <time.h>
 #include "femas_market.h"
 
 
@@ -22,6 +23,7 @@ CFemasMarket::CFemasMarket(fh::core::market::MarketListenerI *listener)
 	   return;	  
     }	
     m_FemasMarkrtManager->CreateFemasBookManager(listener);	
+    m_itimeout = 10;	
 }
 
 CFemasMarket::~CFemasMarket()
@@ -33,35 +35,84 @@ CFemasMarket::~CFemasMarket()
 // implement of MarketI
 bool CFemasMarket::Start()
 {
-    printf("CFemasMarket::Start() \n");
-    if(NULL == m_pUstpFtdcMduserApi)
-    {
+     printf("CFemasMarket::Start() \n");
+     if(NULL == m_pUstpFtdcMduserApi)
+     {
           printf("Error m_pUstpFtdcMduserApi is NULL \n");
 	   return false;	  
+     }
+     if(m_FemasMarkrtManager->mIConnet != 0)
+    {
+          return false;
+    }
+     time_t tmtimeout = time(NULL);	 	 
+     while(0 != m_FemasMarkrtManager->mISubSuss)
+     {
+         if(time(NULL)-tmtimeout>m_itimeout)
+	  {
+              printf("CFemasMarket::mISubSuss tiomeout \n");
+		return false;	  
+	  }
+         sleep(0.1);  
+     }	 
+     printf("CFemasMarket::mISubSuss is ok \n");		 
+     return true;	 
+}
+ // implement of MarketI
+void CFemasMarket::Initialize(std::vector<std::string> insts)
+{
+     printf("CFemasMarket::Initialize() \n");
+	 
+     if(NULL == m_pUstpFtdcMduserApi)
+    {
+          printf("Error m_pUstpFtdcMduserApi is NULL \n");
+	   return ;	  
     }
       
 
     m_pUstpFtdcMduserApi->RegisterSpi(m_FemasMarkrtManager);
 
 
-    m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (21001, USTP_TERT_RESUME);
+    if(insts.size() <= 0)
+    {
+          m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (21001, USTP_TERT_RESUME);	  
+    }
+    else
+    {
+          for(int i=0;i<insts.size();i++)
+          {
+               printf("num = %d ,SubscribeMarketDataTopic ID = %d.\n",i+1,std::atoi(insts[i].c_str()));
+               m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (std::atoi(insts[i].c_str()), USTP_TERT_RESUME);
+          }	
+    }
+    
 
 	 
     std::string tmpurl = m_pFileConfig->Get("femas-market.url");
     printf("femas market url = %s \n",tmpurl.c_str());
+
+    m_itimeout = std::atoi((m_pFileConfig->Get("femas-timeout.timeout")).c_str());
+	
 	 
     m_pUstpFtdcMduserApi->RegisterFront((char*)(tmpurl.c_str()));
 
-
+     m_pUstpFtdcMduserApi->SetHeartbeatTimeout(m_itimeout); 
 
      m_pUstpFtdcMduserApi->Init();
 
-     return true;	 
-}
- // implement of MarketI
-void CFemasMarket::Initialize(std::vector<std::string> insts)
-{
+     time_t tmtimeout = time(NULL);
+     while(0 != m_FemasMarkrtManager->mIConnet)
+     {
+         if(time(NULL)-tmtimeout>m_itimeout)
+	  {
+              printf("CFemasMarket::mIConnet tiomeout \n");
+	       return;		  
+	  }
+         sleep(0.1);    
+     }	 
+     printf("CFemasMarket::mIConnet is ok \n");	 
 
+     return;	 
 }
 // implement of MarketI
 void CFemasMarket::Stop()
@@ -92,17 +143,49 @@ void CFemasMarket::Stop()
 // implement of MarketI
 void CFemasMarket::Subscribe(std::vector<std::string> instruments)
 {
-
+     if(NULL == m_pUstpFtdcMduserApi)
+      {
+          return;
+      }
+      if(instruments.size() <= 0)
+      {
+          m_FemasMarkrtManager->mISubSuss = 1;
+          char *contracts[1];
+	   contracts[0] = new char[100];
+          memset(contracts[0],0,100);
+          strcpy(contracts[0], "*"); 	  
+          m_pUstpFtdcMduserApi->SubMarketData (contracts,1);
+	   delete []contracts[0];	  
+          return;		  
+      }
+      else
+      {
+          m_FemasMarkrtManager->mISubSuss = instruments.size();
+          char **contracts = new char*[instruments.size()];
+          for(int i=0;i<instruments.size();i++)
+	   {
+               contracts[i] = new char[instruments[i].length()+1];
+	        memset(contracts[i],0,instruments[i].length()+1);
+	        strcpy(contracts[i],instruments[i].c_str());	
+		 printf("num = %d,sub contracts = %s.\n",i+1,contracts[i]);	
+	   }	   	  
+	   m_pUstpFtdcMduserApi->SubMarketData (contracts,instruments.size());
+	   for(int i=0;i<instruments.size();i++)
+	   {
+              delete [] contracts[i];   
+	   }
+	   delete [] contracts;
+      }	  	
 }
 // implement of MarketI
 void CFemasMarket::UnSubscribe(std::vector<std::string> instruments)
 {
-
+      return ;
 }
  // implement of MarketI
 void CFemasMarket::ReqDefinitions(std::vector<std::string> instruments)
 {
-
+      return ;
 }
 
 

@@ -43,6 +43,40 @@ void CFemasExchangeApp::Stop()
      return;
 }
 
+void CFemasExchangeApp::Initialize(std::vector<::pb::dms::Contract> contracts)
+{
+        // noop
+}
+
+void CFemasExchangeApp::Add(const ::pb::ems::Order& order)
+{
+        return;
+}
+
+void CFemasExchangeApp::Change(const ::pb::ems::Order& order)
+{
+        return;
+}
+
+void CFemasExchangeApp::Delete(const ::pb::ems::Order& order)
+{
+        return;
+}
+
+void CFemasExchangeApp::Query(const ::pb::ems::Order& order)
+{
+        return;
+}
+
+void CFemasExchangeApp::Query_mass(const char *data, size_t size)
+{
+        return;
+}
+
+void CFemasExchangeApp::Delete_mass(const char *data, size_t size)
+{
+        return;
+}
 
 }
 }

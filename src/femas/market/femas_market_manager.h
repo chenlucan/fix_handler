@@ -22,7 +22,12 @@ namespace market
 class CFemasMarkrtManager : public CUstpFtdcMduserSpi
 {
     public:
-		CFemasMarkrtManager(CUstpFtdcMduserApi *pUserApi) : m_pUserApi(pUserApi) {m_pFileConfig = NULL;}
+		CFemasMarkrtManager(CUstpFtdcMduserApi *pUserApi) : m_pUserApi(pUserApi) 
+		{
+		    m_pFileConfig = NULL;
+		    mIConnet = -1;	
+		    mISubSuss = -1;	
+		}
 		virtual ~CFemasMarkrtManager()
 		{
                   if(NULL != m_pFileConfig)
@@ -33,18 +38,22 @@ class CFemasMarkrtManager : public CUstpFtdcMduserSpi
 	           delete m_pFemasBookManager;			  
 		}
 
-		void OnFrontConnected();
-		void OnFrontDisconnected();
-		void OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserLogin, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-		void OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pMarketData) ;
-		void OnRspError(CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-		void OnRspSubMarketData(CUstpFtdcSpecificInstrumentField *pSpecificInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-		void OnRspUnSubMarketData(CUstpFtdcSpecificInstrumentField *pSpecificInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+		virtual void OnFrontConnected();
+		virtual void OnFrontDisconnected();
+		virtual void OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserLogin, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+		virtual void OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pMarketData) ;
+		virtual void OnRspError(CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+		virtual void OnRspSubMarketData(CUstpFtdcSpecificInstrumentField *pSpecificInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+		virtual void OnRspUnSubMarketData(CUstpFtdcSpecificInstrumentField *pSpecificInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+		virtual void OnHeartBeatWarning(int nTimeLapse);
 
 		//增加初始化接口
 		void SetFileData(std::string &FileConfig);
 
 		void CreateFemasBookManager(fh::core::market::MarketListenerI *sender);
+
+		int mIConnet;
+		int mISubSuss;
 
 		
     private:
