@@ -32,7 +32,6 @@ namespace market
     MutBookManager::MutBookManager():
     m_datas()
     {
-        // noop
     }
 
     MutBookManager::~MutBookManager()
@@ -953,6 +952,294 @@ namespace market
         }
     }
 
+    //BookManager case,  reset book state
+    TEST_F(MutBookManager, BookManager_Test010)
+    {
+        fh::core::market::MockMarketListenerI *mock_market_listener = nullptr; 
+        fh::cme::market::BookManager *book_manager = nullptr;  
+        
+        mock_market_listener = new fh::core::market::MockMarketListenerI();        
+        
+            
+        if(mock_market_listener!=nullptr)
+        {
+            book_manager = new BookManager(mock_market_listener);
+            if(nullptr == book_manager)
+            {                
+                delete mock_market_listener;
+                mock_market_listener = nullptr;
+                
+                return;
+            }
+            
+            EXPECT_CALL(
+                *mock_market_listener,
+                OnContractDefinition(testing::_)
+                ).WillRepeatedly(testing::Return());
+          
+            
+            std::string recvBufFileName;
+            fh::core::assist::common::getAbsolutePath(recvBufFileName);        
+            recvBufFileName +="mut_cmemarket_revbuf.log";
+            
+            std::vector<std::string> vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "[MutBookManager_BookManager_Test010] ");
+            
+
+            // 
+            std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+                    [this, book_manager](const std::string &revPacket)
+                    {
+                        // decode
+                        std::vector<fh::cme::market::message::MdpMessage> mdp_messages;                        
+                        std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(revPacket.data(), revPacket.size(), mdp_messages);
+
+                        //printf("*********** begin **************\n");
+                        
+                        LOG_INFO("seq=", seq, ", mdp_messages count=", mdp_messages.size());
+                                           
+                        std::vector<char> message_types;
+                        std::for_each(mdp_messages.cbegin(), mdp_messages.cend(), [&message_types](const fh::cme::market::message::MdpMessage &m)
+                                {
+                                    message_types.push_back(m.message_type());
+                                });                                           
+                        // logic
+                        std::for_each(mdp_messages.begin(), mdp_messages.end(), 
+                          [this, book_manager](fh::cme::market::message::MdpMessage &m)
+                          {                              
+                              //m.Reset();
+                              //printf("*********** m.Serialize = %s **************\n", m.Serialize().c_str());
+                              m_datas.insert(std::move(m));
+                          });
+
+
+                        for(auto message = m_datas.begin(); message!=m_datas.end(); ++message)
+                        {
+                            //printf("*********** message->m_buffer = %p **************\n",  &(message->m_buffer[0]));
+                            LOG_INFO("{BE}processed: seq=", message->packet_seq_num(), ", type=", message->message_type());
+                            // convert the message to books
+                            book_manager->Parse_to_send(*message);
+                        }
+                        
+                        m_datas.clear(); 
+                        
+                        //printf("*********** end **************\n");
+                    }
+            );
+         
+                                    
+            vecRevPacket.clear();
+        }  
+        
+        
+        delete book_manager;
+        book_manager = nullptr;
+        
+        delete mock_market_listener;
+        mock_market_listener = nullptr;
+        
+        bool bRet = Mock::VerifyAndClearExpectations(mock_market_listener);
+        ASSERT_TRUE(bRet);
+    }
+    
+    //BookManager case,  message=WdXfX , OnL2
+    TEST_F(MutBookManager, BookManager_Test011)
+    {
+        fh::core::market::MockMarketListenerI *mock_market_listener = nullptr; 
+        fh::cme::market::BookManager *book_manager = nullptr;  
+        
+        mock_market_listener = new fh::core::market::MockMarketListenerI();        
+        
+            
+        if(mock_market_listener!=nullptr)
+        {
+            book_manager = new BookManager(mock_market_listener);
+            if(nullptr == book_manager)
+            {                
+                delete mock_market_listener;
+                mock_market_listener = nullptr;
+                
+                return;
+            }
+            
+            EXPECT_CALL(
+                *mock_market_listener,
+                OnContractDefinition(testing::_)
+                ).WillRepeatedly(testing::Return());
+          
+            EXPECT_CALL(
+                *mock_market_listener,
+                OnL2(testing::_)
+                ).WillRepeatedly(testing::Return());
+          
+            EXPECT_CALL(
+                *mock_market_listener,
+                OnContractTrading(testing::_)
+                ).WillRepeatedly(testing::Return());
+            
+            
+            std::string recvBufFileName;
+            fh::core::assist::common::getAbsolutePath(recvBufFileName);        
+            recvBufFileName +="mut_cmemarket_revbuf.log";
+            
+            std::vector<std::string> vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "[MutBookManager_BookManager_Test011] ");
+            
+
+            // 
+            std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+                    [this, book_manager](const std::string &revPacket)
+                    {
+                        // decode
+                        std::vector<fh::cme::market::message::MdpMessage> mdp_messages;                        
+                        std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(revPacket.data(), revPacket.size(), mdp_messages);
+
+                        printf("*********** begin **************\n");
+                        
+                        LOG_INFO("seq=", seq, ", mdp_messages count=", mdp_messages.size());
+                                           
+                        std::vector<char> message_types;
+                        std::for_each(mdp_messages.cbegin(), mdp_messages.cend(), [&message_types](const fh::cme::market::message::MdpMessage &m)
+                                {
+                                    message_types.push_back(m.message_type());
+                                });   
+
+                        LOG_INFO("{IN}received increment packet: ", " seq=", seq, ", message=", std::string(message_types.begin(), message_types.end()));
+                                
+                        // logic
+                        std::for_each(mdp_messages.begin(), mdp_messages.end(), 
+                          [this, book_manager](fh::cme::market::message::MdpMessage &m)
+                          {                              
+                              //m.Reset();
+                              //printf("*********** m.Serialize = %s **************\n", m.Serialize().c_str());
+                              m_datas.insert(std::move(m));
+                          });
+
+
+                        for(auto message = m_datas.begin(); message!=m_datas.end(); ++message)
+                        {
+                            LOG_INFO("{BE}processed: seq=", message->packet_seq_num(), ", type=", message->message_type());
+                            // convert the message to books
+                            book_manager->Parse_to_send(*message);
+                        }
+                        
+                        m_datas.clear(); 
+                        
+                        printf("*********** end **************\n");
+                    }
+            );
+         
+                                    
+            vecRevPacket.clear();
+        }  
+        
+        
+        delete book_manager;
+        book_manager = nullptr;
+        
+        delete mock_market_listener;
+        mock_market_listener = nullptr;
+        
+        bool bRet = Mock::VerifyAndClearExpectations(mock_market_listener);
+        ASSERT_TRUE(bRet);
+    }
+    
+    //BookManager case,  message=d, message=X , OnTrade(mDEntryType=2)
+    TEST_F(MutBookManager, BookManager_Test012)
+    {
+        fh::core::market::MockMarketListenerI *mock_market_listener = nullptr; 
+        fh::cme::market::BookManager *book_manager = nullptr;  
+        
+        mock_market_listener = new fh::core::market::MockMarketListenerI();        
+        
+            
+        if(mock_market_listener!=nullptr)
+        {
+            book_manager = new BookManager(mock_market_listener);
+            if(nullptr == book_manager)
+            {                
+                delete mock_market_listener;
+                mock_market_listener = nullptr;
+                
+                return;
+            }
+            
+            EXPECT_CALL(
+                *mock_market_listener,
+                OnContractDefinition(testing::_)
+                ).WillRepeatedly(testing::Return());
+          
+            EXPECT_CALL(
+                *mock_market_listener,
+                OnTrade(testing::_)
+                ).WillRepeatedly(testing::Return());
+          
+            EXPECT_CALL(
+                *mock_market_listener,
+                OnContractTrading(testing::_)
+                ).WillRepeatedly(testing::Return());
+            
+            
+            std::string recvBufFileName;
+            fh::core::assist::common::getAbsolutePath(recvBufFileName);        
+            recvBufFileName +="mut_cmemarket_revbuf.log";
+            
+            std::vector<std::string> vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "[MutBookManager_BookManager_Test012] ");
+            
+
+            // 
+            std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+                    [this, book_manager](const std::string &revPacket)
+                    {
+                        // decode
+                        std::vector<fh::cme::market::message::MdpMessage> mdp_messages;                        
+                        std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(revPacket.data(), revPacket.size(), mdp_messages);
+
+                        printf("*********** begin **************\n");
+                        
+                        LOG_INFO("seq=", seq, ", mdp_messages count=", mdp_messages.size());
+                                           
+                        std::vector<char> message_types;
+                        std::for_each(mdp_messages.cbegin(), mdp_messages.cend(), [&message_types](const fh::cme::market::message::MdpMessage &m)
+                                {
+                                    message_types.push_back(m.message_type());
+                                });   
+
+                        LOG_INFO("{IN}received increment packet: ", " seq=", seq, ", message=", std::string(message_types.begin(), message_types.end()));
+                                
+                        // logic
+                        std::for_each(mdp_messages.begin(), mdp_messages.end(), 
+                          [this, book_manager](fh::cme::market::message::MdpMessage &m)
+                          {                              
+                              m_datas.insert(std::move(m));
+                          });
+
+
+                        for(auto message = m_datas.begin(); message!=m_datas.end(); ++message)
+                        {
+                            LOG_INFO("{BE}processed: seq=", message->packet_seq_num(), ", type=", message->message_type());
+                            // convert the message to books
+                            book_manager->Parse_to_send(*message);
+                        }
+                        
+                        m_datas.clear(); 
+                        
+                        printf("*********** end **************\n");
+                    }
+            );
+         
+                                    
+            vecRevPacket.clear();
+        }  
+        
+        
+        delete book_manager;
+        book_manager = nullptr;
+        
+        delete mock_market_listener;
+        mock_market_listener = nullptr;
+        
+        bool bRet = Mock::VerifyAndClearExpectations(mock_market_listener);
+        ASSERT_TRUE(bRet);
+    }
 
 } // namespace market
 } // namespace cme

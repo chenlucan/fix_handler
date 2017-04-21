@@ -39,7 +39,6 @@ namespace market
                 }
             };
             
-        
             std::multiset<fh::cme::market::message::MdpMessage, Message_Compare> m_datas;
 
         private:

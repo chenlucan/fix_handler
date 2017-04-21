@@ -63,6 +63,7 @@ all: createdir usender tsender market sbe ptest eserver strategy eclient copyfil
 createdir:
 	mkdir -p ${BIN_PATH}
 	mkdir -p ${BIN_PATH}/result
+	mkdir -p ${BIN_PATH}/result_ut
 usender: $(BIN_PATH)/udp_sender_test.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(SENDER_TARGET) $?
 
