@@ -81,7 +81,16 @@ int main(int argc, char* argv[])
   
      printf("FileConfigstr : %s \n",FileConfigstr.c_str());
      fh::femas::exchange::CFemasExchangeApp *pFemasExchangeApp = new fh::femas::exchange::CFemasExchangeApp(FileConfigstr);
-     pFemasExchangeApp->Start();
+     const std::vector<::pb::ems::Order> init_orders;	
+     std::vector<::pb::dms::Contract> contracts;	 
+     pFemasExchangeApp->Initialize(contracts);
+     if(!pFemasExchangeApp->Start(init_orders))
+      {
+          printf("FemasExchangeApp start  Error!\n");
+	   pFemasExchangeApp->Stop();	 
+	   delete pFemasExchangeApp;
+	   return 0;	  
+      }	 
 	 
      main_loop();
 
