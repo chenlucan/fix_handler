@@ -73,7 +73,7 @@ void CUstpFtdcTraderManger::OnRspError(CUstpFtdcRspInfoField  *pRspInfo, int nRe
     // 客户端需进行错误处理
 
 }
-void CUstpFtdcTraderManger::SetFileConfigData(std::string &FileConfig)
+void CUstpFtdcTraderManger::SetFileConfigData(const std::string &FileConfig)
 {
     printf("CUstpFtdcTraderManger::SetFileConfigData file = %s \n",FileConfig.c_str());
     m_pFileConfig = new fh::core::assist::Settings(FileConfig); 
@@ -89,6 +89,7 @@ CFemasGlobexCommunicator::CFemasGlobexCommunicator(core::exchange::ExchangeListe
      m_pUserApi = CUstpFtdcTraderApi::CreateFtdcTraderApi();	 
      m_pUstpFtdcTraderManger = new CUstpFtdcTraderManger(m_pUserApi);
      m_pUserApi->RegisterSpi(m_pUstpFtdcTraderManger);	
+     m_pUstpFtdcTraderManger->SetFileConfigData(config_file);
      m_itimeout = 10;
       
 }
@@ -97,7 +98,7 @@ CFemasGlobexCommunicator::~CFemasGlobexCommunicator()
 {
      
      delete m_pFileConfig;	 
-     m_pUserApi->Release();	 
+     //m_pUserApi->Release();	 
 }
 
 bool CFemasGlobexCommunicator::Start(const std::vector<::pb::ems::Order> &init_orders)
@@ -108,7 +109,8 @@ bool CFemasGlobexCommunicator::Start(const std::vector<::pb::ems::Order> &init_o
 
 void CFemasGlobexCommunicator::Stop()
 {
-
+    printf("CFemasGlobexCommunicator::Stop \n");
+	
     CUstpFtdcReqUserLogoutField reqUserLogout;
 
     std::string BrokerIDstr = m_pFileConfig->Get("femas-user.BrokerID");
@@ -120,6 +122,9 @@ void CFemasGlobexCommunicator::Stop()
 	
     
     m_pUserApi->ReqUserLogout(&reqUserLogout,0);
+
+    printf("m_pUserApi::Release \n");
+    m_pUserApi->Release();	
     return;
 }
 

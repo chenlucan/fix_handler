@@ -72,7 +72,6 @@ int main_loop()
 int main(int argc, char* argv[])
 {
 
-     //signal(SIGSEGV, handler);
      set_SignalProc();
      printf("exchange main() start\n");
 
@@ -81,8 +80,10 @@ int main(int argc, char* argv[])
   
      printf("FileConfigstr : %s \n",FileConfigstr.c_str());
      fh::femas::exchange::CFemasExchangeApp *pFemasExchangeApp = new fh::femas::exchange::CFemasExchangeApp(FileConfigstr);
-     const std::vector<::pb::ems::Order> init_orders;	
+     std::vector<::pb::ems::Order> init_orders;	
+     init_orders.clear();     	 
      std::vector<::pb::dms::Contract> contracts;	 
+     contracts.clear();	 
      pFemasExchangeApp->Initialize(contracts);
      if(!pFemasExchangeApp->Start(init_orders))
       {
@@ -93,7 +94,9 @@ int main(int argc, char* argv[])
       }	 
 	 
      main_loop();
-
+     pFemasExchangeApp->Stop();	 
+     delete pFemasExchangeApp;
+     printf("exchange main stop.\n");	  
      return 0;	 
 
 }	 
