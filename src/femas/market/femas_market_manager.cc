@@ -69,10 +69,11 @@ namespace market
 	{
 		// 端登失败，客户端需进行错误处理
 		printf("Failed to login, errorcode=%d errormsg=%s requestid=%d chain=%d\n", pRspInfo->ErrorID, pRspInfo->ErrorMsg, nRequestID, bIsLast);
+		mIConnet = 1;
 		return;
 	}
 	
-      char *contracts[1];
+      /*char *contracts[1];
       contracts[0] = new char[100];
       memset(contracts[0],0,100);
       strcpy(contracts[0], "*");  
@@ -80,6 +81,8 @@ namespace market
 	m_pUserApi->SubMarketData(contracts, 1);
 
 	delete []contracts[0];
+	*/
+	mIConnet = 0;
        return;
 }
 
@@ -192,6 +195,11 @@ void CFemasMarkrtManager::OnRspError(CUstpFtdcRspInfoField *pRspInfo, int nReque
 void CFemasMarkrtManager::OnRspSubMarketData(CUstpFtdcSpecificInstrumentField *pSpecificInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 	printf("Sub 返回订阅合约：%s \n",pSpecificInstrument->InstrumentID);
+	if(mISubSuss > 0)
+	{
+           mISubSuss--;
+	}
+	
 	return;
 }
 
@@ -202,6 +210,11 @@ void CFemasMarkrtManager::OnRspSubMarketData(CUstpFtdcSpecificInstrumentField *p
 	return;
 }
 
+void CFemasMarkrtManager::OnHeartBeatWarning(int nTimeLapse)
+{
+      printf("CFemasMarkrtManager::OnHeartBeatWarning %d  \n",nTimeLapse);
+      return;	  
+}
 
  void CFemasMarkrtManager::SetFileData(std::string &FileConfig)
 {

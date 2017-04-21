@@ -14,6 +14,7 @@
 
 
 bool stop_all=false;
+
 void handler(int sig) 
 {
 #ifdef __unix__
@@ -84,14 +85,31 @@ int main(int argc, char* argv[])
       std::string save_url_f = pFileConfig->Get("zeromq.org_url");
       std::string save_url_s = pFileConfig->Get("zeromq.book_url");
       fh::femas::market::CFemasMarketApp *pFemasMarletApp = new fh::femas::market::CFemasMarketApp(save_url_f,save_url_s);
-      delete pFileConfig;	  
+      	  
       pFemasMarletApp->SetFileConfigData(FileConfigstr);
-      pFemasMarletApp->Start();
+      std::vector<std::string> Depthstruments;
+      std::vector<std::string> Subminstruments;
+      Depthstruments.clear();
+      Subminstruments.clear();	  
+      Depthstruments.push_back(pFileConfig->Get("femas-DepthTopicID.TopicID"));
+      Subminstruments.push_back("*");	  
+
+      pFemasMarletApp->Initialize(Depthstruments);
+
+      pFemasMarletApp->Subscribe(Subminstruments);	   
+	  
+      if(!pFemasMarletApp->Start())
+      {
+          printf("FemasMarletApp start  Error!\n");
+	   pFemasMarletApp->Stop();	 
+	   delete pFemasMarletApp;
+	   return 0;	  
+      }
 
       main_loop();
 	  
       pFemasMarletApp->Stop();
-
+      delete pFileConfig;
       delete pFemasMarletApp;
 
       printf("femas-market pross stop! \n");

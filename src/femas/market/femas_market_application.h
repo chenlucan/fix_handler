@@ -27,10 +27,17 @@ class CFemasMarketApp
 		CFemasMarketApp(std::string &save_url_f,std::string &save_url_s);
 		~CFemasMarketApp();
 
-             
+              void Initialize(std::vector<std::string> insts);
+			  
               bool Start();
 
               void Stop();
+
+	       void Subscribe(std::vector<std::string> instruments);
+
+              void UnSubscribe(std::vector<std::string> instruments);
+
+              void ReqDefinitions(std::vector<std::string> instruments); 	  
 		
 		void SetFileConfigData(std::string &FileConfig);
     public:

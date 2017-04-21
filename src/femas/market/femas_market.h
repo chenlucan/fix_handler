@@ -44,7 +44,10 @@ class CFemasMarket : public fh::core::market::MarketI
         public:
 	     fh::core::assist::Settings *m_pFileConfig;	
 	     CUstpFtdcMduserApi *m_pUstpFtdcMduserApi;	 
-	     fh::femas::market::CFemasMarkrtManager *m_FemasMarkrtManager;
+	     fh::femas::market::CFemasMarkrtManager *m_FemasMarkrtManager; 
+
+	     int m_itimeout;	 
+		 
 };
 
 

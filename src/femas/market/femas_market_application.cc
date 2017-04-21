@@ -15,6 +15,7 @@ CFemasMarketApp::CFemasMarketApp(std::string &save_url_f,std::string &save_url_s
     m_book_sender = new CFemasBookSender(save_url_f, save_url_s);
 	
     m_pFemasMarket = new CFemasMarket(m_book_sender);
+
 }
 
 CFemasMarketApp::CFemasMarketApp(CFemasMarket *pFemasMarket)
@@ -49,14 +50,33 @@ void CFemasMarketApp::SetFileConfigData(std::string &FileConfig)
     m_pFemasMarket->SetFileConfigData(FileConfig);	
 }
 
+void CFemasMarketApp::Initialize(std::vector<std::string> insts)
+{
+    printf("CFemasMarketApp::Initialize() \n");
+    m_pFemasMarket->Initialize(insts);
+}
 
 bool CFemasMarketApp::Start()
 {
-    printf("CFemasMarketApp::Start() \n");
+    printf("CFemasMarketApp::Start() \n");        
+    	
+    return m_pFemasMarket->Start();	
+}
 
-    m_pFemasMarket->Start();	
+void CFemasMarketApp::Subscribe(std::vector<std::string> instruments)
+{
+    printf("CFemasMarketApp::Subscribe() \n");
+    m_pFemasMarket->Subscribe(instruments);	
+}
 
-    return true;	
+void CFemasMarketApp::UnSubscribe(std::vector<std::string> instruments)
+{
+    m_pFemasMarket->UnSubscribe(instruments);
+}
+
+void CFemasMarketApp::ReqDefinitions(std::vector<std::string> instruments)
+{
+    m_pFemasMarket->ReqDefinitions(instruments);
 }
 
 void CFemasMarketApp::Stop()
