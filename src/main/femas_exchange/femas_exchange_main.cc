@@ -92,9 +92,21 @@ int main(int argc, char* argv[])
 	   delete pFemasExchangeApp;
 	   return 0;	  
       }	 
-     std::vector<::pb::ems::Order> insertOrders;
-     insertOrders.clear();	 
-     //pFemasExchangeApp->Add(insertOrders);		 
+     ::pb::ems::Order morder;
+     fh::core::assist::Settings *pFileConfig = new fh::core::assist::Settings(FileConfigstr);
+     std::string UserId = pFileConfig->Get("femas-user.UserID");	
+	 
+     morder.set_client_order_id(std::to_string(pFemasExchangeApp->GetMaxOrderLocalID()));
+     morder.set_account(UserId);	
+     morder.set_contract("IF1306");	 
+     morder.set_buy_sell(pb::ems::BuySell::BS_Buy);
+     morder.set_price(std::to_string(398));
+     morder.set_quantity(1000);	 
+     morder.set_tif(pb::ems::TimeInForce::TIF_GFD);
+     morder.set_order_type(pb::ems::OrderType::OT_Limit);
+
+	 
+     pFemasExchangeApp->Add(morder);		 
      main_loop();
      pFemasExchangeApp->Stop();	 
      delete pFemasExchangeApp;

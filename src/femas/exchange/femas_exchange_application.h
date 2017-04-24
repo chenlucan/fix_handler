@@ -38,6 +38,13 @@ namespace exchange
 
                     void Delete_mass(const char *data, size_t size);
 
+		      int GetMaxOrderLocalID()
+		      {
+                        int ret = m_pCFemasGlobexCommunicator->m_pUstpFtdcTraderManger->MaxOrderLocalID;
+			  m_pCFemasGlobexCommunicator->m_pUstpFtdcTraderManger->MaxOrderLocalID++;
+			  return ret;
+		      }
+
 	  public:
 	  	      CFemasGlobexCommunicator* m_pCFemasGlobexCommunicator;
 

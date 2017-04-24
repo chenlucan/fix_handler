@@ -47,7 +47,9 @@ void CUstpFtdcTraderManger::OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserL
 	  //exit(-1);
 	  mIConnet = 1;
     }
-    printf("MaxOrderLocalID=%d", atoi(pRspUserLogin->MaxOrderLocalID));	
+    printf("MaxOrderLocalID = %d\n", atoi(pRspUserLogin->MaxOrderLocalID));	
+    MaxOrderLocalID = atoi(pRspUserLogin->MaxOrderLocalID)+1;	
+    //strncpy(MaxOrderLocalID,pRspUserLogin->MaxOrderLocalID,strlen(pRspUserLogin->MaxOrderLocalID));	
     mIConnet = 0;	
 }	
 void CUstpFtdcTraderManger::OnRspOrderInsert(CUstpFtdcInputOrderField  *pInputOrder, CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast)
@@ -162,8 +164,76 @@ void CFemasGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contr
 
 void CFemasGlobexCommunicator::Add(const ::pb::ems::Order& order)
 {
+        printf("CFemasGlobexCommunicator::Add \n");
+        printf("CUstpFtdcInputOrderField: \n");
+		
         CUstpFtdcInputOrderField SInputOrder;
-        m_pUserApi->ReqOrderInsert(&SInputOrder, 1);
+	 memset(&SInputOrder,0,sizeof(CUstpFtdcInputOrderField));	
+	 strncpy(SInputOrder.UserOrderLocalID,order.client_order_id().c_str(),order.client_order_id().length());	
+	 std::string BrokerID = m_pFileConfig->Get("femas-user.BrokerID");
+	 strncpy(SInputOrder.BrokerID,BrokerID.c_str(),BrokerID.length());
+	 std::string UserID = order.account();
+        strncpy(SInputOrder.UserID,UserID.c_str(),UserID.length());
+	 
+	 std::string InstrumentID = order.contract();
+        strncpy(SInputOrder.InstrumentID,InstrumentID.c_str(),InstrumentID.length()); 
+
+
+        std::string InvestorID = m_pFileConfig->Get("femas-exchange.InvestorID");
+	 strcpy(SInputOrder.InvestorID , InvestorID.c_str());   
+		
+	 
+	 pb::ems::BuySell BuySellval = order.buy_sell();
+	 if(BuySellval == 1)
+	 {
+            SInputOrder.Direction='0';
+	 }
+	 else
+	 if(BuySellval == 2)	
+	 {
+            SInputOrder.Direction='1';
+	 }
+	 else
+	 {
+            return;
+	 }
+
+
+	 std::string OffsetFlag = m_pFileConfig->Get("femas-exchange.OffsetFlag");
+	 SInputOrder.OffsetFlag = OffsetFlag.c_str()[0];
+
+	 std::string HedgeFlag = m_pFileConfig->Get("femas-exchange.HedgeFlag");
+        SInputOrder.HedgeFlag = HedgeFlag.c_str()[0];
+
+		
+        SInputOrder.LimitPrice = atof(order.price().c_str());
+        SInputOrder.Volume = order.quantity();
+
+        std::string TimeCondition = m_pFileConfig->Get("femas-exchange.TimeCondition");
+	 SInputOrder.TimeCondition = TimeCondition.c_str()[0];
+
+        std::string IsAutoSuspend = m_pFileConfig->Get("femas-exchange.IsAutoSuspend"); 
+	 SInputOrder.IsAutoSuspend = atoi(IsAutoSuspend.c_str());
+
+        std::string ExchangeID = m_pFileConfig->Get("femas-exchange.ExchangeID");
+	 strcpy(SInputOrder.ExchangeID , ExchangeID.c_str());  
+
+        printf("UserOrderLocalID: %s\n",SInputOrder.UserOrderLocalID);
+	 printf("BrokerID: %s\n",SInputOrder.BrokerID);
+	 printf("UserID: %s\n",SInputOrder.UserID);
+	 printf("InstrumentID: %s\n",SInputOrder.InstrumentID);
+	 printf("InvestorID: %s\n",SInputOrder.InvestorID);
+	 printf("Direction: %c\n",SInputOrder.Direction);
+	 printf("OffsetFlag: %c\n",SInputOrder.OffsetFlag);
+	 printf("HedgeFlag: %c\n",SInputOrder.HedgeFlag);
+	 printf("LimitPrice: %f\n",SInputOrder.LimitPrice);
+	 printf("Volume: %d\n",SInputOrder.Volume);
+	 printf("TimeCondition: %c\n",SInputOrder.TimeCondition);
+	 printf("IsAutoSuspend: %d\n",SInputOrder.IsAutoSuspend);
+	 printf("ExchangeID: %s\n",SInputOrder.ExchangeID);
+
+	 
+       // m_pUserApi->ReqOrderInsert(&SInputOrder, 1);
         return;
 }
 
