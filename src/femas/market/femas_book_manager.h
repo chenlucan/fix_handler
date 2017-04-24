@@ -22,6 +22,7 @@ namespace market
             virtual ~CFemasBookManager();
 
             void SendFemasarketData(CUstpFtdcDepthMarketDataField *pMarketData);
+	     void SendFemasToDB(const std::string &message);		
 
 	  private:
 

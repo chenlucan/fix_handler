@@ -47,6 +47,7 @@ void CUstpFtdcTraderManger::OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserL
 	  //exit(-1);
 	  mIConnet = 1;
     }
+    printf("MaxOrderLocalID=%d", atoi(pRspUserLogin->MaxOrderLocalID));	
     mIConnet = 0;	
 }	
 void CUstpFtdcTraderManger::OnRspOrderInsert(CUstpFtdcInputOrderField  *pInputOrder, CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast)
@@ -103,8 +104,11 @@ CFemasGlobexCommunicator::~CFemasGlobexCommunicator()
 
 bool CFemasGlobexCommunicator::Start(const std::vector<::pb::ems::Order> &init_orders)
 {
-
-     return true;
+     if(m_pUstpFtdcTraderManger->mIConnet != 0)
+    {
+        return false;
+    }
+    return true;
 }
 
 void CFemasGlobexCommunicator::Stop()
@@ -158,6 +162,8 @@ void CFemasGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contr
 
 void CFemasGlobexCommunicator::Add(const ::pb::ems::Order& order)
 {
+        CUstpFtdcInputOrderField SInputOrder;
+        m_pUserApi->ReqOrderInsert(&SInputOrder, 1);
         return;
 }
 

@@ -88,7 +88,7 @@ namespace exchange
 
 	  private:
 	  	
-                 //DISALLOW_COPY_AND_ASSIGN(CFemasGlobexCommunicator);			 
+                 DISALLOW_COPY_AND_ASSIGN(CFemasGlobexCommunicator);			 
 
 			
     };

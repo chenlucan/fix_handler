@@ -1,5 +1,5 @@
 #include "femas/market/femas_book_manager.h"
-
+#include "core/assist/logger.h"
 namespace fh
 {
 namespace femas
@@ -195,7 +195,13 @@ void CFemasBookManager::SendFemasarketData(CUstpFtdcDepthMarketDataField *pMarke
 	
 }
 
-
+void CFemasBookManager::SendFemasToDB(const std::string &message)
+{
+    LOG_INFO("send Original Message, size=", message.size(), " message=", message);
+    return;	
+    m_book_sender->OnOrginalMessage(message);
+    return;	
+}
 
 	
 } // namespace market

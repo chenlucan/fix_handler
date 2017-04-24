@@ -178,6 +178,7 @@ void CFemasMarkrtManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pM
 	printf("GetDepthMarketData::end\n");
 
 	m_pFemasBookManager->SendFemasarketData(pMarketData);
+       StructToJSON(pMarketData);
 
 	return;
 }
@@ -238,6 +239,36 @@ void CFemasMarkrtManager::CreateFemasBookManager(fh::core::market::MarketListene
           printf("Error m_pFemasBookManager is NULL \n");
       }
       return;	  
+}
+
+
+void CFemasMarkrtManager::StructToJSON(CUstpFtdcDepthMarketDataField *pMarketData)
+{
+    if(NULL == pMarketData)
+    {
+        return;
+    }
+    bsoncxx::builder::basic::document tmjson;
+    tmjson.append(bsoncxx::builder::basic::kvp("TradingDay", T(pMarketData->TradingDay)));
+    tmjson.append(bsoncxx::builder::basic::kvp("SettlementGroupID", T(pMarketData->SettlementGroupID)));	
+    //tmjson.append(bsoncxx::builder::basic::kvp("SettlementGroupID", T(pMarketData->SettlementGroupID)));	
+    FemasDateToString(tmjson);	
+    return;	
+}
+void CFemasMarkrtManager::FemasDateToString(bsoncxx::builder::basic::document& json)
+{
+    bsoncxx::builder::basic::document tmjson;
+    tmjson.append(bsoncxx::builder::basic::kvp("market", T("FEMAS")));		  
+    tmjson.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
+    tmjson.append(bsoncxx::builder::basic::kvp("sendingTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));	
+    tmjson.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));	
+    tmjson.append(bsoncxx::builder::basic::kvp("receivedTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));	
+    tmjson.append(bsoncxx::builder::basic::kvp("message", json));	
+
+    m_pFemasBookManager->SendFemasToDB(bsoncxx::to_json(tmjson.view()));
+    return;	
+
+    //OnOrginalMessage	
 }
 
 
