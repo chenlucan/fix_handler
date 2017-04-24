@@ -18,13 +18,11 @@ namespace cme
 {
 namespace market
 {
-    class CmeMarket;
-
     class MarketManager
     {
         public:
             MarketManager(
-                    CmeMarket *cme,
+                    std::function<void(const std::string &)> channel_stop_callback,
                     fh::core::market::MarketListenerI *listener,
                     const fh::cme::market::setting::Channel &channel,
                     const fh::cme::market::setting::MarketSettings &settings);
@@ -51,7 +49,7 @@ namespace market
             void Stop_saver();
 
         private:
-            CmeMarket *m_cme;
+            std::function<void(const std::string &)> m_channel_stop_callback;
             std::string m_channel_id;
             std::vector<fh::core::udp::UDPReceiver *> m_udp_incrementals;
             std::vector<fh::core::udp::UDPReceiver *> m_udp_recoveries;
