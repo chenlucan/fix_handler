@@ -16,7 +16,7 @@ namespace message
 namespace utility
 {
     // split packet to messages
-    std::uint32_t Pick_messages_from_packet(char *buffer, const size_t data_length, std::vector<fh::cme::market::message::MdpMessage> &mdp_messages);
+    std::uint32_t Pick_messages_from_packet(const char *buffer, const size_t data_length, std::vector<fh::cme::market::message::MdpMessage> &mdp_messages);
 
     // get message's template id from sbe packet
     std::uint16_t Get_sbe_template_id(const char *packet);

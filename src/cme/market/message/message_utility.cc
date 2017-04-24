@@ -17,18 +17,18 @@ namespace utility
 {
 
     // split packet to messages
-    std::uint32_t Pick_messages_from_packet(char *buffer, const size_t data_length, std::vector<fh::cme::market::message::MdpMessage> &mdp_messages)
+    std::uint32_t Pick_messages_from_packet(const char *buffer, const size_t data_length, std::vector<fh::cme::market::message::MdpMessage> &mdp_messages)
     {
-        char *data_begin = buffer;
-        char *data_end = data_begin + data_length;
+        const char *data_begin = buffer;
+        const char *data_end = data_begin + data_length;
         std::uint32_t packet_seq_num = *((std::uint32_t *)data_begin);
         std::uint64_t packet_sending_time = *((std::uint64_t *)(data_begin + 4));
 
-        char *current_position = data_begin + 4 + 8;
+        const char *current_position = data_begin + 4 + 8;
         while(current_position < data_end)
         {
             std::uint16_t message_length = *((std::uint16_t *)current_position);
-            char *message = current_position + 2;
+            const char *message = current_position + 2;
             fh::cme::market::message::MdpMessage mdp(message, message_length - 2, data_length, packet_seq_num, packet_sending_time);
             mdp_messages.push_back(std::move(mdp));
             current_position = current_position + message_length;
