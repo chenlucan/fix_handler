@@ -25,6 +25,7 @@ namespace exchange
                                                                   m_pUserApi (pUserApi) 
 		   {
                       mIConnet = -1;
+			MaxOrderLocalID = 0;		  
 		   }
 	          ~CUstpFtdcTraderManger ()
 	          {
@@ -39,6 +40,7 @@ namespace exchange
 		   virtual void OnRspError(CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast);
 		   void SetFileConfigData(const std::string &FileConfig);	
 		   int mIConnet;
+		   int MaxOrderLocalID;
 		   
         private:
 		   CUstpFtdcTraderApi *m_pUserApi;
