@@ -53,54 +53,60 @@ namespace persist
         }
     }
 
-    bool Mongo::Query(std::vector<std::string> &result, const std::string &market,
-                                                                             const std::string &start_date_include, const std::string &end_date_exclude,
-                                                                             std::uint64_t prev_last_record_insert_time)
+    std::uint64_t Mongo::Query(std::vector<std::string> &result, const std::string &market,
+                                                         const std::string &start_date_include, const std::string &end_date_exclude,
+                                                         std::uint64_t prev_last_record_insert_time)
     {
-        try
+        // condition is: (sendingTimeStr >= start_date_include AND sendingTimeStr < end_date_exclude) AND (insertTime > prev_last_record_insert_time)
+        bsoncxx::builder::stream::document condition{};
+        condition << "$and" << bsoncxx::builder::stream::open_array
+                                                    << bsoncxx::builder::stream::open_document
+                                                        << "sendingTimeStr"
+                                                                << bsoncxx::builder::stream::open_document
+                                                                        << "$gte" << start_date_include
+                                                                        << "$lt" << end_date_exclude
+                                                                 << bsoncxx::builder::stream::close_document
+                                                     << bsoncxx::builder::stream::close_document
+                                                     << bsoncxx::builder::stream::open_document
+                                                         << "insertTime"
+                                                                 << bsoncxx::builder::stream::open_document
+                                                                         << "$gt" << std::to_string(prev_last_record_insert_time)
+                                                                 << bsoncxx::builder::stream::close_document
+                                                      << bsoncxx::builder::stream::close_document
+                                             << bsoncxx::builder::stream::close_array;
+
+        // order by insertTime limit $m_page_size
+        bsoncxx::builder::stream::document sort{};
+        sort << "insertTime" << 1 ;
+        mongocxx::options::find options;
+        options.sort(sort.view());
+        options.limit(m_page_size);
+
+        LOG_INFO("query ", market, " in range [", start_date_include, ", ", end_date_exclude, ") and start after ",
+                prev_last_record_insert_time, " limit ", m_page_size);
+
+        auto collection = m_db[market];
+        auto cursor  = collection.find(condition.view(), options);
+        for(auto doc : cursor)
         {
-            // condition is: (sendingTimeStr >= start_date_include AND sendingTimeStr < end_date_exclude) AND (insertTime > prev_last_record_insert_time)
-            bsoncxx::builder::stream::document condition{};
-            condition << "$and" << bsoncxx::builder::stream::open_array
-                                                        << bsoncxx::builder::stream::open_document
-                                                            << "sendingTimeStr"
-                                                                    << bsoncxx::builder::stream::open_document
-                                                                            << "$gte" << start_date_include
-                                                                            << "$lt" << end_date_exclude
-                                                                     << bsoncxx::builder::stream::close_document
-                                                         << bsoncxx::builder::stream::close_document
-                                                         << bsoncxx::builder::stream::open_document
-                                                             << "insertTime"
-                                                                     << bsoncxx::builder::stream::open_document
-                                                                             << "$gt" << std::to_string(prev_last_record_insert_time)
-                                                                     << bsoncxx::builder::stream::close_document
-                                                          << bsoncxx::builder::stream::close_document
-                                                 << bsoncxx::builder::stream::close_array;
-
-            // order by insertTime limit $m_page_size
-            bsoncxx::builder::stream::document sort{};
-            sort << "insertTime" << 1 ;
-            mongocxx::options::find options;
-            options.sort(sort.view());
-            options.limit(m_page_size);
-
-            LOG_INFO("query ", market, " in range [", start_date_include, ", ", end_date_exclude, ") and start after ",
-                    prev_last_record_insert_time, " limit ", m_page_size);
-
-            auto collection = m_db[market];
-            auto cursor  = collection.find(condition.view(), options);
-            for(auto doc : cursor)
-            {
-                result.push_back(bsoncxx::to_json(doc));
-            }
-
-            return true;
+            result.push_back(bsoncxx::to_json(doc));
         }
-        catch(std::exception &e)
-        {
-            LOG_ERROR("query exception:", e.what());
-            return false;
-        }
+
+        return result.size();
+    }
+
+    std::uint64_t Mongo::Count(const std::string &market, const std::string &start_date_include, const std::string &end_date_exclude)
+    {
+        // condition is: sendingTimeStr >= start_date_include AND sendingTimeStr < end_date_exclude
+        bsoncxx::builder::stream::document condition{};
+        condition << "sendingTimeStr"
+                                        << bsoncxx::builder::stream::open_document
+                                                << "$gte" << start_date_include
+                                                << "$lt" << end_date_exclude
+                                         << bsoncxx::builder::stream::close_document;
+
+        auto collection = m_db[market];
+        return collection.count(condition.view());
     }
 
 } // namespace persist

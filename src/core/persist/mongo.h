@@ -26,9 +26,11 @@ namespace persist
             // 从指定 market 对应的 collection 中检索指定日期时间范围内从指定位置开始的数据（检索的最大条数由配置文件决定）
             // start_date_include, end_date_exclude: "yyyy-MM-dd HH:mm:ss" 格式
             // prev_last_record_insert_time: 分页用。0 表示从上述范围内第一条数据开始检索；
-            bool Query(std::vector<std::string> &result, const std::string &market,
+            std::uint64_t Query(std::vector<std::string> &result, const std::string &market,
                                   const std::string &start_date_include, const std::string &end_date_exclude,
                                   std::uint64_t prev_last_record_insert_time = 0);
+            // 检索指定日期时间范围内指定 market 的行情数据件数
+            std::uint64_t Count(const std::string &market, const std::string &start_date_include, const std::string &end_date_exclude);
 
         private:
             mongocxx::instance m_instance;
