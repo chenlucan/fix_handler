@@ -92,7 +92,9 @@ int main(int argc, char* argv[])
 	   delete pFemasExchangeApp;
 	   return 0;	  
       }	 
-	 
+     std::vector<::pb::ems::Order> insertOrders;
+     insertOrders.clear();	 
+     //pFemasExchangeApp->Add(insertOrders);		 
      main_loop();
      pFemasExchangeApp->Stop();	 
      delete pFemasExchangeApp;

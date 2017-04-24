@@ -51,6 +51,7 @@ void CFemasExchangeApp::Initialize(std::vector<::pb::dms::Contract> contracts)
 
 void CFemasExchangeApp::Add(const ::pb::ems::Order& order)
 {
+        m_pCFemasGlobexCommunicator->Add(order);
         return;
 }
 

@@ -11,6 +11,11 @@
 #include "core/market/marketi.h"
 #include "core/assist/settings.h"
 #include "femas/market/femas_book_manager.h"
+#include "core/assist/utility.h"
+#include <bsoncxx/json.hpp>
+#include <bsoncxx/builder/basic/array.hpp>
+#include <bsoncxx/builder/basic/document.hpp>
+#include "core/global.h"
 
 namespace fh
 {
@@ -18,6 +23,14 @@ namespace femas
 {
 namespace market
 {
+
+
+
+template <typename IntType>
+inline std::string T(IntType v){return std::to_string(v);}
+inline std::string T(const std::string &v){return fh::core::assist::utility::Trim_null(v);}
+inline std::string T(const char *v){return std::string(v);}
+inline std::string T(char *v){return std::string(v);}
 
 class CFemasMarkrtManager : public CUstpFtdcMduserSpi
 {
@@ -51,6 +64,9 @@ class CFemasMarkrtManager : public CUstpFtdcMduserSpi
 		void SetFileData(std::string &FileConfig);
 
 		void CreateFemasBookManager(fh::core::market::MarketListenerI *sender);
+
+		void StructToJSON(CUstpFtdcDepthMarketDataField *pMarketData);
+		void FemasDateToString(bsoncxx::builder::basic::document& json);
 
 		int mIConnet;
 		int mISubSuss;
