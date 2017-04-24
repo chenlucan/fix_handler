@@ -99,7 +99,7 @@ namespace market
     // 获取到第一条数据的 sequence number（如果没有数据，则一直等待）
     std::uint32_t DatSaver::Get_first_data_seq()
     {
-        while(true)
+        while(!m_is_stopped)
         {
             { // for release mutex
                 std::lock_guard<std::mutex> lock(m_mutex);
@@ -110,12 +110,15 @@ namespace market
             }
             std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
         }
+
+        // 说明被终止了
+        return 0;
     }
 
     // 处理恢复数据（如果没有恢复数据，则一直等待）
     void DatSaver::Process_recovery_data()
     {
-        while(true)
+        while(!m_is_stopped)
         {
             { // for release mutex
                 std::lock_guard<std::mutex> lock(m_recovery_mutex);
@@ -126,6 +129,9 @@ namespace market
             }
             std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
         }
+
+        // 说明被终止了
+        if(m_is_stopped) return;
 
         LOG_INFO("recovery messages received.");
 
