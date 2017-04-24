@@ -22,7 +22,7 @@ namespace common
 {
     void getAbsolutePath(std::string &path)
     {
-        char current_absolute_path[256];
+        char current_absolute_path[256] = {0};
         //获取当前程序绝对路径
         int cnt = readlink("/proc/self/exe", current_absolute_path, 256);
         if (cnt < 0 || cnt >= 256)
@@ -96,8 +96,7 @@ namespace common
             if(pos != std::string::npos)
             {
                 line.erase(0, pos + packet_start_indicate.size());
-            }
-
+                
             std::istringstream iss(line);
             std::vector<std::string> tokens;
             std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter(tokens));
@@ -122,6 +121,7 @@ namespace common
             });
             packets.push_back(std::string(bytes.cbegin(), bytes.cend()));
             LOG_DEBUG("read packet: size=", bytes.size(), "\n", byte_line.str());
+        }
         }
 
         return packets;

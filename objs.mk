@@ -191,4 +191,6 @@ $(BIN_PATH)/mut_book_sender.o: $(TEST_PATH)/core/book/mut_book_sender.cc
 $(BIN_PATH)/mut_book_manager.o: $(TEST_PATH)/cme/market/mut_book_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
     
+$(BIN_PATH)/mut_market_manager.o: $(TEST_PATH)/cme/market/mut_market_manager.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
     
