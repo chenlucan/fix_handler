@@ -92,6 +92,11 @@ namespace market
         }
     }
 
+    std::unordered_map<std::uint32_t , fh::cme::market::BookState> &BookStateController::Get_all_states()
+    {
+        return m_md_book_states;
+    }
+
     BookState BookStateController::Create(std::uint8_t book_type, std::uint32_t security_id, std::string symbol, std::uint8_t market_depth)
     {
         BookState bs;

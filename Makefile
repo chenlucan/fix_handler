@@ -30,7 +30,7 @@ TEST_COMPILE_COMMAND = $(COMPILER) $(INCLUDE_PATH) $(INCLUDE_TEST_PATH) $(LIBS_P
 LINT_COMMAND = $(TEST_PATH)/cpplint.py
 
 SETTINGS = $(BIN_PATH)/market_config.xml $(BIN_PATH)/market_settings.ini  $(BIN_PATH)/exchange_server.cfg \
-					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg $(BIN_PATH)/original_saver_settings.ini
+					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg $(BIN_PATH)/persist_settings.ini
 ALL_OBJS =  $(filter-out $(wildcard $(BIN_PATH)/*_test.o), $(wildcard $(BIN_PATH)/*.o)) 
 TEST_OBJS = $(BIN_PATH)/utility_unittest.o $(BIN_PATH)/mut_book_sender.o
 COMM_OBJS = $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/utility.o $(BIN_PATH)/message_utility.o $(BIN_PATH)/logger.o \
@@ -42,6 +42,7 @@ SRC_PATH_TEST = $(realpath $(ROOT)/src)
 ALL_CXXFILES = $(shell find $(SRC_PATH_TEST) -name '*.cc')	
 						   
 SENDER_TARGET = $(BIN_PATH)/udp_sender_test
+F_SENDER_TARGET = $(BIN_PATH)/udp_file_sender_test
 TSENDER_TARGET = $(BIN_PATH)/tcp_sender_test
 MARKET_TARGET = $(BIN_PATH)/market_test
 SBE_TARGET = $(BIN_PATH)/sbe_test
@@ -57,13 +58,17 @@ default: all;
     
 include objs.mk
     
-all: createdir usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend
+all: createdir usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender
  
 createdir:
 	mkdir -p ${BIN_PATH}
 	mkdir -p ${BIN_PATH}/result
+	
 usender: $(BIN_PATH)/udp_sender_test.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(SENDER_TARGET) $?
+
+ufsender: $(BIN_PATH)/udp_file_sender_test.o $(COMM_OBJS) 
+	$(COMPILE_COMMAND) -o $(F_SENDER_TARGET) $?
 
 tsender: $(BIN_PATH)/tcp_sender_test.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(TSENDER_TARGET) $?
@@ -73,7 +78,7 @@ market: $(BIN_PATH)/market_test.o $(BIN_PATH)/dat_processor.o $(BIN_PATH)/udp_re
                $(BIN_PATH)/recovery_saver.o $(BIN_PATH)/dat_replayer.o $(BIN_PATH)/book_manager.o $(BIN_PATH)/book_state_controller.o \
                $(BIN_PATH)/message_parser_d.o $(BIN_PATH)/message_parser_f.o $(BIN_PATH)/message_parser_r.o $(BIN_PATH)/channel_settings.o \
                $(BIN_PATH)/message_parser_x.o $(BIN_PATH)/message_parser_w.o $(BIN_PATH)/definition_manager.o $(BIN_PATH)/status_manager.o \
-               $(BIN_PATH)/cme_market.o $(BIN_PATH)/market_manager.o $(BIN_PATH)/book_sender.o \
+               $(BIN_PATH)/cme_market.o $(BIN_PATH)/market_manager.o $(BIN_PATH)/book_sender.o $(BIN_PATH)/recovery_manager.o \
                $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(MARKET_TARGET) $?
 

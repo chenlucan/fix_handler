@@ -29,6 +29,9 @@ $(BIN_PATH)/book_manager.o: $(SRC_PATH)/cme/market/book_manager.cc
 $(BIN_PATH)/definition_manager.o: $(SRC_PATH)/cme/market/definition_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
+$(BIN_PATH)/recovery_manager.o: $(SRC_PATH)/cme/market/recovery_manager.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/status_manager.o: $(SRC_PATH)/cme/market/status_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
@@ -83,9 +86,6 @@ $(BIN_PATH)/globex_logger.o: $(SRC_PATH)/cme/exchange/globex_logger.cc
 $(BIN_PATH)/order_manager.o: $(SRC_PATH)/cme/exchange/order_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
-$(BIN_PATH)/strategy_communicator.o: $(SRC_PATH)/cme/exchange/strategy_communicator.cc
-	$(COMPILE_COMMAND) -c -o $@ $<
-
 $(BIN_PATH)/exchange_settings.o: $(SRC_PATH)/cme/exchange/exchange_settings.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
@@ -102,6 +102,9 @@ $(BIN_PATH)/utility.o: $(SRC_PATH)/core/assist/utility.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 	
 $(BIN_PATH)/book_sender.o: $(SRC_PATH)/core/book/book_sender.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/strategy_communicator.o: $(SRC_PATH)/core/strategy/strategy_communicator.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/original_receiver.o: $(SRC_PATH)/core/persist/original_receiver.cc
@@ -129,6 +132,9 @@ $(BIN_PATH)/market_test.o: $(SRC_PATH)/main/market/market_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/udp_sender_test.o: $(SRC_PATH)/main/market/udp_sender_test.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/udp_file_sender_test.o: $(SRC_PATH)/main/market/udp_file_sender_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
 $(BIN_PATH)/tcp_sender_test.o: $(SRC_PATH)/main/market/tcp_sender_test.cc

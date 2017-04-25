@@ -4,6 +4,7 @@
 
 #include <set>
 #include <mutex>
+#include <atomic>
 #include "core/global.h"
 #include "cme/market/message/mdp_message.h"
 #include "core/zmq/zmq_sender.h"
@@ -72,7 +73,7 @@ namespace market
             fh::core::market::MarketListenerI *m_book_sender;
             fh::cme::market::BookManager m_book_manager;
             std::uint32_t m_recovery_first_seq;
-            bool m_is_stopped;
+            std::atomic_bool m_is_stopped;
 
         private:
             DISALLOW_COPY_AND_ASSIGN(DatSaver);

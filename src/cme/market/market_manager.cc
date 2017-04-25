@@ -1,6 +1,5 @@
 
 #include "cme/market/market_manager.h"
-#include "cme/market/cme_market.h"
 #include "core/assist/logger.h"
 
 namespace fh
@@ -11,11 +10,12 @@ namespace market
 {
 
     MarketManager::MarketManager(
-            CmeMarket *cme,
+            std::function<void(const std::string &)> channel_stop_callback,
             fh::core::market::MarketListenerI *listener,
             const fh::cme::market::setting::Channel &channel,
             const fh::cme::market::setting::MarketSettings &settings)
-    : m_cme(cme), m_channel_id(channel.id), m_udp_incrementals(), m_udp_recoveries(), m_udp_definitions(),
+    : m_channel_stop_callback(channel_stop_callback), m_channel_id(channel.id),
+      m_udp_incrementals(), m_udp_recoveries(), m_udp_definitions(),
       m_tcp_replayer(nullptr), m_saver(nullptr),
       m_processor(nullptr), m_definition_saver(nullptr), m_recovery_saver(nullptr)
     {
@@ -182,7 +182,7 @@ namespace market
         this->Stop_saver();
 
         LOG_INFO("[", m_channel_id, "]stopped.");
-        m_cme->Remove_market(m_channel_id);
+        m_channel_stop_callback(m_channel_id);
     }
 
 } // namespace market

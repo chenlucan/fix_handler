@@ -16,7 +16,7 @@ namespace persist
     class OriginalSaver
     {
         public:
-            explicit OriginalSaver(const std::string &setting_file = "original_saver_settings.ini");
+            explicit OriginalSaver(const std::string &setting_file = "persist_settings.ini");
             virtual ~OriginalSaver();
 
         public:

@@ -63,4 +63,5 @@
 	
 ## tasks	
 	1.交易模块连接上交易所后需要将当前状态（position）发送给策略
+	2.行情模块中 thread 太多了，考虑一个 udp 监听多个 port；以及不使用 thread.detach
 	

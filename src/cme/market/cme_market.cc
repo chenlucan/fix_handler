@@ -30,7 +30,9 @@ namespace market
     {
         std::for_each(channels.cbegin(), channels.cend(), [this, &listener, &settings](const fh::cme::market::setting::Channel &c){
             LOG_DEBUG("create market ", c.id);
-            MarketManager *market = new MarketManager(this, listener, c, settings);
+            MarketManager *market = new MarketManager(
+                    std::bind(&CmeMarket::Remove_market, this, std::placeholders::_1),
+                    listener, c, settings);
             m_market_managers[c.id] = market;
         });
     }
@@ -74,12 +76,8 @@ namespace market
 
     void CmeMarket::Remove_market(const std::string &channel_id)
     {
-        MarketManager *m = m_market_managers.at(channel_id);
-        delete m;
         m_market_managers.erase(channel_id);
-
         LOG_INFO("active channel count: ", m_market_managers.size());
-
         if(m_market_managers.empty())
         {
             LOG_INFO("all channel stopped. exit.");

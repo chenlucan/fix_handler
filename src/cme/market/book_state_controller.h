@@ -22,11 +22,12 @@ namespace market
         public:
             void Create_or_shrink(const fh::cme::market::message::Instrument &instrument);
             std::pair<std::uint8_t, const void *> Modify_state(const fh::cme::market::message::Book &b);
+            std::unordered_map<std::uint32_t , fh::cme::market::BookState> &Get_all_states();
+            void Reset_state();
 
         private:
             static BookState Create(std::uint8_t book_type, std::uint32_t security_id, std::string symbol, std::uint8_t market_depth);
             static void Shrink(BookState &book_state, std::uint8_t market_new_depth);
-            void Reset_state();
             bool Update_price(const fh::cme::market::message::Book &b, BookState &book_state);
             bool New_price(const fh::cme::market::message::Book &b, BookState &book_state);
             bool Change_price(const fh::cme::market::message::Book &b, BookState &book_state);
