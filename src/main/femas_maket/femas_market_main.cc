@@ -11,6 +11,7 @@
 
 #include "femas/market/femas_market_manager.h"
 #include "femas/market/femas_market_application.h"
+#include "core/assist/logger.h"
 
 
 bool stop_all=false;
@@ -64,7 +65,7 @@ int main_loop()
 {
         while(!stop_all)
        {
-           printf("========================runing=========================\n");
+           LOG_INFO("FemasMarket  runing  main_loop");
 	    sleep(10);	 
        }
 	return 0;
@@ -75,11 +76,11 @@ int main(int argc, char* argv[])
 
      //signal(SIGSEGV, handler);
      set_SignalProc();
-     printf("main() start\n");
-     //¶ÁÈ¡ÅäÖÃÎÄ¼þ
+     LOG_INFO("main() start");
+     //read my cfg
      std::string FileConfigstr= "femas_config.ini";
   
-     printf("FileConfigstr : %s \n",FileConfigstr.c_str());
+     LOG_INFO("FileConfigstr : ",FileConfigstr.c_str());
 	     
       fh::core::assist::Settings *pFileConfig = new fh::core::assist::Settings(FileConfigstr);
       std::string save_url_f = pFileConfig->Get("zeromq.org_url");
@@ -100,7 +101,7 @@ int main(int argc, char* argv[])
 	  
       if(!pFemasMarletApp->Start())
       {
-          printf("FemasMarletApp start  Error!\n");
+          LOG_ERROR("FemasMarletApp start  Error!");
 	   pFemasMarletApp->Stop();	 
 	   delete pFemasMarletApp;
 	   return 0;	  
@@ -112,6 +113,6 @@ int main(int argc, char* argv[])
       delete pFileConfig;
       delete pFemasMarletApp;
 
-      printf("femas-market pross stop! \n");
+      LOG_INFO("femas-market pross stop!");
       return 0;
 }

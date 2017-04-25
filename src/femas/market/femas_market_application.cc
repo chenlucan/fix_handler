@@ -1,6 +1,6 @@
 
 #include "femas_market_application.h"
-
+#include "core/assist/logger.h"
 
 namespace fh
 {
@@ -39,11 +39,11 @@ CFemasMarketApp::~CFemasMarketApp()
 
 void CFemasMarketApp::SetFileConfigData(std::string &FileConfig)
 {
-    printf("CFemasMarketApp::SetFileConfigData file = %s \n",FileConfig.c_str());
+    LOG_INFO("CFemasMarketApp::SetFileConfigData file = ",FileConfig.c_str());
     m_pFileConfig = new fh::core::assist::Settings(FileConfig);
     if(NULL == m_pFileConfig)
     {
-          printf("Error m_pFileConfig is NULL \n");
+          LOG_ERROR("Error m_pFileConfig is NULL ");
 	   return;	  
     }	
 		
@@ -52,20 +52,20 @@ void CFemasMarketApp::SetFileConfigData(std::string &FileConfig)
 
 void CFemasMarketApp::Initialize(std::vector<std::string> insts)
 {
-    printf("CFemasMarketApp::Initialize() \n");
+    LOG_INFO("CFemasMarketApp::Initialize()");
     m_pFemasMarket->Initialize(insts);
 }
 
 bool CFemasMarketApp::Start()
 {
-    printf("CFemasMarketApp::Start() \n");        
+    LOG_INFO("CFemasMarketApp::Start()");        
     	
     return m_pFemasMarket->Start();	
 }
 
 void CFemasMarketApp::Subscribe(std::vector<std::string> instruments)
 {
-    printf("CFemasMarketApp::Subscribe() \n");
+    LOG_INFO("CFemasMarketApp::Subscribe()");
     m_pFemasMarket->Subscribe(instruments);	
 }
 
@@ -81,7 +81,7 @@ void CFemasMarketApp::ReqDefinitions(std::vector<std::string> instruments)
 
 void CFemasMarketApp::Stop()
 {
-    printf("CFemasMarketApp::Stop() \n");
+    LOG_INFO("CFemasMarketApp::Stop()");
     m_pFemasMarket->Stop();	
 }
 

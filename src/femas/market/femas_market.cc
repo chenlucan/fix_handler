@@ -1,7 +1,7 @@
 #include <unistd.h>
 #include <time.h>
 #include "femas_market.h"
-
+#include "core/assist/logger.h"
 
 
 namespace fh
@@ -19,7 +19,7 @@ CFemasMarket::CFemasMarket(fh::core::market::MarketListenerI *listener)
     m_FemasMarkrtManager = new fh::femas::market::CFemasMarkrtManager(m_pUstpFtdcMduserApi);
     if(NULL == m_pUstpFtdcMduserApi || NULL == m_FemasMarkrtManager)
     {
-          printf("Error m_pUstpFtdcMduserApi or m_FemasMarkrtManager is NULL \n");
+          LOG_ERROR("Error m_pUstpFtdcMduserApi or m_FemasMarkrtManager is NULL ");
 	   return;	  
     }	
     m_FemasMarkrtManager->CreateFemasBookManager(listener);	
@@ -35,10 +35,10 @@ CFemasMarket::~CFemasMarket()
 // implement of MarketI
 bool CFemasMarket::Start()
 {
-     printf("CFemasMarket::Start() \n");
+     LOG_INFO("CFemasMarket::Start() ");
      if(NULL == m_pUstpFtdcMduserApi)
      {
-          printf("Error m_pUstpFtdcMduserApi is NULL \n");
+          LOG_ERROR("Error m_pUstpFtdcMduserApi is NULL ");
 	   return false;	  
      }
      if(m_FemasMarkrtManager->mIConnet != 0)
@@ -50,22 +50,22 @@ bool CFemasMarket::Start()
      {
          if(time(NULL)-tmtimeout>m_itimeout)
 	  {
-              printf("CFemasMarket::mISubSuss tiomeout \n");
+              LOG_ERROR("CFemasMarket::mISubSuss tiomeout ");
 		return false;	  
 	  }
          sleep(0.1);  
      }	 
-     printf("CFemasMarket::mISubSuss is ok \n");		 
+     LOG_INFO("CFemasMarket::mISubSuss is ok ");		 
      return true;	 
 }
  // implement of MarketI
 void CFemasMarket::Initialize(std::vector<std::string> insts)
 {
-     printf("CFemasMarket::Initialize() \n");
+     LOG_INFO("CFemasMarket::Initialize() ");
 	 
      if(NULL == m_pUstpFtdcMduserApi)
     {
-          printf("Error m_pUstpFtdcMduserApi is NULL \n");
+          LOG_ERROR("Error m_pUstpFtdcMduserApi is NULL ");
 	   return ;	  
     }
       
@@ -81,7 +81,7 @@ void CFemasMarket::Initialize(std::vector<std::string> insts)
     {
           for(int i=0;i<insts.size();i++)
           {
-               printf("num = %d ,SubscribeMarketDataTopic ID = %d.\n",i+1,std::atoi(insts[i].c_str()));
+               LOG_INFO("num = %d ,SubscribeMarketDataTopic ID = ",i+1,std::atoi(insts[i].c_str()));
                m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (std::atoi(insts[i].c_str()), USTP_TERT_RESUME);
           }	
     }
@@ -89,7 +89,7 @@ void CFemasMarket::Initialize(std::vector<std::string> insts)
 
 	 
     std::string tmpurl = m_pFileConfig->Get("femas-market.url");
-    printf("femas market url = %s \n",tmpurl.c_str());
+    LOG_INFO("femas market url = ",tmpurl.c_str());
 
     m_itimeout = std::atoi((m_pFileConfig->Get("femas-timeout.timeout")).c_str());
 	
@@ -105,23 +105,23 @@ void CFemasMarket::Initialize(std::vector<std::string> insts)
      {
          if(time(NULL)-tmtimeout>m_itimeout)
 	  {
-              printf("CFemasMarket::mIConnet tiomeout \n");
+              LOG_ERROR("CFemasMarket::mIConnet tiomeout ");
 	       return;		  
 	  }
          sleep(0.1);    
      }	 
-     printf("CFemasMarket::mIConnet is ok \n");	 
+     LOG_INFO("CFemasMarket::mIConnet is ok ");	 
 
      return;	 
 }
 // implement of MarketI
 void CFemasMarket::Stop()
 {
-     printf("CFemasMarket::Release \n");
+     LOG_INFO("CFemasMarket::Release ");
 
      if(NULL == m_pUstpFtdcMduserApi)
      {
-          printf("Error m_pUstpFtdcMduserApi is NULL \n");
+          LOG_ERROR("Error m_pUstpFtdcMduserApi is NULL ");
 	   return;	  
      }
 
@@ -130,9 +130,9 @@ void CFemasMarket::Stop()
      std::string BrokerIDstr = m_pFileConfig->Get("femas-user.BrokerID");
      std::string UserIDstr = m_pFileConfig->Get("femas-user.UserID");
      strcpy(reqUserLogout.BrokerID, BrokerIDstr.c_str());
-     printf("femas-user.BrokerID = %s.\n",reqUserLogout.BrokerID);
+     LOG_INFO("femas-user.BrokerID = ",reqUserLogout.BrokerID);
      strcpy(reqUserLogout.UserID, UserIDstr.c_str());
-     printf("femas-user.UserID = %s.\n",reqUserLogout.UserID);
+     LOG_INFO("femas-user.UserID = ",reqUserLogout.UserID);
 	 
 	
      m_pUstpFtdcMduserApi->ReqUserLogout(&reqUserLogout,0);	 
@@ -167,7 +167,7 @@ void CFemasMarket::Subscribe(std::vector<std::string> instruments)
                contracts[i] = new char[instruments[i].length()+1];
 	        memset(contracts[i],0,instruments[i].length()+1);
 	        strcpy(contracts[i],instruments[i].c_str());	
-		 printf("num = %d,sub contracts = %s.\n",i+1,contracts[i]);	
+		 LOG_INFO("num = ",i+1,",sub contracts = ",contracts[i]);	
 	   }	   	  
 	   m_pUstpFtdcMduserApi->SubMarketData (contracts,instruments.size());
 	   for(int i=0;i<instruments.size();i++)
@@ -191,13 +191,13 @@ void CFemasMarket::ReqDefinitions(std::vector<std::string> instruments)
 
  void CFemasMarket::SetFileConfigData(std::string &FileConfig)
  {
-     printf("CFemasMarket::SetFileConfigData file = %s \n",FileConfig.c_str());
+     LOG_INFO("CFemasMarket::SetFileConfigData file = ",FileConfig.c_str());
      m_pFileConfig = new fh::core::assist::Settings(FileConfig); 
      
 
      if(NULL == m_FemasMarkrtManager)
      {
-          printf("Error m_FemasMarkrtManager is NULL \n");
+          LOG_ERROR("Error m_FemasMarkrtManager is NULL ");
 	   return;	  
      }
 

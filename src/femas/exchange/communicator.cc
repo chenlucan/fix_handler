@@ -1,7 +1,7 @@
 #include <unistd.h>
 #include <time.h>
-#include "femas_globex_communicator.h"
-
+#include "communicator.h"
+#include "core/assist/logger.h"
 
 
 namespace fh
@@ -14,40 +14,39 @@ namespace exchange
 // 当客户端与飞马平台建立起通信连接，客户端需要进行登录
 void CUstpFtdcTraderManger::OnFrontConnected()
 {
-    printf("CUstpFtdcTraderManger::OnFrontConnected\n");
+    LOG_INFO("CUstpFtdcTraderManger::OnFrontConnected\n");
     CUstpFtdcReqUserLoginField reqUserLogin;
 
     std::string BrokerIDstr = m_pFileConfig->Get("femas-user.BrokerID");
     std::string UserIDstr = m_pFileConfig->Get("femas-user.UserID");
     std::string Passwordstr = m_pFileConfig->Get("femas-user.Password");
     strcpy(reqUserLogin.BrokerID, BrokerIDstr.c_str());
-    printf("femas-user.BrokerID = %s.\n",reqUserLogin.BrokerID);
+    LOG_INFO("femas-user.BrokerID = ",reqUserLogin.BrokerID);
     strcpy(reqUserLogin.UserID, UserIDstr.c_str());
-    printf("femas-user.UserID = %s.\n",reqUserLogin.UserID);
+    LOG_INFO("femas-user.UserID = ",reqUserLogin.UserID);
     strcpy(reqUserLogin.Password, Passwordstr.c_str());
-    printf("femas-user.Passwor = %s.\n",reqUserLogin.Password);
+    LOG_INFO("femas-user.Passwor = ",reqUserLogin.Password);
     m_pUserApi->ReqUserLogin(&reqUserLogin, 0);	
 	
 }
 void CUstpFtdcTraderManger::OnFrontDisconnected(int nReason)
 {
     // 当发生这个情况后，API会自动重新连接，客户端可不做处理
-    printf("CUstpFtdcTraderManger::OnFrontDisconnected.\n");
+    LOG_INFO("CUstpFtdcTraderManger::OnFrontDisconnected");
 }
 void CUstpFtdcTraderManger::OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserLogin, CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast)
 {
-    printf("CUstpFtdcTraderManger::OnRspUserLogin:\n");
-    printf("ErrorCode=[%d], ErrorMsg=[%s]\n",
-    pRspInfo->ErrorID, pRspInfo->ErrorMsg);
-    printf("RequestID=[%d], Chain=[%d]\n", nRequestID, bIsLast);
+    LOG_INFO("CUstpFtdcTraderManger::OnRspUserLogin:");
+    LOG_INFO("ErrorCode=[",pRspInfo->ErrorID, "]ErrorMsg=[",pRspInfo->ErrorMsg,"]");
+    LOG_INFO("RequestID=[",nRequestID,"], Chain=[",bIsLast,"]");
     if (pRspInfo->ErrorID != 0) 
     {
 		// 端登失败，客户端需进行错误处理
-         printf("Failed to login, errorcode=%d errormsg=%s	requestid=%d chain=%d", pRspInfo->ErrorID, pRspInfo->ErrorMsg,nRequestID, bIsLast);
+         LOG_ERROR("Failed to login, errorcode=",pRspInfo->ErrorID," errormsg=",pRspInfo->ErrorMsg,"	requestid=",nRequestID," chain=", bIsLast);
 	  //exit(-1);
 	  mIConnet = 1;
     }
-    printf("MaxOrderLocalID = %d\n", atoi(pRspUserLogin->MaxOrderLocalID));	
+    LOG_INFO("MaxOrderLocalID = ", atoi(pRspUserLogin->MaxOrderLocalID));	
     MaxOrderLocalID = atoi(pRspUserLogin->MaxOrderLocalID)+1;	
     //strncpy(MaxOrderLocalID,pRspUserLogin->MaxOrderLocalID,strlen(pRspUserLogin->MaxOrderLocalID));	
     mIConnet = 0;	
@@ -55,30 +54,30 @@ void CUstpFtdcTraderManger::OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserL
 void CUstpFtdcTraderManger::OnRspOrderInsert(CUstpFtdcInputOrderField  *pInputOrder, CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast)
 {
     // 输出报单录入结果
-    printf("CUstpFtdcTraderManger::OnRspOrderInsert\n");
-    printf("ErrorCode=[%d], ErrorMsg=[%s]\n",pRspInfo->ErrorID, pRspInfo->ErrorMsg);
+    LOG_INFO("CUstpFtdcTraderManger::OnRspOrderInsert");
+    LOG_INFO("ErrorCode=[",pRspInfo->ErrorID,"], ErrorMsg=[",pRspInfo->ErrorMsg,"]" );
+    return;	
 }
 
 ///报单回报
 void CUstpFtdcTraderManger::OnRtnOrder(CUstpFtdcOrderField  *pOrder)
 {
-    printf("CUstpFtdcTraderManger::OnRtnOrder\n");
-    printf("OrderSysID=[%s]\n", pOrder->OrderSysID);
+    LOG_INFO("CUstpFtdcTraderManger::OnRtnOrder");
+    LOG_INFO("OrderSysID=[",pOrder->OrderSysID,"]");
 }
 
 // 针对用户请求的出错通知
 void CUstpFtdcTraderManger::OnRspError(CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast)
 {
-    printf("CUstpFtdcTraderManger::OnRspError\n");
-    printf("ErrorCode=[%d], ErrorMsg=[%s]\n",
-    pRspInfo->ErrorID, pRspInfo->ErrorMsg);
-    printf("RequestID=[%d], Chain=[%d]\n", nRequestID, bIsLast);
+    LOG_INFO("CUstpFtdcTraderManger::OnRspError");
+    LOG_INFO("ErrorCode=[",pRspInfo->ErrorID,"], ErrorMsg=[",pRspInfo->ErrorMsg,"]" );
+    LOG_INFO("RequestID=[%d], Chain=[%d]\n", nRequestID, bIsLast);
     // 客户端需进行错误处理
 
 }
 void CUstpFtdcTraderManger::SetFileConfigData(const std::string &FileConfig)
 {
-    printf("CUstpFtdcTraderManger::SetFileConfigData file = %s \n",FileConfig.c_str());
+    LOG_INFO("CUstpFtdcTraderManger::SetFileConfigData file =  ",FileConfig.c_str());
     m_pFileConfig = new fh::core::assist::Settings(FileConfig); 
 }
 
@@ -101,6 +100,8 @@ CFemasGlobexCommunicator::~CFemasGlobexCommunicator()
 {
      
      delete m_pFileConfig;	 
+     LOG_INFO("m_pUserApi::Release ");
+     m_pUserApi->Release();	
      //m_pUserApi->Release();	 
 }
 
@@ -115,22 +116,22 @@ bool CFemasGlobexCommunicator::Start(const std::vector<::pb::ems::Order> &init_o
 
 void CFemasGlobexCommunicator::Stop()
 {
-    printf("CFemasGlobexCommunicator::Stop \n");
+    LOG_INFO("CFemasGlobexCommunicator::Stop ");
 	
     CUstpFtdcReqUserLogoutField reqUserLogout;
 
     std::string BrokerIDstr = m_pFileConfig->Get("femas-user.BrokerID");
     std::string UserIDstr = m_pFileConfig->Get("femas-user.UserID");
     strcpy(reqUserLogout.BrokerID, BrokerIDstr.c_str());
-    printf("femas-user.BrokerID = %s.\n",reqUserLogout.BrokerID);
+    LOG_INFO("femas-user.BrokerID = ",reqUserLogout.BrokerID);
     strcpy(reqUserLogout.UserID, UserIDstr.c_str());
-    printf("femas-user.UserID = %s.\n",reqUserLogout.UserID);
+    LOG_INFO("femas-user.UserID = ",reqUserLogout.UserID);
 	
     
     m_pUserApi->ReqUserLogout(&reqUserLogout,0);
 
-    printf("m_pUserApi::Release \n");
-    m_pUserApi->Release();	
+    //printf("m_pUserApi::Release \n");
+    //m_pUserApi->Release();	
     return;
 }
 
@@ -142,7 +143,7 @@ void CFemasGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contr
         m_pUserApi->SubscribePublicTopic(USTP_TERT_RESUME);
 
         std::string tmpurl = m_pFileConfig->Get("femas-exchange.url");
-        printf("femas exchange url = %s \n",tmpurl.c_str());	 
+        LOG_INFO("femas exchange url = ",tmpurl.c_str());	 
         m_pUserApi->RegisterFront((char*)(tmpurl.c_str()));	
 
         m_pUserApi->Init();
@@ -152,20 +153,20 @@ void CFemasGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contr
         {
              if(time(NULL)-tmtimeout>m_itimeout)
 	      {
-                  printf("CFemasGlobexCommunicator::mIConnet tiomeout \n");
+                  LOG_ERROR("CFemasGlobexCommunicator::mIConnet tiomeout ");
 	           return;		  
 	      }
              sleep(0.1);    
          }	 
-         printf("CFemasGlobexCommunicator::mIConnet is ok \n");	 
+         LOG_INFO("CFemasGlobexCommunicator::mIConnet is ok ");	 
 
          return;	
 }
 
 void CFemasGlobexCommunicator::Add(const ::pb::ems::Order& order)
 {
-        printf("CFemasGlobexCommunicator::Add \n");
-        printf("CUstpFtdcInputOrderField: \n");
+        LOG_INFO("CFemasGlobexCommunicator::Add ");
+        LOG_INFO("CUstpFtdcInputOrderField: ");
 		
         CUstpFtdcInputOrderField SInputOrder;
 	 memset(&SInputOrder,0,sizeof(CUstpFtdcInputOrderField));	
@@ -218,22 +219,22 @@ void CFemasGlobexCommunicator::Add(const ::pb::ems::Order& order)
         std::string ExchangeID = m_pFileConfig->Get("femas-exchange.ExchangeID");
 	 strcpy(SInputOrder.ExchangeID , ExchangeID.c_str());  
 
-        printf("UserOrderLocalID: %s\n",SInputOrder.UserOrderLocalID);
-	 printf("BrokerID: %s\n",SInputOrder.BrokerID);
-	 printf("UserID: %s\n",SInputOrder.UserID);
-	 printf("InstrumentID: %s\n",SInputOrder.InstrumentID);
-	 printf("InvestorID: %s\n",SInputOrder.InvestorID);
-	 printf("Direction: %c\n",SInputOrder.Direction);
-	 printf("OffsetFlag: %c\n",SInputOrder.OffsetFlag);
-	 printf("HedgeFlag: %c\n",SInputOrder.HedgeFlag);
-	 printf("LimitPrice: %f\n",SInputOrder.LimitPrice);
-	 printf("Volume: %d\n",SInputOrder.Volume);
-	 printf("TimeCondition: %c\n",SInputOrder.TimeCondition);
-	 printf("IsAutoSuspend: %d\n",SInputOrder.IsAutoSuspend);
-	 printf("ExchangeID: %s\n",SInputOrder.ExchangeID);
+        LOG_INFO("UserOrderLocalID:",SInputOrder.UserOrderLocalID);
+	 LOG_INFO("BrokerID: ",SInputOrder.BrokerID);
+	 LOG_INFO("UserID: ",SInputOrder.UserID);
+	 LOG_INFO("InstrumentID: ",SInputOrder.InstrumentID);
+	 LOG_INFO("InvestorID: ",SInputOrder.InvestorID);
+	 LOG_INFO("Direction: ",SInputOrder.Direction);
+	 LOG_INFO("OffsetFlag: ",SInputOrder.OffsetFlag);
+	 LOG_INFO("HedgeFlag: ",SInputOrder.HedgeFlag);
+	 LOG_INFO("LimitPrice: ",SInputOrder.LimitPrice);
+	 LOG_INFO("Volume: ",SInputOrder.Volume);
+	 LOG_INFO("TimeCondition: ",SInputOrder.TimeCondition);
+	 LOG_INFO("IsAutoSuspend: ",SInputOrder.IsAutoSuspend);
+	 LOG_INFO("ExchangeID: ",SInputOrder.ExchangeID);
 
 	 
-       // m_pUserApi->ReqOrderInsert(&SInputOrder, 1);
+        m_pUserApi->ReqOrderInsert(&SInputOrder, 1);
         return;
 }
 
