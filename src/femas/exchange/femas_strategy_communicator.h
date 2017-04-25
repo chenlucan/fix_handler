@@ -27,6 +27,10 @@ namespace exchange
             CFemasStrategyCommunicator(const std::string &send_url, const std::string &receive_url);
             virtual ~CFemasStrategyCommunicator();
 
+        public:
+            void Start_receive();
+            void Set_exchange(core::exchange::ExchangeI *exchange);
+
 	 public:		
 	     // implement of ExchangeListenerI
             virtual void OnOrder(const ::pb::ems::Order &order) override;

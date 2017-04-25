@@ -23,9 +23,9 @@ CFemasBookManager::~CFemasBookManager()
 
 
 
-void CFemasBookManager::SendFemasarketData(CUstpFtdcDepthMarketDataField *pMarketData)
+void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMarketData)
 {
-	LOG_INFO("CFemasBookManager::SendFemasarketData ");     
+	LOG_INFO("CFemasBookManager::SendFemasmarketData ");     
 	if(NULL == pMarketData)
 	{
        	        LOG_INFO("Error pMarketData is NULL ");
