@@ -25,10 +25,10 @@ CFemasBookManager::~CFemasBookManager()
 
 void CFemasBookManager::SendFemasarketData(CUstpFtdcDepthMarketDataField *pMarketData)
 {
-	printf("CFemasBookManager::SendFemasarketData \n");     
+	LOG_INFO("CFemasBookManager::SendFemasarketData ");     
 	if(NULL == pMarketData)
 	{
-       	printf("Error pMarketData is NULL \n");
+       	        LOG_INFO("Error pMarketData is NULL ");
 		return;
 	}
 	pb::dms::L2 l2_info;
@@ -158,7 +158,7 @@ void CFemasBookManager::SendFemasarketData(CUstpFtdcDepthMarketDataField *pMarke
 	//发送最优价
 	if(pMarketData->BidPrice1 == DBL_MAX && pMarketData->AskPrice1 == DBL_MAX)
 	{
-           printf("Bid and Offer NULL \n");
+           LOG_INFO("Bid and Offer NULL ");
 	}
 	else
 	if(pMarketData->BidPrice1 == DBL_MAX)	

@@ -9,10 +9,13 @@
 #include <signal.h>
 
 
-
+#include "core/assist/logger.h"
 #include "femas/exchange/femas_exchange_application.h"
 
 bool stop_all=false;
+fh::femas::exchange::CFemasExchangeApp *pFemasExchangeApp=NULL;
+::pb::ems::Order morder;
+fh::core::assist::Settings *pFileConfig=NULL;
 
 void handler(int sig) 
 {
@@ -62,8 +65,36 @@ int main_loop()
 {
         while(!stop_all)
        {
-           printf("========================exchange runing=========================\n");
-	    sleep(10);	 
+           LOG_INFO("exchange runing main_loop");
+	    LOG_INFO("exchange order begin");
+	    LOG_INFO("InstrumentID:");
+	    char userInstrumentID[100]={0};	
+	    scanf("%s", userInstrumentID);	
+
+           LOG_INFO("LimitPrice:");
+           float userLimitPrice=0;
+           scanf("%f", &userLimitPrice);	   
+		   
+	    LOG_INFO("Volume:");
+	    int userVolume=0;
+           scanf("%d", &userVolume);
+
+           std::string UserId = pFileConfig->Get("femas-user.UserID");	
+	 
+           morder.set_client_order_id(std::to_string(pFemasExchangeApp->GetMaxOrderLocalID()));
+           morder.set_account(UserId);	
+           morder.set_contract(userInstrumentID);	 
+           morder.set_buy_sell(pb::ems::BuySell::BS_Buy);
+           morder.set_price(std::to_string(userLimitPrice));
+           morder.set_quantity(userVolume);	 
+           morder.set_tif(pb::ems::TimeInForce::TIF_GFD);
+           morder.set_order_type(pb::ems::OrderType::OT_Limit);
+		   
+
+	    pFemasExchangeApp->Add(morder);	
+
+	    LOG_INFO("exchange order end");	
+	    //sleep(10);	 
        }
 	return 0;
 }
@@ -73,13 +104,13 @@ int main(int argc, char* argv[])
 {
 
      set_SignalProc();
-     printf("exchange main() start\n");
+     LOG_INFO("exchange main() start");
 
      //∂¡»°≈‰÷√Œƒº˛
      std::string FileConfigstr= "femas_config.ini";
   
-     printf("FileConfigstr : %s \n",FileConfigstr.c_str());
-     fh::femas::exchange::CFemasExchangeApp *pFemasExchangeApp = new fh::femas::exchange::CFemasExchangeApp(FileConfigstr);
+     LOG_INFO("FileConfigstr : ",FileConfigstr.c_str());
+     pFemasExchangeApp = new fh::femas::exchange::CFemasExchangeApp(FileConfigstr);
      std::vector<::pb::ems::Order> init_orders;	
      init_orders.clear();     	 
      std::vector<::pb::dms::Contract> contracts;	 
@@ -87,14 +118,14 @@ int main(int argc, char* argv[])
      pFemasExchangeApp->Initialize(contracts);
      if(!pFemasExchangeApp->Start(init_orders))
       {
-          printf("FemasExchangeApp start  Error!\n");
+          LOG_ERROR("FemasExchangeApp start  Error!\n");
 	   pFemasExchangeApp->Stop();	 
 	   delete pFemasExchangeApp;
 	   return 0;	  
       }	 
-     ::pb::ems::Order morder;
-     fh::core::assist::Settings *pFileConfig = new fh::core::assist::Settings(FileConfigstr);
-     std::string UserId = pFileConfig->Get("femas-user.UserID");	
+     //::pb::ems::Order morder;
+     pFileConfig = new fh::core::assist::Settings(FileConfigstr);
+     /*std::string UserId = pFileConfig->Get("femas-user.UserID");	
 	 
      morder.set_client_order_id(std::to_string(pFemasExchangeApp->GetMaxOrderLocalID()));
      morder.set_account(UserId);	
@@ -106,11 +137,12 @@ int main(int argc, char* argv[])
      morder.set_order_type(pb::ems::OrderType::OT_Limit);
 
 	 
-     pFemasExchangeApp->Add(morder);		 
+     pFemasExchangeApp->Add(morder);*/		 
      main_loop();
      pFemasExchangeApp->Stop();	 
      delete pFemasExchangeApp;
-     printf("exchange main stop.\n");	  
+     delete pFileConfig;
+     LOG_INFO("exchange main stop");	  
      return 0;	 
 
 }	 

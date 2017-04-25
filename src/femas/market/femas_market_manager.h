@@ -38,6 +38,7 @@ class CFemasMarkrtManager : public CUstpFtdcMduserSpi
 		CFemasMarkrtManager(CUstpFtdcMduserApi *pUserApi) : m_pUserApi(pUserApi) 
 		{
 		    m_pFileConfig = NULL;
+		    m_pFemasBookManager = NULL;	
 		    mIConnet = -1;	
 		    mISubSuss = -1;	
 		}
