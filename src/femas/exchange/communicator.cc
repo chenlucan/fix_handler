@@ -159,7 +159,6 @@ void CFemasGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contr
              sleep(0.1);    
          }	 
          LOG_INFO("CFemasGlobexCommunicator::mIConnet is ok ");	 
-
          return;	
 }
 
