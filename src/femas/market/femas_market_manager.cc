@@ -168,7 +168,7 @@ void CFemasMarkrtManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pM
 	
 	LOG_INFO("GetDepthMarketData::end");
 
-	m_pFemasBookManager->SendFemasarketData(pMarketData);
+	m_pFemasBookManager->SendFemasmarketData(pMarketData);
        StructToJSON(pMarketData);
 
 	return;

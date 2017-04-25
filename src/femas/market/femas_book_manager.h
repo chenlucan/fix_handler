@@ -21,7 +21,7 @@ namespace market
             explicit CFemasBookManager(fh::core::market::MarketListenerI *sender);
             virtual ~CFemasBookManager();
 
-            void SendFemasarketData(CUstpFtdcDepthMarketDataField *pMarketData);
+            void SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMarketData);
 	     void SendFemasToDB(const std::string &message);		
 
 	  private:
