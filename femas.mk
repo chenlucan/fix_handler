@@ -19,6 +19,9 @@ $(BIN_PATH)/femas_market_main.o: $(SRC_PATH)/main/femas_maket/femas_market_main.
 $(BIN_PATH)/communicator.o: $(SRC_PATH)/femas/exchange/communicator.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 	
+$(BIN_PATH)/femas_strategy_communicator.o: $(SRC_PATH)/femas/exchange/femas_strategy_communicator.cc
+	$(COMPILE_COMMAND) -c -o $@ $<	
+	
 $(BIN_PATH)/femas_exchange_application.o: $(SRC_PATH)/femas/exchange/femas_exchange_application.cc
 	$(COMPILE_COMMAND) -c -o $@ $<					
 

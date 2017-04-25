@@ -81,7 +81,7 @@ namespace market
 void CFemasMarkrtManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pMarketData) 
 {
 		// 客户端按需处理返回的数据
-	LOG_INFO("GetDepthMarketData::begin\n");	
+	LOG_INFO("GetDepthMarketData::begin");	
 	LOG_INFO("name : ",pMarketData->InstrumentID);
 		
 	LOG_INFO("UpdateTime=",pMarketData->UpdateTime,"--",pMarketData->UpdateMillisec);

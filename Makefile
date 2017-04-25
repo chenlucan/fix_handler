@@ -62,7 +62,7 @@ include femas.mk
     
 all: createdir femas_exchange_test femas_market usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend
  
-femas_exchange_test: $(BIN_PATH)/femas_exchange_main.o $(BIN_PATH)/femas_exchange_application.o $(BIN_PATH)/communicator.o \
+femas_exchange_test: $(BIN_PATH)/femas_exchange_main.o $(BIN_PATH)/femas_exchange_application.o $(BIN_PATH)/communicator.o $(BIN_PATH)/femas_strategy_communicator.o \
 			 $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(FEMAS_EXCHANGE_TARGET) $?
 
