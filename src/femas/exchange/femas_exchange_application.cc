@@ -12,6 +12,10 @@ namespace exchange
 
 CFemasExchangeApp::CFemasExchangeApp(const std::string &app_setting_file)
 {
+    pFileConfig = new fh::core::assist::Settings(app_setting_file);
+    std::string save_url_f = pFileConfig->Get("strategy.receive_url");
+    std::string save_url_s = pFileConfig->Get("strategy.send_url");
+    m_strategy = new fh::core::strategy::StrategyCommunicator(save_url_f, save_url_s);
     m_pCFemasGlobexCommunicator = new CFemasGlobexCommunicator(NULL,app_setting_file);
     return;
 }
@@ -20,6 +24,8 @@ CFemasExchangeApp::CFemasExchangeApp(const std::string &app_setting_file)
 CFemasExchangeApp::~CFemasExchangeApp()
 {
     delete m_pCFemasGlobexCommunicator;
+    delete pFileConfig;
+    delete m_strategy;	
     return;
 }
 

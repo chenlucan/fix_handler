@@ -4,6 +4,7 @@
 #include <string>
 #include "core/global.h"
 #include "femas/exchange/femas_globex_communicator.h"
+#include "core/strategy/strategy_communicator.h"
 
 namespace fh
 {
@@ -47,6 +48,8 @@ namespace exchange
 
 	  public:
 	  	      CFemasGlobexCommunicator* m_pCFemasGlobexCommunicator;
+		      fh::core::strategy::StrategyCommunicator *m_strategy;
+		      fh::core::assist::Settings *pFileConfig;	  
 
 	  private:
             DISALLOW_COPY_AND_ASSIGN(CFemasExchangeApp);		  
