@@ -178,6 +178,9 @@ $(BIN_PATH)/%.cfg: $(SRC_PATH)/%.cfg
 
 $(BIN_PATH)/%.log: $(TEST_PATH)/%.log
 	cp -f  $< $@
+    
+$(BIN_PATH)/%.log: $(TEST_PATH)/ut_market_log/%.log
+	cp -f  $< $@
 	
 $(BIN_PATH)/utility_unittest.o: $(TEST_PATH)/core/assist/utility_unittest.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
@@ -191,6 +194,9 @@ $(BIN_PATH)/mut_book_sender.o: $(TEST_PATH)/core/book/mut_book_sender.cc
 $(BIN_PATH)/mut_book_manager.o: $(TEST_PATH)/cme/market/mut_book_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
     
+$(BIN_PATH)/autotest_book_sender.o: $(TEST_PATH)/core/book/autotest_book_sender.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/mut_market_manager.o: $(TEST_PATH)/cme/market/mut_market_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
     

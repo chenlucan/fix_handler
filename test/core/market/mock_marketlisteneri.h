@@ -6,7 +6,6 @@
 #include "mock_fwd.h"
 #include "pb/dms/dms.pb.h"
 
-
 namespace fh {
 namespace core {
 namespace market {
@@ -23,7 +22,7 @@ class MockMarketListenerI :public MarketListenerI{
   MOCK_METHOD1(OnBBO, void(const pb::dms::BBO &bbo));
   MOCK_METHOD1(OnBid, void(const pb::dms::Bid &bid));
   MOCK_METHOD1(OnOffer, void(const pb::dms::Offer &offer));
-  MOCK_METHOD1(OnL2, void(const pb::dms::L2 &l2));
+  MOCK_METHOD1(OnL2, void(const pb::dms::L2 &l2));  
   MOCK_METHOD0(OnL3, void());
   MOCK_METHOD1(OnTrade, void(const pb::dms::Trade &trade));
   
@@ -32,7 +31,6 @@ class MockMarketListenerI :public MarketListenerI{
   MOCK_METHOD1(OnContractTrading, void(const std::string &contract));
   
   MOCK_METHOD1(OnOrginalMessage, void(const std::string &message));
-
 };
 
 }  // namespace market

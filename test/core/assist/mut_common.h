@@ -22,7 +22,7 @@ namespace common
     void show_message(const std::string &hex_message);
     
     // read mdp packets from file(one packet per line) for test
-    std::vector<std::string> Read_packets(const std::string &filename, const std::string &packet_start_indicate = "=");
+    std::vector<std::string> Read_packets(const std::string &filename, const std::string &packet_from, const std::string &packet_start_indicate = "=");
 
 } // namespace utility
 } // namespace assist

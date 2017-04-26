@@ -85,43 +85,55 @@ namespace common
     }
     
     // read mdp packets from file(one packet per line) for test
-    std::vector<std::string> Read_packets(const std::string &filename, const std::string &packet_start_indicate)
+    std::vector<std::string> Read_packets(const std::string &filename, const std::string &packet_from,  const std::string &packet_start_indicate)
     {
         std::vector<std::string> packets;
         std::ifstream input(filename);
         std::string line;
         while (std::getline(input, line))
         {
-            auto pos = line.find(packet_start_indicate);
+            auto pos = line.find(packet_from);
             if(pos != std::string::npos)
             {
-                line.erase(0, pos + packet_start_indicate.size());
-                
-            std::istringstream iss(line);
-            std::vector<std::string> tokens;
-            std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter(tokens));
+                line.erase(0, pos + packet_from.size());
+                //printf("=== [1] pos=[%d], line = [%s] ===\n", pos, line.c_str() );
 
-            std::vector<char> bytes;
-            int index = 0;
-            std::ostringstream byte_line;
-            std::for_each(tokens.begin(), tokens.end(), [&bytes, &index, &byte_line](std::string &s){
-                boost::trim_right(s);
-                boost::trim_left(s);
-                if(s != "")
+
+                pos = line.find(packet_start_indicate);
+
+                if(pos != std::string::npos)
                 {
-                    bytes.push_back((char) strtol(s.c_str(), nullptr, 16));
-                    index ++;
-                    std::string dec;
-                    if(index % 40 == 0) dec = "\n";
-                    else if(index % 20 == 0) dec = "    ";
-                    else if(index % 10 == 0) dec = "  ";
-                    else dec = " ";
-                    byte_line << s << dec;
+                    line.erase(0, pos + packet_start_indicate.size());
+                    //printf("=== [2] pos=[%d], line = [%s] ===\n", pos, line.c_str() );
+
+
+                    std::istringstream iss(line);
+                    std::vector<std::string> tokens;
+                    std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter(tokens));
+
+                    std::vector<char> bytes;
+                    int index = 0;
+                    std::ostringstream byte_line;
+                    std::for_each(tokens.begin(), tokens.end(), [&bytes, &index, &byte_line](std::string &s){
+                        boost::trim_right(s);
+                        boost::trim_left(s);
+                        if(s != "")
+                        {
+                            bytes.push_back((char) strtol(s.c_str(), nullptr, 16));
+                            index ++;
+                            std::string dec;
+                            if(index % 40 == 0) dec = "\n";
+                            else if(index % 20 == 0) dec = "    ";
+                            else if(index % 10 == 0) dec = "  ";
+                            else dec = " ";
+                            byte_line << s << dec;
+                        }
+                    });
+                    packets.push_back(std::string(bytes.cbegin(), bytes.cend()));
+                    LOG_DEBUG("read packet: size=", bytes.size(), "\n", byte_line.str());
                 }
-            });
-            packets.push_back(std::string(bytes.cbegin(), bytes.cend()));
-            LOG_DEBUG("read packet: size=", bytes.size(), "\n", byte_line.str());
-        }
+            }
+            
         }
 
         return packets;
