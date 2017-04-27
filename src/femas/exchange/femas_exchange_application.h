@@ -3,7 +3,7 @@
 
 #include <string>
 #include "core/global.h"
-#include "femas/exchange/femas_globex_communicator.h"
+#include "femas/exchange/communicator.h"
 #include "core/strategy/strategy_communicator.h"
 
 namespace fh
