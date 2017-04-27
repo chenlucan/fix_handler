@@ -168,6 +168,7 @@ void CFemasGlobexCommunicator::Add(const ::pb::ems::Order& order)
 {
         LOG_INFO("CFemasGlobexCommunicator::Add ");
         LOG_INFO("CUstpFtdcInputOrderField: ");
+	 //return;	
 		
         CUstpFtdcInputOrderField SInputOrder;
 	 memset(&SInputOrder,0,sizeof(CUstpFtdcInputOrderField));	
@@ -241,26 +242,31 @@ void CFemasGlobexCommunicator::Add(const ::pb::ems::Order& order)
 
 void CFemasGlobexCommunicator::Change(const ::pb::ems::Order& order)
 {
+        LOG_INFO("CFemasGlobexCommunicator::Change ");
         return;
 }
 
 void CFemasGlobexCommunicator::Delete(const ::pb::ems::Order& order)
 {
+        LOG_INFO("CFemasGlobexCommunicator::Delete ");
         return;
 }
 
 void CFemasGlobexCommunicator::Query(const ::pb::ems::Order& order)
 {
+        LOG_INFO("CFemasGlobexCommunicator::Query ");
         return;
 }
 
 void CFemasGlobexCommunicator::Query_mass(const char *data, size_t size)
 {
+        LOG_INFO("CFemasGlobexCommunicator::Query_mass ");
         return;
 }
 
 void CFemasGlobexCommunicator::Delete_mass(const char *data, size_t size)
 {
+        LOG_INFO("CFemasGlobexCommunicator::Delete_mass ");
         return;
 }
 

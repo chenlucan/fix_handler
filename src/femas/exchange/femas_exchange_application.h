@@ -25,6 +25,7 @@ namespace exchange
 		      bool Start(const std::vector<::pb::ems::Order> &init_orders);
 		      void Stop();
 
+                    //code test begin
                     void Initialize(std::vector<::pb::dms::Contract> contracts);
 
                     void Add(const ::pb::ems::Order& order);
@@ -45,6 +46,7 @@ namespace exchange
 			  m_pCFemasGlobexCommunicator->m_pUstpFtdcTraderManger->MaxOrderLocalID++;
 			  return ret;
 		      }
+		      //code test end	  
 
 	  public:
 	  	      CFemasGlobexCommunicator* m_pCFemasGlobexCommunicator;

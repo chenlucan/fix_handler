@@ -28,6 +28,7 @@ CFemasMarket::CFemasMarket(fh::core::market::MarketListenerI *listener)
 
 CFemasMarket::~CFemasMarket()
 {
+     m_pUstpFtdcMduserApi->Release();
     delete m_FemasMarkrtManager;	
     delete m_pFileConfig;	
 }
@@ -137,7 +138,7 @@ void CFemasMarket::Stop()
 	
      m_pUstpFtdcMduserApi->ReqUserLogout(&reqUserLogout,0);	 
 	 
-     m_pUstpFtdcMduserApi->Release();
+     //m_pUstpFtdcMduserApi->Release();
       
 }
 // implement of MarketI

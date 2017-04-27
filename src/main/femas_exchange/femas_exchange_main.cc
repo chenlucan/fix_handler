@@ -65,6 +65,11 @@ int main_loop()
 {
         while(!stop_all)
        {
+           //LOG_INFO("exchange order end");
+	    //sleep(10);
+	    //continue;	
+  
+	   
            LOG_INFO("exchange runing main_loop");
 	    LOG_INFO("exchange order begin");
 	    LOG_INFO("InstrumentID:");
