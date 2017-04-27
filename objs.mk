@@ -68,6 +68,9 @@ $(BIN_PATH)/mdp_message.o: $(SRC_PATH)/cme/market/message/mdp_message.cc
 $(BIN_PATH)/message_utility.o: $(SRC_PATH)/cme/market/message/message_utility.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
+$(BIN_PATH)/book_replayer.o: $(SRC_PATH)/cme/market/playback/book_replayer.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/market_settings.o: $(SRC_PATH)/cme/market/setting/market_settings.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
