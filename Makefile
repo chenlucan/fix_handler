@@ -30,7 +30,8 @@ TEST_COMPILE_COMMAND = $(COMPILER) $(INCLUDE_PATH) $(INCLUDE_TEST_PATH) $(LIBS_P
 LINT_COMMAND = $(TEST_PATH)/cpplint.py
 
 SETTINGS = $(BIN_PATH)/market_config.xml $(BIN_PATH)/market_settings.ini  $(BIN_PATH)/exchange_server.cfg \
-					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg $(BIN_PATH)/persist_settings.ini
+					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg $(BIN_PATH)/persist_settings.ini \
+					  $(BIN_PATH)/trade_matching_settings.ini
 ALL_OBJS =  $(filter-out $(wildcard $(BIN_PATH)/*_test.o), $(wildcard $(BIN_PATH)/*.o)) 
 TEST_OBJS = $(BIN_PATH)/utility_unittest.o $(BIN_PATH)/mut_book_sender.o
 COMM_OBJS = $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/utility.o $(BIN_PATH)/message_utility.o $(BIN_PATH)/logger.o \
@@ -52,13 +53,15 @@ STRATEGY_TARGET = $(BIN_PATH)/strategy_test
 EXCHANGE_CLIENT_TARGET = $(BIN_PATH)/exchange_client_test
 ORIGINAL_SAVER_TARGET = $(BIN_PATH)/original_saver_test
 ORIGINAL_SENDER_TARGET = $(BIN_PATH)/original_sender_test
+TRADE_MATCHING_ALPHA_TARGET = $(BIN_PATH)/trade_matching_alpha_test
 TEST_TARGET = $(BIN_PATH)/utest
     
 default: all;
     
+include tmobjs.mk
 include objs.mk
     
-all: createdir usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender
+all: createdir usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender tmalpha
  
 createdir:
 	mkdir -p ${BIN_PATH}
@@ -105,6 +108,10 @@ original: $(BIN_PATH)/original_saver_test.o $(BIN_PATH)/mongo.o $(BIN_PATH)/orig
 		
 orgsend: $(BIN_PATH)/original_sender_test.o $(COMM_OBJS)
 	$(COMPILE_COMMAND) -o $(ORIGINAL_SENDER_TARGET) $? 
+
+tmalpha: $(BIN_PATH)/trade_matching_alpha_test.o $(BIN_PATH)/tmalpha_market_application.o $(BIN_PATH)/market_simulater.o $(BIN_PATH)/book_replayer.o \
+				 $(BIN_PATH)/mongo.o $(BIN_PATH)/book_state_controller.o $(COMM_OBJS)
+	$(COMPILE_COMMAND) -o $(TRADE_MATCHING_ALPHA_TARGET) $? 
 		
 copyfile: $(SETTINGS)
 
