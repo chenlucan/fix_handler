@@ -1,0 +1,65 @@
+#ifndef __FH_REM_MARKET_CRemBookSender_H__
+#define __FH_REM_MARKET_CRemBookSender_H__
+
+#include <string>
+#include "core/global.h"
+#include "core/market/marketlisteneri.h"
+#include "core/zmq/zmq_sender.h"
+
+namespace fh
+{
+namespace rem
+{
+namespace market
+{
+
+
+    class CRemBookSender : public fh::core::market::MarketListenerI
+    {
+        public:
+            CRemBookSender(const std::string &org_url, const std::string &book_url);
+            virtual ~CRemBookSender();
+
+        public:
+            // implement of MarketListenerI
+            void OnMarketDisconnect(core::market::MarketI* market) override;
+            // implement of MarketListenerI
+            void OnMarketReconnect(core::market::MarketI* market) override;
+            // implement of MarketListenerI
+            void OnContractDefinition(const pb::dms::Contract &contract) override;
+            // implement of MarketListenerI
+            void OnBBO(const pb::dms::BBO &bbo) override;
+            // implement of MarketListenerI
+            void OnBid(const pb::dms::Bid &bid) override;
+            // implement of MarketListenerI
+            void OnOffer(const pb::dms::Offer &offer) override;
+            // implement of MarketListenerI
+            void OnL2(const pb::dms::L2 &l2) override;
+            // implement of MarketListenerI
+            void OnL3() override;
+            // implement of MarketListenerI
+            void OnTrade(const pb::dms::Trade &trade) override;
+            // implement of MarketListenerI
+            void OnContractAuctioning(const std::string &contract) override;
+            // implement of MarketListenerI
+            void OnContractNoTrading(const std::string &contract)  override;
+            // implement of MarketListenerI
+            void OnContractTrading(const std::string &contract)    override;
+            // implement of MarketListenerI
+            virtual void OnOrginalMessage(const std::string &message);
+
+        private:
+            fh::core::zmq::ZmqSender m_org_sender;
+            fh::core::zmq::ZmqSender m_book_sender;
+
+        private:
+            DISALLOW_COPY_AND_ASSIGN(CRemBookSender);
+    };
+
+
+
+} // namespace market
+} // namespace rem
+} // namespace fh
+
+#endif 
