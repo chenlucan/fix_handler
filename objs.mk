@@ -199,4 +199,7 @@ $(BIN_PATH)/autotest_book_sender.o: $(TEST_PATH)/core/book/autotest_book_sender.
 
 $(BIN_PATH)/mut_market_manager.o: $(TEST_PATH)/cme/market/mut_market_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/mut_dat_saver.o: $(TEST_PATH)/cme/market/mut_dat_saver.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
     

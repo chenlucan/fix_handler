@@ -3,15 +3,27 @@
 
 #include <unordered_map>
 #include <string>
+#include <sstream>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/typeof/typeof.hpp>  
+#include <boost/foreach.hpp>
+
+#include <bsoncxx/document/value.hpp>
+#include <bsoncxx/types.hpp>
+#include <bsoncxx/json.hpp>
+
 #include "core/global.h"
 #include "core/market/marketlisteneri.h"
+
+#include "../../core/assist/mut_common.h"
 
 namespace fh
 {
 namespace core
 {
 namespace book
-{
+{    
     class AutoTestBookSender : public fh::core::market::MarketListenerI
     {
         public:
@@ -50,11 +62,13 @@ namespace book
         private:
             int m_current_caseid;
             std::string m_sendL2;  // save the value of the last L2
-            std::unordered_map<std::string, std::string> m_L2ValueMap; // save the value of the last L2
-        public:     
-            void CheckResult(const std::string &contract);
+            std::unordered_map<std::string, std::string> m_L2ValueMap; // save the value of the last L2            
+            std::map<std::string, fh::core::assist::common::DefineMsg_Compare> m_DefValueMap; // save the value of the last Define message
+        public:            
             void SetCaseId(const int &caseId);
             int  GetCaseId();
+            
+            void CheckResult(const std::string &contract);
 
         private:
             DISALLOW_COPY_AND_ASSIGN(AutoTestBookSender);

@@ -13,7 +13,7 @@ namespace book
 {
 
     AutoTestBookSender::AutoTestBookSender():
-    m_current_caseid(0)
+    m_current_caseid(0), m_sendL2(), m_L2ValueMap(), m_DefValueMap()
     {
         // noop
     }
@@ -69,6 +69,12 @@ namespace book
         // 前面加个 L 标记是 L2 数据
         LOG_INFO("send L2: ", fh::core::assist::utility::Format_pb_message(l2));  
         m_sendL2 = fh::core::assist::utility::Format_pb_message(l2);
+        if( (m_current_caseid!=fh::core::assist::common::CaseIdValue::MakePrice_1) 
+            && (m_current_caseid!=fh::core::assist::common::CaseIdValue::MakePrice_2) )
+        {
+            return;
+        }
+        
         std::string strL2 = m_sendL2;
         std::string strContractKey = ", bid";
         auto pos = strL2.find(strContractKey);
@@ -88,8 +94,7 @@ namespace book
                 m_L2ValueMap.insert(make_pair(strL2, m_sendL2)); 
                 LOG_DEBUG("===== insert =====");
             }             
-        }
-        
+        }        
     }
 
     // implement of MarketListenerI
@@ -127,6 +132,120 @@ namespace book
     void AutoTestBookSender::OnOrginalMessage(const std::string &message)
     {
         LOG_INFO("send Original Message, size=", message.size(), " message=", message);
+        std::string strJson = message;
+        //strJson = "{\"code\":0,\"noEvents\":[{\"eventTime\":\"1466460000000000000\"},{\"eventTime\":\"1505489400000000000\"}, {\"eventTime\":\"1466460000000000000\"},{\"eventTime\":\"1505489400000000000\"}]}";
+        
+        //strJson = "{\"noEvents\":[{\"eventType":\"5\",\"eventTime\":\"1466460000000000000\"}]}";
+        
+        //"securityID": "996791",
+        //"SecurityGroup": "91", 
+        //"marketSegmentID" : "99"        
+        //"noEvents": [
+        //    {
+        //        "eventType": "5",
+        //        "eventTime": "1466460000000000000"
+        //    },
+        //    {
+        //        "eventType": "7",
+        //        "eventTime": "1505489400000000000"
+        //    }
+        //],
+        
+        switch(m_current_caseid)
+        {
+            case fh::core::assist::common::CaseIdValue::Sd_1: // case: DatSaver_Test001
+            { 
+                boost::property_tree::ptree ptParse;
+                std::stringstream ss(strJson);
+                try
+                {
+                    boost::property_tree::read_json(ss, ptParse);
+                    
+                    boost::property_tree::ptree event_array = ptParse.get_child("message.noEvents");  // get_child得到数组对象   
+
+                    if(event_array.size()!=2)
+                    {
+                        return;
+                    }
+                    
+                    std::string securityIDValue = ptParse.get<std::string>("message.securityID");   // 获取“securityID”的value            
+                    LOG_DEBUG("===== securityIDValue: ", securityIDValue.c_str(), " =====");
+                                
+                    fh::core::assist::common::DefineMsg_Compare t_defComp;
+                    std::string securityGroupValue = ptParse.get<std::string>("message.SecurityGroup");
+                    std::string defComp = "SecurityGroup="+securityGroupValue;
+                    std::string marketSegmentIDValue = ptParse.get<std::string>("message.marketSegmentID");
+                    defComp += ", marketSegmentID="+marketSegmentIDValue;
+                    defComp += ", noEvents=[";
+                    // 遍历数组
+                    BOOST_FOREACH(boost::property_tree::ptree::value_type &v, event_array)  
+                    {  
+                        boost::property_tree::ptree& childparse = v.second;
+                        
+                        std::string eventType = childparse.get<std::string>("eventType");
+                        std::string eventTime = childparse.get<std::string>("eventTime");
+                        LOG_DEBUG("********* eventType = ", eventType, ", eventTime = ", eventTime ," *********");
+                        if("5" == eventType)
+                        {
+                            t_defComp.activation_date_ime  = eventTime;                    
+                        }
+                        else if("7" == eventType)
+                        {
+                            t_defComp.expiration_date_ime  = eventTime;
+                        }
+                        std::stringstream s;
+                        write_json(s, v.second);
+                        std::string event_item = s.str();
+                        defComp += ", noEvents="+event_item;
+                        LOG_DEBUG("=== event_item = ", event_item.c_str(), ", event_array.size = ", event_array.size(),   " =====");
+                    }
+                    
+                    t_defComp.market_segment_id    = marketSegmentIDValue;
+                    t_defComp.security_group       = securityGroupValue;
+                        
+                    std::string strKey = "securityID="+securityIDValue;
+                    auto iterL2 = m_DefValueMap.find(strKey);
+                    if(iterL2 != m_DefValueMap.end())
+                    {          
+                        LOG_DEBUG("===== [repalce] (", strKey, ",", iterL2->second.To_string(), ") -> (",t_defComp.To_string(), ") =====");
+                        iterL2->second = t_defComp;
+                    }
+                    else
+                    {
+                        m_DefValueMap.insert(make_pair(strKey, t_defComp)); 
+                        LOG_DEBUG("===== [insert] (", strKey, ",", t_defComp.To_string(), ") =====");
+                    }
+                }
+                catch(boost::property_tree::ptree_error & e) {
+                    return;
+                }        
+                /*try
+                {
+                    // parse json error: unset document::element
+                    bsoncxx::document::value details = bsoncxx::from_json(strJson);
+                    auto view = details.view();
+                    auto colname = view["message.SecurityGroup"].get_utf8().value.to_string();
+                    auto colevent = view["message.noEvents"].get_array().value;
+                    
+                    //LOG_DEBUG("colevent = ", colevent);            
+                    LOG_DEBUG("colname: ", colname);
+                }
+                catch(std::exception &e)
+                {
+                    LOG_WARN("parse json error: ", e.what());
+                }*/               
+                break;
+            }
+            default:
+            {
+                LOG_INFO("other m_current_caseid: ", m_current_caseid);
+                break;
+            }
+        }
+        if(m_current_caseid==22)
+        {
+
+        }        
     }
     
     void AutoTestBookSender::SetCaseId(const int &caseId)
@@ -142,14 +261,15 @@ namespace book
     // check the result of case
     void AutoTestBookSender::CheckResult(const std::string &contract)
     {
-        LOG_DEBUG("==== AutoTestBookSender::CheckResult ====");
+        LOG_DEBUG("==== AutoTestBookSender::CheckResult m_current_caseid = [" , m_current_caseid, "] ,contract = [", contract,  "] ====");
         switch(m_current_caseid)
         {
-            case 20: // case: BookManager_Test020
+            case fh::core::assist::common::CaseIdValue::MakePrice_1: // case: BookManager_Test020
             {
                 auto iterL2 = m_L2ValueMap.find(contract);
                 if(iterL2!=m_L2ValueMap.end())
                 {
+                    LOG_DEBUG("[MakePrice_1] check L2Vale = ", iterL2->second.c_str());
                     // EXPECT_STRNE EXPECT_STREQ
                     EXPECT_STREQ("contract=1DVEU7, bid=[price=24135.000000, size=44][price=24130.000000, size=67], offer=",
                         iterL2->second.c_str());
@@ -159,12 +279,34 @@ namespace book
 
                 break;
             }
-            case 21: // case: BookManager_Test021
+            case fh::core::assist::common::CaseIdValue::MakePrice_2: // case: BookManager_Test021
             {   
-                std::string strL2Value = m_L2ValueMap.at(contract);
-                EXPECT_STREQ("contract=1DVEU7, bid=[price=24115.000000, size=93], offer=[price=24140.000000, size=5][price=24150.000000, size=59][price=24155.000000, size=33][price=24160.000000, size=33][price=24165.000000, size=39]",
-                        strL2Value.c_str());
-                m_L2ValueMap.erase(contract);                
+                auto iterL2 = m_L2ValueMap.find(contract);
+                if(iterL2!=m_L2ValueMap.end())
+                {                    
+                    LOG_DEBUG("[MakePrice_2] check L2Vale = ", iterL2->second.c_str());
+                    std::string strL2Value = iterL2->second.c_str();
+                    EXPECT_STREQ("contract=1DVEU7, bid=[price=24115.000000, size=93], offer=[price=24140.000000, size=5][price=24150.000000, size=59][price=24155.000000, size=33][price=24160.000000, size=33][price=24165.000000, size=39]",
+                            strL2Value.c_str());
+                    m_L2ValueMap.erase(contract);
+                }                             
+                break;
+            }
+            case fh::core::assist::common::CaseIdValue::Sd_1: // case: DatSaver_Test001
+            {
+                auto iterDefMsg = m_DefValueMap.find(contract);
+                if(iterDefMsg!=m_DefValueMap.end())
+                {
+                    auto defMsgValue = iterDefMsg->second;
+                    LOG_DEBUG("defMsgValue = ", defMsgValue.To_string());
+                    EXPECT_STREQ("99", defMsgValue.market_segment_id.c_str());
+                    EXPECT_STREQ("8$", defMsgValue.security_group.c_str());
+                    EXPECT_STREQ("1489782300000000000", defMsgValue.activation_date_ime.c_str());
+                    EXPECT_STREQ("1521207000000000000", defMsgValue.expiration_date_ime.c_str());
+                    
+                    m_DefValueMap.erase(contract);
+                }
+                               
                 break;
             }
             default:
@@ -172,9 +314,7 @@ namespace book
                 LOG_INFO("ignore m_current_caseid: ", m_current_caseid);
                 break;
             }
-        }      
-       
-        LOG_DEBUG("m_L2ValueMap size = ", m_L2ValueMap.size());
+        }
     }    
 
 } // namespace book

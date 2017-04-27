@@ -32,7 +32,7 @@ namespace cme
 namespace market
 { 
     MutBookManager::MutBookManager():
-    m_datas()
+    m_datas(), m_vecRevPacket()
     {
     }
 
@@ -43,6 +43,7 @@ namespace market
     
     void MutBookManager::SetUp()
     {
+        m_vecRevPacket.clear();
     }
     
     void MutBookManager::TearDown()
@@ -80,10 +81,10 @@ namespace market
             fh::core::assist::common::getAbsolutePath(recvBufFileName);        
             recvBufFileName +="mut_cmemarket_revbuf.log";
             
-            std::vector<std::string> vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "[MutBookManager_BookManager_Test001] ");
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "[MutBookManager_BookManager_Test001] ");
             
             // 
-            std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
                     [this, book_manager](const std::string &revPacket)
                     {
                         // decode
@@ -115,7 +116,7 @@ namespace market
                     }
             ); 
                         
-            vecRevPacket.clear();
+            m_vecRevPacket.clear();
         }  
         
         
@@ -160,9 +161,9 @@ namespace market
         fh::core::assist::common::getAbsolutePath(recvBufFileName);        
         recvBufFileName +="mut_cmemarket_revbuf.log";
 
-        std::vector<std::string> vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "[MutBookManager_BookManager_Test002] ");
+        fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "[MutBookManager_BookManager_Test002] ");
         
-        std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+        std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
                 [this, book_manager](const std::string &revPacket)
                 {
                     // decode
@@ -193,7 +194,7 @@ namespace market
                 }
         );  
 
-        vecRevPacket.clear();        
+        m_vecRevPacket.clear();        
         
         delete book_manager;
         book_manager = nullptr;
@@ -985,11 +986,11 @@ namespace market
             fh::core::assist::common::getAbsolutePath(recvBufFileName);        
             recvBufFileName +="mut_cmemarket_revbuf.log";
             
-            std::vector<std::string> vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "[MutBookManager_BookManager_Test010] ");
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "[MutBookManager_BookManager_Test010] ");
             
 
             // 
-            std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
                     [this, book_manager](const std::string &revPacket)
                     {
                         // decode
@@ -1030,7 +1031,7 @@ namespace market
             );
          
                                     
-            vecRevPacket.clear();
+            m_vecRevPacket.clear();
         }  
         
         
@@ -1084,11 +1085,11 @@ namespace market
             fh::core::assist::common::getAbsolutePath(recvBufFileName);        
             recvBufFileName +="mut_cmemarket_revbuf.log";
             
-            std::vector<std::string> vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "[MutBookManager_BookManager_Test011] ");
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "[MutBookManager_BookManager_Test011] ");
             
 
             // 
-            std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
                     [this, book_manager](const std::string &revPacket)
                     {
                         // decode
@@ -1131,7 +1132,7 @@ namespace market
             );
          
                                     
-            vecRevPacket.clear();
+            m_vecRevPacket.clear();
         }  
         
         
@@ -1185,11 +1186,11 @@ namespace market
             fh::core::assist::common::getAbsolutePath(recvBufFileName);        
             recvBufFileName +="mut_cmemarket_revbuf.log";
             
-            std::vector<std::string> vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "[MutBookManager_BookManager_Test012] ");
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "[MutBookManager_BookManager_Test012] ");
             
 
             // 
-            std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
                     [this, book_manager](const std::string &revPacket)
                     {
                         // decode
@@ -1230,7 +1231,7 @@ namespace market
             );
          
                                     
-            vecRevPacket.clear();
+            m_vecRevPacket.clear();
         }  
         
         
@@ -1284,11 +1285,11 @@ namespace market
             fh::core::assist::common::getAbsolutePath(recvBufFileName);        
             recvBufFileName +="mut_cmemarket_revbuf.log";
             
-            std::vector<std::string> vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "[MutBookManager_BookManager_Test013] ");
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "[MutBookManager_BookManager_Test013] ");
             
 
             // 
-            std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
                     [this, book_manager](const std::string &revPacket)
                     {
                         // decode
@@ -1329,7 +1330,7 @@ namespace market
             );
          
                                     
-            vecRevPacket.clear();
+            m_vecRevPacket.clear();
         }  
         
         
@@ -1388,8 +1389,8 @@ namespace market
             
             
             // definition all received.
-            std::vector<std::string> vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "[MutBookManager_BookManager_Test014_D] ");            
-            std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "[MutBookManager_BookManager_Test014_D] ");            
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
                     [this, &definition_datas](const std::string &revPacket)
                     {
                         // decode                                                
@@ -1405,11 +1406,11 @@ namespace market
             
             book_manager->Set_definition_data(&definition_datas);
             
-            vecRevPacket.clear();
+            m_vecRevPacket.clear();
             
             std::vector<fh::cme::market::message::MdpMessage> recovery_datas;  // recovery message
-            vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "[MutBookManager_BookManager_Test014_R] ");  
-            std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "[MutBookManager_BookManager_Test014_R] ");  
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
                     [this, &recovery_datas](const std::string &revPacket)
                     {
                         // decode                                                
@@ -1426,7 +1427,7 @@ namespace market
             // set received recovery messages
             book_manager->Set_recovery_data(&recovery_datas);
             
-            vecRevPacket.clear();            
+            m_vecRevPacket.clear();            
                         
             recovery_datas.clear();
             definition_datas.clear();
@@ -1472,23 +1473,26 @@ namespace market
             }
             
             fh::core::book::AutoTestBookSender *autotest_book_sender_check = dynamic_cast<fh::core::book::AutoTestBookSender *>(autotest_book_sender);
-            int caseId = 20;
+            int caseId = fh::core::assist::common::CaseIdValue::MakePrice_1;
             autotest_book_sender_check->SetCaseId(caseId);
             //   [627]UDP Incremental:224.0.28.79, 11627
             //   [627]UDP Incremental:224.0.25.101, 11727
             //   [627]UDP Definition:224.0.28.79, 16627
             //   [627]UDP Recovery:224.0.28.124, 19627
             
+            
             std::string recvBufFileName;
             fh::core::assist::common::getAbsolutePath(recvBufFileName);        
             recvBufFileName += "market_by_price_1.log";
             
-            std::vector<std::string> vecRevPacket;
+            //std::vector<std::string> vecRevPacket;
             std::vector<fh::cme::market::message::MdpMessage> definition_datas; // define message
+
+            m_vecRevPacket.clear();
             // received define message
             // udp received from [224.0.28.79:16627](1368)=01
-            vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "udp received from [224.0.28.79:16627](");            
-            std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "udp received from [224.0.28.79:16627](", "=");            
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
                     [this, &definition_datas](const std::string &revPacket)
                     {
                         // decode                                                
@@ -1504,11 +1508,11 @@ namespace market
              
             book_manager->Set_definition_data(&definition_datas);
             
-            vecRevPacket.clear();
+            m_vecRevPacket.clear();
             
             std::vector<fh::cme::market::message::MdpMessage> recovery_datas;  // recovery message
-            vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "udp received from [224.0.28.124:19627](");  
-            std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "udp received from [224.0.28.124:19627](");  
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
                     [this, &recovery_datas](const std::string &revPacket)
                     {
                         // decode                                                
@@ -1524,11 +1528,11 @@ namespace market
             
             // set received recovery messages
             book_manager->Set_recovery_data(&recovery_datas);
-            vecRevPacket.clear();
+            m_vecRevPacket.clear();
             
             // 
-            vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "udp received from [224.0.28.79:11627](");
-            std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "udp received from [224.0.28.79:11627](");
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
                     [this, book_manager, autotest_book_sender](const std::string &revPacket)
                     {
                         // decode
@@ -1568,7 +1572,7 @@ namespace market
                     }
             );         
                                     
-            vecRevPacket.clear();
+            m_vecRevPacket.clear();
 
             // 数据校验
             if(autotest_book_sender_check!=nullptr)
@@ -1612,7 +1616,7 @@ namespace market
             }
 
             fh::core::book::AutoTestBookSender *autotest_book_sender_check = dynamic_cast<fh::core::book::AutoTestBookSender *>(autotest_book_sender);
-            int caseId = 21;
+            int caseId = fh::core::assist::common::CaseIdValue::MakePrice_2;
             autotest_book_sender_check->SetCaseId(caseId);
             //   [627]UDP Incremental:224.0.28.79, 11627
             //   [627]UDP Incremental:224.0.25.101, 11727
@@ -1622,13 +1626,12 @@ namespace market
             std::string recvBufFileName;
             fh::core::assist::common::getAbsolutePath(recvBufFileName);        
             recvBufFileName += "market_by_price_2.log";
-            
-            std::vector<std::string> vecRevPacket;
+                        
             std::vector<fh::cme::market::message::MdpMessage> definition_datas; // define message
             // received define message
             // udp received from [224.0.28.79:16627](1368)=01
-            vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "udp received from [224.0.28.79:16627](");            
-            std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "udp received from [224.0.28.79:16627](");            
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
                     [this, &definition_datas](const std::string &revPacket)
                     {
                         // decode                                                
@@ -1644,11 +1647,11 @@ namespace market
              
             book_manager->Set_definition_data(&definition_datas);
             
-            vecRevPacket.clear();
+            m_vecRevPacket.clear();
             
             std::vector<fh::cme::market::message::MdpMessage> recovery_datas;  // recovery message
-            vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "udp received from [224.0.28.124:19627](");  
-            std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "udp received from [224.0.28.124:19627](");  
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
                     [this, &recovery_datas](const std::string &revPacket)
                     {
                         // decode                                                
@@ -1664,11 +1667,11 @@ namespace market
             
             // set received recovery messages
             book_manager->Set_recovery_data(&recovery_datas);
-            vecRevPacket.clear();
+            m_vecRevPacket.clear();
             
             // 
-            vecRevPacket = fh::core::assist::common::Read_packets(recvBufFileName, "udp received from [224.0.28.79:11627](");
-            std::for_each(vecRevPacket.cbegin(), vecRevPacket.cend(),
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "udp received from [224.0.28.79:11627](");
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
                     [this, book_manager, autotest_book_sender](const std::string &revPacket)
                     {
                         // decode
@@ -1708,7 +1711,7 @@ namespace market
                     }
             );       
   
-            vecRevPacket.clear();            
+            m_vecRevPacket.clear();            
             
             // 数据校验            
             if(autotest_book_sender_check!=nullptr)
@@ -1724,6 +1727,72 @@ namespace market
             autotest_book_sender = nullptr;
         }
     }
+    
+    TEST_F(MutBookManager, BookManager_Test022)
+    {
+        #if 0
+        fh::core::market::MarketListenerI *autotest_book_sender = nullptr; 
+        fh::cme::market::BookManager *book_manager = nullptr;        
+
+        autotest_book_sender = new fh::core::book::AutoTestBookSender(); 
+        
+        if(autotest_book_sender!=nullptr)
+        {
+            book_manager = new BookManager(autotest_book_sender);
+            if(nullptr == book_manager)
+            {
+                LOG_ERROR("----- book_manager is nullptr, malloc failed! ------");       
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+
+            //fh::core::book::AutoTestBookSender *autotest_book_sender_check = dynamic_cast<fh::core::book::AutoTestBookSender *>(autotest_book_sender);
+            //int caseId = fh::core::assist::common::CaseIdValue::MakePrice_1;
+            //autotest_book_sender_check->SetCaseId(caseId);
+            //   [627]UDP Incremental:224.0.28.79, 11627
+            //   [627]UDP Incremental:224.0.25.101, 11727
+            //   [627]UDP Definition:224.0.28.79, 16627
+            //   [627]UDP Recovery:224.0.28.124, 19627
+            
+            std::string recvBufFileName;
+            fh::core::assist::common::getAbsolutePath(recvBufFileName);        
+            recvBufFileName += "market_SDMForFandS_1.log";
+            
+            //std::vector<std::string> vecRevPacket;
+            std::vector<fh::cme::market::message::MdpMessage> definition_datas; // define message
+            // received define message
+            // udp received from [224.0.28.79:16627](1368)=01
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "udp received from [224.0.28.79:16627](");            
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
+                    [this, &definition_datas](const std::string &revPacket)
+                    {
+                        // decode                                                
+                        std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(revPacket.data(), revPacket.size(), definition_datas);
+
+                        printf("*********** [begin] parse define message **************\n");
+                        
+                        LOG_INFO("seq=", seq, ", definition_datas count=", definition_datas.size());
+
+                        printf("*********** [end] parse define message **************\n");
+                    }
+            );
+             
+            book_manager->Set_definition_data(&definition_datas);
+            
+            m_vecRevPacket.clear();                     
+            
+
+            delete book_manager;
+            book_manager = nullptr;
+            
+            delete autotest_book_sender;
+            autotest_book_sender = nullptr;
+        }
+        #endif
+    }
+    
+    
 } // namespace market
 } // namespace cme
 } // namespace fh

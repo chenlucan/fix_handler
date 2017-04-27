@@ -41,6 +41,7 @@ namespace market
             
             std::multiset<fh::cme::market::message::MdpMessage, Message_Compare> m_datas;
 
+            std::vector<std::string> m_vecRevPacket;
         private:
             DISALLOW_COPY_AND_ASSIGN(MutBookManager);
     };

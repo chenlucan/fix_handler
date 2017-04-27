@@ -85,9 +85,10 @@ namespace common
     }
     
     // read mdp packets from file(one packet per line) for test
-    std::vector<std::string> Read_packets(const std::string &filename, const std::string &packet_from,  const std::string &packet_start_indicate)
+    void Read_packets(std::vector<std::string> &packets, const std::string &filename, const std::string &packet_from, const std::string &packet_start_indicate)
     {
-        std::vector<std::string> packets;
+        //std::vector<std::string> packets;
+        packets.clear();
         std::ifstream input(filename);
         std::string line;
         while (std::getline(input, line))
@@ -136,7 +137,7 @@ namespace common
             
         }
 
-        return packets;
+        return;
     }
 
     
