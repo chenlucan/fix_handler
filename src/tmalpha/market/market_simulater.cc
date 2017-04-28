@@ -1,16 +1,9 @@
 
 #include <thread>
 #include <chrono>
-#include <bsoncxx/builder/core.hpp>
-#include <bsoncxx/document/value.hpp>
-#include <bsoncxx/document/view.hpp>
-#include <bsoncxx/json.hpp>
 #include "core/assist/logger.h"
 #include "core/assist/utility.h"
 #include "tmalpha/market/market_simulater.h"
-
-#define  GET_STR_FROM_JSON(view, key) view[key].get_utf8().value.to_string()
-#define  GET_INT_FROM_JSON(view, key) std::stol(GET_STR_FROM_JSON(view, key))
 
 namespace fh
 {
@@ -21,7 +14,7 @@ namespace market
 
     MarketSimulater::MarketSimulater(DataProvider *provider, DataConsumer *replayer, MarketReplayListener *replay_listener)
     : m_provider(provider), m_replayer(replayer), m_replay_listener(replay_listener), m_messages(),
-      m_is_fetch_end(false), m_is_stopped(true), m_mutex(), m_condition(), m_rate(1)
+      m_is_fetch_end(false), m_is_stopped(true), m_mutex(), m_condition(), m_speed(1)
     {
         // noop
     }
@@ -31,9 +24,9 @@ namespace market
         // noop
     }
 
-    void MarketSimulater::Rate(float rate)
+    void MarketSimulater::Speed(float speed)
     {
-        m_rate = rate <= 0 ? 1 : rate;
+        m_speed = speed <= 0 ? 1 : speed;
     }
 
     void MarketSimulater::Start()
@@ -52,6 +45,7 @@ namespace market
             // 先检索出一拨数据
             std::vector<std::string> messages;
             std::uint64_t count = m_provider->Query(messages, last_message);
+            LOG_INFO("pick messages count: ", count);
             if(count == 0)
             {
                 // 没有数据了，退出，并等待重放线程结束
@@ -60,10 +54,10 @@ namespace market
                 break;
             }
 
-            // 将数据保存起来，并保存最后一条消息的 insertTime，下次的检索就从这条数据以下开始
+            // 将数据保存起来，并保存最后一条消息的识别 ID，下次的检索就从这条数据以下开始
             std::unique_lock<std::mutex> locker(m_mutex);
             for(std::string &m : messages) { m_messages.push(std::move(m)); }
-            last_message = MarketSimulater::Get_message_insert_time(m_messages.back());
+            last_message = m_provider->Message_identify(m_messages.back());
 
             // 然后通知重放线程开始读取，并等待重放线程通知（当数据不足规定条数时，重放线程会通知本线程去继续获取数据）
             m_condition.notify_all();
@@ -101,7 +95,7 @@ namespace market
             if(!m_messages.empty())
             {
                 // 获取马上要发送的 message 的实际交易所发送的时间
-                std::uint64_t send_time= MarketSimulater::Get_message_send_time(m_messages.front());
+                std::uint64_t send_time= m_provider->Message_send_time(m_messages.front());
 
                 // 根据上一条消息的交易所发送时间和本次消息的交易所发送时间，以及上一条消息的重放时间，以及重放速率
                 // 计算出需要休眠多长时间，以保证重放和实际交易所发送按照同样地频率进行
@@ -139,13 +133,14 @@ namespace market
 
     void MarketSimulater::Consume_one()
     {
+        LOG_DEBUG("consume: ", m_messages.front());
         m_replayer->Consume(m_messages.front());
         m_messages.pop();
     }
 
     void MarketSimulater::Show_states()
     {
-        std::unordered_map<std::string , pb::dms::L2> states = m_replayer->Get_state();
+        std::unordered_map<std::uint32_t , pb::dms::L2> states = m_replayer->Get_state();
         m_replay_listener->On_state_changed(states);
     }
 
@@ -159,27 +154,13 @@ namespace market
         if(current_send_time <= last_send_time) return;
 
         // 根据重放速率计算出下次重放应该经过的时间间隔
-        std::uint64_t interval = (std::uint64_t)((current_send_time - last_send_time) / m_rate);
+        std::uint64_t interval = (std::uint64_t)((current_send_time - last_send_time) / m_speed);
 
         // 根据上一条 message 的实际重放时间，加上计算出的发送间隔，算出下一次应该重放的时间
         std::uint64_t next_replay_time = last_replay_time + interval;
 
         // 等待到该时间点后返回（如果当前时间已经过了上面计算出的应该重放时间，无需等待）
         std::this_thread::sleep_until(std::chrono::time_point<std::chrono::system_clock>(std::chrono::nanoseconds(next_replay_time)));
-    }
-
-    std::uint64_t MarketSimulater::Get_message_insert_time(const std::string &last_message)
-    {
-        auto doc = bsoncxx::from_json(last_message);
-        auto view = doc.view();
-        return GET_INT_FROM_JSON(view, "insertTime");
-    }
-
-    std::uint64_t MarketSimulater::Get_message_send_time(const std::string &next_message)
-    {
-        auto doc = bsoncxx::from_json(next_message);
-        auto view = doc.view();
-        return GET_INT_FROM_JSON(view, "sendingTime");
     }
 
 }   // namespace market

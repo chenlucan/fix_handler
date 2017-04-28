@@ -92,7 +92,7 @@ namespace market
         std::string market = app_settings.Get("alpha.market");
         std::string start_include = app_settings.Get("alpha.start_include");
         std::string end_exclude = app_settings.Get("alpha.end_exclude");
-        float rate = std::stof(app_settings.Get("alpha.rate"));
+        float speed = std::stof(app_settings.Get("alpha.speed"));
 
         // 初期化数据提供者
         m_provider = new fh::tmalpha::market::MarketDataProvider(market, persist_setting_file);
@@ -114,9 +114,9 @@ namespace market
 
         // 初期化重放控制模块
         m_simulater = new fh::tmalpha::market::MarketSimulater(m_provider, m_consume, m_listener);
-        m_simulater->Rate(rate);
+        m_simulater->Speed(speed);
 
-        LOG_INFO("==== Replay ", market, " data of [", start_include, ", ", end_exclude, ") on rate ", rate);
+        LOG_INFO("==== Replay ", market, " data of [", start_include, ", ", end_exclude, ") on speed ", speed);
     }
 
 }   // namespace market

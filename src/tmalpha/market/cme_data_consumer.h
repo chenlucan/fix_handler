@@ -34,18 +34,17 @@ namespace market
         public:
             void Consume(const std::string &message) override
             {
-                auto doc = bsoncxx::from_json(message);
-                m_replayer.Apply_message(doc);
+                m_replayer.Apply_message(message);
             }
 
-            std::unordered_map<std::string , pb::dms::L2> Get_state() override
+            std::unordered_map<std::uint32_t , pb::dms::L2> Get_state() override
             {
-                std::unordered_map<std::string , pb::dms::L2> result;
+                std::unordered_map<std::uint32_t , pb::dms::L2> result;
                 std::unordered_map<std::uint32_t , fh::cme::market::BookState> &states = m_replayer.Get_all_states();
                 for(const auto &s : states)
                 {
                     pb::dms::L2 l2 = CmeDataConsumer::State_to_L2(s.second);
-                    result[l2.contract()] = l2;
+                    result[s.first] = l2;
                 }
                 return result;
             }

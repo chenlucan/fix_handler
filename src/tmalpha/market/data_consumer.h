@@ -20,7 +20,7 @@ namespace market
 
         public:
             virtual void Consume(const std::string &message) = 0;
-            virtual std::unordered_map<std::string , pb::dms::L2> Get_state() = 0;
+            virtual std::unordered_map<std::uint32_t , pb::dms::L2> Get_state() = 0;
     };
 }   // namespace market
 }   // namespace tmalpha

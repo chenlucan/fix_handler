@@ -25,7 +25,7 @@ namespace market
             virtual ~MarketSimulater();
 
         public:
-            void Rate(float rate);
+            void Speed(float speed);
             void Start();
             void Stop();
             bool Is_runing();
@@ -35,8 +35,6 @@ namespace market
             void Show_states();
             void Consume_one();
             void Sleep(std::uint64_t last_send_time, std::uint64_t current_send_time, std::uint64_t last_replay_time) const;
-            static std::uint64_t Get_message_insert_time(const std::string &last_message);
-            static std::uint64_t Get_message_send_time(const std::string &next_message);
 
         private:
             fh::tmalpha::market::DataProvider *m_provider;
@@ -47,7 +45,7 @@ namespace market
             std::atomic_bool m_is_stopped;
             std::mutex m_mutex;
             std::condition_variable m_condition;
-            float m_rate;       // 重放按照几倍速率进行：0.5 -> 慢 2 倍；2 -> 快 2 倍
+            float m_speed;       // 重放按照几倍速率进行：0.5 -> 慢 2 倍；2 -> 快 2 倍
 
         private:
             DISALLOW_COPY_AND_ASSIGN(MarketSimulater);

@@ -30,9 +30,10 @@ namespace playback
         // noop
     }
 
-    void BookReplayer::Apply_message(const JSON_DOC &message)
+    void BookReplayer::Apply_message(const std::string &message)
     {
-        auto json = message.view();
+        auto doc = bsoncxx::from_json(message);
+        auto json = doc.view();
         auto sbe_type = GET_STR_FROM_JSON(json, "sbeType");
         auto body = GET_SUB_FROM_JSON(json, "message");
         auto seq = GET_INT_FROM_JSON(json, "packetSeqNum");
@@ -126,6 +127,8 @@ namespace playback
         std::uint32_t first_recovery_seq = 0;
         std::uint32_t last_recovery_seq = 0;
 
+        // TODO 万一有 MDIncrementalRefreshOrderBook43 类型是否需要忽略？
+
         if(!m_recoveries.empty())
         {
             first_recovery_seq = m_recoveries.front().packet_seq_num;
@@ -157,7 +160,8 @@ namespace playback
 
                 if(index != m_recoveries.cend())
                 {
-                    break;
+                    LOG_WARN("discard security: ", b.securityID);
+                    continue;
                 }
             }
 

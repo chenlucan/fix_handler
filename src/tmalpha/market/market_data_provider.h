@@ -4,11 +4,18 @@
 
 #include <string>
 #include <vector>
+#include <bsoncxx/builder/core.hpp>
+#include <bsoncxx/document/value.hpp>
+#include <bsoncxx/document/view.hpp>
+#include <bsoncxx/json.hpp>
 #include "core/global.h"
 #include "core/assist/logger.h"
 #include "core/persist/mongo.h"
 #include "core/assist/settings.h"
 #include "tmalpha/market/data_provider.h"
+
+#define  GET_STR_FROM_JSON(view, key) view[key].get_utf8().value.to_string()
+#define  GET_INT_FROM_JSON(view, key) std::stol(GET_STR_FROM_JSON(view, key))
 
 namespace fh
 {
@@ -52,6 +59,20 @@ namespace market
                 std::uint64_t count =  m_db->Query(result, m_market, m_range.first, m_range.second, prev_last_record_insert_time);
                 LOG_INFO("fetch count from [",  prev_last_record_insert_time, "] = ", count);
                 return count;
+            }
+
+            std::uint64_t Message_identify(const std::string &message) override
+            {
+                auto doc = bsoncxx::from_json(message);
+                auto view = doc.view();
+                return GET_INT_FROM_JSON(view, "insertTime");
+            }
+
+            std::uint64_t Message_send_time(const std::string &message) override
+            {
+                auto doc = bsoncxx::from_json(message);
+                auto view = doc.view();
+                return GET_INT_FROM_JSON(view, "sendingTime");
             }
 
         private:

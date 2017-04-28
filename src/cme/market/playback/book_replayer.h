@@ -9,7 +9,6 @@
 #include "cme/market/book_state_controller.h"
 
 
-#define JSON_DOC bsoncxx::document::value
 #define JSON_ELEMENT bsoncxx::document::element
 
 
@@ -28,7 +27,7 @@ namespace playback
             virtual ~BookReplayer();
 
         public:
-            void Apply_message(const JSON_DOC &message);
+            void Apply_message(const std::string &message);
             std::unordered_map<std::uint32_t , fh::cme::market::BookState> &Get_all_states();
 
         private:

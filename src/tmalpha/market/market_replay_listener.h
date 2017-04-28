@@ -20,7 +20,7 @@ namespace market
             virtual ~MarketReplayListener() {}
 
         public:
-            virtual void On_state_changed(const std::unordered_map<std::string , pb::dms::L2> &) = 0;
+            virtual void On_state_changed(const std::unordered_map<std::uint32_t , pb::dms::L2> &) = 0;
     };
 
     class DefaultMarketReplayListener : public MarketReplayListener
@@ -30,11 +30,11 @@ namespace market
             virtual ~DefaultMarketReplayListener() {}
 
         public:
-            void On_state_changed(const std::unordered_map<std::string , pb::dms::L2> &states) override
+            void On_state_changed(const std::unordered_map<std::uint32_t , pb::dms::L2> &states) override
             {
                 for(const auto &l2 : states)
                 {
-                    LOG_INFO(fh::core::assist::utility::Format_pb_message(l2.second));
+                    LOG_INFO("CURRENT STATES OF (", l2.first, "): ", fh::core::assist::utility::Format_pb_message(l2.second));
                 }
             }
     };
