@@ -54,14 +54,18 @@ ORIGINAL_SAVER_TARGET = $(BIN_PATH)/original_saver_test
 ORIGINAL_SENDER_TARGET = $(BIN_PATH)/original_sender_test
 TEST_TARGET = $(BIN_PATH)/utest
 REM_MARKET_TARGET = $(BIN_PATH)/rem_market_test
+REM_EXCHANGE_TARGET = $(BIN_PATH)/rem_exchange_test
     
 default: all;
     
 include objs.mk
 include rem.mk
     
-all: createdir rem_market usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender
+all: createdir rem_exchange_test rem_market usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender
 
+rem_exchange_test: $(BIN_PATH)/rem_exchange_main.o $(BIN_PATH)/rem_exchange_application.o $(BIN_PATH)/rem_communicator.o \
+			 $(COMM_OBJS) 
+	$(COMPILE_COMMAND) -o $(REM_EXCHANGE_TARGET) $?
 
 rem_market: $(BIN_PATH)/rem_market_main.o $(BIN_PATH)/rem_market_manager.o $(BIN_PATH)/rem_market.o $(BIN_PATH)/rem_market_application.o \
               $(BIN_PATH)/rem_book_sender.o $(BIN_PATH)/rem_book_manager.o \

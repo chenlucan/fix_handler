@@ -74,6 +74,10 @@ void CRemMarket::Initialize(std::vector<std::string> insts)
           LOG_ERROR("Error m_pEESQuoteApi is NULL ");
 	   return ;	  
      }
+
+
+     m_itimeout = std::atoi((m_pFileConfig->Get("rem-timeout.timeout")).c_str());
+	 
      EqsTcpInfo			info;
      std::vector<EqsTcpInfo>	vec_info; 
      vec_info.clear();	 

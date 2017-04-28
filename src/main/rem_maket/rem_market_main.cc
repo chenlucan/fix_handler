@@ -90,9 +90,9 @@ int main(int argc, char* argv[])
       Subminstruments.clear();	 
 
       pRemMarletApp->Initialize(Depthstruments);
-      Subminstruments.push_back("T1706");
-      Subminstruments.push_back("IF1706");	  
-      Subminstruments.push_back("IF1705");		   
+      Subminstruments.push_back("*");
+      //Subminstruments.push_back("IF1706");	  
+      //Subminstruments.push_back("IF1705");		   
       pRemMarletApp->Subscribe(Subminstruments);	   
 	  
       if(!pRemMarletApp->Start())
