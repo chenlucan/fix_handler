@@ -42,6 +42,7 @@ class CRemMarkrtManager : public EESQuoteEvent
 		    mIConnet = -1;	
 		    mISubSuss = -1;
 		    m_SubSymbol.clear();	
+		    m_restart = false;	
 		}
 		virtual ~CRemMarkrtManager()
 		{
@@ -70,10 +71,16 @@ class CRemMarkrtManager : public EESQuoteEvent
 		void StructToJSON(EESMarketDepthQuoteData *pMarketData);
 		void RemDateToString(bsoncxx::builder::basic::document& json);
 
+		bool GetReatart()
+		{
+                   return m_restart;
+		}
+
 		int mIConnet;
 		int mISubSuss;
 		std::vector<std::string> m_SubSymbol;
 
+              bool m_restart;
 		
     private:
 		EESQuoteApi *m_pUserApi;

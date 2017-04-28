@@ -37,6 +37,11 @@ class CRemMarketApp
               void ReqDefinitions(std::vector<std::string> instruments); 	  
 		
 		void SetFileConfigData(std::string &FileConfig);
+
+		bool GetReatart()
+		{
+                   return m_pRemMarket->GetReatart();
+		}
     public:
 	       CRemMarket *m_pRemMarket;	
 		fh::core::assist::Settings *m_pFileConfig;

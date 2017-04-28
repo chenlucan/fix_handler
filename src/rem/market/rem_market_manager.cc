@@ -36,6 +36,7 @@ void CRemMarkrtManager::OnEqsConnected()
 void CRemMarkrtManager::OnEqsDisconnected()
 {
     LOG_INFO("OnEqsDisconnected.");
+    m_restart = true;	
     return;
 }
 void CRemMarkrtManager::OnLoginResponse(bool bSuccess, const char* pReason)

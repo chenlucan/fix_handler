@@ -37,7 +37,13 @@ class CRemMarket : public fh::core::market::MarketI
             // implement of MarketI
             virtual void ReqDefinitions(std::vector<std::string> instruments);   
 
-	     void SetFileConfigData(std::string &FileConfig);		
+	     void SetFileConfigData(std::string &FileConfig);	
+
+	     bool GetReatart()
+	     {
+                return m_RemMarkrtManager->GetReatart();
+	     }
+		 
         public:
 	     fh::core::assist::Settings *m_pFileConfig;	
 	     EESQuoteApi *m_pEESQuoteApi;	 

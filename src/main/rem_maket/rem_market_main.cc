@@ -13,6 +13,7 @@
 
 
 bool stop_all=false;
+fh::rem::market::CRemMarketApp *pSRemMarketApp = NULL;
 
 void handler(int sig) 
 {
@@ -61,7 +62,7 @@ int set_SignalProc()
 
 int main_loop()
 {
-        while(!stop_all)
+        while(!stop_all && !(pSRemMarketApp->GetReatart()))
        {
            LOG_INFO("RemMarket  runing  main_loop");
 	    sleep(10);	 
@@ -78,36 +79,46 @@ int main(int argc, char* argv[])
      std::string FileConfigstr= "rem_config.ini";
   
      LOG_INFO("FileConfigstr : ",FileConfigstr.c_str());
+     std::vector<std::string> Depthstruments;
+     std::vector<std::string> Subminstruments;	 
 	     
       fh::core::assist::Settings *pFileConfig = new fh::core::assist::Settings(FileConfigstr);
       std::string save_url_f = pFileConfig->Get("zeromq.org_url");
       std::string save_url_s = pFileConfig->Get("zeromq.book_url");
-      fh::rem::market::CRemMarketApp *pRemMarletApp = new fh::rem::market::CRemMarketApp(save_url_f,save_url_s);	
-      pRemMarletApp->SetFileConfigData(FileConfigstr);	  
-      std::vector<std::string> Depthstruments;
-      std::vector<std::string> Subminstruments;
-      Depthstruments.clear();
-      Subminstruments.clear();	 
 
-      pRemMarletApp->Initialize(Depthstruments);
-      Subminstruments.push_back("*");
+      while(!stop_all )
+      {
+          fh::rem::market::CRemMarketApp *pRemMarletApp = new fh::rem::market::CRemMarketApp(save_url_f,save_url_s);	
+          pRemMarletApp->SetFileConfigData(FileConfigstr);	  
+      
+          Depthstruments.clear();
+          Subminstruments.clear();	 
+
+          pRemMarletApp->Initialize(Depthstruments);
+          Subminstruments.push_back("*");
+	   pRemMarletApp->Subscribe(Subminstruments);	   
+	  
+          if(!pRemMarletApp->Start())
+          {
+              LOG_ERROR("FemasMarletApp start  Error!");
+	       pRemMarletApp->Stop();	 
+	       delete pRemMarletApp;
+	       return 0;	  
+          }	  
+
+          pSRemMarketApp = pRemMarletApp;
+
+          main_loop();
+	  
+          pRemMarletApp->Stop();	 
+	   delete pRemMarletApp;	  
+      }
+      
       //Subminstruments.push_back("IF1706");	  
       //Subminstruments.push_back("IF1705");		   
-      pRemMarletApp->Subscribe(Subminstruments);	   
-	  
-      if(!pRemMarletApp->Start())
-      {
-          LOG_ERROR("FemasMarletApp start  Error!");
-	   pRemMarletApp->Stop();	 
-	   delete pRemMarletApp;
-	   return 0;	  
-      }	  
-
-      main_loop();
-	  
-      pRemMarletApp->Stop();
+      
       delete pFileConfig;
-      delete pRemMarletApp;
+      
 
       LOG_INFO("rem-market pross stop!");
       return 0;
