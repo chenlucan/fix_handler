@@ -148,6 +148,8 @@ void CFemasGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contr
 
         m_pUserApi->Init();
 
+        m_itimeout = std::atoi((m_pFileConfig->Get("femas-timeout.timeout")).c_str());
+
 	 time_t tmtimeout = time(NULL);
         while(0 != m_pUstpFtdcTraderManger->mIConnet)
         {
