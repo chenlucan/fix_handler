@@ -8,3 +8,6 @@ $(BIN_PATH)/tmalpha_market_application.o: $(SRC_PATH)/tmalpha/market/tmalpha_mar
 $(BIN_PATH)/trade_matching_alpha_test.o: $(SRC_PATH)/main/tradematching/trade_matching_alpha_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
     
+$(BIN_PATH)/mut_market_simulater.o: $(TEST_PATH)/tmalpha/market/mut_market_simulater.cc
+	$(TEST_COMPILE_COMMAND) -c -o $@ $<
+    
