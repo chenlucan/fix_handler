@@ -718,7 +718,7 @@ namespace message
         PUT_TO_JSON_NON_NULL(json, *m, priceDisplayFormat);
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, strikePrice);
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, minCabPrice);
-        PUT_TO_JSON_PRICE_NON_NULL(json, *m, minPriceIncrementAmount);
+        PUT_TO_JSON_PRICE_NON_NULL(json, *m, minPriceIncrement);
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, unitOfMeasureQty);
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, tradingReferencePrice);
         PUT_TO_JSON_PRICE_NON_NULL(json, *m, highLimitPrice);
