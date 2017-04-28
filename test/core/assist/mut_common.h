@@ -23,6 +23,9 @@ namespace common
         MakePrice_2 = 2,
         Sd_1 = 3,
         Sd_2 = 4,
+        Fs_1 = 5,
+        Fs_2 = 6,
+        Order_Qty = 7,
         UNKNOW_VALUE = 255
     };
     
@@ -33,14 +36,25 @@ namespace common
         std::string activation_date_ime;
         std::string expiration_date_ime;
         
+        std::string order_qty;
+        
         std::string To_string() const
         {
             std::ostringstream os;
             os << "DefineMsg_Compare={";
             os << "market_segment_id=" << market_segment_id << " ";
             os << "security_group=" << security_group << " ";
-            os << "activation_date_ime=" << activation_date_ime << " ";
+            os << "activation_date_ime=" << activation_date_ime << " ";            
             os << "expiration_date_ime=" << expiration_date_ime << "}";
+
+            return os.str();
+        }
+        
+        std::string To_order_qty_string() const
+        {
+            std::ostringstream os;
+            os << "DefineMsg_Compare={";            
+            os << "orderQty=" << order_qty << "}";
 
             return os.str();
         }
