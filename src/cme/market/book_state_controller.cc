@@ -39,7 +39,8 @@ namespace market
         }
         else
         {
-            // 该产品的 book state 已经存在，需要根据新深度进行调整（变浅的场合需要删除溢出的）
+            // 该产品的 book state 已经存在，需要更新下名字，并根据新深度进行调整（变浅的场合需要删除溢出的）
+            state_pos->second.symbol = instrument.symbol;
             BookStateController::Shrink(state_pos->second, instrument_depth);
         }
     }
