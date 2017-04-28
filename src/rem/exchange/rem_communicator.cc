@@ -12,9 +12,29 @@ namespace exchange
 {
 
 
+const char* con_prodInfo="REM";
+const char* con_macAddr="00:0C:29:E3:32:E4";
+
 void CEESTraderApiManger::OnConnection(ERR_NO errNo, const char* pErrStr )
 {
     LOG_INFO("CEESTraderApiManger::OnConnection");
+    if(NULL == m_pFileConfig)
+    {
+           LOG_ERROR("Error m_pFileConfig is NULL.");
+	    return;	   
+    }
+    if(NULL == m_pUserApi)
+    {
+           LOG_ERROR("Error m_pUserApi is NULL.");
+	    return;	   
+    } 
+    std::string LogIDstr = m_pFileConfig->Get("rem-user.LogID");
+    std::string Passwordstr = m_pFileConfig->Get("rem-user.Password");
+    LOG_INFO("LogIDstr = ",LogIDstr);
+    LOG_INFO("Passwordstr = ",Passwordstr);	
+
+    m_pUserApi->UserLogon(LogIDstr.c_str(),Passwordstr.c_str(),con_prodInfo,con_macAddr);
+    return;	
 }
 void CEESTraderApiManger::OnDisConnection(ERR_NO errNo, const char* pErrStr )
 {
@@ -23,6 +43,14 @@ void CEESTraderApiManger::OnDisConnection(ERR_NO errNo, const char* pErrStr )
 void CEESTraderApiManger::OnUserLogon(EES_LogonResponse* pLogon)
 {
     LOG_INFO("CEESTraderApiManger::OnUserLogon");
+    if(pLogon->m_Result != 0)
+    {
+        LOG_ERROR("CEESTraderApiManger::OnUserLogon fail  Result = ",pLogon->m_Result);
+	 return;	
+    }
+    LOG_INFO("CEESTraderApiManger::OnUserLogon  suss");	
+    mIConnet = 0;
+    return;	
 }
 void CEESTraderApiManger::OnRspChangePassword(EES_ChangePasswordResult nResult)
 {
@@ -154,7 +182,7 @@ bool CRemGlobexCommunicator::Start(const std::vector<::pb::ems::Order> &init_ord
 {
      if(m_pEESTraderApiManger->mIConnet != 0)
     {
-        //return false;
+        return false;
     }
     return true;
 }
@@ -162,6 +190,7 @@ bool CRemGlobexCommunicator::Start(const std::vector<::pb::ems::Order> &init_ord
 void CRemGlobexCommunicator::Stop()
 {
     LOG_INFO("CRemGlobexCommunicator::Stop ");
+    m_pUserApi->DisConnServer();	
 	
     return;
 }
@@ -170,11 +199,30 @@ void CRemGlobexCommunicator::Stop()
 void CRemGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contracts)
 {
         // noop
-         LOG_INFO("CRemGlobexCommunicator::Initialize ");   
+         LOG_INFO("CRemGlobexCommunicator::Initialize "); 
 
-         //m_pUserApi->ConnServer(const char * svrAddr, int nPort, m_pEESTraderApiManger);
+	  if(NULL == m_pFileConfig)
+	  {
+             LOG_ERROR("CRemGlobexCommunicator::Initialize m_pFileConfig == NULL"); 
+	      return;		 
+	  }
+	  m_itimeout = std::atoi((m_pFileConfig->Get("rem-timeout.timeout")).c_str());
+         std::string svrAddr = m_pFileConfig->Get("rem-exchange.IP");
+	  int  Port = std::atoi((m_pFileConfig->Get("rem-exchange.Port")).c_str());	 
+         m_pUserApi->ConnServer(svrAddr.c_str(), Port, m_pEESTraderApiManger);
+
+         time_t tmtimeout = time(NULL);
+         while(0 != m_pEESTraderApiManger->mIConnet)
+         {
+             if(time(NULL)-tmtimeout>m_itimeout)
+	      {
+                  LOG_ERROR("CRemGlobexCommunicator::mIConnet tiomeout ");
+	           return;		  
+	      }
+             sleep(0.1);    
+          }	
 		
-         return;	
+          return;	
 }
 
 void CRemGlobexCommunicator::Add(const ::pb::ems::Order& order)
