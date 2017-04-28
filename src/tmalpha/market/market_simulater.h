@@ -3,6 +3,7 @@
 #define __FH_TMALPHA_MARKET_MARKET_SIMULATER_H__
 
 #include <string>
+#include <vector>
 #include <queue>
 #include <atomic>
 #include <mutex>
@@ -21,14 +22,15 @@ namespace market
     class MarketSimulater
     {
         public:
-            MarketSimulater(DataProvider *provider, DataConsumer *replayer, MarketReplayListener *replay_listener);
+            MarketSimulater(DataProvider *provider, DataConsumer *replayer);
             virtual ~MarketSimulater();
 
         public:
+            void Add_replay_listener(fh::tmalpha::market::MarketReplayListener *);
             void Speed(float speed);
             void Start();
             void Stop();
-            bool Is_runing();
+            bool Is_runing() const;
 
         private:
             void Replay();
@@ -39,7 +41,7 @@ namespace market
         private:
             fh::tmalpha::market::DataProvider *m_provider;
             fh::tmalpha::market::DataConsumer *m_replayer;
-            fh::tmalpha::market::MarketReplayListener *m_replay_listener;
+            std::vector<fh::tmalpha::market::MarketReplayListener *> m_replay_listeners;
             std::queue<std::string> m_messages;
             std::atomic_bool m_is_fetch_end;
             std::atomic_bool m_is_stopped;

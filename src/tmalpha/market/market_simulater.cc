@@ -12,8 +12,8 @@ namespace tmalpha
 namespace market
 {
 
-    MarketSimulater::MarketSimulater(DataProvider *provider, DataConsumer *replayer, MarketReplayListener *replay_listener)
-    : m_provider(provider), m_replayer(replayer), m_replay_listener(replay_listener), m_messages(),
+    MarketSimulater::MarketSimulater(DataProvider *provider, DataConsumer *replayer)
+    : m_provider(provider), m_replayer(replayer), m_messages(),
       m_is_fetch_end(false), m_is_stopped(true), m_mutex(), m_condition(), m_speed(1)
     {
         // noop
@@ -22,6 +22,11 @@ namespace market
     MarketSimulater::~MarketSimulater()
     {
         // noop
+    }
+
+    void MarketSimulater::Add_replay_listener(fh::tmalpha::market::MarketReplayListener *replay_listener)
+    {
+        m_replay_listeners.push_back(replay_listener);
     }
 
     void MarketSimulater::Speed(float speed)
@@ -77,7 +82,7 @@ namespace market
         m_is_stopped = true;
     }
 
-    bool MarketSimulater::Is_runing()
+    bool MarketSimulater::Is_runing() const
     {
         return !m_is_stopped;
     }
@@ -140,8 +145,8 @@ namespace market
 
     void MarketSimulater::Show_states()
     {
-        std::unordered_map<std::uint32_t , pb::dms::L2> states = m_replayer->Get_state();
-        m_replay_listener->On_state_changed(states);
+        std::unordered_map<std::string , pb::dms::L2> states = m_replayer->Get_state();
+        for(auto *listener : m_replay_listeners) { listener->On_state_changed(states); }
     }
 
     void MarketSimulater::Sleep(std::uint64_t last_send_time, std::uint64_t current_send_time, std::uint64_t last_replay_time) const

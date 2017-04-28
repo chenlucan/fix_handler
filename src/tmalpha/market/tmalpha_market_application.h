@@ -25,6 +25,7 @@ namespace market
             bool Start();
             void Join();
             void Stop();
+            void Add_replay_listener(fh::tmalpha::market::MarketReplayListener *);
 
         private:
             void Init(const fh::core::assist::Settings &app_settings, const fh::core::assist::Settings &persist_setting_file);
@@ -32,7 +33,7 @@ namespace market
         private:
             DataProvider *m_provider;
             DataConsumer *m_consume;
-            MarketReplayListener *m_listener;
+            MarketReplayListener *m_default_listener;
             MarketSimulater *m_simulater;
             std::thread *m_thread;
 

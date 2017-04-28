@@ -22,19 +22,19 @@ namespace market
             virtual ~MockMarketReplayListener() {}
 
         public:
-            void On_state_changed(const std::unordered_map<std::uint32_t , pb::dms::L2> &states) override
+            void On_state_changed(const std::unordered_map<std::string , pb::dms::L2> &states) override
             {
                 m_states = states;
                 DefaultMarketReplayListener::On_state_changed(states);
             }
 
-            std::unordered_map<std::uint32_t , pb::dms::L2> &Get_states()
+            std::unordered_map<std::string , pb::dms::L2> &Get_states()
             {
                 return m_states;
             }
 
         private:
-            std::unordered_map<std::uint32_t , pb::dms::L2> m_states;
+            std::unordered_map<std::string , pb::dms::L2> m_states;
 
     };
 }   // namespace market

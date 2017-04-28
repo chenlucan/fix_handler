@@ -14,7 +14,7 @@ namespace market
 
     TmalphaMarketApplication::TmalphaMarketApplication(
             const std::string &app_setting_file, const std::string &persist_setting_file)
-    : m_provider(nullptr), m_consume(nullptr),  m_listener(nullptr), m_simulater(nullptr), m_thread(nullptr)
+    : m_provider(nullptr), m_consume(nullptr),  m_default_listener(nullptr), m_simulater(nullptr), m_thread(nullptr)
     {
         fh::core::assist::Settings app_settings(app_setting_file);
         fh::core::assist::Settings db_settings(persist_setting_file);
@@ -25,9 +25,14 @@ namespace market
     {
         delete m_thread;
         delete m_simulater;
-        delete m_listener;
+        delete m_default_listener;
         delete m_consume;
         delete m_provider;
+    }
+
+    void TmalphaMarketApplication::Add_replay_listener(fh::tmalpha::market::MarketReplayListener *replay_listener)
+    {
+        m_simulater->Add_replay_listener(replay_listener);
     }
 
     bool TmalphaMarketApplication::Start()
@@ -109,11 +114,12 @@ namespace market
             return;
         }
 
-        // 初期化数据接受者
-        m_listener = new fh::tmalpha::market::DefaultMarketReplayListener();
+        // 初期化默认的数据接受者
+        m_default_listener = new fh::tmalpha::market::DefaultMarketReplayListener();
 
         // 初期化重放控制模块
-        m_simulater = new fh::tmalpha::market::MarketSimulater(m_provider, m_consume, m_listener);
+        m_simulater = new fh::tmalpha::market::MarketSimulater(m_provider, m_consume);
+        m_simulater->Add_replay_listener(m_default_listener);
         m_simulater->Speed(speed);
 
         LOG_INFO("==== Replay ", market, " data of [", start_include, ", ", end_exclude, ") on speed ", speed);

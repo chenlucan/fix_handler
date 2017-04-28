@@ -55,14 +55,15 @@ TEST(MarketSimulaterTest, Test001_ReadOnce)
     fh::tmalpha::market::DataConsumer *consume = new fh::tmalpha::market::CmeDataConsumer();
     fh::tmalpha::market::MockMarketReplayListener *listener = new fh::tmalpha::market::MockMarketReplayListener();
 
-    fh::tmalpha::market::MarketSimulater *simulater = new fh::tmalpha::market::MarketSimulater(provider, consume, listener);
+    fh::tmalpha::market::MarketSimulater *simulater = new fh::tmalpha::market::MarketSimulater(provider, consume);
+    simulater->Add_replay_listener(listener);
     simulater->Start();
 
-    std::unordered_map<std::uint32_t , pb::dms::L2> states = listener->Get_states();
+    std::unordered_map<std::string , pb::dms::L2> states = listener->Get_states();
 
     EXPECT_EQ(states.size(), 2);
-    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at(1)), messages_all_type_result[0]);
-    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at(3)), messages_all_type_result[1]);
+    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at("CON-1-NEW")), messages_all_type_result[0]);
+    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at("CON-3")), messages_all_type_result[1]);
 }
 
 TEST(MarketSimulaterTest, Test001_ReadMultiple)
@@ -72,14 +73,15 @@ TEST(MarketSimulaterTest, Test001_ReadMultiple)
     fh::tmalpha::market::DataConsumer *consume = new fh::tmalpha::market::CmeDataConsumer();
     fh::tmalpha::market::MockMarketReplayListener *listener = new fh::tmalpha::market::MockMarketReplayListener();
 
-    fh::tmalpha::market::MarketSimulater *simulater = new fh::tmalpha::market::MarketSimulater(provider, consume, listener);
+    fh::tmalpha::market::MarketSimulater *simulater = new fh::tmalpha::market::MarketSimulater(provider, consume);
+    simulater->Add_replay_listener(listener);
     simulater->Start();
 
-    std::unordered_map<std::uint32_t , pb::dms::L2> states = listener->Get_states();
+    std::unordered_map<std::string , pb::dms::L2> states = listener->Get_states();
 
     EXPECT_EQ(states.size(), 2);
-    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at(1)), messages_all_type_result[0]);
-    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at(3)), messages_all_type_result[1]);
+    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at("CON-1-NEW")), messages_all_type_result[0]);
+    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at("CON-3")), messages_all_type_result[1]);
 }
 
 TEST(MarketSimulaterTest, Test001_3xSpeed)
@@ -89,13 +91,14 @@ TEST(MarketSimulaterTest, Test001_3xSpeed)
     fh::tmalpha::market::DataConsumer *consume = new fh::tmalpha::market::CmeDataConsumer();
     fh::tmalpha::market::MockMarketReplayListener *listener = new fh::tmalpha::market::MockMarketReplayListener();
 
-    fh::tmalpha::market::MarketSimulater *simulater = new fh::tmalpha::market::MarketSimulater(provider, consume, listener);
+    fh::tmalpha::market::MarketSimulater *simulater = new fh::tmalpha::market::MarketSimulater(provider, consume);
+    simulater->Add_replay_listener(listener);
     simulater->Speed(3);
     simulater->Start();
 
-    std::unordered_map<std::uint32_t , pb::dms::L2> states = listener->Get_states();
+    std::unordered_map<std::string , pb::dms::L2> states = listener->Get_states();
 
     EXPECT_EQ(states.size(), 2);
-    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at(1)), messages_all_type_result[0]);
-    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at(3)), messages_all_type_result[1]);
+    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at("CON-1-NEW")), messages_all_type_result[0]);
+    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at("CON-3")), messages_all_type_result[1]);
 }
