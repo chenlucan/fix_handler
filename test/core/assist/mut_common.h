@@ -47,6 +47,11 @@ namespace common
         std::string mdentry_px_mantissa;  // mdentry_px
         std::string mdentry_px_exponent;
         std::string mdentry_size;
+        
+        std::string highlimit_price_mantissa;  // highLimitPrice
+        std::string highlimit_price_exponent;
+        std::string lowlimit_price_mantissa;  // lowLimitPrice
+        std::string lowlimit_price_exponent; 
 
         
         std::string To_string() const
@@ -76,6 +81,19 @@ namespace common
             os << "mDEntry_Price_Size_Compare={";    
             os << "mdentry_px_mantissa=" << mdentry_px_mantissa << " ";  
             os << "mdentry_px_exponent=" << mdentry_px_exponent << " ";             
+            os << "mdentry_size=" << mdentry_size << "}";
+
+            return os.str();
+        }
+        
+        std::string To_limit_price_string() const
+        {
+            std::ostringstream os;
+            os << "limit_Price_Compare={";    
+            os << "highlimit_price_mantissa=" << highlimit_price_mantissa << " ";  
+            os << "highlimit_price_exponent=" << highlimit_price_exponent << " ";     
+            os << "lowlimit_price_mantissa=" << lowlimit_price_mantissa << " ";  
+            os << "lowlimit_price_exponent=" << lowlimit_price_exponent << " ";               
             os << "mdentry_size=" << mdentry_size << "}";
 
             return os.str();

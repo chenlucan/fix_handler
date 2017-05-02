@@ -60,7 +60,52 @@ namespace book
     void AutoTestBookSender::OnOffer(const pb::dms::Offer &offer)
     {
         // 前面加个 O 标记是 offer 数据
-        LOG_INFO("send Offer: ", fh::core::assist::utility::Format_pb_message(offer));        
+        LOG_INFO("send Offer: ", fh::core::assist::utility::Format_pb_message(offer));  
+        std::string strOrignalOffer = fh::core::assist::utility::Format_pb_message(offer);
+        switch(m_current_caseid)
+        {
+            case fh::core::assist::common::CaseIdValue::Sm_5: // case: BookManager_Test025            
+            {
+                std::string strOffer = strOrignalOffer;
+                std::string strContractKey = ", offer=[";
+                auto pos = strOffer.find(strContractKey);
+                if(pos != std::string::npos)
+                {
+                    std::string strPriceValue = strOffer;
+                    strOffer.erase(pos, strOffer.size());
+                    LOG_DEBUG("===== strOffer=[", strOffer.c_str(), "] ,pos=[", pos, "] =====");
+                    
+                    strPriceValue.erase(0, pos+strContractKey.size());
+                    std::string strEndKey = ", size=";              
+                    pos = strPriceValue.find(strEndKey);
+                    if(pos != std::string::npos)
+                    {
+                        strPriceValue.erase(pos, strPriceValue.size());
+                    }
+                    
+                    LOG_DEBUG("===== strPriceValue=[", strPriceValue.c_str(), "] ,pos=[", pos, "] =====");
+                    
+                    auto iterL2 = m_L2ValueMap.find(strOffer);
+                    if(iterL2 != m_L2ValueMap.end())
+                    {
+                        iterL2->second = strPriceValue;
+                        LOG_DEBUG("===== [OnOffer] repalce (", iterL2->second, " -> ", strPriceValue.c_str(), ")",  " =====");
+                    }
+                    else
+                    {
+                        m_L2ValueMap.insert(make_pair(strOffer, strPriceValue));
+                        LOG_DEBUG("===== [OnOffer] insert (", strOffer, " , ", strPriceValue.c_str(), ")",  " =====");
+                    }
+                }   
+        
+                break;
+            } 
+            default:
+            {
+                LOG_INFO("other m_current_caseid: ", m_current_caseid);
+                break;
+            }
+        }        
     }
 
     // implement of MarketListenerI
@@ -112,7 +157,7 @@ namespace book
         switch(m_current_caseid)
         {
             case fh::core::assist::common::CaseIdValue::Sm_1: // case: BookManager_Test022
-            case fh::core::assist::common::CaseIdValue::Sm_2: // case: BookManager_Test023
+            case fh::core::assist::common::CaseIdValue::Sm_2: // case: BookManager_Test023            
             {
                 std::string strTrade = strOrignalTrade;
                 std::string strContractKey = ", last=";
@@ -136,11 +181,44 @@ namespace book
                 }   
         
                 break;
-            }   
-            case fh::core::assist::common::CaseIdValue::Sm_6: // case: BookManager_Test000
-            {           
+            }
+            case fh::core::assist::common::CaseIdValue::Sm_4: // case: BookManager_Test024            
+            {
+                std::string strTrade = strOrignalTrade;
+                std::string strContractKey = ", last=[";
+                auto pos = strTrade.find(strContractKey);
+                if(pos != std::string::npos)
+                {
+                    std::string strPriceValue = strTrade;
+                    strTrade.erase(pos, strTrade.size());
+                    LOG_DEBUG("===== strTrade=[", strTrade.c_str(), "] ,pos=[", pos, "] =====");
+                    
+                                        
+                    strPriceValue.erase(0, pos+strContractKey.size());
+                    std::string strEndKey = ", size=";                  
+                    pos = strPriceValue.find(strEndKey);
+                    if(pos != std::string::npos)
+                    {
+                        strPriceValue.erase(pos, strPriceValue.size());
+                    }
+                    
+                    LOG_DEBUG("===== strPriceValue=[", strPriceValue.c_str(), "] ,pos=[", pos, "] =====");
+                    
+                    auto iterL2 = m_L2ValueMap.find(strTrade);
+                    if(iterL2 != m_L2ValueMap.end())
+                    {
+                        iterL2->second = strPriceValue;
+                        LOG_DEBUG("===== [OnTrade] repalce (", iterL2->second, " -> ", strPriceValue.c_str(), ")",  " =====");
+                    }
+                    else
+                    {
+                        m_L2ValueMap.insert(make_pair(strTrade, strPriceValue));
+                        LOG_DEBUG("===== [OnTrade] insert (", strTrade, " , ", strPriceValue.c_str(), ")",  " =====");
+                    }           
+                }   
+        
                 break;
-            }               
+            }
             default:
             {
                 LOG_INFO("other m_current_caseid: ", m_current_caseid);
@@ -422,6 +500,99 @@ namespace book
                 }
                 break;
             }
+            case fh::core::assist::common::CaseIdValue::Sm_6: // case: DatSaver_Test007
+            {
+                boost::property_tree::ptree ptParse;
+                std::stringstream ss(strJson);
+                try
+                {
+                    boost::property_tree::read_json(ss, ptParse);  
+                   
+                    boost::property_tree::ptree nomdentries_array = ptParse.get_child("message.noMDEntries");  // get_child得到数组对象   
+
+                    if(nomdentries_array.size()!=0) // 有message.noMDEntries
+                    {            
+                        fh::core::assist::common::DefineMsg_Compare t_defComp; 
+                    
+                        std::string securityIDValue;                              
+                        // 遍历数组
+                        BOOST_FOREACH(boost::property_tree::ptree::value_type &v, nomdentries_array)  
+                        {  
+                            boost::property_tree::ptree& childparse = v.second;
+                            securityIDValue = childparse.get<std::string>("securityID");   
+                                                        
+                            bool is_highlimit_px = false;
+                            boost::property_tree::ptree::assoc_iterator itHighLimitPrice = childparse.find("highLimitPrice");
+                            if(itHighLimitPrice!=childparse.not_found())
+                            {
+                                std::string highLimitPriceMantissa = childparse.get<std::string>("highLimitPrice.mantissa");
+                                std::string highLimitPriceExponent = childparse.get<std::string>("highLimitPrice.exponent");                           
+                                LOG_DEBUG("********* [highLimitPriceMantissa = ", highLimitPriceMantissa, ", highLimitPriceExponent = ",highLimitPriceExponent, "], securityIDValue = ", securityIDValue.c_str(), " *********");
+                                t_defComp.highlimit_price_mantissa    = highLimitPriceMantissa;
+                                t_defComp.highlimit_price_exponent    = highLimitPriceExponent;
+                                is_highlimit_px = true;
+                            }
+                            else
+                            {
+                                LOG_DEBUG("********* not found highlimit_px *********");
+                            }
+                               
+                            bool is_lowlimit_px = false;
+                            boost::property_tree::ptree::assoc_iterator itLowLimitPrice = childparse.find("lowLimitPrice");
+                            if(itHighLimitPrice!=childparse.not_found())
+                            {
+                                std::string lowLimitPriceMantissa = childparse.get<std::string>("lowLimitPrice.mantissa");
+                                std::string lowLimitPriceExponent = childparse.get<std::string>("lowLimitPrice.exponent");                           
+                                LOG_DEBUG("********* [lowLimitPriceMantissa = ", lowLimitPriceMantissa, ", lowLimitPriceExponent = ",lowLimitPriceExponent, "], securityIDValue = ", securityIDValue.c_str(), " *********");
+                                t_defComp.lowlimit_price_mantissa    = lowLimitPriceMantissa;
+                                t_defComp.lowlimit_price_exponent    = lowLimitPriceExponent;
+                                is_lowlimit_px = true;
+                            }
+                            else
+                            {
+                                LOG_DEBUG("********* not found highlimit_px *********");
+                            }                               
+                                                      
+                            std::stringstream s;
+                            write_json(s, v.second);
+                            std::string nomdentries_item = s.str();                            
+                            LOG_DEBUG("=== nomdentries_item = ", nomdentries_item.c_str(), ", nomdentries_array.size = ", nomdentries_array.size(),   " =====");
+                            
+                            
+                            if((true == is_highlimit_px) || (true == is_lowlimit_px))
+                            {
+                                std::string strKey = "securityID="+securityIDValue;
+                                auto iterL2 = m_DefValueMap.find(strKey);
+                                if(iterL2 != m_DefValueMap.end())
+                                {   
+                                    LOG_DEBUG("===== [repalce] (", strKey, ",", iterL2->second.To_limit_price_string(), ") -> (",t_defComp.To_limit_price_string(), ") =====");
+                                    if(true == is_highlimit_px)
+                                    {
+                                        iterL2->second.highlimit_price_mantissa = t_defComp.highlimit_price_mantissa;
+                                        iterL2->second.highlimit_price_exponent = t_defComp.highlimit_price_exponent;
+                                    }
+                                    
+                                    if(true == is_lowlimit_px)
+                                    {
+                                        iterL2->second.lowlimit_price_mantissa = t_defComp.lowlimit_price_mantissa;
+                                        iterL2->second.lowlimit_price_exponent = t_defComp.lowlimit_price_exponent;
+                                    }
+                                }
+                                else
+                                {
+                                    m_DefValueMap.insert(make_pair(strKey, t_defComp)); 
+                                    LOG_DEBUG("===== [insert] (", strKey, ",", t_defComp.To_limit_price_string(), ") =====");
+                                }
+                            }
+                            
+                        }
+                    } 
+                }
+                catch(boost::property_tree::ptree_error & e) {
+                    return;
+                }
+                break;
+            }
             default:
             {
                 LOG_INFO("other m_current_caseid: ", m_current_caseid);
@@ -596,6 +767,53 @@ namespace book
                     EXPECT_STREQ("241450000000", defMsgValue.mdentry_px_mantissa.c_str());
                     EXPECT_STREQ("-7", defMsgValue.mdentry_px_exponent.c_str());
                     EXPECT_STREQ("47", defMsgValue.mdentry_size.c_str());
+                    
+                    m_DefValueMap.erase(contract);
+                }
+                               
+                break;
+            }
+            case fh::core::assist::common::CaseIdValue::Sm_4: // case: BookManager_Test024
+            {
+                auto iterL2 = m_L2ValueMap.find(contract);
+                if(iterL2!=m_L2ValueMap.end())
+                {
+                    LOG_DEBUG("[Sm_4] check Trade mDEntryPx = ", iterL2->second.c_str());
+                    // EXPECT_STRNE EXPECT_STREQ
+                    EXPECT_STREQ("price=24145.000000",
+                        iterL2->second.c_str());
+                        
+                    m_L2ValueMap.erase(contract);
+                }
+
+                break;
+            }
+            case fh::core::assist::common::CaseIdValue::Sm_5: // case: BookManager_Test025
+            {
+                auto iterL2 = m_L2ValueMap.find(contract);
+                if(iterL2!=m_L2ValueMap.end())
+                {
+                    LOG_DEBUG("[Sm_5] check Offer mDEntryPx = ", iterL2->second.c_str());
+                    // EXPECT_STRNE EXPECT_STREQ
+                    EXPECT_STREQ("price=23670.000000",
+                        iterL2->second.c_str());
+                        
+                    m_L2ValueMap.erase(contract);
+                }
+
+                break;
+            }
+            case fh::core::assist::common::CaseIdValue::Sm_6: // case: DatSaver_Test006
+            {
+                auto iterDefMsg = m_DefValueMap.find(contract);
+                if(iterDefMsg!=m_DefValueMap.end())
+                {
+                    auto defMsgValue = iterDefMsg->second;
+                    LOG_DEBUG("[Sm_6] check defMsgValue = ", defMsgValue.To_limit_price_string());
+                    EXPECT_STREQ("242200000000", defMsgValue.highlimit_price_mantissa.c_str());
+                    EXPECT_STREQ("-7", defMsgValue.highlimit_price_exponent.c_str());
+                    EXPECT_STREQ("240650000000", defMsgValue.lowlimit_price_mantissa.c_str());
+                    EXPECT_STREQ("-7", defMsgValue.lowlimit_price_exponent.c_str());
                     
                     m_DefValueMap.erase(contract);
                 }

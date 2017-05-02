@@ -2002,6 +2002,281 @@ namespace market
         }
     }
     
+    //
+    // case desc: 
+    // Statistic Messages: 
+    // 4  A trading session high price\4  A trading session high price.
+    // Instrument:1DVEU7 SecurityID:996791
+    // out:  Trade: contract=1DVEU7, last=[price=24145.000000, size=47]
+    //
+    TEST_F(MutBookManager, BookManager_Test024)
+    {
+        fh::core::market::MarketListenerI *autotest_book_sender = nullptr; 
+        fh::cme::market::BookManager *book_manager = nullptr;        
+
+        autotest_book_sender = new fh::core::book::AutoTestBookSender(); 
+        
+        if(autotest_book_sender!=nullptr)
+        {
+            book_manager = new BookManager(autotest_book_sender);
+            if(nullptr == book_manager)
+            {
+                LOG_ERROR("----- book_manager is nullptr, malloc failed! ------");       
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+
+            fh::core::book::AutoTestBookSender *autotest_book_sender_check = dynamic_cast<fh::core::book::AutoTestBookSender *>(autotest_book_sender);
+            int caseId = fh::core::assist::common::CaseIdValue::Sm_4;
+            autotest_book_sender_check->SetCaseId(caseId);
+            //   [627]UDP Incremental:224.0.28.79, 11627
+            //   [627]UDP Incremental:224.0.25.101, 11727
+            //   [627]UDP Definition:224.0.28.79, 16627
+            //   [627]UDP Recovery:224.0.28.124, 19627
+            
+            std::string recvBufFileName;
+            fh::core::assist::common::getAbsolutePath(recvBufFileName);        
+            recvBufFileName += "market_627_427_sm_4.log";
+                        
+            std::vector<fh::cme::market::message::MdpMessage> definition_datas; // define message
+            // received define message
+            // udp received from [224.0.28.79:16627](
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "udp received from [224.0.28.79:16627](");            
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
+                    [this, &definition_datas](const std::string &revPacket)
+                    {
+                        // decode                                                
+                        std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(revPacket.data(), revPacket.size(), definition_datas);
+
+                        printf("*********** [begin] parse define message **************\n");
+                        
+                        LOG_INFO("seq=", seq, ", definition_datas count=", definition_datas.size());
+
+                        printf("*********** [end] parse define message **************\n");
+                    }
+            );
+             
+            book_manager->Set_definition_data(&definition_datas);
+            
+            m_vecRevPacket.clear();
+            
+            std::vector<fh::cme::market::message::MdpMessage> recovery_datas;  // recovery message
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "udp received from [224.0.28.124:19627](");  
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
+                    [this, &recovery_datas](const std::string &revPacket)
+                    {
+                        // decode                                                
+                        std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(revPacket.data(), revPacket.size(), recovery_datas);
+
+                        printf("*********** [begin] parse define message **************\n");
+                        
+                        LOG_INFO("seq=", seq, ", recovery_datas count=", recovery_datas.size());
+
+                        printf("*********** [end] parse define message **************\n");
+                    }
+            );
+            
+            // set received recovery messages
+            book_manager->Set_recovery_data(&recovery_datas);
+            m_vecRevPacket.clear();
+            
+            // 
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "udp received from [224.0.28.79:11627](");
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
+                    [this, book_manager, autotest_book_sender](const std::string &revPacket)
+                    {
+                        // decode
+                        std::vector<fh::cme::market::message::MdpMessage> mdp_messages;                        
+                        std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(revPacket.data(), revPacket.size(), mdp_messages);
+
+                        printf("*********** begin **************\n");
+                        
+                        LOG_INFO("seq=", seq, ", mdp_messages count=", mdp_messages.size());
+                                           
+                        std::vector<char> message_types;
+                        std::for_each(mdp_messages.cbegin(), mdp_messages.cend(), [&message_types](const fh::cme::market::message::MdpMessage &m)
+                                {
+                                    message_types.push_back(m.message_type());
+                                });   
+
+                        LOG_INFO("{IN}received increment packet: ", " seq=", seq, ", message=", std::string(message_types.begin(), message_types.end()));
+                                
+                        // logic
+                        std::for_each(mdp_messages.begin(), mdp_messages.end(), 
+                          [this, book_manager](fh::cme::market::message::MdpMessage &m)
+                          {                              
+                              m_datas.insert(std::move(m));
+                          });
+
+                        int iXMsgNum = m_datas.size();
+                        for(auto message = m_datas.begin(); message!=m_datas.end(); ++message)
+                        {
+                            LOG_INFO("{BE}processed: seq=", message->packet_seq_num(), ", type=", message->message_type(), ",iXMsgNum=" ,iXMsgNum);
+                            // convert the message to books                     
+                            book_manager->Parse_to_send(*message);
+                        }
+                        
+                        m_datas.clear();
+                        
+                        printf("*********** end **************\n");
+                    }
+            );       
+  
+            m_vecRevPacket.clear();            
+            
+            // 数据校验            
+            if(autotest_book_sender_check!=nullptr)
+            {
+                std::string construct = "contract=1DVEU7";
+                autotest_book_sender_check->CheckResult(construct);
+            }
+
+            delete book_manager;
+            book_manager = nullptr;
+            
+            delete autotest_book_sender;
+            autotest_book_sender = nullptr;
+        }
+    }
+    
+    //
+    // case desc: 
+    // Statistic Messages: 
+    // 5 A session low offer was sent. Please validate the following values
+    // Instrument:1DVEH8 SecurityID:996801
+    // out:  Offer: contract=1DVEH8, offer=[price=23670.000000, size=1]
+    //
+    TEST_F(MutBookManager, BookManager_Test025)
+    {
+        fh::core::market::MarketListenerI *autotest_book_sender = nullptr; 
+        fh::cme::market::BookManager *book_manager = nullptr;        
+
+        autotest_book_sender = new fh::core::book::AutoTestBookSender(); 
+        
+        if(autotest_book_sender!=nullptr)
+        {
+            book_manager = new BookManager(autotest_book_sender);
+            if(nullptr == book_manager)
+            {
+                LOG_ERROR("----- book_manager is nullptr, malloc failed! ------");       
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+
+            fh::core::book::AutoTestBookSender *autotest_book_sender_check = dynamic_cast<fh::core::book::AutoTestBookSender *>(autotest_book_sender);
+            int caseId = fh::core::assist::common::CaseIdValue::Sm_5;
+            autotest_book_sender_check->SetCaseId(caseId);
+            //   [627]UDP Incremental:224.0.28.79, 11627
+            //   [627]UDP Incremental:224.0.25.101, 11727
+            //   [627]UDP Definition:224.0.28.79, 16627
+            //   [627]UDP Recovery:224.0.28.124, 19627
+            
+            std::string recvBufFileName;
+            fh::core::assist::common::getAbsolutePath(recvBufFileName);        
+            recvBufFileName += "market_627_427_sm_5.log";
+                        
+            std::vector<fh::cme::market::message::MdpMessage> definition_datas; // define message
+            // received define message
+            // udp received from [224.0.28.79:16627](
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "udp received from [224.0.28.79:16627](");            
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
+                    [this, &definition_datas](const std::string &revPacket)
+                    {
+                        // decode                                                
+                        std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(revPacket.data(), revPacket.size(), definition_datas);
+
+                        printf("*********** [begin] parse define message **************\n");
+                        
+                        LOG_INFO("seq=", seq, ", definition_datas count=", definition_datas.size());
+
+                        printf("*********** [end] parse define message **************\n");
+                    }
+            );
+             
+            book_manager->Set_definition_data(&definition_datas);
+            
+            m_vecRevPacket.clear();
+            
+            std::vector<fh::cme::market::message::MdpMessage> recovery_datas;  // recovery message
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "udp received from [224.0.28.124:19627](");  
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
+                    [this, &recovery_datas](const std::string &revPacket)
+                    {
+                        // decode                                                
+                        std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(revPacket.data(), revPacket.size(), recovery_datas);
+
+                        printf("*********** [begin] parse define message **************\n");
+                        
+                        LOG_INFO("seq=", seq, ", recovery_datas count=", recovery_datas.size());
+
+                        printf("*********** [end] parse define message **************\n");
+                    }
+            );
+            
+            // set received recovery messages
+            book_manager->Set_recovery_data(&recovery_datas);
+            m_vecRevPacket.clear();
+            
+            // 
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "udp received from [224.0.28.79:11627](");
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
+                    [this, book_manager, autotest_book_sender](const std::string &revPacket)
+                    {
+                        // decode
+                        std::vector<fh::cme::market::message::MdpMessage> mdp_messages;                        
+                        std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(revPacket.data(), revPacket.size(), mdp_messages);
+
+                        printf("*********** begin **************\n");
+                        
+                        LOG_INFO("seq=", seq, ", mdp_messages count=", mdp_messages.size());
+                                           
+                        std::vector<char> message_types;
+                        std::for_each(mdp_messages.cbegin(), mdp_messages.cend(), [&message_types](const fh::cme::market::message::MdpMessage &m)
+                                {
+                                    message_types.push_back(m.message_type());
+                                });   
+
+                        LOG_INFO("{IN}received increment packet: ", " seq=", seq, ", message=", std::string(message_types.begin(), message_types.end()));
+                                
+                        // logic
+                        std::for_each(mdp_messages.begin(), mdp_messages.end(), 
+                          [this, book_manager](fh::cme::market::message::MdpMessage &m)
+                          {                              
+                              m_datas.insert(std::move(m));
+                          });
+
+                        int iXMsgNum = m_datas.size();
+                        for(auto message = m_datas.begin(); message!=m_datas.end(); ++message)
+                        {
+                            LOG_INFO("{BE}processed: seq=", message->packet_seq_num(), ", type=", message->message_type(), ",iXMsgNum=" ,iXMsgNum);
+                            // convert the message to books                     
+                            book_manager->Parse_to_send(*message);
+                        }
+                        
+                        m_datas.clear();
+                        
+                        printf("*********** end **************\n");
+                    }
+            );       
+  
+            m_vecRevPacket.clear();            
+            
+            // 数据校验            
+            if(autotest_book_sender_check!=nullptr)
+            {
+                std::string construct = "contract=1DVEH8";
+                autotest_book_sender_check->CheckResult(construct);
+            }
+
+            delete book_manager;
+            book_manager = nullptr;
+            
+            delete autotest_book_sender;
+            autotest_book_sender = nullptr;
+        }
+    }
     
 } // namespace market
 } // namespace cme
