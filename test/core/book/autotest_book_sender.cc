@@ -539,7 +539,7 @@ namespace book
                                
                             bool is_lowlimit_px = false;
                             boost::property_tree::ptree::assoc_iterator itLowLimitPrice = childparse.find("lowLimitPrice");
-                            if(itHighLimitPrice!=childparse.not_found())
+                            if(itLowLimitPrice!=childparse.not_found())
                             {
                                 std::string lowLimitPriceMantissa = childparse.get<std::string>("lowLimitPrice.mantissa");
                                 std::string lowLimitPriceExponent = childparse.get<std::string>("lowLimitPrice.exponent");                           
