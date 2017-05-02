@@ -66,6 +66,7 @@ namespace message
             b.packet_seq_num = message.packet_seq_num();
             b.template_id = template_id;
             b.type = 'X';
+            LOG_DEBUG("  book security id: ", b.securityID);
         });
 
         LOG_DEBUG("message type is X, template id is ", template_id, " done.");

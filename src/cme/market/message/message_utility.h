@@ -2,6 +2,8 @@
 #ifndef __FH_CME_MARKET_MESSAGE_MESSAGE_UTILITY_H__
 #define __FH_CME_MARKET_MESSAGE_MESSAGE_UTILITY_H__
 
+#include <vector>
+#include <string>
 #include "core/global.h"
 #include "cme/market/message/mdp_message.h"
 
@@ -32,6 +34,9 @@ namespace utility
 
     // make a mdp packet for test
     std::size_t Make_packet(char *buffer, std::uint32_t packet_seq_num, std::uint32_t *ids, size_t len);
+
+    // read mdp packets from file(one packet per line) for test
+    std::vector<std::pair<std::string, std::string>> Read_packets(const std::string &filename, const std::string &packet_start_indicate = "=");
 
     // convert price in sbe message to double
     double Get_price(std::pair<std::int64_t, std::int8_t> price_mantissa);

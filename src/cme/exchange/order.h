@@ -1,7 +1,6 @@
 #ifndef __FH_CME_EXCHANGE_ORDER_H__
 #define __FH_CME_EXCHANGE_ORDER_H__
 
-#include <stdexcept>
 #include "core/global.h"
 
 namespace fh
@@ -46,14 +45,6 @@ namespace exchange
         std::string mass_status_req_id;                // （AF）
         std::uint8_t mass_status_req_type;         // （AF）         1: Instrument  3: Instrument Group  7: All Orders  100: Market Segment
         std::uint8_t ord_status_req_type;            // （AF）         100: SenderSubID  101: Account
-    };
-
-    struct InvalidOrder : public std::invalid_argument
-    {
-        InvalidOrder( const std::string& what = "" ) : invalid_argument(what)
-        {
-            // noop
-        }
     };
 
     // 从 CME 接受的订单处理结果；对应消息类型：

@@ -8,10 +8,10 @@
 #include <quickfix/SessionSettings.h>
 #include "core/global.h"
 #include "core/exchange/exchangei.h"
+#include "core/exchange/exchangelisteneri.h"
 #include "cme/exchange/order_manager.h"
 #include "cme/exchange/exchange_settings.h"
 #include "cme/exchange/globex_logger.h"
-#include "cme/exchange/strategy_communicator.h"
 #include "pb/ems/ems.pb.h"
 
 namespace fh

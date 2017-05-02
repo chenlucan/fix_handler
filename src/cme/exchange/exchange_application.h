@@ -4,7 +4,7 @@
 
 #include <string>
 #include "core/global.h"
-#include "cme/exchange/strategy_communicator.h"
+#include "core/strategy/strategy_communicator.h"
 #include "cme/exchange/globex_communicator.h"
 
 
@@ -31,7 +31,7 @@ namespace exchange
             std::vector<::pb::ems::Order> Get_init_orders();
 
         private:
-            StrategyCommunicator *m_strategy;
+            fh::core::strategy::StrategyCommunicator *m_strategy;
             GlobexCommunicator *m_globex;
 
         private:

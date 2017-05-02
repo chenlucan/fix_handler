@@ -29,7 +29,7 @@ namespace exchange
     {
         fh::cme::exchange::ExchangeSettings app_settings(app_setting_file);
         std::pair<std::string, std::string> url = app_settings.Get_strategy_url();
-        m_strategy = new StrategyCommunicator(url.first, url.second);
+        m_strategy = new fh::core::strategy::StrategyCommunicator(url.first, url.second);
         m_globex = new GlobexCommunicator(m_strategy, fix_setting_file, app_settings);
         m_strategy->Set_exchange(m_globex);
     }

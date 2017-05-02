@@ -7,7 +7,8 @@
 
 std::string make_json()
 {
-    return "{\"time\":\"" + fh::core::assist::utility::Current_time_str() + "\"}";
+    return "{\"market\":\"CME\", \"insertTime\":\"" + std::to_string(fh::core::assist::utility::Current_time_ns()) +
+            "\", \"sendingTimeStr\":\"" + fh::core::assist::utility::Current_time_str() + "\"}";
 }
 
 int main(int argc, char* argv[])
@@ -43,4 +44,4 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-// ./original_saver_test 5557 1000
+// ./original_sender_test 5557 1000
