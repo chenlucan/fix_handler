@@ -108,6 +108,45 @@ namespace book
     {
         // 前面加个 T 标记是 trade 数据
         LOG_INFO("send Trade: ", fh::core::assist::utility::Format_pb_message(trade));
+        std::string strOrignalTrade = fh::core::assist::utility::Format_pb_message(trade);
+        switch(m_current_caseid)
+        {
+            case fh::core::assist::common::CaseIdValue::Sm_1: // case: BookManager_Test022
+            case fh::core::assist::common::CaseIdValue::Sm_2: // case: BookManager_Test023
+            {
+                std::string strTrade = strOrignalTrade;
+                std::string strContractKey = ", last=";
+                auto pos = strTrade.find(strContractKey);
+                if(pos != std::string::npos)
+                {
+                    strTrade.erase(pos, strTrade.size());
+                    LOG_DEBUG("===== strTrade=[", strTrade.c_str(), "] ,pos=[", pos, "] =====");
+                    
+                    auto iterL2 = m_L2ValueMap.find(strTrade);
+                    if(iterL2 != m_L2ValueMap.end())
+                    {
+                        iterL2->second = strOrignalTrade;
+                        LOG_DEBUG("===== [OnTrade] repalce (", iterL2->second, " -> ", strOrignalTrade.c_str(), ")",  " =====");
+                    }
+                    else
+                    {
+                        m_L2ValueMap.insert(make_pair(strTrade, strOrignalTrade)); 
+                        LOG_DEBUG("===== [OnTrade] insert (", strTrade, " , ", strOrignalTrade.c_str(), ")",  " =====");
+                    }           
+                }   
+        
+                break;
+            }   
+            case fh::core::assist::common::CaseIdValue::Sm_6: // case: BookManager_Test000
+            {           
+                break;
+            }               
+            default:
+            {
+                LOG_INFO("other m_current_caseid: ", m_current_caseid);
+                break;
+            }
+        }
     }
 
     // implement of MarketListenerI
@@ -289,6 +328,100 @@ namespace book
                 }
                 break;
             }
+            case fh::core::assist::common::CaseIdValue::Sm_3: // case: DatSaver_Test006
+            {
+                boost::property_tree::ptree ptParse;
+                std::stringstream ss(strJson);
+                try
+                {
+                    boost::property_tree::read_json(ss, ptParse);  
+                   
+                    boost::property_tree::ptree nomdentries_array = ptParse.get_child("message.noMDEntries");  // get_child得到数组对象   
+
+                    if(nomdentries_array.size()!=0) // 有message.noMDEntries
+                    {            
+                        fh::core::assist::common::DefineMsg_Compare t_defComp; 
+                    
+                        std::string securityIDValue;                              
+                        // 遍历数组
+                        BOOST_FOREACH(boost::property_tree::ptree::value_type &v, nomdentries_array)  
+                        {  
+                            boost::property_tree::ptree& childparse = v.second;
+                            securityIDValue = childparse.get<std::string>("securityID");   
+                                                        
+                                                    
+                            bool is_mdentry_size = false;
+                            //auto itEntrySize = ptParse.find("message.noMDEntries.mDEntrySize");
+
+                            auto itEntrySize = childparse.find("mDEntrySize");
+                            if(itEntrySize!=childparse.not_found())
+                            {
+                                std::string mDEntrySize = childparse.get<std::string>("mDEntrySize");                            
+                                LOG_DEBUG("********* mDEntrySize = ", mDEntrySize, ", securityIDValue = ", securityIDValue.c_str(), " *********");
+                                t_defComp.mdentry_size    = mDEntrySize;
+                                is_mdentry_size = true;
+                            }
+                            else
+                            {
+                                LOG_DEBUG("********* not found mDEntrySize *********");
+                            }
+                            
+                            bool is_mdentry_px = false;
+                            boost::property_tree::ptree::assoc_iterator itEntryPx = childparse.find("mDEntryPx");
+                            if(itEntryPx!=childparse.not_found())
+                            {
+                                std::string mDEntryPxMantissa = childparse.get<std::string>("mDEntryPx.mantissa");
+                                std::string mDEntryPxExponent = childparse.get<std::string>("mDEntryPx.exponent");                            
+                                LOG_DEBUG("********* [mDEntryPxMantissa = ", mDEntryPxMantissa, ", mDEntryPxExponent = ",mDEntryPxExponent, "], securityIDValue = ", securityIDValue.c_str(), " *********");
+                                t_defComp.mdentry_px_mantissa    = mDEntryPxMantissa;
+                                t_defComp.mdentry_px_exponent    = mDEntryPxExponent;
+                                is_mdentry_px = true;
+                            }
+                            else
+                            {
+                                LOG_DEBUG("********* not found mDEntryPx *********");
+                            }
+                                                        
+                                                      
+                            std::stringstream s;
+                            write_json(s, v.second);
+                            std::string nomdentries_item = s.str();                            
+                            LOG_DEBUG("=== nomdentries_item = ", nomdentries_item.c_str(), ", nomdentries_array.size = ", nomdentries_array.size(),   " =====");
+                            
+                            
+                            if((true == is_mdentry_size) || (true == is_mdentry_px))
+                            {
+                                std::string strKey = "securityID="+securityIDValue;
+                                auto iterL2 = m_DefValueMap.find(strKey);
+                                if(iterL2 != m_DefValueMap.end())
+                                {   
+                                    LOG_DEBUG("===== [repalce] (", strKey, ",", iterL2->second.To_mdentry_price_size_string(), ") -> (",t_defComp.To_mdentry_price_size_string(), ") =====");
+                                    if(true == is_mdentry_size)
+                                    {
+                                        iterL2->second.mdentry_size = t_defComp.mdentry_size;
+                                    }
+                                    
+                                    if(true == is_mdentry_px)
+                                    {
+                                        iterL2->second.mdentry_px_mantissa = t_defComp.mdentry_px_mantissa;
+                                        iterL2->second.mdentry_px_exponent = t_defComp.mdentry_px_exponent;
+                                    }
+                                }
+                                else
+                                {
+                                    m_DefValueMap.insert(make_pair(strKey, t_defComp)); 
+                                    LOG_DEBUG("===== [insert] (", strKey, ",", t_defComp.To_mdentry_price_size_string(), ") =====");
+                                }
+                            }
+                            
+                        }
+                    } 
+                }
+                catch(boost::property_tree::ptree_error & e) {
+                    return;
+                }
+                break;
+            }
             default:
             {
                 LOG_INFO("other m_current_caseid: ", m_current_caseid);
@@ -417,6 +550,52 @@ namespace book
                     auto defMsgValue = iterDefMsg->second;
                     LOG_DEBUG("[Order_Qty] check defMsgValue = ", defMsgValue.To_order_qty_string());
                     EXPECT_STREQ("290", defMsgValue.order_qty.c_str());
+                    
+                    m_DefValueMap.erase(contract);
+                }
+                               
+                break;
+            }
+            case fh::core::assist::common::CaseIdValue::Sm_1: // case: BookManager_Test022
+            {
+                auto iterL2 = m_L2ValueMap.find(contract);
+                if(iterL2!=m_L2ValueMap.end())
+                {
+                    LOG_DEBUG("[Sm_1] check TradeVale = ", iterL2->second.c_str());
+                    // EXPECT_STRNE EXPECT_STREQ
+                    EXPECT_STREQ("contract=1DVEH8, last=[price=23675.000000, size=33]",
+                        iterL2->second.c_str());
+                        
+                    m_L2ValueMap.erase(contract);
+                }
+
+                break;
+            }
+            case fh::core::assist::common::CaseIdValue::Sm_2: // case: BookManager_Test023
+            {
+                auto iterL2 = m_L2ValueMap.find(contract);
+                if(iterL2!=m_L2ValueMap.end())
+                {
+                    LOG_DEBUG("[Sm_2] check TradeVale = ", iterL2->second.c_str());
+                    // EXPECT_STRNE EXPECT_STREQ
+                    EXPECT_STREQ("contract=1DVEU7, last=[price=24140.000000, size=668]",
+                        iterL2->second.c_str());
+                        
+                    m_L2ValueMap.erase(contract);
+                }
+
+                break;
+            }
+            case fh::core::assist::common::CaseIdValue::Sm_3: // case: DatSaver_Test006
+            {
+                auto iterDefMsg = m_DefValueMap.find(contract);
+                if(iterDefMsg!=m_DefValueMap.end())
+                {
+                    auto defMsgValue = iterDefMsg->second;
+                    LOG_DEBUG("[Sm_3] check defMsgValue = ", defMsgValue.To_mdentry_price_size_string());
+                    EXPECT_STREQ("241450000000", defMsgValue.mdentry_px_mantissa.c_str());
+                    EXPECT_STREQ("-7", defMsgValue.mdentry_px_exponent.c_str());
+                    EXPECT_STREQ("47", defMsgValue.mdentry_size.c_str());
                     
                     m_DefValueMap.erase(contract);
                 }

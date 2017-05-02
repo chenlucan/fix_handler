@@ -32,8 +32,9 @@ LINT_COMMAND = $(TEST_PATH)/cpplint.py
 SETTINGS = $(BIN_PATH)/market_config.xml $(BIN_PATH)/market_settings.ini  $(BIN_PATH)/exchange_server.cfg \
 					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg $(BIN_PATH)/original_saver_settings.ini \
 					  $(BIN_PATH)/mut_cmemarket_revbuf.log $(BIN_PATH)/market_by_price_1.log $(BIN_PATH)/market_by_price_2.log \
-                      $(BIN_PATH)/market_609_426_sd_1.log $(BIN_PATH)/market_609_426_sd_2.log $(BIN_PATH)/market_627_426_fs_1.log \
-                      $(BIN_PATH)/market_627_426_fs_2.log $(BIN_PATH)/market_627_426_qm.log
+					  $(BIN_PATH)/market_609_426_sd_1.log $(BIN_PATH)/market_609_426_sd_2.log $(BIN_PATH)/market_627_426_fs_1.log \
+					  $(BIN_PATH)/market_627_426_fs_2.log $(BIN_PATH)/market_627_426_qm.log $(BIN_PATH)/market_627_427_sm_1.log \
+					  $(BIN_PATH)/market_627_427_sm_2.log $(BIN_PATH)/market_627_427_sm_3.log
 ALL_OBJS =  $(filter-out $(wildcard $(BIN_PATH)/*_test.o), $(wildcard $(BIN_PATH)/*.o)) 
 TEST_OBJS = $(BIN_PATH)/utility_unittest.o $(BIN_PATH)/mut_common.o $(BIN_PATH)/mut_book_sender.o $(BIN_PATH)/mut_book_manager.o  \
 						   $(BIN_PATH)/mut_market_manager.o $(BIN_PATH)/autotest_book_sender.o $(BIN_PATH)/mut_dat_saver.o
