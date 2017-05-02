@@ -66,7 +66,7 @@ TEST(MarketSimulaterTest, Test001_ReadOnce)
     EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at("CON-3")), messages_all_type_result[1]);
 }
 
-TEST(MarketSimulaterTest, Test001_ReadMultiple)
+TEST(MarketSimulaterTest, Test002_ReadMultiple)
 {
     std::uint32_t page_size = 5;
     fh::tmalpha::market::MockMarketDataProvider *provider = new fh::tmalpha::market::MockMarketDataProvider(messages_all_type, page_size);
@@ -84,7 +84,7 @@ TEST(MarketSimulaterTest, Test001_ReadMultiple)
     EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at("CON-3")), messages_all_type_result[1]);
 }
 
-TEST(MarketSimulaterTest, Test001_3xSpeed)
+TEST(MarketSimulaterTest, Test003_3xSpeed)
 {
     std::uint32_t page_size = 15;
     fh::tmalpha::market::MockMarketDataProvider *provider = new fh::tmalpha::market::MockMarketDataProvider(messages_all_type, page_size);
