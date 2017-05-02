@@ -54,6 +54,7 @@ EXCHANGE_CLIENT_TARGET = $(BIN_PATH)/exchange_client_test
 ORIGINAL_SAVER_TARGET = $(BIN_PATH)/original_saver_test
 ORIGINAL_SENDER_TARGET = $(BIN_PATH)/original_sender_test
 TRADE_MATCHING_ALPHA_TARGET = $(BIN_PATH)/trade_matching_alpha_test
+TRADE_MATCHING_EXCHANGE_ALPHA_TARGET = $(BIN_PATH)/trade_matching_exchange_alpha_test
 TEST_TARGET = $(BIN_PATH)/utest
     
 default: all;
@@ -61,7 +62,7 @@ default: all;
 include tmobjs.mk
 include objs.mk
     
-all: createdir usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender tmalpha
+all: createdir usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender tmalpha tmalphaex
  
 createdir:
 	mkdir -p ${BIN_PATH}
@@ -112,7 +113,12 @@ orgsend: $(BIN_PATH)/original_sender_test.o $(COMM_OBJS)
 tmalpha: $(BIN_PATH)/trade_matching_alpha_test.o $(BIN_PATH)/tmalpha_market_application.o $(BIN_PATH)/market_simulater.o $(BIN_PATH)/book_replayer.o \
 				 $(BIN_PATH)/mongo.o $(BIN_PATH)/book_state_controller.o $(COMM_OBJS)
 	$(COMPILE_COMMAND) -o $(TRADE_MATCHING_ALPHA_TARGET) $? 
-		
+
+tmalphaex: $(BIN_PATH)/trade_matching_exchange_alpha_test.o $(BIN_PATH)/tmalpha_exchange_application.o $(BIN_PATH)/exchange_simulater.o \
+					 $(BIN_PATH)/tmalpha_market_application.o $(BIN_PATH)/market_simulater.o $(BIN_PATH)/book_replayer.o \
+				     $(BIN_PATH)/mongo.o $(BIN_PATH)/book_state_controller.o $(BIN_PATH)/strategy_communicator.o $(COMM_OBJS)
+	$(COMPILE_COMMAND) -o $(TRADE_MATCHING_EXCHANGE_ALPHA_TARGET) $? 
+				     
 copyfile: $(SETTINGS)
 
 test: $(ALL_OBJS) $(TEST_OBJS)
