@@ -18,7 +18,7 @@ namespace exchange
     : core::exchange::ExchangeI(result_listener),
       m_result_listener(result_listener), m_market(nullptr), m_init_orders(),
       m_exchange_order_id(0), m_fill_id(0),
-      m_working_orders(), m_filled_orders(), m_mutex(), m_current_states()
+      m_working_orders(), m_working_order_ids(), m_filled_orders(), m_mutex(), m_current_states()
     {
         m_market = new fh::tmalpha::market::TmalphaMarketApplication(app_setting_file, persist_setting_file);
         m_market->Add_replay_listener(this);
@@ -76,6 +76,7 @@ namespace exchange
         else
         {
             m_working_orders[order.client_order_id()] = this->Order_working(order);
+            m_working_order_ids.push_back(order.client_order_id());
         }
     }
 
@@ -141,12 +142,14 @@ namespace exchange
         LOG_INFO("rematching order...");
 
         // 行情变化后看看待处理订单中有没有能匹配价格的
-        for(auto iter = m_working_orders.begin(); iter != m_working_orders.end();)
+        for(auto iter = m_working_order_ids.begin(); iter != m_working_order_ids.end();)
         {
-            if(this->Has_matching(iter->second))
+            auto order = m_working_orders[*iter];
+            if(this->Has_matching(order))
             {
-                m_filled_orders[iter->second.client_order_id()] = this->Order_filled(iter->second, iter->second.exchange_order_id());
-                m_working_orders.erase(iter++);
+                m_filled_orders[order.client_order_id()] = this->Order_filled(order, order.exchange_order_id());
+                m_working_order_ids.erase(iter++);
+                m_working_orders.erase(order.client_order_id());
             }
             else
             {

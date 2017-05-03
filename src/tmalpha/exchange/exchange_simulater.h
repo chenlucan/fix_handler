@@ -5,6 +5,7 @@
 #include <string>
 #include <atomic>
 #include <map>
+#include <list>
 #include <mutex>
 #include "core/global.h"
 #include "core/exchange/exchangei.h"
@@ -71,6 +72,7 @@ namespace exchange
             std::atomic<std::uint32_t> m_exchange_order_id;
             std::atomic<std::uint32_t> m_fill_id;
             std::map<std::string, pb::ems::Order> m_working_orders;
+            std::list<std::string> m_working_order_ids;   // 为了保证 working order 按照时间顺序匹配
             std::map<std::string, pb::ems::Fill> m_filled_orders;
             std::mutex m_mutex;
             std::unordered_map<std::string , pb::dms::L2> m_current_states;
