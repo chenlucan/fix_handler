@@ -10,6 +10,7 @@
 #include "core/exchange/exchangei.h"
 #include "pb/ems/ems.pb.h"
 #include "core/assist/settings.h"
+#include "core/exchange/exchangelisteneri.h"
 
 namespace fh
 {
@@ -25,7 +26,8 @@ namespace exchange
                                                                   m_pUserApi (pUserApi) 
 		   {
                       mIConnet = -1;
-			MaxOrderLocalID = 0;		  
+			MaxOrderLocalID = 0;
+			m_strategy = NULL;
 		   }
 	          ~CUstpFtdcTraderManger ()
 	          {
@@ -38,11 +40,21 @@ namespace exchange
 		   virtual void OnRspOrderInsert(CUstpFtdcInputOrderField  *pInputOrder, CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast);
 		   virtual void OnRtnOrder(CUstpFtdcOrderField  *pOrder);
 		   virtual void OnRspError(CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast);
-		   void SetFileConfigData(const std::string &FileConfig);	
+		   virtual void OnRtnTrade(CUstpFtdcTradeField *pTrade) ;
+		   virtual void OnErrRtnOrderInsert(CUstpFtdcInputOrderField *pInputOrder, CUstpFtdcRspInfoField *pRspInfo);
+		   void SetFileConfigData(const std::string &FileConfig);
+		   void OnInsertOrder(CUstpFtdcInputOrderField  *pInputOrder,CUstpFtdcRspInfoField  *pRspInfo);
+		   void OnOrder(CUstpFtdcOrderField  *pOrder);
+		   void OnFill(CUstpFtdcTradeField *pTrade);
+		   void SetStrategy(core::exchange::ExchangeListenerI *strategy)
+		   {
+                      m_strategy = strategy;
+		   }
 		   int mIConnet;
 		   int MaxOrderLocalID;
 		   
         private:
+		   core::exchange::ExchangeListenerI *m_strategy;	 
 		   CUstpFtdcTraderApi *m_pUserApi;
 		   fh::core::assist::Settings *m_pFileConfig;
 		   

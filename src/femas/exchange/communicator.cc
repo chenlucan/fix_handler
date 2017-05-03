@@ -10,7 +10,7 @@ namespace femas
 {
 namespace exchange
 {
-
+class fh::core::exchange::ExchangeListenerI;
 // 当客户端与飞马平台建立起通信连接，客户端需要进行登录
 void CUstpFtdcTraderManger::OnFrontConnected()
 {
@@ -56,6 +56,9 @@ void CUstpFtdcTraderManger::OnRspOrderInsert(CUstpFtdcInputOrderField  *pInputOr
     // 输出报单录入结果
     LOG_INFO("CUstpFtdcTraderManger::OnRspOrderInsert");
     LOG_INFO("ErrorCode=[",pRspInfo->ErrorID,"], ErrorMsg=[",pRspInfo->ErrorMsg,"]" );
+
+    OnInsertOrder(pInputOrder,pRspInfo);	
+
     return;	
 }
 
@@ -64,6 +67,7 @@ void CUstpFtdcTraderManger::OnRtnOrder(CUstpFtdcOrderField  *pOrder)
 {
     LOG_INFO("CUstpFtdcTraderManger::OnRtnOrder");
     LOG_INFO("OrderSysID=[",pOrder->OrderSysID,"]");
+    OnOrder(pOrder);	
 }
 
 // 针对用户请求的出错通知
@@ -75,13 +79,61 @@ void CUstpFtdcTraderManger::OnRspError(CUstpFtdcRspInfoField  *pRspInfo, int nRe
     // 客户端需进行错误处理
 
 }
+void CUstpFtdcTraderManger::OnRtnTrade(CUstpFtdcTradeField *pTrade)
+{
+    LOG_INFO("CUstpFtdcTraderManger::OnRtnTrade");
+    OnFill(pTrade);	
+}
+
+void CUstpFtdcTraderManger::OnErrRtnOrderInsert(CUstpFtdcInputOrderField *pInputOrder, CUstpFtdcRspInfoField *pRspInfo)
+{//是否使用 待定
+    LOG_INFO("CUstpFtdcTraderManger::OnErrRtnOrderInsert");
+}
+
+void CUstpFtdcTraderManger::OnInsertOrder(CUstpFtdcInputOrderField  *pInputOrder,CUstpFtdcRspInfoField  *pRspInfo)
+{
+    LOG_INFO("CUstpFtdcTraderManger::OnInsertOrder");
+    if(NULL != m_strategy)
+    {
+        const ::pb::ems::Order tmporder;
+
+	 m_strategy->OnOrder(tmporder);
+    }	
+}
+void CUstpFtdcTraderManger::OnOrder(CUstpFtdcOrderField  *pOrder)
+{
+    LOG_INFO("CUstpFtdcTraderManger::OnOrder");
+
+    if(NULL != m_strategy)
+    {
+        ::pb::ems::Order tmporder;
+
+		
+	 m_strategy->OnOrder(tmporder);
+    }
+}
+void CUstpFtdcTraderManger::OnFill(CUstpFtdcTradeField *pTrade)
+{
+    LOG_INFO("CUstpFtdcTraderManger::OnFill");
+
+    if(NULL != m_strategy)
+    {
+        ::pb::ems::Fill tmpfill;
+
+		
+	 m_strategy->OnFill(tmpfill);
+    }	
+}
+
 void CUstpFtdcTraderManger::SetFileConfigData(const std::string &FileConfig)
 {
     LOG_INFO("CUstpFtdcTraderManger::SetFileConfigData file =  ",FileConfig.c_str());
     m_pFileConfig = new fh::core::assist::Settings(FileConfig); 
 }
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////CFemasGlobexCommunicator//////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CFemasGlobexCommunicator::CFemasGlobexCommunicator(core::exchange::ExchangeListenerI *strategy,const std::string &config_file)
 	                                                                                                  :core::exchange::ExchangeI(strategy), m_strategy(strategy)
@@ -93,7 +145,12 @@ CFemasGlobexCommunicator::CFemasGlobexCommunicator(core::exchange::ExchangeListe
      m_pUserApi->RegisterSpi(m_pUstpFtdcTraderManger);	
      m_pUstpFtdcTraderManger->SetFileConfigData(config_file);
      m_itimeout = 10;
-      
+     m_strategy =  strategy;  
+     if(m_pUstpFtdcTraderManger != NULL)
+     {
+         m_pUstpFtdcTraderManger->SetStrategy(m_strategy);
+     }
+     	 
 }
 
 CFemasGlobexCommunicator::~CFemasGlobexCommunicator()
@@ -223,6 +280,21 @@ void CFemasGlobexCommunicator::Add(const ::pb::ems::Order& order)
         std::string ExchangeID = m_pFileConfig->Get("femas-exchange.ExchangeID");
 	 strcpy(SInputOrder.ExchangeID , ExchangeID.c_str());  
 
+	 //===================
+	 if(order.order_type() == pb::ems::OrderType::OT_Limit)
+	 {
+            SInputOrder.OrderPriceType = '2';
+	 }
+	 else
+	 if(order.order_type() == pb::ems::OrderType::OT_Market)
+	 {
+            SInputOrder.OrderPriceType = '1';
+	 }
+
+	 SInputOrder.VolumeCondition=(m_pFileConfig->Get("femas-exchange.VolumeCondition")).c_str()[0];
+	 SInputOrder.ForceCloseReason=(m_pFileConfig->Get("femas-exchange.ForceCloseReason")).c_str()[0];;
+	 //===================
+
         LOG_INFO("UserOrderLocalID:",SInputOrder.UserOrderLocalID);
 	 LOG_INFO("BrokerID: ",SInputOrder.BrokerID);
 	 LOG_INFO("UserID: ",SInputOrder.UserID);
@@ -236,9 +308,12 @@ void CFemasGlobexCommunicator::Add(const ::pb::ems::Order& order)
 	 LOG_INFO("TimeCondition: ",SInputOrder.TimeCondition);
 	 LOG_INFO("IsAutoSuspend: ",SInputOrder.IsAutoSuspend);
 	 LOG_INFO("ExchangeID: ",SInputOrder.ExchangeID);
+	 LOG_INFO("OrderPriceType: ",SInputOrder.OrderPriceType);
+	 LOG_INFO("VolumeCondition: ",SInputOrder.VolumeCondition);
+	 LOG_INFO("ForceCloseReason: ",SInputOrder.ForceCloseReason);
 
 	 
-        m_pUserApi->ReqOrderInsert(&SInputOrder, 1);
+        m_pUserApi->ReqOrderInsert(&SInputOrder, std::atoi(SInputOrder.UserOrderLocalID));
         return;
 }
 

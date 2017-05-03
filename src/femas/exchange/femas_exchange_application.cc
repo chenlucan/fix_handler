@@ -42,13 +42,13 @@ bool CFemasExchangeApp::Start(const std::vector<::pb::ems::Order> &init_orders)
          LOG_ERROR("CFemasExchangeApp::Start");
          return false;
      }
-     /*	 
+     	 
      LOG_INFO("start femas strategy thread");
      std::thread strategy_listener([this]{
             m_strategy->Start_receive();
         });
      strategy_listener.detach();
-     */		
+     		
      return m_pCFemasGlobexCommunicator->Start(init_orders);	 
 }
 
