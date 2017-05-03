@@ -32,13 +32,17 @@ namespace market
             // parse increment message to books and send to target zeromq
             void Parse_to_send(const fh::cme::market::message::MdpMessage &message);
 
+        public:
+            static void Send_trade(fh::core::market::MarketListenerI *sender, const fh::cme::market::message::Book *trade_book, const std::string &contract);
+            static void Send_l2(fh::core::market::MarketListenerI *sender, const fh::cme::market::BookState *state);
+            static void Send_bbo(fh::core::market::MarketListenerI *sender, const fh::cme::market::BookState *state);
+
         private:
             void Parse_definition(const std::vector<fh::cme::market::message::MdpMessage> &messages);
             void Parse_recovery(const std::vector<fh::cme::market::message::MdpMessage> &messages);
             std::vector<fh::cme::market::message::Book> Parse_increment(const fh::cme::market::message::MdpMessage &message);
             void On_definition_changed(const fh::cme::market::message::Instrument &instrument);
             void Send(bool is_bbo_changed, const fh::cme::market::BookState *state);
-            void Send_trade(const fh::cme::market::message::Book *trade_book);
             bool Is_BBO_changed(const fh::cme::market::message::Book &b);
 
         private:
