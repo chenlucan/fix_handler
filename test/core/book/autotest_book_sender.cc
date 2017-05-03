@@ -115,7 +115,9 @@ namespace book
         LOG_INFO("send L2: ", fh::core::assist::utility::Format_pb_message(l2));  
         m_sendL2 = fh::core::assist::utility::Format_pb_message(l2);
         if( (m_current_caseid!=fh::core::assist::common::CaseIdValue::MakePrice_1) 
-            && (m_current_caseid!=fh::core::assist::common::CaseIdValue::MakePrice_2) )
+            && (m_current_caseid!=fh::core::assist::common::CaseIdValue::MakePrice_2)
+            && (m_current_caseid!=fh::core::assist::common::CaseIdValue::ChannelReset_MakePrice_1)
+            && (m_current_caseid!=fh::core::assist::common::CaseIdValue::ChannelReset_MakePrice_2) )
         {
             return;
         }
@@ -593,6 +595,62 @@ namespace book
                 }
                 break;
             }
+            case fh::core::assist::common::CaseIdValue::Market_State_Message_1: // case: DatSaver_Test008
+            {
+                boost::property_tree::ptree ptParse;
+                std::stringstream ss(strJson);
+                try
+                {
+                    boost::property_tree::read_json(ss, ptParse);  
+                    
+                    boost::property_tree::ptree items = ptParse.get_child("message");  // get_child得到子对象
+                    
+                    bool is_security_trading_status = false;
+                    std::string typeValue;
+                    fh::core::assist::common::DefineMsg_Compare t_defComp; 
+                    for (boost::property_tree::ptree::iterator it=items.begin();it!=items.end();++it)  
+                    {  
+                        //遍历读出数据  
+                        std::string key=it->first;//key
+                        std::string value =it->second.data();
+                        
+                        std::string strType = "type";
+                        std::string strSecurityTradingStatus = "securityTradingStatus";
+                        if(strSecurityTradingStatus == key)
+                        {
+                            t_defComp.security_trading_status = value;
+                            is_security_trading_status = true;
+                        }
+                        else if(strType == key)
+                        {
+                            typeValue = value;
+                        }
+                        LOG_DEBUG("===== first: ", key, ", second: ", value.c_str(), " =====");
+                    }
+                    
+                    
+                    if(true == is_security_trading_status)
+                    {
+                        std::string strKey = "type="+typeValue;
+                        auto iterL2 = m_DefValueMap.find(strKey);
+                        if(iterL2 != m_DefValueMap.end())
+                        {   
+                            LOG_DEBUG("===== [repalce] (", strKey, ",", iterL2->second.To_security_trading_status_string(), ") -> (",t_defComp.To_security_trading_status_string(), ") =====");
+                            iterL2->second.security_trading_status = t_defComp.security_trading_status;
+                            //iterL2->second.security_trading_event = t_defComp.security_trading_event;
+                        }
+                        else
+                        {
+                            m_DefValueMap.insert(make_pair(strKey, t_defComp));
+                            LOG_DEBUG("===== [insert] (", strKey, ",", t_defComp.To_security_trading_status_string(), ") =====");
+                        } 
+                    }              
+                }
+                catch(boost::property_tree::ptree_error & e) {
+                    return;
+                }
+                break;
+            }
             default:
             {
                 LOG_INFO("other m_current_caseid: ", m_current_caseid);
@@ -803,7 +861,7 @@ namespace book
 
                 break;
             }
-            case fh::core::assist::common::CaseIdValue::Sm_6: // case: DatSaver_Test006
+            case fh::core::assist::common::CaseIdValue::Sm_6: // case: DatSaver_Test007
             {
                 auto iterDefMsg = m_DefValueMap.find(contract);
                 if(iterDefMsg!=m_DefValueMap.end())
@@ -820,6 +878,50 @@ namespace book
                                
                 break;
             }
+            case fh::core::assist::common::CaseIdValue::ChannelReset_MakePrice_1: // case: BookManager_Test026
+            {
+                auto iterL2 = m_L2ValueMap.find(contract);
+                if(iterL2!=m_L2ValueMap.end())
+                {
+                    LOG_DEBUG("[ChannelReset_MakePrice_1] check L2Vale = ", iterL2->second.c_str());
+                    // EXPECT_STRNE EXPECT_STREQ
+                    EXPECT_STREQ("contract=1DVEU7, bid=[price=24135.000000, size=62][price=24130.000000, size=7][price=24125.000000, size=74][price=24120.000000, size=26][price=24115.000000, size=94], offer=[price=24140.000000, size=49][price=24145.000000, size=62][price=24150.000000, size=80][price=24155.000000, size=54][price=24160.000000, size=60]",
+                        iterL2->second.c_str());
+                        
+                    m_L2ValueMap.erase(contract);
+                }
+
+                break;
+            }
+            case fh::core::assist::common::CaseIdValue::ChannelReset_MakePrice_2: // case: BookManager_Test027
+            {
+                auto iterL2 = m_L2ValueMap.find(contract);
+                if(iterL2!=m_L2ValueMap.end())
+                {
+                    LOG_DEBUG("[ChannelReset_MakePrice_2] check L2Vale = ", iterL2->second.c_str());
+                    // EXPECT_STRNE EXPECT_STREQ
+                    EXPECT_STREQ("contract=1DVEU7, bid=[price=24135.000000, size=62][price=24130.000000, size=7][price=24125.000000, size=74][price=24120.000000, size=26][price=24115.000000, size=94], offer=[price=24140.000000, size=49][price=24145.000000, size=62][price=24150.000000, size=80][price=24155.000000, size=54][price=24160.000000, size=60]",
+                        iterL2->second.c_str());
+                        
+                    m_L2ValueMap.erase(contract);
+                }
+
+                break;
+            }
+            case fh::core::assist::common::CaseIdValue::Market_State_Message_1: // case: DatSaver_Test008
+            {
+                auto iterDefMsg = m_DefValueMap.find(contract);
+                if(iterDefMsg!=m_DefValueMap.end())
+                {
+                    auto defMsgValue = iterDefMsg->second;
+                    LOG_DEBUG("[Market_State_Message_1] check defMsgValue = ", defMsgValue.To_security_trading_status_string());
+                    EXPECT_STREQ("21", defMsgValue.security_trading_status.c_str());                    
+                    
+                    m_DefValueMap.erase(contract);
+                }
+
+                break;
+            }            
             default:
             {
                 LOG_INFO("ignore m_current_caseid: ", m_current_caseid);

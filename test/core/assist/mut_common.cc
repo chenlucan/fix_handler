@@ -71,7 +71,7 @@ namespace common
             }
         });
 
-        LOG_INFO("hex message: size=", bytes.size(), "\n", byte_line.str());
+        //LOG_INFO("hex message: size=", bytes.size(), "\n", byte_line.str());
 
         std::vector<fh::cme::market::message::MdpMessage> message;
         std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(bytes.data(), bytes.size(), message);

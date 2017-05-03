@@ -32,6 +32,13 @@ namespace common
         Sm_4 = 11,
         Sm_5 = 12,
         Sm_6 = 13,
+        ChannelReset_MakePrice_1 = 14,
+        ChannelReset_MakePrice_2 = 15,
+        Market_State_Message_1 = 16,
+        Market_State_Message_2 = 17,
+        Market_State_Message_3 = 18,
+        Market_State_Message_4 = 19,
+        Market_State_Message_5 = 20,
         UNKNOW_VALUE = 255
     };
     
@@ -52,6 +59,10 @@ namespace common
         std::string highlimit_price_exponent;
         std::string lowlimit_price_mantissa;  // lowLimitPrice
         std::string lowlimit_price_exponent; 
+        
+        
+        std::string security_trading_status; // Market State Message
+        std::string security_trading_event;
 
         
         std::string To_string() const
@@ -95,6 +106,16 @@ namespace common
             os << "lowlimit_price_mantissa=" << lowlimit_price_mantissa << " ";  
             os << "lowlimit_price_exponent=" << lowlimit_price_exponent << " ";               
             os << "mdentry_size=" << mdentry_size << "}";
+
+            return os.str();
+        }
+        
+        std::string To_security_trading_status_string() const
+        {
+            std::ostringstream os;
+            os << "security_trading_status_Compare={";    
+            os << "security_trading_status=" << security_trading_status << " ";   
+            os << "security_trading_event=" << security_trading_event << "}";
 
             return os.str();
         }
