@@ -10,7 +10,6 @@ namespace femas
 {
 namespace exchange
 {
-class fh::core::exchange::ExchangeListenerI;
 // 当客户端与飞马平台建立起通信连接，客户端需要进行登录
 void CUstpFtdcTraderManger::OnFrontConnected()
 {
@@ -90,12 +89,101 @@ void CUstpFtdcTraderManger::OnErrRtnOrderInsert(CUstpFtdcInputOrderField *pInput
     LOG_INFO("CUstpFtdcTraderManger::OnErrRtnOrderInsert");
 }
 
+void CUstpFtdcTraderManger::OnRspOrderAction(CUstpFtdcOrderActionField *pOrderAction, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) 
+{
+    LOG_INFO("CUstpFtdcTraderManger::OnRspOrderAction");
+    LOG_INFO("ErrorCode=[",pRspInfo->ErrorID,"], ErrorMsg=[",pRspInfo->ErrorMsg,"]" );	
+    OnActionOrder(pOrderAction,pRspInfo);	
+}
+
+void CUstpFtdcTraderManger::OnErrRtnOrderAction(CUstpFtdcOrderActionField *pOrderAction, CUstpFtdcRspInfoField *pRspInfo)
+{
+    LOG_INFO("CUstpFtdcTraderManger::OnErrRtnOrderAction");
+}
+
+
+
+void CUstpFtdcTraderManger::OnActionOrder(CUstpFtdcOrderActionField *pOrderAction, CUstpFtdcRspInfoField *pRspInfo)
+{
+    LOG_INFO("CUstpFtdcTraderManger::OnActionOrder");
+    if(NULL != m_strategy)
+    {
+        ::pb::ems::Order tmporder;
+
+
+	 tmporder.set_client_order_id(pOrderAction->UserOrderActionLocalID);
+        tmporder.set_account(pOrderAction->UserID);
+		
+	 tmporder.set_price(std::to_string(pOrderAction->LimitPrice));
+        tmporder.set_quantity(pOrderAction->VolumeChange);	
+
+	 LOG_INFO("client_order_id:",pOrderAction->UserOrderActionLocalID);
+	 LOG_INFO("account:",pOrderAction->UserID);
+	 LOG_INFO("LimitPrice:",pOrderAction->LimitPrice);
+	 LOG_INFO("VolumeChange:",pOrderAction->VolumeChange);
+	 LOG_INFO("UserOrderLocalID:",pOrderAction->UserOrderLocalID);
+
+
+	 m_strategy->OnOrder(tmporder);	
+    }
+}
+
 void CUstpFtdcTraderManger::OnInsertOrder(CUstpFtdcInputOrderField  *pInputOrder,CUstpFtdcRspInfoField  *pRspInfo)
 {
     LOG_INFO("CUstpFtdcTraderManger::OnInsertOrder");
     if(NULL != m_strategy)
     {
-        const ::pb::ems::Order tmporder;
+        ::pb::ems::Order tmporder;	
+	 tmporder.set_client_order_id(pInputOrder->UserOrderLocalID);
+        tmporder.set_account(pInputOrder->UserID);
+        tmporder.set_contract(pInputOrder->InstrumentID);
+
+	 if(pInputOrder->Direction == '0')
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Buy);
+	 }
+	 else
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Sell);
+	 }
+
+        tmporder.set_price(std::to_string(pInputOrder->LimitPrice));
+        tmporder.set_quantity(pInputOrder->Volume);
+        tmporder.set_tif(pb::ems::TimeInForce::TIF_GFD);
+	 if(pInputOrder->OrderPriceType == '2')
+	 {
+            tmporder.set_order_type(pb::ems::OrderType::OT_Limit);
+	 }
+	 else
+	 if(pInputOrder->OrderPriceType == '1')
+	 {
+            tmporder.set_order_type(pb::ems::OrderType::OT_Market);
+	 }	
+        
+		
+        tmporder.set_exchange_order_id(pInputOrder->OrderSysID);
+	 if(pRspInfo->ErrorID != 0)	
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_None);
+	 }	
+        //tmporder.set_working_price(std::to_string(report.single_report.price));
+        //tmporder.set_working_quantity(report.single_report.leaves_qty);
+        //tmporder.set_filled_quantity(report.single_report.cum_qty);
+        //tmporder.set_message(report.single_report.text);
+
+	 std::string tmpActionDay = pInputOrder->ActionDay;	
+        fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpActionDay);	
+
+        LOG_INFO("client_order_id:",pInputOrder->OrderSysID);
+	 LOG_INFO("account:",pInputOrder->UserID);
+	 LOG_INFO("contract:",pInputOrder->InstrumentID);
+	 LOG_INFO("buy_sell:",pInputOrder->Direction);
+	 LOG_INFO("price:",pInputOrder->LimitPrice);
+	 LOG_INFO("quantity:",pInputOrder->Volume); 
+	 LOG_INFO("tif:",pb::ems::TimeInForce::TIF_GFD);
+	 LOG_INFO("order_type:",pInputOrder->OrderPriceType);
+	 LOG_INFO("exchange_order_id:",pInputOrder->OrderSysID);
+	 LOG_INFO("submit_time:",tmpActionDay);
 
 	 m_strategy->OnOrder(tmporder);
     }	
@@ -108,6 +196,58 @@ void CUstpFtdcTraderManger::OnOrder(CUstpFtdcOrderField  *pOrder)
     {
         ::pb::ems::Order tmporder;
 
+        //===================
+        tmporder.set_client_order_id(pOrder->OrderUserID);
+        tmporder.set_account(pOrder->UserID);
+        tmporder.set_contract(pOrder->InstrumentID);
+
+	 if(pOrder->Direction == '0')
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Buy);
+	 }
+	 else
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Sell);
+	 }
+
+        tmporder.set_price(std::to_string(pOrder->LimitPrice));
+        tmporder.set_quantity(pOrder->Volume);
+        tmporder.set_tif(pb::ems::TimeInForce::TIF_GFD);
+	 if(pOrder->OrderPriceType == '2')
+	 {
+            tmporder.set_order_type(pb::ems::OrderType::OT_Limit);
+	 }
+	 else
+	 if(pOrder->OrderPriceType == '1')
+	 {
+            tmporder.set_order_type(pb::ems::OrderType::OT_Market);
+	 }	
+        
+		
+        tmporder.set_exchange_order_id(pOrder->OrderSysID);
+
+        //pOrder->OrderStatus
+        //tmporder.set_status(GlobexCommunicator::Convert_order_status(report.single_report.order_status));
+   
+        //tmporder.set_working_price(std::to_string(report.single_report.price));
+        //tmporder.set_working_quantity(report.single_report.leaves_qty);
+        //tmporder.set_filled_quantity(report.single_report.cum_qty);
+        //tmporder.set_message(report.single_report.text);
+
+	 std::string tmpActionDay = pOrder->ActionDay;	
+        fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpActionDay);	
+
+        LOG_INFO("client_order_id:",pOrder->OrderUserID);
+	 LOG_INFO("account:",pOrder->UserID);
+	 LOG_INFO("contract:",pOrder->InstrumentID);
+	 LOG_INFO("buy_sell:",pOrder->Direction);
+	 LOG_INFO("price:",pOrder->LimitPrice);
+	 LOG_INFO("quantity:",pOrder->Volume); 
+	 LOG_INFO("tif:",pb::ems::TimeInForce::TIF_GFD);
+	 LOG_INFO("order_type:",pOrder->OrderPriceType);
+	 LOG_INFO("exchange_order_id:",pOrder->OrderSysID);
+	 LOG_INFO("submit_time:",tmpActionDay); 
+        //===================
 		
 	 m_strategy->OnOrder(tmporder);
     }
@@ -120,6 +260,42 @@ void CUstpFtdcTraderManger::OnFill(CUstpFtdcTradeField *pTrade)
     {
         ::pb::ems::Fill tmpfill;
 
+
+        //===================
+        tmpfill.set_fill_id(pTrade->TradeID);
+        tmpfill.set_account(pTrade->UserID);
+        tmpfill.set_contract(pTrade->InstrumentID);
+
+	 if(pTrade->Direction == '0')
+	 {
+            tmpfill.set_buy_sell(pb::ems::BuySell::BS_Buy);
+	 }
+	 else
+	 {
+            tmpfill.set_buy_sell(pb::ems::BuySell::BS_Sell);
+	 }
+
+        tmpfill.set_fill_price(std::to_string(pTrade->TradePrice));
+        tmpfill.set_fill_quantity(pTrade->TradeVolume);
+		
+        tmpfill.set_client_order_id(pTrade->OrderUserID);
+        tmpfill.set_exchange_order_id(pTrade->OrderSysID);
+		
+
+
+	 std::string tmpTradeTime = pTrade->TradeTime;	
+        fh::core::assist::utility::To_pb_time(tmpfill.mutable_fill_time(), tmpTradeTime);	
+
+        LOG_INFO("fill_id:",pTrade->TradeID);
+	 LOG_INFO("account:",pTrade->UserID);
+	 LOG_INFO("contract:",pTrade->InstrumentID);
+	 LOG_INFO("buy_sell:",pTrade->Direction);
+	 LOG_INFO("price:",pTrade->TradePrice);
+	 LOG_INFO("quantity:",pTrade->TradeVolume); 
+	 LOG_INFO("client_order_id:",pTrade->OrderUserID);
+	 LOG_INFO("exchange_order_id:",pTrade->OrderSysID);
+	 LOG_INFO("TradeTime:",pTrade->TradeTime);
+        //===================
 		
 	 m_strategy->OnFill(tmpfill);
     }	
@@ -158,8 +334,7 @@ CFemasGlobexCommunicator::~CFemasGlobexCommunicator()
      
      delete m_pFileConfig;	 
      LOG_INFO("m_pUserApi::Release ");
-     m_pUserApi->Release();	
-     //m_pUserApi->Release();	 
+     m_pUserApi->Release();	 
 }
 
 bool CFemasGlobexCommunicator::Start(const std::vector<::pb::ems::Order> &init_orders)
@@ -187,8 +362,6 @@ void CFemasGlobexCommunicator::Stop()
     
     m_pUserApi->ReqUserLogout(&reqUserLogout,0);
 
-    //printf("m_pUserApi::Release \n");
-    //m_pUserApi->Release();	
     return;
 }
 
@@ -326,6 +499,31 @@ void CFemasGlobexCommunicator::Change(const ::pb::ems::Order& order)
 void CFemasGlobexCommunicator::Delete(const ::pb::ems::Order& order)
 {
         LOG_INFO("CFemasGlobexCommunicator::Delete ");
+        CUstpFtdcOrderActionField OrderAction;
+        memset(&OrderAction,0,sizeof(CUstpFtdcOrderActionField));
+
+
+	 strncpy(OrderAction.OrderSysID,order.exchange_order_id().c_str(),order.exchange_order_id().length());	
+
+        //femas 
+        //strncpy(OrderAction.UserOrderLocalID,order.client_order_id().c_str(),order.client_order_id().length()); 
+	 strcpy(OrderAction.UserOrderLocalID,"");	
+
+	 strncpy(OrderAction.UserOrderActionLocalID,order.client_order_id().c_str(),order.client_order_id().length());
+
+        std::string ExchangeID = m_pFileConfig->Get("femas-exchange.ExchangeID");
+	 strcpy(OrderAction.ExchangeID , ExchangeID.c_str());
+
+        std::string BrokerID = m_pFileConfig->Get("femas-user.BrokerID");
+	 strncpy(OrderAction.BrokerID,BrokerID.c_str(),BrokerID.length());
+	 std::string UserID = order.account();
+        strncpy(OrderAction.UserID,UserID.c_str(),UserID.length());
+	 std::string InvestorID = m_pFileConfig->Get("femas-exchange.InvestorID");
+	 strcpy(OrderAction.InvestorID , InvestorID.c_str());  	
+	 
+	 OrderAction.ActionFlag=USTP_FTDC_AF_Delete;
+		
+	 m_pUserApi->ReqOrderAction(&OrderAction, std::atoi(OrderAction.UserOrderLocalID));	
         return;
 }
 

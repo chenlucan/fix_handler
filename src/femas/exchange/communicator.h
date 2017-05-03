@@ -42,10 +42,13 @@ namespace exchange
 		   virtual void OnRspError(CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast);
 		   virtual void OnRtnTrade(CUstpFtdcTradeField *pTrade) ;
 		   virtual void OnErrRtnOrderInsert(CUstpFtdcInputOrderField *pInputOrder, CUstpFtdcRspInfoField *pRspInfo);
+		   virtual void OnRspOrderAction(CUstpFtdcOrderActionField *pOrderAction, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast); 
+		   virtual void OnErrRtnOrderAction(CUstpFtdcOrderActionField *pOrderAction, CUstpFtdcRspInfoField *pRspInfo);
 		   void SetFileConfigData(const std::string &FileConfig);
 		   void OnInsertOrder(CUstpFtdcInputOrderField  *pInputOrder,CUstpFtdcRspInfoField  *pRspInfo);
 		   void OnOrder(CUstpFtdcOrderField  *pOrder);
 		   void OnFill(CUstpFtdcTradeField *pTrade);
+		   void OnActionOrder(CUstpFtdcOrderActionField *pOrderAction, CUstpFtdcRspInfoField *pRspInfo);
 		   void SetStrategy(core::exchange::ExchangeListenerI *strategy)
 		   {
                       m_strategy = strategy;
