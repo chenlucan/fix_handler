@@ -272,10 +272,11 @@ namespace book
         
         switch(m_current_caseid)
         {
-            case fh::core::assist::common::CaseIdValue::Sd_1: // case: DatSaver_Test001
-            case fh::core::assist::common::CaseIdValue::Sd_2: // case: DatSaver_Test002
-            case fh::core::assist::common::CaseIdValue::Fs_1: // case: DatSaver_Test003
-            case fh::core::assist::common::CaseIdValue::Fs_2: // case: DatSaver_Test004            
+            case fh::core::assist::common::CaseIdValue::Sd_1:    // case: DatSaver_Test001
+            case fh::core::assist::common::CaseIdValue::Sd_2:    // case: DatSaver_Test002
+            case fh::core::assist::common::CaseIdValue::Fs_1:    // case: DatSaver_Test003
+            case fh::core::assist::common::CaseIdValue::Fs_2:    // case: DatSaver_Test004
+            case fh::core::assist::common::CaseIdValue::Sdmff_1: // case: DatSaver_Test014            
             { 
                 boost::property_tree::ptree ptParse;
                 std::stringstream ss(strJson);
@@ -603,6 +604,39 @@ namespace book
                 {
                     boost::property_tree::read_json(ss, ptParse);  
                     
+                    std::string typeValue = ptParse.get<std::string>("message.type");
+                    std::string securityTradingStatusValue = ptParse.get<std::string>("message.securityTradingStatus");
+                    
+                    fh::core::assist::common::DefineMsg_Compare t_defComp; 
+                    t_defComp.security_trading_status = securityTradingStatusValue;
+                    
+                    std::string strKey = "type="+typeValue;
+                    auto iterL2 = m_DefValueMap.find(strKey);
+                    if(iterL2 != m_DefValueMap.end())
+                    {   
+                        LOG_DEBUG("===== [repalce] (", strKey, ",", iterL2->second.To_security_trading_status_string(), ") -> (",t_defComp.To_security_trading_status_string(), ") =====");
+                        iterL2->second.security_trading_status = t_defComp.security_trading_status;
+                        //iterL2->second.security_trading_event = t_defComp.security_trading_event;
+                    }
+                    else
+                    {
+                        m_DefValueMap.insert(make_pair(strKey, t_defComp));
+                        LOG_DEBUG("===== [insert] (", strKey, ",", t_defComp.To_security_trading_status_string(), ") =====");
+                    }            
+                }
+                catch(boost::property_tree::ptree_error & e) {
+                    return;
+                }
+                break;
+            }
+            case fh::core::assist::common::CaseIdValue::Market_State_Message_2: // case: DatSaver_Test009
+            {
+                boost::property_tree::ptree ptParse;
+                std::stringstream ss(strJson);
+                try
+                {
+                    boost::property_tree::read_json(ss, ptParse);  
+                    
                     boost::property_tree::ptree items = ptParse.get_child("message");  // get_child得到子对象
                     
                     bool is_security_trading_status = false;
@@ -649,6 +683,128 @@ namespace book
                 catch(boost::property_tree::ptree_error & e) {
                     return;
                 }
+                break;
+            }
+            case fh::core::assist::common::CaseIdValue::Market_State_Message_3: // case: DatSaver_Test010
+            case fh::core::assist::common::CaseIdValue::Market_State_Message_4: // case: DatSaver_Test011
+            case fh::core::assist::common::CaseIdValue::Market_State_Message_5: // case: DatSaver_Test012
+            {
+                boost::property_tree::ptree ptParse;
+                std::stringstream ss(strJson);
+                try
+                {
+                    boost::property_tree::read_json(ss, ptParse);  
+                    
+                    std::string typeValue = ptParse.get<std::string>("message.type");
+                    std::string securityTradingStatusValue = ptParse.get<std::string>("message.securityTradingStatus");
+                    
+                    fh::core::assist::common::DefineMsg_Compare t_defComp; 
+                    t_defComp.security_trading_status = securityTradingStatusValue;
+                    
+                    std::string strKey = "type="+typeValue;
+                    auto iterL2 = m_DefValueMap.find(strKey);
+                    if(iterL2 != m_DefValueMap.end())
+                    {   
+                        LOG_DEBUG("===== [repalce] (", strKey, ",", iterL2->second.To_security_trading_status_string(), ") -> (",t_defComp.To_security_trading_status_string(), ") =====");
+                        iterL2->second.security_trading_status = t_defComp.security_trading_status;
+                        //iterL2->second.security_trading_event = t_defComp.security_trading_event;
+                    }
+                    else
+                    {
+                        m_DefValueMap.insert(make_pair(strKey, t_defComp));
+                        LOG_DEBUG("===== [insert] (", strKey, ",", t_defComp.To_security_trading_status_string(), ") =====");
+                    }            
+                }
+                catch(boost::property_tree::ptree_error & e) {
+                    return;
+                }
+                break;
+            }
+            case fh::core::assist::common::CaseIdValue::Sdmfo_1: // case: DatSaver_Test013            
+            { 
+                boost::property_tree::ptree ptParse;
+                std::stringstream ss(strJson);
+                try
+                {
+                    boost::property_tree::read_json(ss, ptParse);
+                    
+                    boost::property_tree::ptree event_array = ptParse.get_child("message.noEvents");  // get_child得到数组对象   
+
+                    if(event_array.size()!=0) // 有message.noEvents信息
+                    {
+                        //获取“securityID”的value
+                        std::string securityIDValue = ptParse.get<std::string>("message.securityID");            
+                        LOG_DEBUG("===== securityIDValue: ", securityIDValue.c_str(), " =====");
+                                    
+                        fh::core::assist::common::DefineMsg_Compare t_defComp;
+                        std::string securityGroupValue = ptParse.get<std::string>("message.SecurityGroup");
+                        std::string defComp = "SecurityGroup="+securityGroupValue;
+                        std::string marketSegmentIDValue = ptParse.get<std::string>("message.marketSegmentID");
+                        defComp += ", marketSegmentID="+marketSegmentIDValue;
+                        defComp += ", noEvents=[";
+                        // 遍历数组
+                        BOOST_FOREACH(boost::property_tree::ptree::value_type &v, event_array)  
+                        {  
+                            boost::property_tree::ptree& childparse = v.second;
+                            
+                            std::string eventType = childparse.get<std::string>("eventType");
+                            std::string eventTime = childparse.get<std::string>("eventTime");
+                            LOG_DEBUG("********* eventType = ", eventType, ", eventTime = ", eventTime ," *********");
+                            if("5" == eventType)
+                            {
+                                t_defComp.activation_date_ime  = eventTime;                    
+                            }
+                            else if("7" == eventType)
+                            {
+                                t_defComp.expiration_date_ime  = eventTime;
+                            }
+                            std::stringstream s;
+                            write_json(s, v.second);
+                            std::string event_item = s.str();
+                            defComp += ", noEvents="+event_item;
+                            LOG_DEBUG("=== event_item = ", event_item.c_str(), ", event_array.size = ", event_array.size(),   " =====");
+                        }
+                        
+                        std::string strikePriceMantissaValue = ptParse.get<std::string>("message.strikePrice.mantissa");
+                        std::string strikePriceExponentValue = ptParse.get<std::string>("message.strikePrice.exponent");
+                        
+                        t_defComp.market_segment_id        = marketSegmentIDValue;
+                        t_defComp.security_group           = securityGroupValue;                        
+                        t_defComp.strike_price_mantissa    = strikePriceMantissaValue;
+                        t_defComp.strike_price_exponent    = strikePriceExponentValue;
+                            
+                        std::string strKey = "securityID="+securityIDValue;
+                        auto iterL2 = m_DefValueMap.find(strKey);
+                        if(iterL2 != m_DefValueMap.end())
+                        {  
+                            LOG_DEBUG("===== [repalce] (", strKey, ",", iterL2->second.To_security_definition_messages_for_options_string(), ") -> (",t_defComp.To_security_definition_messages_for_options_string(), ") =====");
+                            iterL2->second = t_defComp;
+                        }
+                        else
+                        {
+                            m_DefValueMap.insert(make_pair(strKey, t_defComp)); 
+                            LOG_DEBUG("===== [insert] (", strKey, ",", t_defComp.To_security_definition_messages_for_options_string(), ") =====");
+                        }
+                    } 
+                }
+                catch(boost::property_tree::ptree_error & e) {
+                    return;
+                }
+                /*try
+                {
+                    // parse json error: unset document::element
+                    bsoncxx::document::value details = bsoncxx::from_json(strJson);
+                    auto view = details.view();
+                    auto colname = view["message.SecurityGroup"].get_utf8().value.to_string();
+                    auto colevent = view["message.noEvents"].get_array().value;
+                    
+                    //LOG_DEBUG("colevent = ", colevent);            
+                    LOG_DEBUG("colname: ", colname);
+                }
+                catch(std::exception &e)
+                {
+                    LOG_WARN("parse json error: ", e.what());
+                }*/               
                 break;
             }
             default:
@@ -920,6 +1076,98 @@ namespace book
                     m_DefValueMap.erase(contract);
                 }
 
+                break;
+            } 
+            case fh::core::assist::common::CaseIdValue::Market_State_Message_2: // case: DatSaver_Test009
+            {
+                auto iterDefMsg = m_DefValueMap.find(contract);
+                if(iterDefMsg!=m_DefValueMap.end())
+                {
+                    auto defMsgValue = iterDefMsg->second;
+                    LOG_DEBUG("[Market_State_Message_2] check defMsgValue = ", defMsgValue.To_security_trading_status_string());
+                    EXPECT_STREQ("21", defMsgValue.security_trading_status.c_str());                    
+                    
+                    m_DefValueMap.erase(contract);
+                }
+
+                break;
+            }
+            case fh::core::assist::common::CaseIdValue::Market_State_Message_3: // case: DatSaver_Test010
+            {
+                auto iterDefMsg = m_DefValueMap.find(contract);
+                if(iterDefMsg!=m_DefValueMap.end())
+                {
+                    auto defMsgValue = iterDefMsg->second;
+                    LOG_DEBUG("[Market_State_Message_3] check defMsgValue = ", defMsgValue.To_security_trading_status_string());
+                    EXPECT_STREQ("17", defMsgValue.security_trading_status.c_str());                    
+                    
+                    m_DefValueMap.erase(contract);
+                }
+
+                break;
+            } 
+            case fh::core::assist::common::CaseIdValue::Market_State_Message_4: // case: DatSaver_Test011
+            {
+                auto iterDefMsg = m_DefValueMap.find(contract);
+                if(iterDefMsg!=m_DefValueMap.end())
+                {
+                    auto defMsgValue = iterDefMsg->second;
+                    LOG_DEBUG("[Market_State_Message_4] check defMsgValue = ", defMsgValue.To_security_trading_status_string());
+                    EXPECT_STREQ("2", defMsgValue.security_trading_status.c_str());                    
+                    
+                    m_DefValueMap.erase(contract);
+                }
+
+                break;
+            } 
+            case fh::core::assist::common::CaseIdValue::Market_State_Message_5: // case: DatSaver_Test012
+            {
+                auto iterDefMsg = m_DefValueMap.find(contract);
+                if(iterDefMsg!=m_DefValueMap.end())
+                {
+                    auto defMsgValue = iterDefMsg->second;
+                    LOG_DEBUG("[Market_State_Message_5] check defMsgValue = ", defMsgValue.To_security_trading_status_string());
+                    EXPECT_STREQ("4", defMsgValue.security_trading_status.c_str());                    
+                    
+                    m_DefValueMap.erase(contract);
+                }
+
+                break;
+            }    
+            case fh::core::assist::common::CaseIdValue::Sdmfo_1: // case: DatSaver_Test013
+            {
+                auto iterDefMsg = m_DefValueMap.find(contract);
+                if(iterDefMsg!=m_DefValueMap.end())
+                {
+                    auto defMsgValue = iterDefMsg->second;
+                    LOG_DEBUG("[Sdmfo_1] check defMsgValue = ", defMsgValue.To_security_definition_messages_for_options_string());
+                    EXPECT_STREQ("99", defMsgValue.market_segment_id.c_str());
+                    EXPECT_STREQ("8$", defMsgValue.security_group.c_str());
+                    EXPECT_STREQ("1489782300000000000", defMsgValue.activation_date_ime.c_str());
+                    EXPECT_STREQ("1521207000000000000", defMsgValue.expiration_date_ime.c_str());
+                    EXPECT_STREQ("1330000000000", defMsgValue.strike_price_mantissa.c_str());
+                    EXPECT_STREQ("-7", defMsgValue.strike_price_exponent.c_str());
+                    
+                    m_DefValueMap.erase(contract);
+                }
+                               
+                break;
+            }
+            case fh::core::assist::common::CaseIdValue::Sdmff_1: // case: DatSaver_Test014
+            {
+                auto iterDefMsg = m_DefValueMap.find(contract);
+                if(iterDefMsg!=m_DefValueMap.end())
+                {
+                    auto defMsgValue = iterDefMsg->second;
+                    LOG_DEBUG("[Sdmff_1] check defMsgValue = ", defMsgValue.To_string());
+                    EXPECT_STREQ("99", defMsgValue.market_segment_id.c_str());
+                    EXPECT_STREQ("91", defMsgValue.security_group.c_str());
+                    EXPECT_STREQ("1466460000000000000", defMsgValue.activation_date_ime.c_str());
+                    EXPECT_STREQ("1505489400000000000", defMsgValue.expiration_date_ime.c_str());
+                    
+                    m_DefValueMap.erase(contract);
+                }
+                               
                 break;
             }            
             default:

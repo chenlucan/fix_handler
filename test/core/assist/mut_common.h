@@ -39,6 +39,8 @@ namespace common
         Market_State_Message_3 = 18,
         Market_State_Message_4 = 19,
         Market_State_Message_5 = 20,
+        Sdmfo_1 = 21,
+        Sdmff_1 = 22,
         UNKNOW_VALUE = 255
     };
     
@@ -48,6 +50,9 @@ namespace common
         std::string security_group;
         std::string activation_date_ime;
         std::string expiration_date_ime;
+        
+        std::string strike_price_mantissa;  // strikePrice
+        std::string strike_price_exponent; 
         
         std::string order_qty;
         
@@ -119,6 +124,21 @@ namespace common
 
             return os.str();
         }
+        
+        std::string To_security_definition_messages_for_options_string() const
+        {
+            std::ostringstream os;
+            os << "security_definition_messages_for_options_Compare={";
+            os << "market_segment_id=" << market_segment_id << " ";
+            os << "security_group=" << security_group << " ";
+            os << "activation_date_ime=" << activation_date_ime << " ";
+            os << "expiration_date_ime=" << expiration_date_ime << " ";
+            os << "strike_price_mantissa=" << strike_price_mantissa << " ";  
+            os << "strike_price_exponent=" << strike_price_exponent << "}";             
+            
+            return os.str();
+        }
+        
     };
     
     void getAbsolutePath(std::string &path);
