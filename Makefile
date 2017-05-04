@@ -111,11 +111,17 @@ orgsend: $(BIN_PATH)/original_sender_test.o $(COMM_OBJS)
 	$(COMPILE_COMMAND) -o $(ORIGINAL_SENDER_TARGET) $? 
 
 tmalpha: $(BIN_PATH)/trade_matching_alpha_test.o $(BIN_PATH)/tmalpha_market_application.o $(BIN_PATH)/market_simulater.o $(BIN_PATH)/book_replayer.o \
-				 $(BIN_PATH)/mongo.o $(BIN_PATH)/book_state_controller.o $(COMM_OBJS)
+                $(BIN_PATH)/book_sender.o $(BIN_PATH)/message_parser_d.o $(BIN_PATH)/message_parser_f.o $(BIN_PATH)/message_parser_r.o \
+                $(BIN_PATH)/recovery_manager.o \
+                $(BIN_PATH)/message_parser_x.o $(BIN_PATH)/message_parser_w.o $(BIN_PATH)/definition_manager.o $(BIN_PATH)/status_manager.o \
+	    		$(BIN_PATH)/book_manager.o $(BIN_PATH)/mongo.o $(BIN_PATH)/book_state_controller.o $(COMM_OBJS)
 	$(COMPILE_COMMAND) -o $(TRADE_MATCHING_ALPHA_TARGET) $? 
 
 tmalphaex: $(BIN_PATH)/trade_matching_exchange_alpha_test.o $(BIN_PATH)/tmalpha_exchange_application.o $(BIN_PATH)/exchange_simulater.o \
-					 $(BIN_PATH)/tmalpha_market_application.o $(BIN_PATH)/market_simulater.o $(BIN_PATH)/book_replayer.o \
+					 $(BIN_PATH)/tmalpha_market_application.o $(BIN_PATH)/market_simulater.o $(BIN_PATH)/book_replayer.o $(BIN_PATH)/book_manager.o  \
+	                 $(BIN_PATH)/recovery_manager.o \
+                     $(BIN_PATH)/book_sender.o $(BIN_PATH)/message_parser_d.o $(BIN_PATH)/message_parser_f.o $(BIN_PATH)/message_parser_r.o \
+                     $(BIN_PATH)/message_parser_x.o $(BIN_PATH)/message_parser_w.o $(BIN_PATH)/definition_manager.o $(BIN_PATH)/status_manager.o \
 				     $(BIN_PATH)/mongo.o $(BIN_PATH)/book_state_controller.o $(BIN_PATH)/strategy_communicator.o $(COMM_OBJS)
 	$(COMPILE_COMMAND) -o $(TRADE_MATCHING_EXCHANGE_ALPHA_TARGET) $? 
 				     

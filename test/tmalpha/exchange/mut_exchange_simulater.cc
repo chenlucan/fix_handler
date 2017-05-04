@@ -8,58 +8,6 @@
 #include "tmalpha/exchange/exchange_simulater.h"
 
 
-std::unordered_map<std::string , pb::dms::L2> make_state()
-{
-    pb::dms::L2 t1;
-    t1.set_contract("T1");
-    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(10.01);  bid->set_size(10); }
-    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(11.11);  bid->set_size(11); }
-    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(12.21);  bid->set_size(12); }
-    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(20.10);  ask->set_size(20); }
-    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(21.20);  ask->set_size(21); }
-    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(22.30);  ask->set_size(22); }
-
-    pb::dms::L2 t2;
-    t2.set_contract("T2");
-    { pb::dms::DataPoint *bid = t2.add_bid(); bid->set_price(100.01);  bid->set_size(100); }
-    { pb::dms::DataPoint *bid = t2.add_bid(); bid->set_price(101.02);  bid->set_size(101); }
-    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(201.10);  ask->set_size(201); }
-    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(202.20);  ask->set_size(202); }
-    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(203.30);  ask->set_size(203); }
-
-    pb::dms::L2 t3;
-    t3.set_contract("T3");
-    { pb::dms::DataPoint *bid = t3.add_bid(); bid->set_price(1000);  bid->set_size(1000); }
-    { pb::dms::DataPoint *ask = t3.add_offer(); ask->set_price(900.50);  ask->set_size(900); }
-
-    return { {"T1", t1}, {"T2", t2}, {"T3", t3} };
-}
-
-std::unordered_map<std::string , pb::dms::L2> make_new_state()
-{
-    pb::dms::L2 t1;
-    t1.set_contract("T1");
-    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(10.01);  bid->set_size(10); }
-    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(11.20);  bid->set_size(7); }
-    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(20.10);  ask->set_size(20); }
-    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(22.30);  ask->set_size(22); }
-
-    pb::dms::L2 t2;
-    t2.set_contract("T2");
-    { pb::dms::DataPoint *bid = t2.add_bid(); bid->set_price(200.01);  bid->set_size(100); }
-    { pb::dms::DataPoint *bid = t2.add_bid(); bid->set_price(203.35);  bid->set_size(101); }
-    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(201.10);  ask->set_size(201); }
-    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(202.20);  ask->set_size(202); }
-    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(203.30);  ask->set_size(203); }
-
-    pb::dms::L2 t3;
-    t3.set_contract("T3");
-    { pb::dms::DataPoint *bid = t3.add_bid(); bid->set_price(1000);  bid->set_size(1000); }
-    { pb::dms::DataPoint *ask = t3.add_offer(); ask->set_price(900.00);  ask->set_size(123); }
-
-    return { {"T1", t1}, {"T2", t2}, {"T3", t3} };
-}
-
 pb::ems::Order make_order(const std::string &cid, const std::string &contract, double price, bool is_buy, bool is_limit)
 {
     pb::ems::Order order;
@@ -78,9 +26,18 @@ pb::ems::Order make_order(const std::string &cid, const std::string &contract, d
 TEST(ExchangeSimulaterTest, Test001_Market)
 {
     fh::tmalpha::exchange::MockExchangeListener *result_listener = new fh::tmalpha::exchange::MockExchangeListener();
-    fh::tmalpha::exchange::ExchangeSimulater *exchange_simulater = new fh::tmalpha::exchange::ExchangeSimulater(result_listener);
+    fh::tmalpha::exchange::ExchangeSimulater *exchange_simulater = new fh::tmalpha::exchange::ExchangeSimulater(nullptr, result_listener);
 
-    exchange_simulater->On_state_changed(make_state());
+    pb::dms::L2 t1;
+    t1.set_contract("T1");
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(10.01);  bid->set_size(10); }
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(11.11);  bid->set_size(11); }
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(12.21);  bid->set_size(12); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(20.10);  ask->set_size(20); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(21.20);  ask->set_size(21); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(22.30);  ask->set_size(22); }
+
+    exchange_simulater->On_state_changed(t1);
 
     EXPECT_EQ(result_listener->orders().size(), 0);
     EXPECT_EQ(result_listener->fills().size(), 0);
@@ -101,9 +58,18 @@ TEST(ExchangeSimulaterTest, Test001_Market)
 TEST(ExchangeSimulaterTest, Test002_NoContract)
 {
     fh::tmalpha::exchange::MockExchangeListener *result_listener = new fh::tmalpha::exchange::MockExchangeListener();
-    fh::tmalpha::exchange::ExchangeSimulater *exchange_simulater = new fh::tmalpha::exchange::ExchangeSimulater(result_listener);
+    fh::tmalpha::exchange::ExchangeSimulater *exchange_simulater = new fh::tmalpha::exchange::ExchangeSimulater(nullptr, result_listener);
 
-    exchange_simulater->On_state_changed(make_state());
+    pb::dms::L2 t1;
+    t1.set_contract("T1");
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(10.01);  bid->set_size(10); }
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(11.11);  bid->set_size(11); }
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(12.21);  bid->set_size(12); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(20.10);  ask->set_size(20); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(21.20);  ask->set_size(21); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(22.30);  ask->set_size(22); }
+
+    exchange_simulater->On_state_changed(t1);
 
     EXPECT_EQ(result_listener->orders().size(), 0);
     EXPECT_EQ(result_listener->fills().size(), 0);
@@ -124,9 +90,28 @@ TEST(ExchangeSimulaterTest, Test002_NoContract)
 TEST(ExchangeSimulaterTest, Test003_Working)
 {
     fh::tmalpha::exchange::MockExchangeListener *result_listener = new fh::tmalpha::exchange::MockExchangeListener();
-    fh::tmalpha::exchange::ExchangeSimulater *exchange_simulater = new fh::tmalpha::exchange::ExchangeSimulater(result_listener);
+    fh::tmalpha::exchange::ExchangeSimulater *exchange_simulater = new fh::tmalpha::exchange::ExchangeSimulater(nullptr, result_listener);
 
-    exchange_simulater->On_state_changed(make_state());
+    pb::dms::L2 t1;
+    t1.set_contract("T1");
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(10.01);  bid->set_size(10); }
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(11.11);  bid->set_size(11); }
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(12.21);  bid->set_size(12); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(20.10);  ask->set_size(20); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(21.20);  ask->set_size(21); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(22.30);  ask->set_size(22); }
+
+    exchange_simulater->On_state_changed(t1);
+
+    pb::dms::L2 t2;
+    t2.set_contract("T2");
+    { pb::dms::DataPoint *bid = t2.add_bid(); bid->set_price(100.01);  bid->set_size(100); }
+    { pb::dms::DataPoint *bid = t2.add_bid(); bid->set_price(101.02);  bid->set_size(101); }
+    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(201.10);  ask->set_size(201); }
+    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(202.20);  ask->set_size(202); }
+    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(203.30);  ask->set_size(203); }
+
+    exchange_simulater->On_state_changed(t2);
 
     EXPECT_EQ(result_listener->orders().size(), 0);
     EXPECT_EQ(result_listener->fills().size(), 0);
@@ -156,9 +141,28 @@ TEST(ExchangeSimulaterTest, Test003_Working)
 TEST(ExchangeSimulaterTest, Test004_Fill)
 {
     fh::tmalpha::exchange::MockExchangeListener *result_listener = new fh::tmalpha::exchange::MockExchangeListener();
-    fh::tmalpha::exchange::ExchangeSimulater *exchange_simulater = new fh::tmalpha::exchange::ExchangeSimulater(result_listener);
+    fh::tmalpha::exchange::ExchangeSimulater *exchange_simulater = new fh::tmalpha::exchange::ExchangeSimulater(nullptr, result_listener);
 
-    exchange_simulater->On_state_changed(make_state());
+    pb::dms::L2 t1;
+    t1.set_contract("T1");
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(10.01);  bid->set_size(10); }
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(11.11);  bid->set_size(11); }
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(12.21);  bid->set_size(12); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(20.10);  ask->set_size(20); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(21.20);  ask->set_size(21); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(22.30);  ask->set_size(22); }
+
+    exchange_simulater->On_state_changed(t1);
+
+    pb::dms::L2 t2;
+    t2.set_contract("T2");
+    { pb::dms::DataPoint *bid = t2.add_bid(); bid->set_price(100.01);  bid->set_size(100); }
+    { pb::dms::DataPoint *bid = t2.add_bid(); bid->set_price(101.02);  bid->set_size(101); }
+    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(201.10);  ask->set_size(201); }
+    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(202.20);  ask->set_size(202); }
+    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(203.30);  ask->set_size(203); }
+
+    exchange_simulater->On_state_changed(t2);
 
     EXPECT_EQ(result_listener->orders().size(), 0);
     EXPECT_EQ(result_listener->fills().size(), 0);
@@ -188,9 +192,35 @@ TEST(ExchangeSimulaterTest, Test004_Fill)
 TEST(ExchangeSimulaterTest, Test005_RematchNone)
 {
     fh::tmalpha::exchange::MockExchangeListener *result_listener = new fh::tmalpha::exchange::MockExchangeListener();
-    fh::tmalpha::exchange::ExchangeSimulater *exchange_simulater = new fh::tmalpha::exchange::ExchangeSimulater(result_listener);
+    fh::tmalpha::exchange::ExchangeSimulater *exchange_simulater = new fh::tmalpha::exchange::ExchangeSimulater(nullptr, result_listener);
 
-    exchange_simulater->On_state_changed(make_state());
+    pb::dms::L2 t1;
+    t1.set_contract("T1");
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(10.01);  bid->set_size(10); }
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(11.11);  bid->set_size(11); }
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(12.21);  bid->set_size(12); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(20.10);  ask->set_size(20); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(21.20);  ask->set_size(21); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(22.30);  ask->set_size(22); }
+
+    exchange_simulater->On_state_changed(t1);
+
+    pb::dms::L2 t2;
+    t2.set_contract("T2");
+    { pb::dms::DataPoint *bid = t2.add_bid(); bid->set_price(100.01);  bid->set_size(100); }
+    { pb::dms::DataPoint *bid = t2.add_bid(); bid->set_price(101.02);  bid->set_size(101); }
+    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(201.10);  ask->set_size(201); }
+    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(202.20);  ask->set_size(202); }
+    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(203.30);  ask->set_size(203); }
+
+    exchange_simulater->On_state_changed(t2);
+
+    pb::dms::L2 t3;
+    t3.set_contract("T3");
+    { pb::dms::DataPoint *bid = t3.add_bid(); bid->set_price(1000);  bid->set_size(1000); }
+    { pb::dms::DataPoint *ask = t3.add_offer(); ask->set_price(900.50);  ask->set_size(900); }
+
+    exchange_simulater->On_state_changed(t3);
 
     EXPECT_EQ(result_listener->orders().size(), 0);
     EXPECT_EQ(result_listener->fills().size(), 0);
@@ -205,7 +235,9 @@ TEST(ExchangeSimulaterTest, Test005_RematchNone)
     EXPECT_EQ(result_listener->orders().size(), 2);
     EXPECT_EQ(result_listener->fills().size(), 0);
 
-    exchange_simulater->On_state_changed(make_state());
+    exchange_simulater->On_state_changed(t1);
+    exchange_simulater->On_state_changed(t2);
+    exchange_simulater->On_state_changed(t3);
 
     EXPECT_EQ(result_listener->orders().size(), 2);
     EXPECT_EQ(result_listener->fills().size(), 0);
@@ -217,9 +249,37 @@ TEST(ExchangeSimulaterTest, Test005_RematchNone)
 TEST(ExchangeSimulaterTest, Test006_Rematch)
 {
     fh::tmalpha::exchange::MockExchangeListener *result_listener = new fh::tmalpha::exchange::MockExchangeListener();
-    fh::tmalpha::exchange::ExchangeSimulater *exchange_simulater = new fh::tmalpha::exchange::ExchangeSimulater(result_listener);
+    fh::tmalpha::exchange::ExchangeSimulater *exchange_simulater = new fh::tmalpha::exchange::ExchangeSimulater(nullptr, result_listener);
 
-    exchange_simulater->On_state_changed(make_state());
+    {
+    pb::dms::L2 t1;
+    t1.set_contract("T1");
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(10.01);  bid->set_size(10); }
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(11.11);  bid->set_size(11); }
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(12.21);  bid->set_size(12); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(20.10);  ask->set_size(20); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(21.20);  ask->set_size(21); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(22.30);  ask->set_size(22); }
+
+    exchange_simulater->On_state_changed(t1);
+
+    pb::dms::L2 t2;
+    t2.set_contract("T2");
+    { pb::dms::DataPoint *bid = t2.add_bid(); bid->set_price(100.01);  bid->set_size(100); }
+    { pb::dms::DataPoint *bid = t2.add_bid(); bid->set_price(101.02);  bid->set_size(101); }
+    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(201.10);  ask->set_size(201); }
+    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(202.20);  ask->set_size(202); }
+    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(203.30);  ask->set_size(203); }
+
+    exchange_simulater->On_state_changed(t2);
+
+    pb::dms::L2 t3;
+    t3.set_contract("T3");
+    { pb::dms::DataPoint *bid = t3.add_bid(); bid->set_price(1000);  bid->set_size(1000); }
+    { pb::dms::DataPoint *ask = t3.add_offer(); ask->set_price(900.50);  ask->set_size(900); }
+
+    exchange_simulater->On_state_changed(t3);
+    }
 
     EXPECT_EQ(result_listener->orders().size(), 0);
     EXPECT_EQ(result_listener->fills().size(), 0);
@@ -239,7 +299,31 @@ TEST(ExchangeSimulaterTest, Test006_Rematch)
     EXPECT_EQ(result_listener->orders().size(), 3);
     EXPECT_EQ(result_listener->fills().size(), 0);
 
-    exchange_simulater->On_state_changed(make_new_state());
+    pb::dms::L2 t1;
+    t1.set_contract("T1");
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(10.01);  bid->set_size(10); }
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(11.20);  bid->set_size(7); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(20.10);  ask->set_size(20); }
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(22.30);  ask->set_size(22); }
+
+    exchange_simulater->On_state_changed(t1);
+
+    pb::dms::L2 t2;
+    t2.set_contract("T2");
+    { pb::dms::DataPoint *bid = t2.add_bid(); bid->set_price(200.01);  bid->set_size(100); }
+    { pb::dms::DataPoint *bid = t2.add_bid(); bid->set_price(203.35);  bid->set_size(101); }
+    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(201.10);  ask->set_size(201); }
+    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(202.20);  ask->set_size(202); }
+    { pb::dms::DataPoint *ask = t2.add_offer(); ask->set_price(203.30);  ask->set_size(203); }
+
+    exchange_simulater->On_state_changed(t2);
+
+    pb::dms::L2 t3;
+    t3.set_contract("T3");
+    { pb::dms::DataPoint *bid = t3.add_bid(); bid->set_price(1000);  bid->set_size(1000); }
+    { pb::dms::DataPoint *ask = t3.add_offer(); ask->set_price(900.00);  ask->set_size(123); }
+
+    exchange_simulater->On_state_changed(t3);
 
     EXPECT_EQ(result_listener->orders().size(), 3);
     EXPECT_EQ(result_listener->fills().size(), 2);
@@ -256,7 +340,9 @@ TEST(ExchangeSimulaterTest, Test006_Rematch)
     EXPECT_EQ(std::stod(result_listener->fills().at(1).fill_price()), 900);
     EXPECT_EQ(result_listener->fills().at(1).fill_quantity(), 20);
 
-    exchange_simulater->On_state_changed(make_new_state());
+    exchange_simulater->On_state_changed(t1);
+    exchange_simulater->On_state_changed(t2);
+    exchange_simulater->On_state_changed(t3);
 
     EXPECT_EQ(result_listener->orders().size(), 3);
     EXPECT_EQ(result_listener->fills().size(), 2);

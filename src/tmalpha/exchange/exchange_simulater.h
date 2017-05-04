@@ -8,10 +8,12 @@
 #include <list>
 #include <mutex>
 #include "core/global.h"
+#include "core/assist/settings.h"
 #include "core/exchange/exchangei.h"
 #include "core/exchange/exchangelisteneri.h"
 #include "pb/ems/ems.pb.h"
-#include "tmalpha/market/tmalpha_market_application.h"
+#include "tmalpha/market/market_simulater.h"
+
 
 namespace fh
 {
@@ -19,13 +21,12 @@ namespace tmalpha
 {
 namespace exchange
 {
-    class ExchangeSimulater : public core::exchange::ExchangeI, public fh::tmalpha::market::MarketReplayListener
+    class ExchangeSimulater : public core::exchange::ExchangeI
     {
         public:
             ExchangeSimulater(
-                    core::exchange::ExchangeListenerI *result_listener,
-                    const std::string &app_setting_file = "trade_matching_settings.ini",
-                    const std::string &persist_setting_file = "persist_settings.ini");
+                    fh::tmalpha::market::MarketSimulater *market,
+                    fh::core::exchange::ExchangeListenerI *result_listener);
             virtual ~ExchangeSimulater();
 
         public:
@@ -33,10 +34,6 @@ namespace exchange
             bool Start(const std::vector<::pb::ems::Order> &init_orders) override;
             // implement of ExchangeI
             void Stop() override;
-
-        public:
-            // implement of MarketReplayListener
-            void On_state_changed(const std::unordered_map<std::string , pb::dms::L2> &states) override;
 
         public:
             void Join();
@@ -58,16 +55,18 @@ namespace exchange
             void Delete_mass(const char *data, size_t size) override;
 
         private:
+            void Init(const fh::core::assist::Settings &app_settings, const fh::core::assist::Settings &persist_settings);
             pb::ems::Fill Order_filled(const ::pb::ems::Order& org_order, std::string next_exchange_order_id);
             pb::ems::Order Order_working(const ::pb::ems::Order& org_order);
             std::string Next_exchange_order_id();
             std::string Next_fill_id();
             bool Has_matching(const ::pb::ems::Order& org_order);
             void Rematching();
+            void On_state_changed(const pb::dms::L2 &l2);
 
         private:
+            fh::tmalpha::market::MarketSimulater *m_market;
             core::exchange::ExchangeListenerI *m_result_listener;
-            fh::tmalpha::market::TmalphaMarketApplication *m_market;
             std::vector<::pb::ems::Order> m_init_orders;
             std::atomic<std::uint32_t> m_exchange_order_id;
             std::atomic<std::uint32_t> m_fill_id;

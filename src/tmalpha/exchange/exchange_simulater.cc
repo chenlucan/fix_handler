@@ -3,6 +3,9 @@
 #include "core/assist/logger.h"
 #include "core/strategy/invalid_order.h"
 #include "tmalpha/exchange/exchange_simulater.h"
+#include "tmalpha/market/market_data_provider.h"
+#include "tmalpha/market/cme_data_consumer.h"
+#include "tmalpha/exchange/market_replay_listener.h"
 
 namespace fh
 {
@@ -12,21 +15,24 @@ namespace exchange
 {
 
     ExchangeSimulater::ExchangeSimulater(
-            core::exchange::ExchangeListenerI *result_listener,
-            const std::string &app_setting_file,
-            const std::string &persist_setting_file)
-    : core::exchange::ExchangeI(result_listener),
-      m_result_listener(result_listener), m_market(nullptr), m_init_orders(),
+            fh::tmalpha::market::MarketSimulater *market,
+            fh::core::exchange::ExchangeListenerI *result_listener)
+    : fh::core::exchange::ExchangeI(result_listener),
+      m_market(market), m_result_listener(result_listener), m_init_orders(),
       m_exchange_order_id(0), m_fill_id(0),
       m_working_orders(), m_working_order_ids(), m_filled_orders(), m_mutex(), m_current_states()
     {
-        m_market = new fh::tmalpha::market::TmalphaMarketApplication(app_setting_file, persist_setting_file);
-        m_market->Add_replay_listener(this);
+        if(m_market && m_market->Listener())
+        {
+            // L2 行情发生变化时需要通知本模块
+            auto market_listener = static_cast<fh::tmalpha::exchange::MarketReplayListener *>(m_market->Listener());
+            market_listener->Add_l2_changed_callback(std::bind(&ExchangeSimulater::On_state_changed, this, std::placeholders::_1));
+        }
     }
 
     ExchangeSimulater::~ExchangeSimulater()
     {
-        delete m_market;
+        // noop
     }
 
     // implement of ExchangeI
@@ -35,6 +41,19 @@ namespace exchange
         m_init_orders = init_orders;
         LOG_INFO("init orders count:", init_orders.size());
 
+        if(m_market == nullptr)
+        {
+            LOG_WARN("market is invalid");
+            return false;
+        }
+
+        if(m_market->Is_runing())
+        {
+            LOG_INFO("market is already runing");
+            return false;
+        }
+
+        LOG_INFO("start market");
         return m_market->Start();
     }
 
@@ -46,14 +65,27 @@ namespace exchange
     // implement of ExchangeI
     void ExchangeSimulater::Stop()
     {
+        if(m_market == nullptr)
+        {
+            LOG_WARN("market is invalid");
+            return;
+        }
+
+        if(!m_market->Is_runing())
+        {
+            LOG_INFO("market is already stopped");
+            return;
+        }
+
+        LOG_INFO("stop market");
         m_market->Stop();
     }
 
-    // implement of MarketReplayListener
-    void ExchangeSimulater::On_state_changed(const std::unordered_map<std::string , pb::dms::L2> &states)
+    void ExchangeSimulater::On_state_changed(const pb::dms::L2 &l2)
     {
+        // L2 情报发生变化时，内部需要记录，同时对尚未成交的订单重新匹配下
         std::lock_guard<std::mutex> lock(m_mutex);
-        m_current_states = states;
+        m_current_states[l2.contract()] = l2;
         this->Rematching();
     }
 
