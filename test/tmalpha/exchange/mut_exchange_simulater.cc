@@ -39,17 +39,19 @@ TEST(ExchangeSimulaterTest, Test001_Market)
 
     exchange_simulater->On_state_changed(t1);
 
+    // 此时还没有订单存在
     EXPECT_EQ(result_listener->orders().size(), 0);
     EXPECT_EQ(result_listener->fills().size(), 0);
 
     exchange_simulater->Add(make_order("C1", "T1", 10, false, false));
 
+    // 此时新加的订单没有匹配
     EXPECT_EQ(result_listener->orders().size(), 1);
     EXPECT_EQ(result_listener->fills().size(), 0);
 
-    EXPECT_EQ(result_listener->orders().at(0).client_order_id(), "C1");
-    EXPECT_EQ(result_listener->orders().at(0).status(), ::pb::ems::OrderStatus::OS_Working);
-    EXPECT_EQ(result_listener->orders().at(0).exchange_order_id(), "Order-1");
+    EXPECT_EQ(result_listener->orders().back().client_order_id(), "C1");
+    EXPECT_EQ(result_listener->orders().back().status(), ::pb::ems::OrderStatus::OS_Working);
+    EXPECT_EQ(result_listener->orders().back().exchange_order_id(), "Order-1");
 
     delete exchange_simulater;
     delete result_listener;
@@ -71,17 +73,19 @@ TEST(ExchangeSimulaterTest, Test002_NoContract)
 
     exchange_simulater->On_state_changed(t1);
 
+    // 此时还没有订单存在
     EXPECT_EQ(result_listener->orders().size(), 0);
     EXPECT_EQ(result_listener->fills().size(), 0);
 
     exchange_simulater->Add(make_order("C1", "T9", 100, true, true));
 
+    // 此时新加的订单没有匹配
     EXPECT_EQ(result_listener->orders().size(), 1);
     EXPECT_EQ(result_listener->fills().size(), 0);
 
-    EXPECT_EQ(result_listener->orders().at(0).client_order_id(), "C1");
-    EXPECT_EQ(result_listener->orders().at(0).status(), ::pb::ems::OrderStatus::OS_Working);
-    EXPECT_EQ(result_listener->orders().at(0).exchange_order_id(), "Order-1");
+    EXPECT_EQ(result_listener->orders().back().client_order_id(), "C1");
+    EXPECT_EQ(result_listener->orders().back().status(), ::pb::ems::OrderStatus::OS_Working);
+    EXPECT_EQ(result_listener->orders().back().exchange_order_id(), "Order-1");
 
     delete exchange_simulater;
     delete result_listener;
@@ -96,7 +100,7 @@ TEST(ExchangeSimulaterTest, Test003_Working)
     t1.set_contract("T1");
     { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(10.01);  bid->set_size(10); }
     { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(11.11);  bid->set_size(11); }
-    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(12.21);  bid->set_size(12); }
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(21.00);  bid->set_size(12); }
     { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(20.10);  ask->set_size(20); }
     { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(21.20);  ask->set_size(21); }
     { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(22.30);  ask->set_size(22); }
@@ -113,26 +117,27 @@ TEST(ExchangeSimulaterTest, Test003_Working)
 
     exchange_simulater->On_state_changed(t2);
 
+    // 此时还没有订单存在
     EXPECT_EQ(result_listener->orders().size(), 0);
     EXPECT_EQ(result_listener->fills().size(), 0);
 
     exchange_simulater->Add(make_order("C1", "T1", 21.00, true, true));
 
+    // 此时新加的订单没有匹配
     EXPECT_EQ(result_listener->orders().size(), 1);
     EXPECT_EQ(result_listener->fills().size(), 0);
-
-    EXPECT_EQ(result_listener->orders().at(0).client_order_id(), "C1");
-    EXPECT_EQ(result_listener->orders().at(0).status(), ::pb::ems::OrderStatus::OS_Working);
-    EXPECT_EQ(result_listener->orders().at(0).exchange_order_id(), "Order-1");
+    EXPECT_EQ(result_listener->orders().back().client_order_id(), "C1");
+    EXPECT_EQ(result_listener->orders().back().status(), ::pb::ems::OrderStatus::OS_Working);
+    EXPECT_EQ(result_listener->orders().back().exchange_order_id(), "Order-1");
 
     exchange_simulater->Add(make_order("C2", "T2", 100, false, true));
 
+    // 此时两个订单都没有匹配
     EXPECT_EQ(result_listener->orders().size(), 2);
     EXPECT_EQ(result_listener->fills().size(), 0);
-
-    EXPECT_EQ(result_listener->orders().at(1).client_order_id(), "C2");
-    EXPECT_EQ(result_listener->orders().at(1).status(), ::pb::ems::OrderStatus::OS_Working);
-    EXPECT_EQ(result_listener->orders().at(1).exchange_order_id(), "Order-2");
+    EXPECT_EQ(result_listener->orders().back().client_order_id(), "C2");
+    EXPECT_EQ(result_listener->orders().back().status(), ::pb::ems::OrderStatus::OS_Working);
+    EXPECT_EQ(result_listener->orders().back().exchange_order_id(), "Order-2");
 
     delete exchange_simulater;
     delete result_listener;
@@ -164,26 +169,29 @@ TEST(ExchangeSimulaterTest, Test004_Fill)
 
     exchange_simulater->On_state_changed(t2);
 
+    // 此时还没有订单存在
     EXPECT_EQ(result_listener->orders().size(), 0);
     EXPECT_EQ(result_listener->fills().size(), 0);
 
     exchange_simulater->Add(make_order("C1", "T1", 11.11000, false, true));
 
+    // 此时该订单成交
     EXPECT_EQ(result_listener->orders().size(), 0);
     EXPECT_EQ(result_listener->fills().size(), 1);
 
-    EXPECT_EQ(result_listener->fills().at(0).client_order_id(), "C1");
-    EXPECT_EQ(result_listener->fills().at(0).exchange_order_id(), "Order-1");
-    EXPECT_EQ(result_listener->fills().at(0).fill_id(), "Fill-1");
+    EXPECT_EQ(result_listener->fills().back().client_order_id(), "C1");
+    EXPECT_EQ(result_listener->fills().back().exchange_order_id(), "Order-1");
+    EXPECT_EQ(result_listener->fills().back().fill_id(), "Fill-1");
 
     exchange_simulater->Add(make_order("C2", "T2", 203.3, true, true));
 
+    // 此时第二个订单也成交
     EXPECT_EQ(result_listener->orders().size(), 0);
     EXPECT_EQ(result_listener->fills().size(), 2);
 
-    EXPECT_EQ(result_listener->fills().at(1).client_order_id(), "C2");
-    EXPECT_EQ(result_listener->fills().at(1).exchange_order_id(), "Order-2");
-    EXPECT_EQ(result_listener->fills().at(1).fill_id(), "Fill-2");
+    EXPECT_EQ(result_listener->fills().back().client_order_id(), "C2");
+    EXPECT_EQ(result_listener->fills().back().exchange_order_id(), "Order-2");
+    EXPECT_EQ(result_listener->fills().back().fill_id(), "Fill-2");
 
     delete exchange_simulater;
     delete result_listener;
@@ -222,16 +230,19 @@ TEST(ExchangeSimulaterTest, Test005_RematchNone)
 
     exchange_simulater->On_state_changed(t3);
 
+    // 此时还没有订单存在
     EXPECT_EQ(result_listener->orders().size(), 0);
     EXPECT_EQ(result_listener->fills().size(), 0);
 
     exchange_simulater->Add(make_order("C1", "T1", 11.2, false, true));
 
+    // 此时新加的订单没有匹配
     EXPECT_EQ(result_listener->orders().size(), 1);
     EXPECT_EQ(result_listener->fills().size(), 0);
 
     exchange_simulater->Add(make_order("C2", "T3", 900.20, true, true));
 
+    // 此时订单没有匹配
     EXPECT_EQ(result_listener->orders().size(), 2);
     EXPECT_EQ(result_listener->fills().size(), 0);
 
@@ -239,6 +250,7 @@ TEST(ExchangeSimulaterTest, Test005_RematchNone)
     exchange_simulater->On_state_changed(t2);
     exchange_simulater->On_state_changed(t3);
 
+    // 此时订单还是没有匹配
     EXPECT_EQ(result_listener->orders().size(), 2);
     EXPECT_EQ(result_listener->fills().size(), 0);
 
@@ -281,21 +293,25 @@ TEST(ExchangeSimulaterTest, Test006_Rematch)
     exchange_simulater->On_state_changed(t3);
     }
 
+    // 此时还没有订单存在
     EXPECT_EQ(result_listener->orders().size(), 0);
     EXPECT_EQ(result_listener->fills().size(), 0);
 
     exchange_simulater->Add(make_order("C1", "T1", 11.2, false, true));
 
+    // 此时新加的订单没有匹配
     EXPECT_EQ(result_listener->orders().size(), 1);
     EXPECT_EQ(result_listener->fills().size(), 0);
 
     exchange_simulater->Add(make_order("C2", "T2", 203.35, true, true));
 
+    // 此时新加的订单没有匹配
     EXPECT_EQ(result_listener->orders().size(), 2);
     EXPECT_EQ(result_listener->fills().size(), 0);
 
     exchange_simulater->Add(make_order("C3", "T3", 900, true, true));
 
+    // 此时新加的订单没有匹配
     EXPECT_EQ(result_listener->orders().size(), 3);
     EXPECT_EQ(result_listener->fills().size(), 0);
 
@@ -325,6 +341,7 @@ TEST(ExchangeSimulaterTest, Test006_Rematch)
 
     exchange_simulater->On_state_changed(t3);
 
+    // 此时有两个订单产生匹配
     EXPECT_EQ(result_listener->orders().size(), 3);
     EXPECT_EQ(result_listener->fills().size(), 2);
 
@@ -344,8 +361,183 @@ TEST(ExchangeSimulaterTest, Test006_Rematch)
     exchange_simulater->On_state_changed(t2);
     exchange_simulater->On_state_changed(t3);
 
+    // 此时没有新的订单匹配发生
     EXPECT_EQ(result_listener->orders().size(), 3);
     EXPECT_EQ(result_listener->fills().size(), 2);
+
+    delete exchange_simulater;
+    delete result_listener;
+}
+
+TEST(ExchangeSimulaterTest, Test007_ChangeOrder)
+{
+    fh::tmalpha::exchange::MockExchangeListener *result_listener = new fh::tmalpha::exchange::MockExchangeListener();
+    fh::tmalpha::exchange::ExchangeSimulater *exchange_simulater = new fh::tmalpha::exchange::ExchangeSimulater(nullptr, result_listener);
+
+    exchange_simulater->Change(make_order("C1", "T1", 11.2, false, true));
+
+    // 订单不存在，无法修改
+    EXPECT_EQ(result_listener->orders().size(), 1);
+    EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Rejected);
+    EXPECT_EQ(result_listener->orders().back().message(), "order not found");
+
+    exchange_simulater->Add(make_order("C1", "T1", 11.2, false, true));
+
+    // 添加新处理中订单
+    EXPECT_EQ(result_listener->orders().size(), 2);
+    EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Working);
+    EXPECT_EQ(std::stod(result_listener->orders().back().price()), 11.2);
+    EXPECT_EQ(result_listener->orders().back().contract(), "T1");
+
+    exchange_simulater->Change(make_order("C1", "T1-2", 99.09, true, true));
+
+    // 订单修改成功
+    EXPECT_EQ(result_listener->orders().size(), 3);
+    EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Working);
+    EXPECT_EQ(std::stod(result_listener->orders().back().price()), 99.09);
+    EXPECT_EQ(result_listener->orders().back().contract(), "T1-2");
+
+    pb::dms::L2 t1;
+    t1.set_contract("T1-2");
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(99.09);  ask->set_size(1); }
+
+    exchange_simulater->On_state_changed(t1);
+
+    // 修改过的订单匹配成功
+    EXPECT_EQ(result_listener->fills().size(), 1);
+    EXPECT_EQ(std::stod(result_listener->fills().back().fill_price()), 99.09);
+
+    exchange_simulater->Change(make_order("C1", "T1-3", 33.3, false, true));
+
+    // 订单已被匹配，无法修改
+    EXPECT_EQ(result_listener->orders().size(), 4);
+    EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Rejected);
+    EXPECT_EQ(result_listener->orders().back().message(), "order is filled");
+
+    delete exchange_simulater;
+    delete result_listener;
+}
+
+TEST(ExchangeSimulaterTest, Test008_DeleteOrder)
+{
+    fh::tmalpha::exchange::MockExchangeListener *result_listener = new fh::tmalpha::exchange::MockExchangeListener();
+    fh::tmalpha::exchange::ExchangeSimulater *exchange_simulater = new fh::tmalpha::exchange::ExchangeSimulater(nullptr, result_listener);
+
+    exchange_simulater->Delete(make_order("C1", "T1", 11.2, true, true));
+
+    // 订单不存在，无法删除
+    EXPECT_EQ(result_listener->orders().size(), 1);
+    EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Rejected);
+    EXPECT_EQ(result_listener->orders().back().message(), "order not found");
+
+    pb::dms::L2 t1;
+    t1.set_contract("T1");
+    { pb::dms::DataPoint *ask = t1.add_offer(); ask->set_price(11.20);  ask->set_size(1); }
+
+    exchange_simulater->On_state_changed(t1);
+
+    exchange_simulater->Add(make_order("C1", "T1", 11.2, true, true));
+
+    // 订单匹配成功
+    EXPECT_EQ(result_listener->fills().size(), 1);
+    EXPECT_EQ(std::stod(result_listener->fills().back().fill_price()), 11.20);
+
+    exchange_simulater->Delete(make_order("C1", "T1", 11.2, false, true));
+
+    // 订单已成交，无法删除
+    EXPECT_EQ(result_listener->orders().size(), 2);
+    EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Rejected);
+    EXPECT_EQ(result_listener->orders().back().message(), "order is filled");
+
+    exchange_simulater->Add(make_order("C2", "T1", 11.2, false, true));
+
+    EXPECT_EQ(result_listener->fills().size(), 1);
+    EXPECT_EQ(result_listener->orders().size(), 3);
+
+    exchange_simulater->Delete(make_order("C2", "T1", 11.2, false, true));
+
+    // 订单删除成功
+    EXPECT_EQ(result_listener->orders().size(), 4);
+    EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Cancelled);
+
+    exchange_simulater->Delete(make_order("C2", "T1", 11.2, false, true));
+
+    // 订单已经被删除，无法再次删除
+    EXPECT_EQ(result_listener->orders().size(), 5);
+    EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Rejected);
+    EXPECT_EQ(result_listener->orders().back().message(), "order is canceled");
+
+    exchange_simulater->Change(make_order("C2", "T1", 33.3, false, true));
+
+    // 订单已经被删除，无法修改
+    EXPECT_EQ(result_listener->orders().size(), 6);
+    EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Rejected);
+    EXPECT_EQ(result_listener->orders().back().message(), "order is canceled");
+
+    delete exchange_simulater;
+    delete result_listener;
+}
+
+TEST(ExchangeSimulaterTest, Test009_QueryOrder)
+{
+    fh::tmalpha::exchange::MockExchangeListener *result_listener = new fh::tmalpha::exchange::MockExchangeListener();
+    fh::tmalpha::exchange::ExchangeSimulater *exchange_simulater = new fh::tmalpha::exchange::ExchangeSimulater(nullptr, result_listener);
+
+    exchange_simulater->Query(make_order("C1", "T1", 11.2, true, true));
+
+    // 订单不存在
+    EXPECT_EQ(result_listener->orders().size(), 1);
+    EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Rejected);
+    EXPECT_EQ(result_listener->orders().back().message(), "order not found");
+
+    exchange_simulater->Add(make_order("C1", "T1", 61.00, false, true));
+
+    // 新加处理中订单
+    EXPECT_EQ(result_listener->orders().size(), 2);
+
+    exchange_simulater->Query(make_order("C1", "T1", 61.00, false, true));
+
+    // 订单在处理中
+    EXPECT_EQ(result_listener->orders().size(), 3);
+    EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Working);
+    EXPECT_EQ(std::stod(result_listener->orders().back().price()), 61);
+    EXPECT_EQ(result_listener->orders().back().contract(), "T1");
+
+    pb::dms::L2 t1;
+    t1.set_contract("T1");
+    { pb::dms::DataPoint *bid = t1.add_bid(); bid->set_price(61.00);  bid->set_size(100); }
+
+    exchange_simulater->On_state_changed(t1);
+
+    // 订单匹配成功
+    EXPECT_EQ(result_listener->fills().size(), 1);
+    EXPECT_EQ(std::stod(result_listener->fills().back().fill_price()), 61);
+
+    exchange_simulater->Query(make_order("C1", "T1", 61.00, false, true));
+
+    // 订单已成交
+    EXPECT_EQ(result_listener->orders().size(), 4);
+    EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Filled);
+    EXPECT_EQ(std::stod(result_listener->orders().back().price()), 61);
+    EXPECT_EQ(result_listener->orders().back().filled_quantity(), 20);
+
+    exchange_simulater->Add(make_order("C2", "T1", 11.2, false, true));
+
+    // 添加新处理中订单
+    EXPECT_EQ(result_listener->orders().size(), 5);
+    EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Working);
+
+    exchange_simulater->Delete(make_order("C2", "T1", 11.2, false, true));
+
+    // 订单删除成功
+    EXPECT_EQ(result_listener->orders().size(), 6);
+    EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Cancelled);
+
+    exchange_simulater->Query(make_order("C2", "T1", 11.20, false, true));
+
+    // 订单已删除
+    EXPECT_EQ(result_listener->orders().size(), 7);
+    EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Cancelled);
 
     delete exchange_simulater;
     delete result_listener;

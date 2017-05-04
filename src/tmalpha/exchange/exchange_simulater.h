@@ -37,6 +37,7 @@ namespace exchange
 
         public:
             void Join();
+            void On_state_changed(const pb::dms::L2 &l2);
 
         public:
             // implement of ExchangeI
@@ -56,13 +57,16 @@ namespace exchange
 
         private:
             void Init(const fh::core::assist::Settings &app_settings, const fh::core::assist::Settings &persist_settings);
-            pb::ems::Fill Order_filled(const ::pb::ems::Order& org_order, std::string next_exchange_order_id);
-            pb::ems::Order Order_working(const ::pb::ems::Order& org_order);
+            pb::ems::Fill Order_filled(const ::pb::ems::Order& org_order, const std::string &next_exchange_order_id);
+            pb::ems::Order Order_working(const ::pb::ems::Order& org_order, const std::string &next_exchange_order_id);
+            void Order_reject(const ::pb::ems::Order& org_order, const std::string &reason);
+            void Order_status(const ::pb::ems::Order& org_order, pb::ems::OrderStatus status);
+            void Order_status(const ::pb::ems::Fill& org_fill);
             std::string Next_exchange_order_id();
             std::string Next_fill_id();
             bool Has_matching(const ::pb::ems::Order& org_order);
             void Rematching();
-            void On_state_changed(const pb::dms::L2 &l2);
+            void Set_to_current_time(::pb::ems::Timestamp* target);
 
         private:
             fh::tmalpha::market::MarketSimulater *m_market;
@@ -73,6 +77,7 @@ namespace exchange
             std::map<std::string, pb::ems::Order> m_working_orders;
             std::list<std::string> m_working_order_ids;   // 为了保证 working order 按照时间顺序匹配
             std::map<std::string, pb::ems::Fill> m_filled_orders;
+            std::map<std::string, pb::ems::Order> m_canceled_orders;
             std::mutex m_mutex;
             std::unordered_map<std::string , pb::dms::L2> m_current_states;
 
