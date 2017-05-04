@@ -65,41 +65,10 @@ int main_loop()
 {
         while(!stop_all)
        {
-           //LOG_INFO("exchange order end");
-	    //sleep(10);
-	    //continue;	
-  
-	   
+  	   
            LOG_INFO("exchange runing main_loop");
-	    LOG_INFO("exchange order begin");
-	    LOG_INFO("InstrumentID:");
-	    char userInstrumentID[100]={0};	
-	    scanf("%s", userInstrumentID);	
-
-           LOG_INFO("LimitPrice:");
-           float userLimitPrice=0;
-           scanf("%f", &userLimitPrice);	   
-		   
-	    LOG_INFO("Volume:");
-	    int userVolume=0;
-           scanf("%d", &userVolume);
-
-           std::string UserId = pFileConfig->Get("femas-user.UserID");	
-	 
-           morder.set_client_order_id(std::to_string(pFemasExchangeApp->GetMaxOrderLocalID()));
-           morder.set_account(UserId);	
-           morder.set_contract(userInstrumentID);	 
-           morder.set_buy_sell(pb::ems::BuySell::BS_Buy);
-           morder.set_price(std::to_string(userLimitPrice));
-           morder.set_quantity(userVolume);	 
-           morder.set_tif(pb::ems::TimeInForce::TIF_GFD);
-           morder.set_order_type(pb::ems::OrderType::OT_Limit);
-		   
-
-	    pFemasExchangeApp->Add(morder);	
-
-	    LOG_INFO("exchange order end");	
-	    //sleep(10);	 
+	    	
+	    sleep(10);	 
        }
 	return 0;
 }
@@ -130,19 +99,37 @@ int main(int argc, char* argv[])
       }	 
      //::pb::ems::Order morder;
      pFileConfig = new fh::core::assist::Settings(FileConfigstr);
-     /*std::string UserId = pFileConfig->Get("femas-user.UserID");	
-	 
-     morder.set_client_order_id(std::to_string(pFemasExchangeApp->GetMaxOrderLocalID()));
-     morder.set_account(UserId);	
-     morder.set_contract("IF1306");	 
-     morder.set_buy_sell(pb::ems::BuySell::BS_Buy);
-     morder.set_price(std::to_string(398));
-     morder.set_quantity(1000);	 
-     morder.set_tif(pb::ems::TimeInForce::TIF_GFD);
-     morder.set_order_type(pb::ems::OrderType::OT_Limit);
 
+
+           LOG_INFO("exchange order begin");
+	    LOG_INFO("InstrumentID:");
+	    char userInstrumentID[100]={0};	
+	    scanf("%s", userInstrumentID);	
+
+           LOG_INFO("LimitPrice:");
+           float userLimitPrice=0;
+           scanf("%f", &userLimitPrice);	   
+		   
+	    LOG_INFO("Volume:");
+	    int userVolume=0;
+           scanf("%d", &userVolume);
+
+           std::string UserId = pFileConfig->Get("femas-user.UserID");	
 	 
-     pFemasExchangeApp->Add(morder);*/		 
+           morder.set_client_order_id(std::to_string(pFemasExchangeApp->GetMaxOrderLocalID()));
+           morder.set_account(UserId);	
+           morder.set_contract(userInstrumentID);	 
+           morder.set_buy_sell(pb::ems::BuySell::BS_Buy);
+           morder.set_price(std::to_string(userLimitPrice));
+           morder.set_quantity(userVolume);	 
+           morder.set_tif(pb::ems::TimeInForce::TIF_GFD);
+           morder.set_order_type(pb::ems::OrderType::OT_Limit);
+		   
+
+	    pFemasExchangeApp->Add(morder);
+
+
+		 
      main_loop();
      pFemasExchangeApp->Stop();	 
      delete pFemasExchangeApp;
