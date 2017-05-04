@@ -1,5 +1,5 @@
 
-#include <thread>
+
 #include <chrono>
 #include "core/assist/logger.h"
 #include "core/assist/utility.h"
@@ -12,21 +12,19 @@ namespace tmalpha
 namespace market
 {
 
-    MarketSimulater::MarketSimulater(DataProvider *provider, DataConsumer *replayer)
-    : m_provider(provider), m_replayer(replayer), m_messages(),
-      m_is_fetch_end(false), m_is_stopped(true), m_mutex(), m_condition(), m_speed(1)
+    MarketSimulater::MarketSimulater(fh::core::market::MarketListenerI *listener, DataProvider *provider, DataConsumer *consumer)
+    : fh::core::market::MarketI(listener),
+      m_provider(provider), m_consumer(consumer), m_listener(listener), m_messages(),
+      m_is_fetch_end(false), m_is_stopped(true), m_mutex(), m_condition(), m_speed(1),
+      m_replayer(nullptr), m_reader(nullptr)
     {
-        // noop
+        m_consumer->Add_listener(listener);
     }
 
     MarketSimulater::~MarketSimulater()
     {
-        // noop
-    }
-
-    void MarketSimulater::Add_replay_listener(fh::tmalpha::market::MarketReplayListener *replay_listener)
-    {
-        m_replay_listeners.push_back(replay_listener);
+        delete m_reader;
+        delete m_replayer;
     }
 
     void MarketSimulater::Speed(float speed)
@@ -34,12 +32,69 @@ namespace market
         m_speed = speed <= 0 ? 1 : speed;
     }
 
-    void MarketSimulater::Start()
+    fh::core::market::MarketListenerI * MarketSimulater::Listener()
     {
-        // 先启动重放（读取数据）线程
-        m_is_stopped = false;
-        std::thread replayer([this](){this->Replay();});
+        return m_listener;
+    }
 
+    // implement of MarketI
+    bool MarketSimulater::Start()
+    {
+        LOG_INFO("Start Market Simulater");
+
+        m_is_stopped = false;
+        // 先启动重放线程
+        m_replayer = new std::thread([this](){this->Replay();});
+        // 再启动读取数据线程
+        m_reader = new std::thread([this](){this->Read();});
+
+        return true;
+    }
+
+    // implement of MarketI
+    void MarketSimulater::Stop()
+    {
+        LOG_INFO("replay is stopping...");
+        m_is_stopped = true;
+    }
+
+    void MarketSimulater::Join()
+    {
+        m_replayer->join();
+        m_reader->join();
+    }
+
+    bool MarketSimulater::Is_runing() const
+    {
+        return !m_is_stopped;
+    }
+
+    // implement of MarketI
+    void MarketSimulater::Initialize(std::vector<std::string> insts)
+    {
+        // noop
+    }
+
+    // implement of MarketI
+    void MarketSimulater::Subscribe(std::vector<std::string> instruments)
+    {
+        // noop
+    }
+
+    // implement of MarketI
+    void MarketSimulater::UnSubscribe(std::vector<std::string> instruments)
+    {
+        // noop
+    }
+
+    // implement of MarketI
+    void MarketSimulater::ReqDefinitions(std::vector<std::string> instruments)
+    {
+        // noop
+    }
+
+    void MarketSimulater::Read()
+    {
         // 开始读取数据
         std::uint64_t total = m_provider->Total_count();
         LOG_INFO("Start. There are ", total, " messages waiting for replay.");
@@ -71,20 +126,8 @@ namespace market
 
         // 最后通知下重放线程（防止此时它还在等待数据）
         m_condition.notify_all();
-        replayer.join();
 
-        LOG_INFO("Exit.");
-    }
-
-    void MarketSimulater::Stop()
-    {
-        LOG_INFO("replay is stopped.");
-        m_is_stopped = true;
-    }
-
-    bool MarketSimulater::Is_runing() const
-    {
-        return !m_is_stopped;
+        LOG_INFO("reader is stopped");
     }
 
     void MarketSimulater::Replay()
@@ -118,9 +161,6 @@ namespace market
 
                 // 如果剩下的消息数量不足了，通知 provider 去拉取新的数据
                 if(m_messages.size() < 100) m_condition.notify_all();
-
-                // 发送最新行情状态
-                this->Show_states();
             }
             else if(m_is_fetch_end)
             {
@@ -134,19 +174,15 @@ namespace market
                 m_condition.wait(locker);
             }
         }
+
+        LOG_INFO("replayer is stopped");
     }
 
     void MarketSimulater::Consume_one()
     {
         LOG_DEBUG("consume: ", m_messages.front());
-        m_replayer->Consume(m_messages.front());
+        m_consumer->Consume(m_messages.front());
         m_messages.pop();
-    }
-
-    void MarketSimulater::Show_states()
-    {
-        std::unordered_map<std::string , pb::dms::L2> states = m_replayer->Get_state();
-        for(auto *listener : m_replay_listeners) { listener->On_state_changed(states); }
     }
 
     void MarketSimulater::Sleep(std::uint64_t last_send_time, std::uint64_t current_send_time, std::uint64_t last_replay_time) const

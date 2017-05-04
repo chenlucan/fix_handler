@@ -4,7 +4,10 @@
 #include <bsoncxx/json.hpp>
 #include "cme/market/playback/book_replayer.h"
 #include "core/assist/logger.h"
-
+#include "core/market/marketlisteneri.h"
+#include "cme/market/book_manager.h"
+#include "cme/market/definition_manager.h"
+#include "cme/market/status_manager.h"
 
 #define  GET_SUB_FROM_JSON(view, key) view[key]
 #define  GET_STR_FROM_JSON(view, key) view[key].get_utf8().value.to_string()
@@ -25,9 +28,16 @@ namespace market
 namespace playback
 {
 
-    BookReplayer::BookReplayer() : m_book_state_controller(), m_instruments(), m_recoveries(), m_is_first_recovery(true)
+    BookReplayer::BookReplayer()
+    : m_listener(nullptr), m_book_state_controller(), m_instruments(),
+      m_recoveries(), m_is_first_recovery(true)
     {
         // noop
+    }
+
+    void BookReplayer::Add_listener(fh::core::market::MarketListenerI *listener)
+    {
+        m_listener = listener;
     }
 
     void BookReplayer::Apply_message(const std::string &message)
@@ -44,12 +54,8 @@ namespace playback
         if(sbe_type == "d")   Parse_definitions(body);
         else if(sbe_type == "W")   Parse_recoveries(body);
         else if(sbe_type == "X")   Parse_increments(seq, body);
+        else if(sbe_type == "f")   Parse_status(body);
         else LOG_WARN("ignore sbe type:", sbe_type);
-    }
-
-    std::unordered_map<std::uint32_t , fh::cme::market::BookState> &BookReplayer::Get_all_states()
-    {
-        return m_book_state_controller.Get_all_states();
     }
 
     void BookReplayer::Parse_definitions(const JSON_ELEMENT &message)
@@ -90,6 +96,8 @@ namespace playback
 
         // 更新 book state 信息
         m_book_state_controller.Create_or_shrink(ins);
+        // 发送出去
+        if(m_listener) fh::cme::market::DefinitionManager::Send(m_listener, ins);
     }
 
     void BookReplayer::Parse_recoveries(const JSON_ELEMENT &message)
@@ -118,7 +126,8 @@ namespace playback
 
             m_recoveries.push_back(b);
 
-            m_book_state_controller.Modify_state(b);
+            auto changed_state = m_book_state_controller.Modify_state(b);
+            if(m_listener) fh::cme::market::BookManager::Send(m_listener, b, changed_state, this->Contract(b.securityID));
         }
     }
 
@@ -165,8 +174,39 @@ namespace playback
                 }
             }
 
-            m_book_state_controller.Modify_state(b);
+            auto changed_state = m_book_state_controller.Modify_state(b);
+            if(m_listener) fh::cme::market::BookManager::Send(m_listener, b, changed_state, this->Contract(b.securityID));
         }
+    }
+
+    void BookReplayer::Parse_status(const JSON_ELEMENT &message)
+    {
+        std::uint32_t security_id = GET_INT_OR_DEFAULT_FROM_JSON (message, "securityID", 0);
+        mktdata::SecurityTradingStatus::Value securityTradingStatus = mktdata::SecurityTradingStatus::get(GET_INT_OR_DEFAULT_FROM_JSON (message, "securityTradingStatus", 255));
+
+        std::string contract = "";
+        if(security_id == 0)
+        {
+            // 如果没设置 security id
+            contract = "";
+        }
+        else
+        {
+            contract = this->Contract(security_id);
+            // 如果找不到名称，就使用 id
+            if(contract == "") contract = std::to_string(security_id);
+        }
+
+        LOG_INFO("status changed: ", securityTradingStatus);
+        if(m_listener) fh::cme::market::StatusManager::Send(m_listener, contract, securityTradingStatus);
+    }
+
+    std::string BookReplayer::Contract(int security_id)
+    {
+        // 根据 id 在回放时整理好的合约列表中找到合约名称，找不到的场合返回 ""
+        auto pos = m_instruments.find(security_id);
+        if(pos == m_instruments.end()) return "";
+        return pos->second.symbol;
     }
 
     BookReplayer::~BookReplayer()

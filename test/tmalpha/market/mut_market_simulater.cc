@@ -36,8 +36,8 @@ std::vector<std::string> messages_all_type {
     "{ \"insertTime\" : \"1493010903858508385\", \"sendingTime\" : \"1493010826950452080\", \"packetSeqNum\" : \"17\", \"sbeType\" : \"X\", \"message\" : { \"type\" : \"MDIncrementalRefreshVolume37\", \"transactTime\" : \"1493010826950890457\", \"noMDEntries\" : [ { \"mDEntrySize\" : \"71\", \"securityID\" : \"1\", \"rptSeq\" : \"73\", \"mDUpdateAction\" : \"0\", \"mDEntryType\" : \"e\" }, { \"mDEntrySize\" : \"61\", \"securityID\" : \"3\", \"rptSeq\" : \"63\", \"mDUpdateAction\" : \"1\", \"mDEntryType\" : \"e\" } ] } }",
     // 忽略：entity type = 2
     "{ \"insertTime\" : \"1493010903863585881\", \"sendingTime\" : \"1493010827452165197\", \"packetSeqNum\" : \"18\", \"sbeType\" : \"X\", \"message\" : { \"type\" : \"MDIncrementalRefreshTrade36\", \"transactTime\" : \"1493010827452294374\", \"noMDEntries\" : [ { \"mDEntryPx\" : { \"mantissa\" : \"456000000\", \"exponent\" : \"-7\" }, \"mDEntrySize\" : \"74\", \"securityID\" : \"1\", \"rptSeq\" : \"73\", \"tradeID\" : \"7\", \"aggressorSide\" : \"1\", \"mDUpdateAction\" : \"0\", \"mDEntryType\" : \"2\", \"numberOfOrders\" : \"8\" }, { \"mDEntryPx\" : { \"mantissa\" : \"162000000\", \"exponent\" : \"-7\" }, \"mDEntrySize\" : \"51\", \"securityID\" : \"3\", \"rptSeq\" : \"73\", \"tradeID\" : \"6\", \"aggressorSide\" : \"2\", \"mDUpdateAction\" : \"2\", \"mDEntryType\" : \"2\", \"numberOfOrders\" : \"4\" } ] } }",
-    // 忽略：message type = f
-    "{ \"insertTime\" : \"1493010903865858063\", \"sendingTime\" : \"1493010827452165197\", \"packetSeqNum\" : \"18\", \"sbeType\" : \"f\", \"message\" : { \"type\" : \"SecurityStatus30\", \"transactTime\" : \"1493010827453048765\", \"SecurityGroup\" : \"ABCDEF\", \"Asset\" : \"xyz\", \"tradeDate\" : \"2017\", \"securityTradingStatus\" : \"17\", \"haltReason\" : \"4\", \"securityTradingEvent\" : \"4\", \"securityID\" : \"72\" } }",
+    // 忽略：message type = f（产生状态数据）
+    "{ \"insertTime\" : \"1493010903865858063\", \"sendingTime\" : \"1493010827452165197\", \"packetSeqNum\" : \"18\", \"sbeType\" : \"f\", \"message\" : { \"type\" : \"SecurityStatus30\", \"transactTime\" : \"1493010827453048765\", \"SecurityGroup\" : \"ABCDEF\", \"Asset\" : \"xyz\", \"tradeDate\" : \"2017\", \"securityTradingStatus\" : \"17\", \"haltReason\" : \"4\", \"securityTradingEvent\" : \"4\", \"securityID\" : \"1\" } }",
     // contract=1/CON-1-NEW, bid=[price=99.000000, size=900][price=0.000000, size=0][price=123.000000, size=62], offer=[price=0.000000, size=0][price=0.000000, size=0][price=12.000000, size=46]
     // contract=3/CON-3, contract=CON-3, bid=[price=0.000000, size=0][price=49.000000, size=68], offer=[price=0.000000, size=0][price=300.330000, size=50]
     "{ \"insertTime\" : \"1493010903871898063\", \"sendingTime\" : \"1493010827954103879\", \"packetSeqNum\" : \"19\", \"sbeType\" : \"X\", \"message\" : { \"type\" : \"MDIncrementalRefreshBook32\", \"transactTime\" : \"1493010827954243136\", \"noMDEntries\" : [ { \"securityID\" : \"1\", \"rptSeq\" : \"73\", \"mDPriceLevel\" : \"3\", \"mDUpdateAction\" : \"0\", \"mDEntryType\" : \"1\", \"mDEntrySize\" : \"46\", \"numberOfOrders\" : \"18\", \"mDEntryPx\" : { \"mantissa\" : \"120000000\", \"exponent\" : \"-7\" } }, { \"securityID\" : \"3\", \"rptSeq\" : \"73\", \"mDPriceLevel\" : \"2\", \"mDUpdateAction\" : \"1\", \"mDEntryType\" : \"0\", \"mDEntrySize\" : \"68\", \"numberOfOrders\" : \"25\", \"mDEntryPx\" : { \"mantissa\" : \"490000000\", \"exponent\" : \"-7\" } } ] } }"
@@ -55,15 +55,26 @@ TEST(MarketSimulaterTest, Test001_ReadOnce)
     fh::tmalpha::market::DataConsumer *consume = new fh::tmalpha::market::CmeDataConsumer();
     fh::tmalpha::market::MockMarketReplayListener *listener = new fh::tmalpha::market::MockMarketReplayListener();
 
-    fh::tmalpha::market::MarketSimulater *simulater = new fh::tmalpha::market::MarketSimulater(provider, consume);
-    simulater->Add_replay_listener(listener);
+    fh::tmalpha::market::MarketSimulater *simulater = new fh::tmalpha::market::MarketSimulater(listener, provider, consume);
     simulater->Start();
+    simulater->Join();
 
-    std::unordered_map<std::string , pb::dms::L2> states = listener->Get_states();
+    auto cs = listener->Contracts();
 
-    EXPECT_EQ(states.size(), 2);
-    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at("CON-1-NEW")), messages_all_type_result[0]);
-    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at("CON-3")), messages_all_type_result[1]);
+    EXPECT_EQ(cs.size(), 3);
+    EXPECT_EQ(cs[1].name(), "CON-3");
+    EXPECT_EQ(cs[2].name(), "CON-1-NEW");
+
+    auto l2s = listener->L2s();
+    int size = l2s.size();
+
+    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(l2s[size - 2]), messages_all_type_result[0]);
+    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(l2s[size - 1]), messages_all_type_result[1]);
+
+    delete simulater;
+    delete listener;
+    delete consume;
+    delete provider;
 }
 
 TEST(MarketSimulaterTest, Test002_ReadMultiple)
@@ -73,15 +84,20 @@ TEST(MarketSimulaterTest, Test002_ReadMultiple)
     fh::tmalpha::market::DataConsumer *consume = new fh::tmalpha::market::CmeDataConsumer();
     fh::tmalpha::market::MockMarketReplayListener *listener = new fh::tmalpha::market::MockMarketReplayListener();
 
-    fh::tmalpha::market::MarketSimulater *simulater = new fh::tmalpha::market::MarketSimulater(provider, consume);
-    simulater->Add_replay_listener(listener);
+    fh::tmalpha::market::MarketSimulater *simulater = new fh::tmalpha::market::MarketSimulater(listener, provider, consume);
     simulater->Start();
+    simulater->Join();
 
-    std::unordered_map<std::string , pb::dms::L2> states = listener->Get_states();
+    auto states = listener->Status();
 
-    EXPECT_EQ(states.size(), 2);
-    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at("CON-1-NEW")), messages_all_type_result[0]);
-    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at("CON-3")), messages_all_type_result[1]);
+    EXPECT_EQ(states.size(), 1);
+    EXPECT_EQ(states[0].first, "CON-1-NEW");
+    EXPECT_EQ(states[0].second, 3);
+
+    delete simulater;
+    delete listener;
+    delete consume;
+    delete provider;
 }
 
 TEST(MarketSimulaterTest, Test003_3xSpeed)
@@ -91,14 +107,18 @@ TEST(MarketSimulaterTest, Test003_3xSpeed)
     fh::tmalpha::market::DataConsumer *consume = new fh::tmalpha::market::CmeDataConsumer();
     fh::tmalpha::market::MockMarketReplayListener *listener = new fh::tmalpha::market::MockMarketReplayListener();
 
-    fh::tmalpha::market::MarketSimulater *simulater = new fh::tmalpha::market::MarketSimulater(provider, consume);
-    simulater->Add_replay_listener(listener);
+    fh::tmalpha::market::MarketSimulater *simulater = new fh::tmalpha::market::MarketSimulater(listener, provider, consume);
     simulater->Speed(3);
     simulater->Start();
+    simulater->Join();
 
-    std::unordered_map<std::string , pb::dms::L2> states = listener->Get_states();
+    auto bids = listener->Bids();
 
-    EXPECT_EQ(states.size(), 2);
-    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at("CON-1-NEW")), messages_all_type_result[0]);
-    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(states.at("CON-3")), messages_all_type_result[1]);
+    EXPECT_EQ(bids.size(), 1);
+    EXPECT_EQ(fh::core::assist::utility::Format_pb_message(bids[0]), "contract=CON-1-NEW, bid=[price=99.000000, size=900]");
+
+    delete simulater;
+    delete listener;
+    delete consume;
+    delete provider;
 }

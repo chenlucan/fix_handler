@@ -1,5 +1,6 @@
 
 #include "core/assist/logger.h"
+#include "core/book/book_sender.h"
 #include "tmalpha/market/market_data_provider.h"
 #include "tmalpha/market/cme_data_consumer.h"
 #include "tmalpha/market/market_simulater.h"
@@ -14,7 +15,7 @@ namespace market
 
     TmalphaMarketApplication::TmalphaMarketApplication(
             const std::string &app_setting_file, const std::string &persist_setting_file)
-    : m_provider(nullptr), m_consume(nullptr),  m_default_listener(nullptr), m_simulater(nullptr), m_thread(nullptr)
+    : m_provider(nullptr), m_consumer(nullptr), m_listener(nullptr),  m_simulater(nullptr)
     {
         fh::core::assist::Settings app_settings(app_setting_file);
         fh::core::assist::Settings db_settings(persist_setting_file);
@@ -23,16 +24,10 @@ namespace market
 
     TmalphaMarketApplication::~TmalphaMarketApplication()
     {
-        delete m_thread;
         delete m_simulater;
-        delete m_default_listener;
-        delete m_consume;
+        delete m_listener;
+        delete m_consumer;
         delete m_provider;
-    }
-
-    void TmalphaMarketApplication::Add_replay_listener(fh::tmalpha::market::MarketReplayListener *replay_listener)
-    {
-        m_simulater->Add_replay_listener(replay_listener);
     }
 
     bool TmalphaMarketApplication::Start()
@@ -49,27 +44,12 @@ namespace market
             return false;
         }
 
-        m_thread = new std::thread([this](){m_simulater->Start();});
-        LOG_INFO("simulater started");
-
-        return true;
+        return m_simulater->Start();
     }
 
     void TmalphaMarketApplication::Join()
     {
-        if(m_simulater == nullptr)
-        {
-            LOG_WARN("simulater is invalid");
-            return;
-        }
-
-        if(!m_simulater->Is_runing())
-        {
-            LOG_INFO("simulater is stopped");
-            return;
-        }
-
-        m_thread->join();
+        m_simulater->Join();
     }
 
     void TmalphaMarketApplication::Stop()
@@ -97,6 +77,7 @@ namespace market
         std::string market = app_settings.Get("alpha.market");
         std::string start_include = app_settings.Get("alpha.start_include");
         std::string end_exclude = app_settings.Get("alpha.end_exclude");
+        std::string book_receive_url = app_settings.Get("alpha-market.book_url");
         float speed = std::stof(app_settings.Get("alpha.speed"));
 
         // 初期化数据提供者
@@ -106,7 +87,7 @@ namespace market
         // 初期化数据处理者
         if(market == "CME")
         {
-            m_consume = new fh::tmalpha::market::CmeDataConsumer();
+            m_consumer = new fh::tmalpha::market::CmeDataConsumer();
         }
         else
         {
@@ -114,12 +95,11 @@ namespace market
             return;
         }
 
-        // 初期化默认的数据接受者
-        m_default_listener = new fh::tmalpha::market::DefaultMarketReplayListener();
+        // 初期化数据接受者（由于不需要发送原始数据，所以第一个参数不设置了）
+        m_listener = new fh::core::book::BookSender("", book_receive_url);
 
         // 初期化重放控制模块
-        m_simulater = new fh::tmalpha::market::MarketSimulater(m_provider, m_consume);
-        m_simulater->Add_replay_listener(m_default_listener);
+        m_simulater = new fh::tmalpha::market::MarketSimulater(m_listener, m_provider, m_consumer);
         m_simulater->Speed(speed);
 
         LOG_INFO("==== Replay ", market, " data of [", start_include, ", ", end_exclude, ") on speed ", speed);
