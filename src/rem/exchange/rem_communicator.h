@@ -10,6 +10,7 @@
 #include "core/exchange/exchangei.h"
 #include "pb/ems/ems.pb.h"
 #include "core/assist/settings.h"
+#include "core/exchange/exchangelisteneri.h"
 
 namespace fh
 {
@@ -60,12 +61,25 @@ namespace exchange
 		   virtual void OnSymbolStatusReport(EES_SymbolStatus* pSymbolStatus);
 		   virtual void OnQuerySymbolStatus(EES_SymbolStatus* pSymbolStatus, bool bFinish);
 
-		   
+
+                 void SendOrderAccept(EES_OrderAcceptField* pAccept);
+		   void SendOrderMarketAccept(EES_OrderMarketAcceptField* pAccept);	
+		   void SendOrderReject(EES_OrderRejectField* pReject);
+		   void SendOrderMarketReject(EES_OrderMarketRejectField* pReject);
+		   void SendOrderExecution(EES_OrderExecutionField* pExec);	
+		   void SendOrderCxled(EES_OrderCxled* pCxled);
+		   void SendCxlOrderReject(EES_CxlOrderRej* pReject);
+				  
+		   void SetStrategy(core::exchange::ExchangeListenerI *strategy)
+		   {
+                      m_strategy = strategy;
+		   }
 		   void SetFileConfigData(const std::string &FileConfig);	
 		   int mIConnet;
 		   int MaxOrderLocalID;
 		   
         private:
+		   core::exchange::ExchangeListenerI *m_strategy;	 
 		   EESTraderApi *m_pUserApi;
 		   fh::core::assist::Settings *m_pFileConfig;
 		   

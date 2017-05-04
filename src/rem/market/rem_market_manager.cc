@@ -152,7 +152,7 @@ void CRemMarkrtManager::OnSymbolRegisterResponse(EesEqsIntrumentType chInstrumen
 {
     if (bSuccess)
     {
-        LOG_INFO("SubSymbol :", pSymbol,"Success");
+        LOG_INFO("SubSymbol :", pSymbol);
 	 if(mISubSuss > 0)
 	 {
            mISubSuss--;

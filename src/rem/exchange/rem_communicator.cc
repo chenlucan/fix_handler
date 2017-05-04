@@ -15,6 +15,8 @@ namespace exchange
 const char* con_prodInfo="REM";
 const char* con_macAddr="00:0C:29:E3:32:E4";
 
+
+/// \brief 服务器连接事件
 void CEESTraderApiManger::OnConnection(ERR_NO errNo, const char* pErrStr )
 {
     LOG_INFO("CEESTraderApiManger::OnConnection");
@@ -36,10 +38,13 @@ void CEESTraderApiManger::OnConnection(ERR_NO errNo, const char* pErrStr )
     m_pUserApi->UserLogon(LogIDstr.c_str(),Passwordstr.c_str(),con_prodInfo,con_macAddr);
     return;	
 }
+
+/// \brief	服务器主动断开，会收到这个消息
 void CEESTraderApiManger::OnDisConnection(ERR_NO errNo, const char* pErrStr )
 {
     LOG_INFO("CEESTraderApiManger::OnDisConnection");
 }
+/// \brief	登录消息的回调
 void CEESTraderApiManger::OnUserLogon(EES_LogonResponse* pLogon)
 {
     LOG_INFO("CEESTraderApiManger::OnUserLogon");
@@ -50,6 +55,7 @@ void CEESTraderApiManger::OnUserLogon(EES_LogonResponse* pLogon)
     }
     LOG_INFO("CEESTraderApiManger::OnUserLogon  suss");	
     mIConnet = 0;
+    MaxOrderLocalID = pLogon->m_MaxToken;	
     return;	
 }
 void CEESTraderApiManger::OnRspChangePassword(EES_ChangePasswordResult nResult)
@@ -80,33 +86,49 @@ void CEESTraderApiManger::OnQueryAccountTradeFee(const char* pAccount, EES_Accou
 {
     LOG_INFO("CEESTraderApiManger::OnQueryAccountTradeFee");
 }
+/// \brief	下单被REM接受的事件
 void CEESTraderApiManger::OnOrderAccept(EES_OrderAcceptField* pAccept )
 {
     LOG_INFO("CEESTraderApiManger::OnOrderAccept");
+    SendOrderAccept(pAccept);	
 }
+/// \brief	下单被市场接受的事件
 void CEESTraderApiManger::OnOrderMarketAccept(EES_OrderMarketAcceptField* pAccept)
 {
     LOG_INFO("CEESTraderApiManger::OnOrderMarketAccept");
+    SendOrderMarketAccept(pAccept);	
 }
+///	\brief	下单被REM拒绝的事件
 void CEESTraderApiManger::OnOrderReject(EES_OrderRejectField* pReject )
 {
-    LOG_INFO("CEESTraderApiManger::OnOrderReject");
+    LOG_INFO("CEESTraderApiManger::OnOrderReject");	
+    LOG_INFO("m_ReasonCode: ",(int)pReject->m_ReasonCode);
+    SendOrderReject(pReject);	
+		
 }
+///	\brief	下单被市场拒绝的事件
 void CEESTraderApiManger::OnOrderMarketReject(EES_OrderMarketRejectField* pReject)
 {
     LOG_INFO("CEESTraderApiManger::OnOrderMarketReject");
+    SendOrderMarketReject(pReject);	
 }
+///	\brief	订单成交的消息事件
 void CEESTraderApiManger::OnOrderExecution(EES_OrderExecutionField* pExec )
 {
     LOG_INFO("CEESTraderApiManger::OnOrderExecution");
+    SendOrderExecution(pExec);	
 }
+///	\brief	订单成功撤销事件
 void CEESTraderApiManger::OnOrderCxled(EES_OrderCxled* pCxled )
 {
     LOG_INFO("CEESTraderApiManger::OnOrderCxled");
+    SendOrderCxled(pCxled);	
 }
+///	\brief	撤单被拒绝的消息事件
 void CEESTraderApiManger::OnCxlOrderReject(EES_CxlOrderRej* pReject )
 {
     LOG_INFO("CEESTraderApiManger::OnCxlOrderReject");
+    SendCxlOrderReject(pReject);	
 }
 void CEESTraderApiManger::OnQueryTradeOrder(const char* pAccount, EES_QueryAccountOrder* pQueryOrder, bool bFinish  )
 {
@@ -150,13 +172,41 @@ void CEESTraderApiManger::SetFileConfigData(const std::string &FileConfig)
 
 
 
+void CEESTraderApiManger::SendOrderAccept(EES_OrderAcceptField* pAccept)
+{
+
+}
+void CEESTraderApiManger::SendOrderMarketAccept(EES_OrderMarketAcceptField* pAccept)	
+{
+
+}
+void CEESTraderApiManger::SendOrderReject(EES_OrderRejectField* pReject)
+{
+
+}
+void CEESTraderApiManger::SendOrderMarketReject(EES_OrderMarketRejectField* pReject)
+{
+
+}
+void CEESTraderApiManger::SendOrderExecution(EES_OrderExecutionField* pExec)
+{
+
+}
+void CEESTraderApiManger::SendOrderCxled(EES_OrderCxled* pCxled)
+{
+
+}
+void CEESTraderApiManger::SendCxlOrderReject(EES_CxlOrderRej* pReject)
+{
+
+}
 
 
 
 
-
-
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////CRemGlobexCommunicator///////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 CRemGlobexCommunicator::CRemGlobexCommunicator(core::exchange::ExchangeListenerI *strategy,const std::string &config_file)
 	                                                                                                  :core::exchange::ExchangeI(strategy), m_strategy(strategy)
 {
@@ -166,6 +216,12 @@ CRemGlobexCommunicator::CRemGlobexCommunicator(core::exchange::ExchangeListenerI
      m_pEESTraderApiManger = new CEESTraderApiManger(m_pUserApi);
 
      m_pEESTraderApiManger->SetFileConfigData(config_file);
+
+     m_strategy = strategy;
+     if(m_pEESTraderApiManger != NULL)
+     {
+         m_pEESTraderApiManger->SetStrategy(m_strategy);
+     }	 
      m_itimeout = 10;
       
 }
@@ -228,6 +284,61 @@ void CRemGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contrac
 void CRemGlobexCommunicator::Add(const ::pb::ems::Order& order)
 {
         LOG_INFO("CRemGlobexCommunicator::Add ");
+        EES_ClientToken order_token = 0;
+	 m_pUserApi->GetMaxToken(&order_token);
+
+	EES_EnterOrderField temp;	
+	memset(&temp, 0, sizeof(EES_EnterOrderField));	
+
+
+	if(order.tif() == pb::ems::TimeInForce::TIF_FAK || order.tif() == pb::ems::TimeInForce::TIF_FOK)
+	{
+           temp.m_Tif = EES_OrderTif_IOC;
+	}
+	else
+	{
+           temp.m_Tif = EES_OrderTif_Day;
+	}
+		
+	
+	
+	
+       std::string HedgeFlag = m_pFileConfig->Get("rem-exchange.HedgeFlag");
+       temp.m_HedgeFlag = HedgeFlag.c_str()[0];	
+
+       std::string SecType = m_pFileConfig->Get("rem-exchange.SecType");
+       temp.m_SecType = SecType.c_str()[0];	
+
+	std::string ExchangeID = m_pFileConfig->Get("rem-exchange.ExchangeID");
+	temp.m_Exchange = ExchangeID.c_str()[0];    
+
+       pb::ems::BuySell BuySellval = order.buy_sell();
+	if(BuySellval == 1)
+	{
+           temp.m_Side = EES_SideType_open_long;
+	}
+	else
+	if(BuySellval == 2)	
+	{
+           temp.m_Side = EES_SideType_open_short;
+	}
+	else
+	{
+           //return;
+	}
+	std::string UserID = order.account();
+	strncpy(temp.m_Account,UserID.c_str(),UserID.length());		
+	std::string InstrumentID = order.contract();
+	strncpy(temp.m_Symbol,InstrumentID.c_str(),InstrumentID.length());
+	
+       temp.m_Price = atof(order.price().c_str());
+       temp.m_Qty = order.quantity();
+
+
+	temp.m_ClientOrderToken = order_token + 1;
+
+	RESULT ret = m_pUserApi->EnterOrder(&temp);	
+		
         
         return;
 }

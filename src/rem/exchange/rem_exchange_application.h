@@ -43,7 +43,8 @@ namespace exchange
 
 		      int GetMaxOrderLocalID()
 		      {
-                        int ret = 0;
+                        int ret = m_pCRemGlobexCommunicator->m_pEESTraderApiManger->MaxOrderLocalID;
+			  m_pCRemGlobexCommunicator->m_pEESTraderApiManger->MaxOrderLocalID++;
 			  return ret;
 		      }
 		      //code test end	  
