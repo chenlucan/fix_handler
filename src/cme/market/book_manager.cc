@@ -54,30 +54,40 @@ namespace market
                 [this, &t](const fh::cme::market::message::Book &b)
                 {
                     auto changed_state_or_trade = m_book_state_controller.Modify_state(b);
-                    std::uint8_t flag = changed_state_or_trade.first;   // 0: no data  changed 1: reset  2: book state changed  3: trade info
-                    const void *data = changed_state_or_trade.second;
-                    if(flag == 1)
-                    {
-                        // TODO reset 后要不要通知策略端
-                    }
-                    else if(flag == 2 && data != nullptr)
-                    {
-                        const fh::cme::market::BookState * bs = static_cast<const fh::cme::market::BookState *>(data);
-                        BookManager::Send_l2(m_book_sender, bs);
-                        if(this->Is_BBO_changed(b))
-                        {
-                            BookManager::Send_bbo(m_book_sender, bs);
-                        }
-                        LOG_INFO("send to zmq(book state): ", t.Elapsed_nanoseconds(), "ns");
-                    }
-                    else if(flag == 3 && data != nullptr)
-                    {
-                        const fh::cme::market::message::Book *trade = static_cast<const fh::cme::market::message::Book *>(data);
-                        BookManager::Send_trade(m_book_sender, trade, m_definition_manager.Get_symbol(trade->securityID));
-                        LOG_INFO("send to zmq(trade book): ", t.Elapsed_nanoseconds(), "ns");
-                    }
+                    BookManager::Send(m_book_sender, b, changed_state_or_trade, m_definition_manager.Get_symbol(b.securityID));
+                    LOG_INFO("send to zmq: ", t.Elapsed_nanoseconds(), "ns");
                 }
         );
+    }
+
+    void BookManager::Send(
+        fh::core::market::MarketListenerI *sender,
+        const fh::cme::market::message::Book &org_book,
+        std::pair<std::uint8_t, const void *> changed_state,
+        const std::string &contract)
+    {
+        std::uint8_t flag = changed_state.first;   // 0: no data  changed 1: reset  2: book state changed  3: trade info
+        const void *data = changed_state.second;
+        if(flag == 1)
+        {
+            // TODO reset 后要不要通知策略端
+        }
+        else if(flag == 2 && data != nullptr)
+        {
+            // 发送行情数据
+            const fh::cme::market::BookState * bs = static_cast<const fh::cme::market::BookState *>(data);
+            BookManager::Send_l2(sender, bs);
+            if(BookManager::Is_BBO_changed(org_book))
+            {
+                BookManager::Send_bbo(sender, bs);
+            }
+        }
+        else if(flag == 3 && data != nullptr)
+        {
+            // 发送 trade 数据
+            const fh::cme::market::message::Book *trade = static_cast<const fh::cme::market::message::Book *>(data);
+            BookManager::Send_trade(sender, trade, contract);
+        }
     }
 
     void BookManager::Send_l2(fh::core::market::MarketListenerI *sender, const fh::cme::market::BookState *state)

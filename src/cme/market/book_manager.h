@@ -33,17 +33,23 @@ namespace market
             void Parse_to_send(const fh::cme::market::message::MdpMessage &message);
 
         public:
-            static void Send_trade(fh::core::market::MarketListenerI *sender, const fh::cme::market::message::Book *trade_book, const std::string &contract);
-            static void Send_l2(fh::core::market::MarketListenerI *sender, const fh::cme::market::BookState *state);
-            static void Send_bbo(fh::core::market::MarketListenerI *sender, const fh::cme::market::BookState *state);
+            static void Send(
+                    fh::core::market::MarketListenerI *sender,
+                    const fh::cme::market::message::Book &org_book,
+                    std::pair<std::uint8_t, const void *> changed_state,
+                    const std::string &contract);
 
         private:
             void Parse_definition(const std::vector<fh::cme::market::message::MdpMessage> &messages);
             void Parse_recovery(const std::vector<fh::cme::market::message::MdpMessage> &messages);
             std::vector<fh::cme::market::message::Book> Parse_increment(const fh::cme::market::message::MdpMessage &message);
             void On_definition_changed(const fh::cme::market::message::Instrument &instrument);
-            void Send(bool is_bbo_changed, const fh::cme::market::BookState *state);
-            bool Is_BBO_changed(const fh::cme::market::message::Book &b);
+
+        private:
+            static void Send_trade(fh::core::market::MarketListenerI *sender, const fh::cme::market::message::Book *trade_book, const std::string &contract);
+            static void Send_l2(fh::core::market::MarketListenerI *sender, const fh::cme::market::BookState *state);
+            static void Send_bbo(fh::core::market::MarketListenerI *sender, const fh::cme::market::BookState *state);
+            static bool Is_BBO_changed(const fh::cme::market::message::Book &b);
 
         private:
             fh::cme::market::message::MessageParserR m_parser_r;
