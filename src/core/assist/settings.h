@@ -19,13 +19,14 @@ namespace assist
             virtual ~Settings();
 
         public:
-            std::string Get(const std::string &key) const;
+            const std::string &Get(const std::string &key) const;
+            const std::unordered_map<std::string, std::string> &Get_section(const std::string &key) const;
 
         private:
             void Read_settings(const std::string &app_setting_file);
 
         private:
-            std::unordered_map<std::string, std::string> m_settings;
+            std::unordered_map<std::string, std::unordered_map<std::string, std::string>> m_sections;
 
         private:
             DISALLOW_COPY_AND_ASSIGN(Settings);
