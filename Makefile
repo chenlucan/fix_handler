@@ -36,7 +36,7 @@ TEST_OBJS = $(BIN_PATH)/utility_unittest.o $(BIN_PATH)/mut_book_sender.o
 COMM_OBJS = $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/utility.o $(BIN_PATH)/message_utility.o $(BIN_PATH)/logger.o \
 						   $(BIN_PATH)/mdp_message.o $(BIN_PATH)/sbe_to_json.o $(BIN_PATH)/sbe_decoder.o $(BIN_PATH)/settings.o \
 						   $(BIN_PATH)/time_measurer.o $(BIN_PATH)/zmq_sender.o $(BIN_PATH)/zmq_receiver.o \
-						   $(BIN_PATH)/ems.pb.o $(BIN_PATH)/dms.pb.o $(BIN_PATH)/strategy_communicator.o
+						   $(BIN_PATH)/ems.pb.o $(BIN_PATH)/dms.pb.o $(BIN_PATH)/strategy_communicator.o $(BIN_PATH)/book_sender.o
 ALL_FILES = $(shell find $(SRC_PATH) -name '*.h' -or -name '*.cc')
 SRC_PATH_TEST = $(realpath $(ROOT)/src)						   
 ALL_CXXFILES = $(shell find $(SRC_PATH_TEST) -name '*.cc')	
@@ -68,7 +68,7 @@ femas_exchange_test: $(BIN_PATH)/femas_exchange_main.o $(BIN_PATH)/femas_exchang
 	$(COMPILE_COMMAND) -o $(FEMAS_EXCHANGE_TARGET) $?
 
 femas_market: $(BIN_PATH)/femas_market_main.o $(BIN_PATH)/femas_market_manager.o $(BIN_PATH)/femas_market.o $(BIN_PATH)/femas_market_application.o \
-              $(BIN_PATH)/femas_book_sender.o $(BIN_PATH)/femas_book_manager.o \
+              $(BIN_PATH)/femas_book_manager.o \
 			 $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(FEMAS_MARKET_TARGET) $?	 
  

@@ -9,7 +9,8 @@
 #include "femas_market.h"
 #include "core/market/marketi.h"
 #include "core/assist/settings.h"
-#include "femas/market/femas_book_sender.h"
+#include "core/book/book_sender.h"
+
 
 namespace fh
 {
@@ -43,7 +44,7 @@ class CFemasMarketApp
     public:
 	       CFemasMarket *m_pFemasMarket;	
 		fh::core::assist::Settings *m_pFileConfig;
-		fh::femas::market::CFemasBookSender *m_book_sender;
+		fh::core::book::BookSender *m_book_sender;
 
 };
 

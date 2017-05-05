@@ -197,8 +197,8 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 
 void CFemasBookManager::SendFemasToDB(const std::string &message)
 {
-    LOG_INFO("send Original Message, size=", message.size(), " message=", message);
-    return;	
+    //LOG_INFO("send Original Message, size=", message.size(), " message=", message);
+    //return;	
     m_book_sender->OnOrginalMessage(message);
     return;	
 }

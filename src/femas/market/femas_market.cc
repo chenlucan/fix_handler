@@ -82,7 +82,7 @@ void CFemasMarket::Initialize(std::vector<std::string> insts)
     {
           for(int i=0;i<insts.size();i++)
           {
-               LOG_INFO("num = %d ,SubscribeMarketDataTopic ID = ",i+1,std::atoi(insts[i].c_str()));
+               LOG_INFO("num =  ",i+1," ,SubscribeMarketDataTopic ID = ",std::atoi(insts[i].c_str()));
                m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (std::atoi(insts[i].c_str()), USTP_TERT_RESUME);
           }	
     }

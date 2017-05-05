@@ -7,9 +7,6 @@ $(BIN_PATH)/femas_market.o: $(SRC_PATH)/femas/market/femas_market.cc
 $(BIN_PATH)/femas_market_application.o: $(SRC_PATH)/femas/market/femas_market_application.cc
 	$(COMPILE_COMMAND) -c -o $@ $<		
 	
-$(BIN_PATH)/femas_book_sender.o: $(SRC_PATH)/femas/market/femas_book_sender.cc
-	$(COMPILE_COMMAND) -c -o $@ $<
-	
 $(BIN_PATH)/femas_book_manager.o: $(SRC_PATH)/femas/market/femas_book_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<					
 

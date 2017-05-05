@@ -12,7 +12,7 @@ namespace market
 
 CFemasMarketApp::CFemasMarketApp(std::string &save_url_f,std::string &save_url_s)
 {	
-    m_book_sender = new CFemasBookSender(save_url_f, save_url_s);
+    m_book_sender = new fh::core::book::BookSender(save_url_f, save_url_s);
 	
     m_pFemasMarket = new CFemasMarket(m_book_sender);
 
