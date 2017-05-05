@@ -69,6 +69,7 @@ namespace exchange
 		   void SendOrderExecution(EES_OrderExecutionField* pExec);	
 		   void SendOrderCxled(EES_OrderCxled* pCxled);
 		   void SendCxlOrderReject(EES_CxlOrderRej* pReject);
+		   void SendQueryTradeOrder(const char* pAccount, EES_QueryAccountOrder* pQueryOrder);
 				  
 		   void SetStrategy(core::exchange::ExchangeListenerI *strategy)
 		   {

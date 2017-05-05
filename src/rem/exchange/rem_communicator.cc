@@ -133,6 +133,7 @@ void CEESTraderApiManger::OnCxlOrderReject(EES_CxlOrderRej* pReject )
 void CEESTraderApiManger::OnQueryTradeOrder(const char* pAccount, EES_QueryAccountOrder* pQueryOrder, bool bFinish  )
 {
     LOG_INFO("CEESTraderApiManger::OnQueryTradeOrder");
+    SendQueryTradeOrder(pAccount,pQueryOrder);	
 }
 void CEESTraderApiManger::OnQueryTradeOrderExec(const char* pAccount, EES_QueryOrderExecution* pQueryOrderExec, bool bFinish  )
 {
@@ -174,33 +175,220 @@ void CEESTraderApiManger::SetFileConfigData(const std::string &FileConfig)
 
 void CEESTraderApiManger::SendOrderAccept(EES_OrderAcceptField* pAccept)
 {
+    LOG_INFO("CEESTraderApiManger::SendOrderAccept");
+    if(NULL != m_strategy)
+    {
+        ::pb::ems::Order tmporder;	
 
+        tmporder.set_client_order_id(std::to_string(pAccept->m_ClientOrderToken));
+	 tmporder.set_account(std::to_string(pAccept->m_UserID));	
+	 tmporder.set_exchange_order_id(std::to_string(pAccept->m_MarketOrderToken));
+	 if(pAccept->m_OrderState == EES_OrderState_order_live)//OS_Cancelled
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled);
+	 }
+	 else
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
+	 }
+	 
+	 if(pAccept->m_Side == EES_SideType_open_long)
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Buy);
+	 }
+	 else
+	 if(pAccept->m_Side == EES_SideType_open_short)	
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Sell);
+	 }
+	 tmporder.set_contract(pAccept->m_Symbol);
+
+	 tmporder.set_price(std::to_string(pAccept->m_Price));
+        tmporder.set_quantity(pAccept->m_Qty);
+		
+	 //std::string tmpActionDay = pAccept->m_AcceptTime;	
+        //fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpActionDay);
+
+	 LOG_INFO("client_order_id:",pAccept->m_ClientOrderToken);
+	 LOG_INFO("account:",pAccept->m_UserID);
+	 LOG_INFO("exchange_order_id:",pAccept->m_MarketOrderToken);
+	 LOG_INFO("OrderState:",pAccept->m_OrderState);
+	 LOG_INFO("Side:",pAccept->m_Side);
+
+	 LOG_INFO("contract:",pAccept->m_Symbol);
+	 LOG_INFO("price:",pAccept->m_Price);
+	 LOG_INFO("quantity:",pAccept->m_Qty);
+	 LOG_INFO("ActionDay:",pAccept->m_AcceptTime);
+		
+	 m_strategy->OnOrder(tmporder);	
+    }
 }
 void CEESTraderApiManger::SendOrderMarketAccept(EES_OrderMarketAcceptField* pAccept)	
 {
+    LOG_INFO("CEESTraderApiManger::SendOrderMarketAccept");
+    if(NULL != m_strategy)
+    {
+        ::pb::ems::Order tmporder;	
 
+        tmporder.set_client_order_id(std::to_string(pAccept->m_MarketOrderToken));
+	 tmporder.set_account(pAccept->m_Account);	
+	 tmporder.set_exchange_order_id(pAccept->m_MarketOrderId);
+	 
+        LOG_INFO("account:",pAccept->m_Account);
+	 LOG_INFO("client_order_id:",pAccept->m_MarketOrderToken);
+	 LOG_INFO("exchange_order_id:",pAccept->m_MarketOrderId);
+		
+	 m_strategy->OnOrder(tmporder);	
+    }	
 }
 void CEESTraderApiManger::SendOrderReject(EES_OrderRejectField* pReject)
 {
+    LOG_INFO("CEESTraderApiManger::SendOrderReject");
+    if(NULL != m_strategy)
+    {
+        ::pb::ems::Order tmporder;	
 
+        tmporder.set_account(std::to_string(pReject->m_Userid));
+	 tmporder.set_client_order_id(std::to_string(pReject->m_ClientOrderToken));
+	 LOG_INFO("account:",pReject->m_Userid);
+	 LOG_INFO("client_order_id:",pReject->m_ClientOrderToken);
+		
+	 m_strategy->OnOrder(tmporder);	
+    }	
 }
 void CEESTraderApiManger::SendOrderMarketReject(EES_OrderMarketRejectField* pReject)
 {
+    LOG_INFO("CEESTraderApiManger::SendOrderMarketReject");
+    if(NULL != m_strategy)
+    {
+        ::pb::ems::Order tmporder;	
 
+        tmporder.set_account(pReject->m_Account);
+	 tmporder.set_exchange_order_id(std::to_string(pReject->m_MarketOrderToken));	
+	 LOG_INFO("account:",pReject->m_Account);
+	 LOG_INFO("exchange_order_id:",pReject->m_MarketOrderToken);	
+		
+	 m_strategy->OnOrder(tmporder);	
+    }	
 }
 void CEESTraderApiManger::SendOrderExecution(EES_OrderExecutionField* pExec)
 {
+    LOG_INFO("CEESTraderApiManger::SendOrderExecution");
+    if(NULL != m_strategy)
+    {
+        ::pb::ems::Fill tmpfill;
 
+        tmpfill.set_client_order_id(std::to_string(pExec->m_ClientOrderToken));
+	 tmpfill.set_account(std::to_string(pExec->m_Userid));	
+	 tmpfill.set_exchange_order_id(std::to_string(pExec->m_MarketOrderToken));
+	 
+	 tmpfill.set_fill_price(std::to_string(pExec->m_Price));
+        tmpfill.set_fill_quantity(pExec->m_Quantity);
+	 tmpfill.set_fill_id(pExec->m_MarketExecID);
+
+	 LOG_INFO("client_order_id:",pExec->m_ClientOrderToken);
+	 LOG_INFO("account:",pExec->m_Userid);	
+	 LOG_INFO("exchange_order_id:",pExec->m_MarketOrderToken);
+	 LOG_INFO("fill_price:",pExec->m_Price);
+	 LOG_INFO("fill_quantity:",pExec->m_Quantity);
+	 LOG_INFO("fill_id:",pExec->m_MarketExecID);
+		
+	 m_strategy->OnFill(tmpfill);	
+    }	
 }
 void CEESTraderApiManger::SendOrderCxled(EES_OrderCxled* pCxled)
 {
+    LOG_INFO("CEESTraderApiManger::SendOrderCxled");
+    if(NULL != m_strategy)
+    {
+        ::pb::ems::Order tmporder;	
 
+        tmporder.set_account(std::to_string(pCxled->m_Userid));
+	 tmporder.set_client_order_id(std::to_string(pCxled->m_ClientOrderToken));	
+	 tmporder.set_exchange_order_id(std::to_string(pCxled->m_MarketOrderToken));
+	 LOG_INFO("client_order_id:",pCxled->m_ClientOrderToken);
+	 LOG_INFO("account:",pCxled->m_Userid);	
+	 LOG_INFO("exchange_order_id:",pCxled->m_MarketOrderToken);
+		
+	 m_strategy->OnOrder(tmporder);	
+    }	
 }
 void CEESTraderApiManger::SendCxlOrderReject(EES_CxlOrderRej* pReject)
 {
+    LOG_INFO("CEESTraderApiManger::SendCxlOrderReject");
+    if(NULL != m_strategy)
+    {
+        ::pb::ems::Order tmporder;	
 
+        tmporder.set_account(pReject->m_account);
+	 tmporder.set_exchange_order_id(std::to_string(pReject->m_MarketOrderToken));	
+	 LOG_INFO("account:",pReject->m_account);	
+	 LOG_INFO("exchange_order_id:",pReject->m_MarketOrderToken);
+		
+	 m_strategy->OnOrder(tmporder);	
+    }	
 }
+void CEESTraderApiManger::SendQueryTradeOrder(const char* pAccount, EES_QueryAccountOrder* pQueryOrder)
+{
+    LOG_INFO("CEESTraderApiManger::SendQueryTradeOrder");
+    if(NULL != m_strategy)
+    {
+        ::pb::ems::Order tmporder;	
 
+        tmporder.set_client_order_id(std::to_string(pQueryOrder->m_ClientOrderToken));
+	 tmporder.set_account(std::to_string(pQueryOrder->m_Userid));	
+	 tmporder.set_exchange_order_id(std::to_string(pQueryOrder->m_MarketOrderToken));
+	 if(pQueryOrder->m_OrderStatus == EES_OrderStatus_cancelled)//OS_Cancelled
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled);
+	 }
+	 else
+	 if(pQueryOrder->m_OrderStatus == EES_OrderStatus_executed)//OS_Cancelled	
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Working);
+	 }
+	 else
+	 if(pQueryOrder->m_OrderStatus == EES_OrderStatus_closed)//OS_Cancelled	
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
+	 }
+	 else
+	 if(pQueryOrder->m_OrderStatus == EES_OrderStatus_mkt_accept)//OS_Cancelled	
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Pending);
+	 }
+	 
+	 if(pQueryOrder->m_SideType == EES_SideType_open_long)
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Buy);
+	 }
+	 else
+	 if(pQueryOrder->m_SideType == EES_SideType_open_short)	
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Sell);
+	 }
+	 tmporder.set_contract(pQueryOrder->m_symbol);
+
+	 tmporder.set_price(std::to_string(pQueryOrder->m_Price));
+        tmporder.set_quantity(pQueryOrder->m_Quantity);
+		
+	 //std::string tmpActionDay = pAccept->m_AcceptTime;	
+        //fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpActionDay);
+
+	 LOG_INFO("client_order_id:",pQueryOrder->m_ClientOrderToken);
+	 LOG_INFO("account:",pQueryOrder->m_Userid);
+	 LOG_INFO("exchange_order_id:",pQueryOrder->m_MarketOrderToken);
+	 LOG_INFO("OrderState:",pQueryOrder->m_OrderStatus);
+	 LOG_INFO("Side:",pQueryOrder->m_SideType);
+
+	 LOG_INFO("contract:",pQueryOrder->m_symbol);
+	 LOG_INFO("price:",pQueryOrder->m_Price);
+	 LOG_INFO("quantity:",pQueryOrder->m_Quantity);
+	 LOG_INFO("ActionDay:",pQueryOrder->m_Timestamp);
+		
+	 m_strategy->OnOrder(tmporder);	
+    }	
+}
 
 
 
@@ -352,12 +540,24 @@ void CRemGlobexCommunicator::Change(const ::pb::ems::Order& order)
 void CRemGlobexCommunicator::Delete(const ::pb::ems::Order& order)
 {
         LOG_INFO("CRemGlobexCommunicator::Delete ");
+	 EES_CancelOrder tmpCxlOrder;
+	 memset(&tmpCxlOrder,0,sizeof(EES_CancelOrder));
+
+        std::string UserID = order.account();
+        strncpy(tmpCxlOrder.m_Account,UserID.c_str(),UserID.length());
+
+        tmpCxlOrder.m_Quantity = order.quantity();
+	 tmpCxlOrder.m_MarketOrderToken = std::atoi(order.exchange_order_id().c_str());
+
+	 RESULT ret = m_pUserApi->CancelOrder(&tmpCxlOrder);	
         return;
 }
 
 void CRemGlobexCommunicator::Query(const ::pb::ems::Order& order)
 {
         LOG_INFO("CRemGlobexCommunicator::Query ");
+		
+	 RESULT ret = m_pUserApi->QueryAccountOrder(order.account().c_str()); 	
         return;
 }
 
