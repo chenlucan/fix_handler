@@ -28,10 +28,12 @@ namespace market
             // 根据 security id 获取其名称
             std::string Get_symbol(std::uint32_t security_id);
 
+        public:
+            static void Send(fh::core::market::MarketListenerI *sender, const fh::cme::market::message::Instrument &instrument);
+
         private:
             void Update_definition(const fh::cme::market::message::Instrument &instrument,
                     std::function<void(const fh::cme::market::message::Instrument &instrument)> callback);
-            void Send(const fh::cme::market::message::Instrument &instrument);
 
         private:
             // 保存每个 SecurityID 对应的 definition 情报

@@ -67,14 +67,14 @@ namespace market
         }
 
         // 将新的定义情报发送出去
-        this->Send(instrument);
+        fh::cme::market::DefinitionManager::Send(m_sender, instrument);
         // 回调下调用方
         callback(instrument);
     }
 
-    void DefinitionManager::Send(const fh::cme::market::message::Instrument &instrument)
+    void DefinitionManager::Send(fh::core::market::MarketListenerI *sender, const fh::cme::market::message::Instrument &instrument)
     {
-        // 将更新的产品信息发送到策略
+        // 将更新的产品信息发送到策略 TODO 删除的场合如何发送
         pb::dms::Contract contract;
         contract.set_name(instrument.symbol);
         contract.set_tick_size(std::to_string(fh::cme::market::message::utility::Get_price(instrument.minPriceIncrement)));
@@ -86,7 +86,7 @@ namespace market
         // contract.set_lega(); // 暂不使用
         // contract.set_legb(); // 暂不使用
 
-        m_sender->OnContractDefinition(contract);
+        sender->OnContractDefinition(contract);
     }
 
 } // namespace market

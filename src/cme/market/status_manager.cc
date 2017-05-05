@@ -25,41 +25,37 @@ namespace market
     void StatusManager::On_new_status(const fh::cme::market::message::MdpMessage &message)
     {
         auto status = m_parser_f.Parse(message);
-        auto security_id = status.first;
-        auto trading_status = this->Convert_status(status.second);
+        LOG_INFO("message securityID=", status.first, ", securityTradingStatus=", (int)status.second);
 
-        LOG_INFO("message securityID=", security_id, ", securityTradingStatus=", (int)status.second);
-
-        if(security_id == mktdata::SecurityStatus30::securityIDNullValue())
+        std::string contract = "";
+        if(status.first == mktdata::SecurityStatus30::securityIDNullValue())
         {
             // 如果没设置 security id
-            this->Send("", trading_status);
-            return;
+            contract = "";
         }
-
-        std::string contract = m_definition_manager->Get_symbol(security_id);
-        if(contract == "")
+        else
         {
+            contract = m_definition_manager->Get_symbol(status.first);
             // 如果找不到名称，就使用 id
-            this->Send(std::to_string(security_id), trading_status);
-            return;
+            if(contract == "") contract = std::to_string(status.first);
         }
 
-        this->Send(contract, trading_status);
+        StatusManager::Send(m_sender, contract, status.second);
     }
 
-    void StatusManager::Send(const std::string &contract, std::uint8_t flag)
+    void StatusManager::Send(fh::core::market::MarketListenerI *sender, const std::string &contract, mktdata::SecurityTradingStatus::Value status)
     {
-        switch(flag)
+        auto trading_status = StatusManager::Convert_status(status);
+        switch(trading_status)
         {
             case 1: // Auctioning
-                m_sender->OnContractAuctioning(contract);
+                sender->OnContractAuctioning(contract);
                 return;
             case 2: // Trading
-                m_sender->OnContractTrading(contract);
+                sender->OnContractTrading(contract);
                 return;
             case 3: // NoTrading
-                m_sender->OnContractNoTrading(contract);
+                sender->OnContractNoTrading(contract);
                 return;
             default: // other
                 return;

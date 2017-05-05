@@ -241,6 +241,7 @@ namespace exchange
 
     char GlobexCommunicator::Convert_tif(pb::ems::TimeInForce tif)
     {
+        // TODO FAK 和 FOK 需要区分，FOK 的场合需要设置  tag 110（MinQty）
         switch(tif)
         {
             case pb::ems::TimeInForce::TIF_FAK:
@@ -259,6 +260,7 @@ namespace exchange
     {
         switch(tif)
         {
+            // TODO 要根据 tag 110（MinQty） 区分 FAK 和 FOK
             case '0':
                 return pb::ems::TimeInForce::TIF_GFD;
             case '3':

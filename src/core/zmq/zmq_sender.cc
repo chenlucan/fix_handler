@@ -13,6 +13,9 @@ namespace zmq
 
     ZmqSender::ZmqSender(const std::string &url) : m_context(1), m_sender(m_context, ZMQ_PUSH)
     {
+        // url 没有设定的场合就不初期化了
+        if(url == "") return;
+
         try
         {
             m_sender.bind(url);

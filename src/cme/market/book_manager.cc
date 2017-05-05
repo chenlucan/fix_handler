@@ -54,27 +54,43 @@ namespace market
                 [this, &t](const fh::cme::market::message::Book &b)
                 {
                     auto changed_state_or_trade = m_book_state_controller.Modify_state(b);
-                    std::uint8_t flag = changed_state_or_trade.first;   // 0: no data  changed 1: reset  2: book state changed  3: trade info
-                    const void *data = changed_state_or_trade.second;
-                    if(flag == 1)
-                    {
-                        // TODO reset 后要不要通知策略端
-                    }
-                    else if(flag == 2 && data != nullptr)
-                    {
-                        this->Send(this->Is_BBO_changed(b), static_cast<const fh::cme::market::BookState *>(data));
-                        LOG_INFO("send to zmq(book state): ", t.Elapsed_nanoseconds(), "ns");
-                    }
-                    else if(flag == 3 && data != nullptr)
-                    {
-                        this->Send_trade(static_cast<const fh::cme::market::message::Book *>(data));
-                        LOG_INFO("send to zmq(trade book): ", t.Elapsed_nanoseconds(), "ns");
-                    }
+                    BookManager::Send(m_book_sender, b, changed_state_or_trade, m_definition_manager.Get_symbol(b.securityID));
+                    LOG_INFO("send to zmq: ", t.Elapsed_nanoseconds(), "ns");
                 }
         );
     }
 
-    void BookManager::Send(bool is_bbo_changed, const fh::cme::market::BookState *state)
+    void BookManager::Send(
+        fh::core::market::MarketListenerI *sender,
+        const fh::cme::market::message::Book &org_book,
+        std::pair<std::uint8_t, const void *> changed_state,
+        const std::string &contract)
+    {
+        std::uint8_t flag = changed_state.first;   // 0: no data  changed 1: reset  2: book state changed  3: trade info
+        const void *data = changed_state.second;
+        if(flag == 1)
+        {
+            // TODO reset 后要不要通知策略端
+        }
+        else if(flag == 2 && data != nullptr)
+        {
+            // 发送行情数据
+            const fh::cme::market::BookState * bs = static_cast<const fh::cme::market::BookState *>(data);
+            BookManager::Send_l2(sender, bs);
+            if(BookManager::Is_BBO_changed(org_book))
+            {
+                BookManager::Send_bbo(sender, bs);
+            }
+        }
+        else if(flag == 3 && data != nullptr)
+        {
+            // 发送 trade 数据
+            const fh::cme::market::message::Book *trade = static_cast<const fh::cme::market::message::Book *>(data);
+            BookManager::Send_trade(sender, trade, contract);
+        }
+    }
+
+    void BookManager::Send_l2(fh::core::market::MarketListenerI *sender, const fh::cme::market::BookState *state)
     {
         // 发送二级行情
         pb::dms::L2 l2_info;
@@ -90,14 +106,11 @@ namespace market
             ask->set_size(p.mDEntrySize);
         });
 
-        m_book_sender->OnL2(l2_info);
+        sender->OnL2(l2_info);
+    }
 
-        if(!is_bbo_changed)
-        {
-            LOG_DEBUG("BBO not changed.");
-            return;
-        }
-
+    void BookManager::Send_bbo(fh::core::market::MarketListenerI *sender, const fh::cme::market::BookState *state)
+    {
         // 发送最优价位
         bool is_bid_empty = state->bid.empty();
         bool is_ask_empty = state->ask.empty();
@@ -117,7 +130,7 @@ namespace market
             ask->set_price(fh::cme::market::message::utility::Get_price(state->ask.front().mDEntryPx));
             ask->set_size(state->ask.front().mDEntrySize);
 
-            m_book_sender->OnBBO(bbo_info);
+            sender->OnBBO(bbo_info);
         }
         else if(is_bid_empty)
         {
@@ -128,7 +141,7 @@ namespace market
             offer->set_price(fh::cme::market::message::utility::Get_price(state->ask.front().mDEntryPx));
             offer->set_size(state->ask.front().mDEntrySize);
 
-            m_book_sender->OnOffer(offer_info);
+            sender->OnOffer(offer_info);
         }
         else
         {
@@ -139,20 +152,20 @@ namespace market
             bid->set_price(fh::cme::market::message::utility::Get_price(state->bid.front().mDEntryPx));
             bid->set_size(state->bid.front().mDEntrySize);
 
-            m_book_sender->OnBid(bid_info);
+            sender->OnBid(bid_info);
         }
     }
 
-    void BookManager::Send_trade(const fh::cme::market::message::Book *trade_book)
+    void BookManager::Send_trade(fh::core::market::MarketListenerI *sender, const fh::cme::market::message::Book *trade_book, const std::string &contract)
     {
         // 发送 trade 数据 TODO 这里要根据 mDUpdateAction 区分下不同的动作吧
         pb::dms::Trade trade;
-        trade.set_contract(m_definition_manager.Get_symbol(trade_book->securityID));
+        trade.set_contract(contract);
         pb::dms::DataPoint *last = trade.mutable_last();
         last->set_price(fh::cme::market::message::utility::Get_price(trade_book->mDEntryPx));
         last->set_size(trade_book->mDEntrySize);
 
-        m_book_sender->OnTrade(trade);
+        sender->OnTrade(trade);
     }
 
     void BookManager::Parse_definition(const std::vector<fh::cme::market::message::MdpMessage> &messages)
@@ -166,7 +179,10 @@ namespace market
 
     void BookManager::Parse_recovery(const std::vector<fh::cme::market::message::MdpMessage> &messages)
     {
-        m_recovery_manager.On_new_recovery(messages, std::bind(&BookManager::Send, this, true, std::placeholders::_1));
+        m_recovery_manager.On_new_recovery(messages, [this](const fh::cme::market::BookState *bs){
+            BookManager::Send_l2(m_book_sender, bs);
+            BookManager::Send_bbo(m_book_sender, bs);
+        });
     }
 
     std::vector<fh::cme::market::message::Book> BookManager::Parse_increment(const fh::cme::market::message::MdpMessage &message)

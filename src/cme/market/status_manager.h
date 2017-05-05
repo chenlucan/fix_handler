@@ -23,11 +23,11 @@ namespace market
         public:
             // 接受到产品状态消息（tag 35-MsgType=f）后发送出去
             void On_new_status(const fh::cme::market::message::MdpMessage &message);
+            static void Send(fh::core::market::MarketListenerI *sender, const std::string &contract, mktdata::SecurityTradingStatus::Value status);
 
         private:
-            void Send(const std::string &contract, std::uint8_t flag);
-            // 将收到的 SecurityTradingStatus 转换为： 1（Auctioning） 2（Trading） 3（NoTrading） 4（Other）
-            std::uint8_t Convert_status(mktdata::SecurityTradingStatus::Value status);
+            // 将 SecurityTradingStatus 转换为： 1（Auctioning） 2（Trading） 3（NoTrading） 4（Other）
+            static std::uint8_t Convert_status(mktdata::SecurityTradingStatus::Value status);
 
         private:
             fh::cme::market::message::MessageParserF m_parser_f;
