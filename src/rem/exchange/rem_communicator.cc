@@ -110,6 +110,7 @@ void CEESTraderApiManger::OnOrderReject(EES_OrderRejectField* pReject )
 void CEESTraderApiManger::OnOrderMarketReject(EES_OrderMarketRejectField* pReject)
 {
     LOG_INFO("CEESTraderApiManger::OnOrderMarketReject");
+    LOG_INFO("m_ReasonText:",pReject->m_ReasonText);	
     SendOrderMarketReject(pReject);	
 }
 ///	\brief	订单成交的消息事件
@@ -128,6 +129,8 @@ void CEESTraderApiManger::OnOrderCxled(EES_OrderCxled* pCxled )
 void CEESTraderApiManger::OnCxlOrderReject(EES_CxlOrderRej* pReject )
 {
     LOG_INFO("CEESTraderApiManger::OnCxlOrderReject");
+    LOG_INFO("m_ReasonCode:",pReject->m_ReasonCode);	
+    LOG_INFO("m_ReasonText:",pReject->m_ReasonText);	
     SendCxlOrderReject(pReject);	
 }
 void CEESTraderApiManger::OnQueryTradeOrder(const char* pAccount, EES_QueryAccountOrder* pQueryOrder, bool bFinish  )
@@ -486,19 +489,15 @@ void CRemGlobexCommunicator::Add(const ::pb::ems::Order& order)
 	else
 	{
            temp.m_Tif = EES_OrderTif_Day;
-	}
-		
-	
-	
-	
+	}					
        std::string HedgeFlag = m_pFileConfig->Get("rem-exchange.HedgeFlag");
-       temp.m_HedgeFlag = HedgeFlag.c_str()[0];	
+       temp.m_HedgeFlag = std::atoi(HedgeFlag.c_str());	
 
        std::string SecType = m_pFileConfig->Get("rem-exchange.SecType");
-       temp.m_SecType = SecType.c_str()[0];	
+       temp.m_SecType = std::atoi(SecType.c_str());	
 
 	std::string ExchangeID = m_pFileConfig->Get("rem-exchange.ExchangeID");
-	temp.m_Exchange = ExchangeID.c_str()[0];    
+	temp.m_Exchange = std::atoi(ExchangeID.c_str());    
 
        pb::ems::BuySell BuySellval = order.buy_sell();
 	if(BuySellval == 1)
@@ -512,22 +511,38 @@ void CRemGlobexCommunicator::Add(const ::pb::ems::Order& order)
 	}
 	else
 	{
-           //return;
+           temp.m_Side = EES_SideType_open_long;
 	}
 	std::string UserID = order.account();
 	strncpy(temp.m_Account,UserID.c_str(),UserID.length());		
 	std::string InstrumentID = order.contract();
-	strncpy(temp.m_Symbol,InstrumentID.c_str(),InstrumentID.length());
-	
+	strncpy(temp.m_Symbol,InstrumentID.c_str(),InstrumentID.length());	
        temp.m_Price = atof(order.price().c_str());
        temp.m_Qty = order.quantity();
-
-
+//demo
+/*temp.m_Tif = EES_OrderTif_Day;
+temp.m_HedgeFlag = EES_HedgeFlag_Speculation;
+strcpy(temp.m_Account, "000240");	
+strcpy(temp.m_Symbol, "T1709");	
+temp.m_Side = EES_SideType_open_long;	//temp.m_Side = EES_SideType_open_short;	
+temp.m_Exchange = EES_ExchangeID_cffex;	
+temp.m_SecType = EES_SecType_fut;	
+temp.m_Price = 2100.0;	
+temp.m_Qty = 1;
+*/
 	temp.m_ClientOrderToken = order_token + 1;
 
-	RESULT ret = m_pUserApi->EnterOrder(&temp);	
-		
-        
+	LOG_INFO("Tif:",temp.m_Tif);
+	LOG_INFO("HedgeFlag:",(int)(temp.m_HedgeFlag));
+	LOG_INFO("SecType:",(int)(temp.m_SecType));
+	LOG_INFO("Account:",temp.m_Account);
+	LOG_INFO("Symbol:",temp.m_Symbol);
+	LOG_INFO("Side:",temp.m_Side);
+	LOG_INFO("Exchange:",(int)(temp.m_Exchange));
+	LOG_INFO("Price:",temp.m_Price);
+	LOG_INFO("Qty:",temp.m_Qty);
+	
+	m_pUserApi->EnterOrder(&temp);			        
         return;
 }
 
@@ -549,7 +564,7 @@ void CRemGlobexCommunicator::Delete(const ::pb::ems::Order& order)
         tmpCxlOrder.m_Quantity = order.quantity();
 	 tmpCxlOrder.m_MarketOrderToken = std::atoi(order.exchange_order_id().c_str());
 
-	 RESULT ret = m_pUserApi->CancelOrder(&tmpCxlOrder);	
+	 m_pUserApi->CancelOrder(&tmpCxlOrder);	
         return;
 }
 
@@ -557,7 +572,7 @@ void CRemGlobexCommunicator::Query(const ::pb::ems::Order& order)
 {
         LOG_INFO("CRemGlobexCommunicator::Query ");
 		
-	 RESULT ret = m_pUserApi->QueryAccountOrder(order.account().c_str()); 	
+	 m_pUserApi->QueryAccountOrder(order.account().c_str()); 	
         return;
 }
 

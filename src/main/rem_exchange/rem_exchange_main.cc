@@ -77,9 +77,33 @@ int main(int argc, char* argv[])
 	   delete pRemExchangeApp;
 	   return 0;	  
       }
-      
-     //::pb::ems::Order morder;
-     pFileConfig = new fh::core::assist::Settings(FileConfigstr);
+     pFileConfig = new fh::core::assist::Settings(FileConfigstr);	
+     LOG_INFO("exchange order begin");
+     LOG_INFO("InstrumentID:");
+     char userInstrumentID[100]={0};	
+     scanf("%s", userInstrumentID);	
+
+     LOG_INFO("LimitPrice:");
+     float userLimitPrice=0;
+     scanf("%f", &userLimitPrice);	   
+		   
+     LOG_INFO("Volume:");
+     int userVolume=0;
+     scanf("%d", &userVolume);	 
+
+     std::string UserId = pFileConfig->Get("rem-user.LogID");	  
+     ::pb::ems::Order morder;
+     morder.set_client_order_id(std::to_string(pRemExchangeApp->GetMaxOrderLocalID()));
+     morder.set_account(UserId);
+     morder.set_contract(userInstrumentID);	 
+     morder.set_buy_sell(pb::ems::BuySell::BS_Buy);
+     morder.set_price(std::to_string(userLimitPrice));
+     morder.set_quantity(userVolume);	 
+     morder.set_tif(pb::ems::TimeInForce::TIF_GFD);
+     morder.set_order_type(pb::ems::OrderType::OT_Limit);	 
+     
+     pRemExchangeApp->Add(morder);
+  
 	 
      main_loop();
      pRemExchangeApp->Stop();	 
