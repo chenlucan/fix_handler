@@ -16,7 +16,7 @@ namespace market
 
 CRemMarketApp::CRemMarketApp(std::string &save_url_f,std::string &save_url_s)
 {	
-    m_book_sender = new CRemBookSender(save_url_f, save_url_s);
+    m_book_sender = new fh::core::book::BookSender(save_url_f, save_url_s);
 	
     m_pRemMarket = new CRemMarket(m_book_sender);
 

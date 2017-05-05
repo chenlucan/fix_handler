@@ -7,7 +7,7 @@
 #include "rem_market.h"
 #include "core/market/marketi.h"
 #include "core/assist/settings.h"
-#include "rem/market/rem_book_sender.h"
+#include "core/book/book_sender.h"
 
 namespace fh
 {
@@ -45,7 +45,7 @@ class CRemMarketApp
     public:
 	       CRemMarket *m_pRemMarket;	
 		fh::core::assist::Settings *m_pFileConfig;
-		fh::rem::market::CRemBookSender *m_book_sender;
+		fh::core::book::BookSender *m_book_sender;
 
 };
 
