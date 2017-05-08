@@ -28,7 +28,8 @@ namespace exchange
                                                                   m_pUserApi (pUserApi) 
 		   {
                       mIConnet = -1;
-			MaxOrderLocalID = 0;		  
+			MaxOrderLocalID = 0;
+			m_InitQueryNum = 0;
 		   }
 	          ~CEESTraderApiManger ()
 	          {
@@ -78,6 +79,7 @@ namespace exchange
 		   void SetFileConfigData(const std::string &FileConfig);	
 		   int mIConnet;
 		   int MaxOrderLocalID;
+		   int m_InitQueryNum;
 		   
         private:
 		   core::exchange::ExchangeListenerI *m_strategy;	 
@@ -119,6 +121,7 @@ namespace exchange
                  fh::core::assist::Settings *m_pFileConfig;
 		   EESTraderApi *m_pUserApi;
 		   int m_itimeout;
+		   
   
 
 	  private:

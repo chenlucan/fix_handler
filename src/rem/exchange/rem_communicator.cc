@@ -136,6 +136,10 @@ void CEESTraderApiManger::OnCxlOrderReject(EES_CxlOrderRej* pReject )
 void CEESTraderApiManger::OnQueryTradeOrder(const char* pAccount, EES_QueryAccountOrder* pQueryOrder, bool bFinish  )
 {
     LOG_INFO("CEESTraderApiManger::OnQueryTradeOrder");
+    if(m_InitQueryNum > 0)
+    {
+        m_InitQueryNum--; 
+    }
     SendQueryTradeOrder(pAccount,pQueryOrder);	
 }
 void CEESTraderApiManger::OnQueryTradeOrderExec(const char* pAccount, EES_QueryOrderExecution* pQueryOrderExec, bool bFinish  )
@@ -186,21 +190,23 @@ void CEESTraderApiManger::SendOrderAccept(EES_OrderAcceptField* pAccept)
         tmporder.set_client_order_id(std::to_string(pAccept->m_ClientOrderToken));
 	 tmporder.set_account(std::to_string(pAccept->m_UserID));	
 	 tmporder.set_exchange_order_id(std::to_string(pAccept->m_MarketOrderToken));
-	 if(pAccept->m_OrderState == EES_OrderState_order_live)//OS_Cancelled
-	 {
-            tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled);
-	 }
-	 else
+	 if(pAccept->m_OrderState == EES_OrderState_order_dead)
 	 {
             tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
 	 }
+	 else
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Pending);
+	 }
+        
 	 
-	 if(pAccept->m_Side == EES_SideType_open_long)
+	 if(pAccept->m_Side == EES_SideType_open_long ||pAccept->m_Side == EES_SideType_close_today_short
+	      	||pAccept->m_Side == EES_SideType_close_ovn_short || pAccept->m_Side == EES_SideType_force_close_ovn_short
+	      	||pAccept->m_Side == EES_SideType_force_close_today_short)
 	 {
             tmporder.set_buy_sell(pb::ems::BuySell::BS_Buy);
 	 }
 	 else
-	 if(pAccept->m_Side == EES_SideType_open_short)	
 	 {
             tmporder.set_buy_sell(pb::ems::BuySell::BS_Sell);
 	 }
@@ -208,6 +214,15 @@ void CEESTraderApiManger::SendOrderAccept(EES_OrderAcceptField* pAccept)
 
 	 tmporder.set_price(std::to_string(pAccept->m_Price));
         tmporder.set_quantity(pAccept->m_Qty);
+        if(pAccept->m_Tif == EES_OrderTif_IOC)
+	{
+            tmporder.set_tif(pb::ems::TimeInForce::TIF_FOK);
+	}
+	else
+	{
+            tmporder.set_tif(pb::ems::TimeInForce::TIF_GTC);
+	}
+				
 		
 	 //std::string tmpActionDay = pAccept->m_AcceptTime;	
         //fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpActionDay);
@@ -236,6 +251,7 @@ void CEESTraderApiManger::SendOrderMarketAccept(EES_OrderMarketAcceptField* pAcc
         tmporder.set_client_order_id(std::to_string(pAccept->m_MarketOrderToken));
 	 tmporder.set_account(pAccept->m_Account);	
 	 tmporder.set_exchange_order_id(pAccept->m_MarketOrderId);
+	 tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
 	 
         LOG_INFO("account:",pAccept->m_Account);
 	 LOG_INFO("client_order_id:",pAccept->m_MarketOrderToken);
@@ -253,6 +269,8 @@ void CEESTraderApiManger::SendOrderReject(EES_OrderRejectField* pReject)
 
         tmporder.set_account(std::to_string(pReject->m_Userid));
 	 tmporder.set_client_order_id(std::to_string(pReject->m_ClientOrderToken));
+        tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
+	 
 	 LOG_INFO("account:",pReject->m_Userid);
 	 LOG_INFO("client_order_id:",pReject->m_ClientOrderToken);
 		
@@ -268,6 +286,8 @@ void CEESTraderApiManger::SendOrderMarketReject(EES_OrderMarketRejectField* pRej
 
         tmporder.set_account(pReject->m_Account);
 	 tmporder.set_exchange_order_id(std::to_string(pReject->m_MarketOrderToken));	
+        tmporder.set_status(pb::ems::OrderStatus::OS_Rejected); 
+	 
 	 LOG_INFO("account:",pReject->m_Account);
 	 LOG_INFO("exchange_order_id:",pReject->m_MarketOrderToken);	
 		
@@ -289,6 +309,7 @@ void CEESTraderApiManger::SendOrderExecution(EES_OrderExecutionField* pExec)
         tmpfill.set_fill_quantity(pExec->m_Quantity);
 	 tmpfill.set_fill_id(pExec->m_MarketExecID);
 
+
 	 LOG_INFO("client_order_id:",pExec->m_ClientOrderToken);
 	 LOG_INFO("account:",pExec->m_Userid);	
 	 LOG_INFO("exchange_order_id:",pExec->m_MarketOrderToken);
@@ -309,6 +330,8 @@ void CEESTraderApiManger::SendOrderCxled(EES_OrderCxled* pCxled)
         tmporder.set_account(std::to_string(pCxled->m_Userid));
 	 tmporder.set_client_order_id(std::to_string(pCxled->m_ClientOrderToken));	
 	 tmporder.set_exchange_order_id(std::to_string(pCxled->m_MarketOrderToken));
+        tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled); 
+	 
 	 LOG_INFO("client_order_id:",pCxled->m_ClientOrderToken);
 	 LOG_INFO("account:",pCxled->m_Userid);	
 	 LOG_INFO("exchange_order_id:",pCxled->m_MarketOrderToken);
@@ -325,6 +348,8 @@ void CEESTraderApiManger::SendCxlOrderReject(EES_CxlOrderRej* pReject)
 
         tmporder.set_account(pReject->m_account);
 	 tmporder.set_exchange_order_id(std::to_string(pReject->m_MarketOrderToken));	
+        tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
+	 
 	 LOG_INFO("account:",pReject->m_account);	
 	 LOG_INFO("exchange_order_id:",pReject->m_MarketOrderToken);
 		
@@ -346,19 +371,30 @@ void CEESTraderApiManger::SendQueryTradeOrder(const char* pAccount, EES_QueryAcc
             tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled);
 	 }
 	 else
-	 if(pQueryOrder->m_OrderStatus == EES_OrderStatus_executed)//OS_Cancelled	
+	 if(pQueryOrder->m_OrderStatus == EES_OrderStatus_executed)//OS_Working	
 	 {
             tmporder.set_status(pb::ems::OrderStatus::OS_Working);
 	 }
 	 else
-	 if(pQueryOrder->m_OrderStatus == EES_OrderStatus_closed)//OS_Cancelled	
+	 if(pQueryOrder->m_OrderStatus == EES_OrderStatus_closed)//OS_Rejected	
 	 {
             tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
 	 }
 	 else
-	 if(pQueryOrder->m_OrderStatus == EES_OrderStatus_mkt_accept)//OS_Cancelled	
+	 if(pQueryOrder->m_OrderStatus == EES_OrderStatus_mkt_accept)//OS_Pending	
 	 {
             tmporder.set_status(pb::ems::OrderStatus::OS_Pending);
+	 }
+	 else
+	 if(pQueryOrder->m_OrderStatus == EES_OrderStatus_shengli_accept)//OS_Pending	
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Pending);
+	 }
+	 else
+	 	//////////////???????????????????
+	 if(pQueryOrder->m_OrderStatus == EES_OrderStatus_cxl_requested)//OS_Cancelled	
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled);
 	 }
 	 
 	 if(pQueryOrder->m_SideType == EES_SideType_open_long)
@@ -427,10 +463,53 @@ CRemGlobexCommunicator::~CRemGlobexCommunicator()
 
 bool CRemGlobexCommunicator::Start(const std::vector<::pb::ems::Order> &init_orders)
 {
-     if(m_pEESTraderApiManger->mIConnet != 0)
+    if(NULL == m_pFileConfig)
+    {
+        LOG_ERROR("CRemGlobexCommunicator::Initialize m_pFileConfig == NULL"); 
+	 return false;		 
+    }
+    m_itimeout = std::atoi((m_pFileConfig->Get("rem-timeout.timeout")).c_str());
+    std::string svrAddr = m_pFileConfig->Get("rem-exchange.IP");
+    int  Port = std::atoi((m_pFileConfig->Get("rem-exchange.Port")).c_str());	 
+    m_pUserApi->ConnServer(svrAddr.c_str(), Port, m_pEESTraderApiManger);
+
+    time_t tmtimeout = time(NULL);
+    while(0 != m_pEESTraderApiManger->mIConnet)
+    {
+        if(time(NULL)-tmtimeout>m_itimeout)
+	 {
+              LOG_ERROR("CRemGlobexCommunicator::mIConnet tiomeout ");
+	       break;	  
+	  }
+         sleep(0.1);    
+    }
+    if(m_pEESTraderApiManger->mIConnet != 0)
     {
         return false;
     }
+    LOG_INFO("CRemGlobexCommunicator::mIConnet is ok ");
+    m_pEESTraderApiManger->m_InitQueryNum = init_orders.size();
+    for(int i=0;i<init_orders.size();i++)
+    {
+        Query(init_orders[i]);
+    }
+    tmtimeout = time(NULL);	
+    int tmpQueryNum = m_pEESTraderApiManger->m_InitQueryNum;
+    while(0 != m_pEESTraderApiManger->m_InitQueryNum)
+    {
+        if(time(NULL)-tmtimeout>m_itimeout)
+	 {
+            LOG_ERROR("CRemGlobexCommunicator::InitQuery tiomeout ");
+	     return false;
+	 }
+	 if(tmpQueryNum != m_pEESTraderApiManger->m_InitQueryNum)
+	 {
+            tmpQueryNum = m_pEESTraderApiManger->m_InitQueryNum;
+	     tmtimeout = time(NULL);		
+	 }
+	 sleep(0.1);  
+    } 
+    LOG_INFO("CRemGlobexCommunicator::InitQuery is over ");	
     return true;
 }
 
@@ -448,7 +527,7 @@ void CRemGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contrac
         // noop
          LOG_INFO("CRemGlobexCommunicator::Initialize "); 
 
-	  if(NULL == m_pFileConfig)
+	 /* if(NULL == m_pFileConfig)
 	  {
              LOG_ERROR("CRemGlobexCommunicator::Initialize m_pFileConfig == NULL"); 
 	      return;		 
@@ -467,7 +546,7 @@ void CRemGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contrac
 	           return;		  
 	      }
              sleep(0.1);    
-          }	
+          }*/	
 		
           return;	
 }
