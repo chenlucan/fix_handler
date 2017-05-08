@@ -28,6 +28,7 @@ namespace exchange
                       mIConnet = -1;
 			MaxOrderLocalID = 0;
 			m_strategy = NULL;
+			m_InitQueryNum = 0;
 		   }
 	          ~CUstpFtdcTraderManger ()
 	          {
@@ -57,6 +58,7 @@ namespace exchange
 		   }
 		   int mIConnet;
 		   int MaxOrderLocalID;
+		   int m_InitQueryNum;
 		   
         private:
 		   core::exchange::ExchangeListenerI *m_strategy;	 

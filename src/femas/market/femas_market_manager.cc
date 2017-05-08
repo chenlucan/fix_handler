@@ -16,9 +16,9 @@ namespace market
 
 
 
- void CFemasMarkrtManager::OnFrontConnected() 
+ void CFemasMarketManager::OnFrontConnected() 
  {
-       LOG_INFO("CFemasMarkrtManager::OnFrontConnected.");
+       LOG_INFO("CFemasMarketManager::OnFrontConnected.");
 
        if(NULL == m_pFileConfig)
 	{
@@ -51,7 +51,7 @@ namespace market
 }
 
 
- void CFemasMarkrtManager::OnFrontDisconnected()
+ void CFemasMarketManager::OnFrontDisconnected()
 {
 	// 当发生这个情况后，API会自动重新连接，客户端可不做处理
 	LOG_INFO("OnFrontDisconnected.");
@@ -59,7 +59,7 @@ namespace market
 }
 	
 
- void CFemasMarkrtManager::OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserLogin, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) 
+ void CFemasMarketManager::OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserLogin, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) 
 {
 	LOG_INFO("OnRspUserLogin:");
 	LOG_INFO("ErrorCode=[",pRspInfo->ErrorID,"], ErrorMsg=[",pRspInfo->ErrorMsg,"]\n" );
@@ -78,7 +78,7 @@ namespace market
 }
 
 
-void CFemasMarkrtManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pMarketData) 
+void CFemasMarketManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pMarketData) 
 {
 		// 客户端按需处理返回的数据
 	LOG_INFO("GetDepthMarketData::begin");	
@@ -175,7 +175,7 @@ void CFemasMarkrtManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pM
 }
 
 
-void CFemasMarkrtManager::OnRspError(CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) 
+void CFemasMarketManager::OnRspError(CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) 
 {
 	LOG_INFO("OnRspError:");
 	LOG_INFO("ErrorCode=[",pRspInfo->ErrorID,"], ErrorMsg=[",pRspInfo->ErrorMsg,"]" );
@@ -184,7 +184,7 @@ void CFemasMarkrtManager::OnRspError(CUstpFtdcRspInfoField *pRspInfo, int nReque
        return;		
 }
 
-void CFemasMarkrtManager::OnRspSubMarketData(CUstpFtdcSpecificInstrumentField *pSpecificInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+void CFemasMarketManager::OnRspSubMarketData(CUstpFtdcSpecificInstrumentField *pSpecificInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 	LOG_INFO("Sub 返回订阅合约：",pSpecificInstrument->InstrumentID);
 	if(mISubSuss > 0)
@@ -196,21 +196,21 @@ void CFemasMarkrtManager::OnRspSubMarketData(CUstpFtdcSpecificInstrumentField *p
 }
 
 
- void CFemasMarkrtManager::OnRspUnSubMarketData(CUstpFtdcSpecificInstrumentField *pSpecificInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+ void CFemasMarketManager::OnRspUnSubMarketData(CUstpFtdcSpecificInstrumentField *pSpecificInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 	LOG_INFO("UnSub 返回订阅合约：",pSpecificInstrument->InstrumentID);
 	return;
 }
 
-void CFemasMarkrtManager::OnHeartBeatWarning(int nTimeLapse)
+void CFemasMarketManager::OnHeartBeatWarning(int nTimeLapse)
 {
-      LOG_INFO("CFemasMarkrtManager::OnHeartBeatWarning ",nTimeLapse);
+      LOG_INFO("CFemasMarketManager::OnHeartBeatWarning ",nTimeLapse);
       return;	  
 }
 
- void CFemasMarkrtManager::SetFileData(std::string &FileConfig)
+ void CFemasMarketManager::SetFileData(std::string &FileConfig)
 {
-      LOG_INFO("CFemasMarkrtManager::SetData ",FileConfig.c_str());
+      LOG_INFO("CFemasMarketManager::SetData ",FileConfig.c_str());
       m_pFileConfig = new fh::core::assist::Settings(FileConfig);
       if(NULL == m_pFileConfig)
       {
@@ -220,9 +220,9 @@ void CFemasMarkrtManager::OnHeartBeatWarning(int nTimeLapse)
 }
 
 
-void CFemasMarkrtManager::CreateFemasBookManager(fh::core::market::MarketListenerI *sender)
+void CFemasMarketManager::CreateFemasBookManager(fh::core::market::MarketListenerI *sender)
 {
-      LOG_INFO("CFemasMarkrtManager::CreateFemasBookManager ");
+      LOG_INFO("CFemasMarketManager::CreateFemasBookManager ");
       if(NULL != m_pFemasBookManager)
       {
           delete m_pFemasBookManager;
@@ -238,7 +238,7 @@ void CFemasMarkrtManager::CreateFemasBookManager(fh::core::market::MarketListene
 }
 
 
-void CFemasMarkrtManager::StructToJSON(CUstpFtdcDepthMarketDataField *pMarketData)
+void CFemasMarketManager::StructToJSON(CUstpFtdcDepthMarketDataField *pMarketData)
 {
     if(NULL == pMarketData)
     {
@@ -316,7 +316,7 @@ void CFemasMarkrtManager::StructToJSON(CUstpFtdcDepthMarketDataField *pMarketDat
     FemasDateToString(tmjson);	
     return;	
 }
-void CFemasMarkrtManager::FemasDateToString(bsoncxx::builder::basic::document& json)
+void CFemasMarketManager::FemasDateToString(bsoncxx::builder::basic::document& json)
 {
     bsoncxx::builder::basic::document tmjson;
     tmjson.append(bsoncxx::builder::basic::kvp("market", T("FEMAS")));		  

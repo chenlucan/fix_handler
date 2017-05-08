@@ -16,20 +16,20 @@ CFemasMarket::CFemasMarket(fh::core::market::MarketListenerI *listener)
 : fh::core::market::MarketI(listener)
 {
     m_pUstpFtdcMduserApi = CUstpFtdcMduserApi::CreateFtdcMduserApi();
-    m_FemasMarkrtManager = new fh::femas::market::CFemasMarkrtManager(m_pUstpFtdcMduserApi);
-    if(NULL == m_pUstpFtdcMduserApi || NULL == m_FemasMarkrtManager)
+    m_FemasMarketManager = new fh::femas::market::CFemasMarketManager(m_pUstpFtdcMduserApi);
+    if(NULL == m_pUstpFtdcMduserApi || NULL == m_FemasMarketManager)
     {
-          LOG_ERROR("Error m_pUstpFtdcMduserApi or m_FemasMarkrtManager is NULL ");
+          LOG_ERROR("Error m_pUstpFtdcMduserApi or m_FemasMarketManager is NULL ");
 	   return;	  
     }	
-    m_FemasMarkrtManager->CreateFemasBookManager(listener);	
+    m_FemasMarketManager->CreateFemasBookManager(listener);	
     m_itimeout = 10;	
 }
 
 CFemasMarket::~CFemasMarket()
 {
      m_pUstpFtdcMduserApi->Release();
-    delete m_FemasMarkrtManager;	
+    delete m_FemasMarketManager;	
     delete m_pFileConfig;	
 }
 
@@ -42,12 +42,12 @@ bool CFemasMarket::Start()
           LOG_ERROR("Error m_pUstpFtdcMduserApi is NULL ");
 	   return false;	  
      }
-     if(m_FemasMarkrtManager->mIConnet != 0)
+     if(m_FemasMarketManager->mIConnet != 0)
     {
           return false;
     }
      time_t tmtimeout = time(NULL);	 	 
-     while(0 != m_FemasMarkrtManager->mISubSuss)
+     while(0 != m_FemasMarketManager->mISubSuss)
      {
          if(time(NULL)-tmtimeout>m_itimeout)
 	  {
@@ -71,7 +71,7 @@ void CFemasMarket::Initialize(std::vector<std::string> insts)
     }
       
 
-    m_pUstpFtdcMduserApi->RegisterSpi(m_FemasMarkrtManager);
+    m_pUstpFtdcMduserApi->RegisterSpi(m_FemasMarketManager);
 
 
     if(insts.size() <= 0)
@@ -102,7 +102,7 @@ void CFemasMarket::Initialize(std::vector<std::string> insts)
      m_pUstpFtdcMduserApi->Init();
 
      time_t tmtimeout = time(NULL);
-     while(0 != m_FemasMarkrtManager->mIConnet)
+     while(0 != m_FemasMarketManager->mIConnet)
      {
          if(time(NULL)-tmtimeout>m_itimeout)
 	  {
@@ -150,7 +150,7 @@ void CFemasMarket::Subscribe(std::vector<std::string> instruments)
       }
       if(instruments.size() <= 0)
       {
-          m_FemasMarkrtManager->mISubSuss = 1;
+          m_FemasMarketManager->mISubSuss = 1;
           char *contracts[1];
 	   contracts[0] = new char[100];
           memset(contracts[0],0,100);
@@ -161,7 +161,7 @@ void CFemasMarket::Subscribe(std::vector<std::string> instruments)
       }
       else
       {
-          m_FemasMarkrtManager->mISubSuss = instruments.size();
+          m_FemasMarketManager->mISubSuss = instruments.size();
           char **contracts = new char*[instruments.size()];
           for(int i=0;i<instruments.size();i++)
 	   {
@@ -196,13 +196,13 @@ void CFemasMarket::ReqDefinitions(std::vector<std::string> instruments)
      m_pFileConfig = new fh::core::assist::Settings(FileConfig); 
      
 
-     if(NULL == m_FemasMarkrtManager)
+     if(NULL == m_FemasMarketManager)
      {
-          LOG_ERROR("Error m_FemasMarkrtManager is NULL ");
+          LOG_ERROR("Error m_FemasMarketManager is NULL ");
 	   return;	  
      }
 
-     m_FemasMarkrtManager->SetFileData(FileConfig);	 
+     m_FemasMarketManager->SetFileData(FileConfig);	 
       	 
  }
 

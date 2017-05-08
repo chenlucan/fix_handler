@@ -44,11 +44,13 @@ void CUstpFtdcTraderManger::OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserL
          LOG_ERROR("Failed to login, errorcode=",pRspInfo->ErrorID," errormsg=",pRspInfo->ErrorMsg,"	requestid=",nRequestID," chain=", bIsLast);
 	  //exit(-1);
 	  mIConnet = 1;
+	  return;
     }
     LOG_INFO("MaxOrderLocalID = ", atoi(pRspUserLogin->MaxOrderLocalID));	
     MaxOrderLocalID = atoi(pRspUserLogin->MaxOrderLocalID)+1;	
     //strncpy(MaxOrderLocalID,pRspUserLogin->MaxOrderLocalID,strlen(pRspUserLogin->MaxOrderLocalID));	
-    mIConnet = 0;	
+    mIConnet = 0;
+    return;	
 }	
 void CUstpFtdcTraderManger::OnRspOrderInsert(CUstpFtdcInputOrderField  *pInputOrder, CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast)
 {
@@ -104,6 +106,10 @@ void CUstpFtdcTraderManger::OnErrRtnOrderAction(CUstpFtdcOrderActionField *pOrde
 void CUstpFtdcTraderManger::OnRspQryOrder(CUstpFtdcOrderField *pOrder, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
     LOG_INFO("CUstpFtdcTraderManger::OnRspQryOrder");
+    if(m_InitQueryNum > 0)
+    {
+        m_InitQueryNum--;
+    }
     OnQryOrder(pOrder);
 	
 }
@@ -135,11 +141,56 @@ void CUstpFtdcTraderManger::OnQryOrder(CUstpFtdcOrderField *pOrder)
             tmporder.set_order_type(pb::ems::OrderType::OT_Limit);
 	 }
 	 else
-	 if(pOrder->OrderPriceType == '1')
+	 //if(pOrder->OrderPriceType == '1')
 	 {
             tmporder.set_order_type(pb::ems::OrderType::OT_Market);
 	 }	     		
-        tmporder.set_exchange_order_id(pOrder->OrderSysID);		
+        tmporder.set_exchange_order_id(pOrder->OrderSysID);
+
+	if(pOrder->OrderStatus == '0')//OS_Filled
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Filled);
+	 }
+	 else
+	 if(pOrder->OrderStatus == '1')
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Working);
+	 }
+	 else
+	 if(pOrder->OrderStatus == '2')
+	 {
+	     //something fill is fill ?
+            tmporder.set_status(pb::ems::OrderStatus::OS_Filled);
+	 }
+	 else
+	 if(pOrder->OrderStatus == '3')
+	 {
+           tmporder.set_status(pb::ems::OrderStatus::OS_Working);
+	 }
+	 else
+	 if(pOrder->OrderStatus == '4')
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Rejected); 
+	 }
+	 else
+	 if(pOrder->OrderStatus == '5')//OS_Cancelled
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled);
+	 }
+	 else
+	 if(pOrder->OrderStatus == '6')
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Pending);
+	 }
+	 else
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_None);
+	 } 	
+		
+        tmporder.set_working_price(std::to_string(pOrder->LimitPrice));
+	 tmporder.set_working_quantity(pOrder->VolumeRemain);
+        tmporder.set_filled_quantity(pOrder->VolumeTraded);
+		
 	 std::string tmpActionDay = pOrder->ActionDay;	
         fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpActionDay);
 	 //end	
@@ -167,7 +218,27 @@ void CUstpFtdcTraderManger::OnActionOrder(CUstpFtdcOrderActionField *pOrderActio
 	 tmporder.set_client_order_id(pOrderAction->UserOrderActionLocalID);
         tmporder.set_account(pOrderAction->UserID);		
 	 tmporder.set_price(std::to_string(pOrderAction->LimitPrice));
-        tmporder.set_quantity(pOrderAction->VolumeChange);	
+        tmporder.set_quantity(pOrderAction->VolumeChange);
+	 tmporder.set_exchange_order_id(pOrderAction->OrderSysID);
+	 if(pOrderAction->ActionFlag == USTP_FTDC_AF_Delete)
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled);
+	 }
+	 else
+	 if(pOrderAction->ActionFlag == USTP_FTDC_AF_Suspend)
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Pending);
+	 }
+	 else
+	 if(pOrderAction->ActionFlag == USTP_FTDC_AF_Active)
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Working);
+	 }
+	 else
+	 if(pOrderAction->ActionFlag == USTP_FTDC_AF_Modify)
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Working);
+	 }
 	 //end	
         //print message	
 	 LOG_INFO("client_order_id:",pOrderAction->UserOrderActionLocalID);
@@ -215,10 +286,6 @@ void CUstpFtdcTraderManger::OnInsertOrder(CUstpFtdcInputOrderField  *pInputOrder
 	 {
             tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
 	 }	
-        //tmporder.set_working_price(std::to_string(report.single_report.price));
-        //tmporder.set_working_quantity(report.single_report.leaves_qty);
-        //tmporder.set_filled_quantity(report.single_report.cum_qty);
-        //tmporder.set_message(report.single_report.text);
 	 std::string tmpActionDay = pInputOrder->ActionDay;	
         fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpActionDay);	
         //end	
@@ -276,22 +343,23 @@ void CUstpFtdcTraderManger::OnOrder(CUstpFtdcOrderField  *pOrder)
 	 else
 	 if(pOrder->OrderStatus == '1')
 	 {
-
+            tmporder.set_status(pb::ems::OrderStatus::OS_Working);
 	 }
 	 else
 	 if(pOrder->OrderStatus == '2')
 	 {
-
+	     //something fill is fill ?
+            tmporder.set_status(pb::ems::OrderStatus::OS_Filled);
 	 }
 	 else
 	 if(pOrder->OrderStatus == '3')
 	 {
-
+           tmporder.set_status(pb::ems::OrderStatus::OS_Working);
 	 }
 	 else
 	 if(pOrder->OrderStatus == '4')
 	 {
-
+            tmporder.set_status(pb::ems::OrderStatus::OS_Rejected); 
 	 }
 	 else
 	 if(pOrder->OrderStatus == '5')//OS_Cancelled
@@ -301,16 +369,17 @@ void CUstpFtdcTraderManger::OnOrder(CUstpFtdcOrderField  *pOrder)
 	 else
 	 if(pOrder->OrderStatus == '6')
 	 {
-
+            tmporder.set_status(pb::ems::OrderStatus::OS_Pending);
 	 }
 	 else
 	 {
-
+            tmporder.set_status(pb::ems::OrderStatus::OS_None);
 	 }
-        //tmporder.set_status(GlobexCommunicator::Convert_order_status(report.single_report.order_status));   
-        //tmporder.set_working_price(std::to_string(report.single_report.price));
-        //tmporder.set_working_quantity(report.single_report.leaves_qty);
-        //tmporder.set_filled_quantity(report.single_report.cum_qty);
+
+	 tmporder.set_working_price(std::to_string(pOrder->LimitPrice));
+	 tmporder.set_working_quantity(pOrder->VolumeRemain);
+        tmporder.set_filled_quantity(pOrder->VolumeTraded);
+   
         //tmporder.set_message(report.single_report.text);
 	 std::string tmpActionDay = pOrder->ActionDay;	
         fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpActionDay);	
@@ -351,7 +420,8 @@ void CUstpFtdcTraderManger::OnFill(CUstpFtdcTradeField *pTrade)
 	 }
         tmpfill.set_fill_price(std::to_string(pTrade->TradePrice));
         tmpfill.set_fill_quantity(pTrade->TradeVolume);		
-        tmpfill.set_client_order_id(pTrade->OrderUserID);
+        //tmpfill.set_client_order_id(pTrade->OrderUserID);
+	 tmpfill.set_client_order_id(pTrade->UserOrderLocalID);
         tmpfill.set_exchange_order_id(pTrade->OrderSysID);		
 	 std::string tmpTradeTime = pTrade->TradeTime;	
         fh::core::assist::utility::To_pb_time(tmpfill.mutable_fill_time(), tmpTradeTime);	
@@ -409,10 +479,50 @@ CFemasGlobexCommunicator::~CFemasGlobexCommunicator()
 
 bool CFemasGlobexCommunicator::Start(const std::vector<::pb::ems::Order> &init_orders)
 {
+    m_pUserApi->SubscribePrivateTopic(USTP_TERT_RESUME);	 
+    m_pUserApi->SubscribePublicTopic(USTP_TERT_RESUME);
+    std::string tmpurl = m_pFileConfig->Get("femas-exchange.url");
+    LOG_INFO("femas exchange url = ",tmpurl.c_str());	 
+    m_pUserApi->RegisterFront((char*)(tmpurl.c_str()));	
+    m_pUserApi->Init();
+    m_itimeout = std::atoi((m_pFileConfig->Get("femas-timeout.timeout")).c_str());
+    time_t tmtimeout = time(NULL);
+    while(0 != m_pUstpFtdcTraderManger->mIConnet)
+    {
+        if(time(NULL)-tmtimeout>m_itimeout)
+	 {
+             LOG_ERROR("CFemasGlobexCommunicator::mIConnet tiomeout ");
+	      break;		  
+	 }
+        sleep(0.1);    
+     }	 	
      if(m_pUstpFtdcTraderManger->mIConnet != 0)
     {
         return false;
     }
+    LOG_INFO("CFemasGlobexCommunicator::mIConnet is ok ");
+    m_pUstpFtdcTraderManger->m_InitQueryNum = init_orders.size();	
+    for(int i=0;i<init_orders.size();i++)
+    {
+        Query(init_orders[i]);
+    }
+    tmtimeout = time(NULL);	
+    int tmpQueryNum = m_pUstpFtdcTraderManger->m_InitQueryNum;
+    while(0 != m_pUstpFtdcTraderManger->m_InitQueryNum)
+    {
+        if(time(NULL)-tmtimeout>m_itimeout)
+	 {
+            LOG_ERROR("CFemasGlobexCommunicator::InitQuery tiomeout ");
+	     return false;
+	 }
+	 if(tmpQueryNum != m_pUstpFtdcTraderManger->m_InitQueryNum)
+	 {
+            tmpQueryNum = m_pUstpFtdcTraderManger->m_InitQueryNum;
+	     tmtimeout = time(NULL);		
+	 }
+	 sleep(0.1);  
+    } 
+    LOG_INFO("CFemasGlobexCommunicator::InitQuery is over ");	
     return true;
 }
 
@@ -428,7 +538,7 @@ void CFemasGlobexCommunicator::Stop()
     strcpy(reqUserLogout.UserID, UserIDstr.c_str());
     LOG_INFO("femas-user.UserID = ",reqUserLogout.UserID);
     // send message	    
-    m_pUserApi->ReqUserLogout(&reqUserLogout,0);
+    m_pUserApi->ReqUserLogout(&reqUserLogout,m_pUstpFtdcTraderManger->MaxOrderLocalID++);
     return;
 }
 
@@ -436,7 +546,7 @@ void CFemasGlobexCommunicator::Stop()
 void CFemasGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contracts)
 {
         // make Initialize
-        m_pUserApi->SubscribePrivateTopic(USTP_TERT_RESUME);	 
+        /*m_pUserApi->SubscribePrivateTopic(USTP_TERT_RESUME);	 
         m_pUserApi->SubscribePublicTopic(USTP_TERT_RESUME);
         std::string tmpurl = m_pFileConfig->Get("femas-exchange.url");
         LOG_INFO("femas exchange url = ",tmpurl.c_str());	 
@@ -453,7 +563,8 @@ void CFemasGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contr
 	      }
              sleep(0.1);    
          }	 	
-         LOG_INFO("CFemasGlobexCommunicator::mIConnet is ok ");	 
+         LOG_INFO("CFemasGlobexCommunicator::mIConnet is ok ");*/	
+         LOG_INFO("CFemasGlobexCommunicator::Initialize ");	
          return;	
 }
 

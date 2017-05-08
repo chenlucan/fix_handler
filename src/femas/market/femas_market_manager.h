@@ -32,17 +32,17 @@ inline std::string T(const std::string &v){return fh::core::assist::utility::Tri
 inline std::string T(const char *v){return std::string(v);}
 inline std::string T(char *v){return std::string(v);}
 
-class CFemasMarkrtManager : public CUstpFtdcMduserSpi
+class CFemasMarketManager : public CUstpFtdcMduserSpi
 {
     public:
-		CFemasMarkrtManager(CUstpFtdcMduserApi *pUserApi) : m_pUserApi(pUserApi) 
+		CFemasMarketManager(CUstpFtdcMduserApi *pUserApi) : m_pUserApi(pUserApi) 
 		{
 		    m_pFileConfig = NULL;
 		    m_pFemasBookManager = NULL;	
 		    mIConnet = -1;	
 		    mISubSuss = -1;	
 		}
-		virtual ~CFemasMarkrtManager()
+		virtual ~CFemasMarketManager()
 		{
                   if(NULL != m_pFileConfig)
                   {
