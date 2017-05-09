@@ -525,30 +525,9 @@ void CRemGlobexCommunicator::Stop()
 void CRemGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contracts)
 {
         // noop
-         LOG_INFO("CRemGlobexCommunicator::Initialize "); 
-
-	 /* if(NULL == m_pFileConfig)
-	  {
-             LOG_ERROR("CRemGlobexCommunicator::Initialize m_pFileConfig == NULL"); 
-	      return;		 
-	  }
-	  m_itimeout = std::atoi((m_pFileConfig->Get("rem-timeout.timeout")).c_str());
-         std::string svrAddr = m_pFileConfig->Get("rem-exchange.IP");
-	  int  Port = std::atoi((m_pFileConfig->Get("rem-exchange.Port")).c_str());	 
-         m_pUserApi->ConnServer(svrAddr.c_str(), Port, m_pEESTraderApiManger);
-
-         time_t tmtimeout = time(NULL);
-         while(0 != m_pEESTraderApiManger->mIConnet)
-         {
-             if(time(NULL)-tmtimeout>m_itimeout)
-	      {
-                  LOG_ERROR("CRemGlobexCommunicator::mIConnet tiomeout ");
-	           return;		  
-	      }
-             sleep(0.1);    
-          }*/	
+         LOG_INFO("CRemGlobexCommunicator::Initialize "); 	
 		
-          return;	
+         return;	
 }
 
 void CRemGlobexCommunicator::Add(const ::pb::ems::Order& order)
