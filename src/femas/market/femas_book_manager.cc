@@ -36,121 +36,124 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
        l2_info.set_contract(pMarketData->InstrumentID);
 
 	   
-	pb::dms::DataPoint *bid = l2_info.add_bid();
-	pb::dms::DataPoint *ask = l2_info.add_offer();
+	pb::dms::DataPoint *bid;// = l2_info.add_bid();
+	pb::dms::DataPoint *ask;// = l2_info.add_offer();
 	
 	if (pMarketData->BidPrice1==DBL_MAX)
 	{
-           bid->set_price(0.0);
+           //bid->set_price(0.0);
 	}
 	else
 	{
+	    bid = l2_info.add_bid();
            bid->set_price(pMarketData->BidPrice1);
+	    bid->set_size(pMarketData->BidVolume1);	   
 	}	
-	bid->set_size(pMarketData->BidVolume1);
-
-	
+		
 	if (pMarketData->AskPrice1==DBL_MAX)
 	{
-           ask->set_price(0.0);
+           //ask->set_price(0.0);
 	}
 	else
 	{
+	    ask = l2_info.add_offer();
            ask->set_price(pMarketData->AskPrice1);
+	    ask->set_size(pMarketData->AskVolume1);	   
 	}
-	ask->set_size(pMarketData->AskVolume1);
+	
 
-       bid = l2_info.add_bid();
-	ask = l2_info.add_offer();
 	if (pMarketData->BidPrice2==DBL_MAX)
 	{
-           bid->set_price(0.0);
+           //bid->set_price(0.0);
 	}
 	else
 	{
+	    bid = l2_info.add_bid();
            bid->set_price(pMarketData->BidPrice2);
+	    bid->set_size(pMarketData->BidVolume2);	   
 	}	
-	bid->set_size(pMarketData->BidVolume2);
+	
 
 	if (pMarketData->AskPrice2==DBL_MAX)
 	{
-           ask->set_price(0.0);
+           //ask->set_price(0.0);
 	}
 	else
 	{
+	    ask = l2_info.add_offer();
            ask->set_price(pMarketData->AskPrice2);
+	    ask->set_size(pMarketData->AskVolume2);	   
 	}
-	ask->set_size(pMarketData->AskVolume2);
-
-       bid = l2_info.add_bid();
-	ask = l2_info.add_offer();
+	
 	if (pMarketData->BidPrice3==DBL_MAX)
 	{
-           bid->set_price(0.0);
+           //bid->set_price(0.0);
 	}
 	else
 	{
+	    bid = l2_info.add_bid();
            bid->set_price(pMarketData->BidPrice3);
+	    bid->set_size(pMarketData->BidVolume3);	   
 	}	
-	bid->set_size(pMarketData->BidVolume3);
+	
 
 	if (pMarketData->AskPrice3==DBL_MAX)
 	{
-           ask->set_price(0.0);
+           //ask->set_price(0.0);
 	}
 	else
 	{
+	    ask = l2_info.add_offer();
            ask->set_price(pMarketData->AskPrice3);
+	    ask->set_size(pMarketData->AskVolume3);	   
 	}
-	ask->set_size(pMarketData->AskVolume3);
-
-
-       bid = l2_info.add_bid();
-	ask = l2_info.add_offer();
+	
 	if (pMarketData->BidPrice4==DBL_MAX)
 	{
-           bid->set_price(0.0);
+           //bid->set_price(0.0);
 	}
 	else
 	{
+	    bid = l2_info.add_bid();
            bid->set_price(pMarketData->BidPrice4);
+	    bid->set_size(pMarketData->BidVolume4);	   
 	}	
-	bid->set_size(pMarketData->BidVolume4);
+	
 
 	if (pMarketData->AskPrice4==DBL_MAX)
 	{
-           ask->set_price(0.0);
+           //ask->set_price(0.0);
 	}
 	else
 	{
+	    ask = l2_info.add_offer();
            ask->set_price(pMarketData->AskPrice4);
+	    ask->set_size(pMarketData->AskVolume4);	   
 	}
-	ask->set_size(pMarketData->AskVolume4);
-
-       bid = l2_info.add_bid();
-	ask = l2_info.add_offer();
+	
 	if (pMarketData->BidPrice5==DBL_MAX)
 	{
-           bid->set_price(0.0);
+           //bid->set_price(0.0);
 	}
 	else
 	{
+	    bid = l2_info.add_bid();
            bid->set_price(pMarketData->BidPrice5);
+	    bid->set_size(pMarketData->BidVolume5);	   
 	}	
-	bid->set_size(pMarketData->BidVolume5);
+	
 
 	if (pMarketData->AskPrice5==DBL_MAX)
 	{
-           ask->set_price(0.0);
+           //ask->set_price(0.0);
 	}
 	else
 	{
+	    ask = l2_info.add_offer();
            ask->set_price(pMarketData->AskPrice5);
+	    ask->set_size(pMarketData->AskVolume5);	   
 	}
-	ask->set_size(pMarketData->AskVolume5);
-
-
-
+	
 	m_book_sender->OnL2(l2_info);
 
 	//以上发送L2 行情
@@ -197,8 +200,6 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 
 void CFemasBookManager::SendFemasToDB(const std::string &message)
 {
-    //LOG_INFO("send Original Message, size=", message.size(), " message=", message);
-    //return;	
     m_book_sender->OnOrginalMessage(message);
     return;	
 }

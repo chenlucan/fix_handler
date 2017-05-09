@@ -46,7 +46,8 @@ class CFemasMarket : public fh::core::market::MarketI
 	     CUstpFtdcMduserApi *m_pUstpFtdcMduserApi;	 
 	     fh::femas::market::CFemasMarketManager *m_FemasMarketManager; 
 
-	     int m_itimeout;	 
+	     int m_itimeout;
+	     std::vector<std::string> m_insts;	 
 		 
 };
 

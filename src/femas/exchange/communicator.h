@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
+#include <map>
 #include "USTPFtdcTraderApi.h"
 #include "core/exchange/exchangei.h"
 #include "pb/ems/ems.pb.h"
@@ -29,6 +30,7 @@ namespace exchange
 			MaxOrderLocalID = 0;
 			m_strategy = NULL;
 			m_InitQueryNum = 0;
+			m_ordermap.clear();
 		   }
 	          ~CUstpFtdcTraderManger ()
 	          {
@@ -56,9 +58,12 @@ namespace exchange
 		   {
                       m_strategy = strategy;
 		   }
+		   void AddOrderId(std::string cl_orderid,int i_key=-1);
+		   std::string GetOrderId(int i_key);
 		   int mIConnet;
 		   int MaxOrderLocalID;
 		   int m_InitQueryNum;
+		   std::map <int, std::string> m_ordermap;
 		   
         private:
 		   core::exchange::ExchangeListenerI *m_strategy;	 

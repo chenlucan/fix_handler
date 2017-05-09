@@ -94,7 +94,7 @@ void CFemasMarketManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pM
 
 	LOG_INFO("BidVolume1: ",pMarketData->BidVolume1);
 
-//ÉêÂò¶þ
+/*//ÉêÂò¶þ
 	 if (pMarketData->BidPrice2==DBL_MAX)
 		LOG_INFO("BidPrice2:NULL");
 	else
@@ -125,7 +125,7 @@ void CFemasMarketManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pM
 		LOG_INFO("BidPrice5:",pMarketData->BidPrice5);
 
 	LOG_INFO("BidVolume5:",pMarketData->BidVolume5);
-
+*/
 //ÉêÂôÒ»	
 	if (pMarketData->AskPrice1==DBL_MAX)
 		LOG_INFO("AskPrice1:NULL");
@@ -134,7 +134,7 @@ void CFemasMarketManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pM
 
 	LOG_INFO("AskVolume1:",pMarketData->AskVolume1);	
 
-//ÉêÂô¶þ
+/*//ÉêÂô¶þ
 	if (pMarketData->AskPrice2==DBL_MAX)
 		LOG_INFO("AskPrice2:NULL");
 	else
@@ -165,7 +165,7 @@ void CFemasMarketManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pM
 		LOG_INFO("AskPrice5:",pMarketData->AskPrice5);
 
 	LOG_INFO("AskVolume5:",pMarketData->AskVolume5);	
-	
+*/	
 	LOG_INFO("GetDepthMarketData::end");
 
 	m_pFemasBookManager->SendFemasmarketData(pMarketData);

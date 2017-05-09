@@ -92,12 +92,13 @@ int main(int argc, char* argv[])
       std::vector<std::string> Subminstruments;
       Depthstruments.clear();
       Subminstruments.clear();	  
-      Depthstruments.push_back(pFileConfig->Get("femas-DepthTopicID.TopicID"));
-      Subminstruments.push_back("*");	  
+      //Depthstruments.push_back(pFileConfig->Get("femas-DepthTopicID.TopicID"));
+      //Subminstruments.push_back("*");	  
 
+      Depthstruments.push_back("*");
       pFemasMarletApp->Initialize(Depthstruments);
 
-      pFemasMarletApp->Subscribe(Subminstruments);	   
+      //pFemasMarletApp->Subscribe(Subminstruments);	   
 	  
       if(!pFemasMarletApp->Start())
       {

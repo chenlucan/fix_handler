@@ -24,6 +24,7 @@ CFemasMarket::CFemasMarket(fh::core::market::MarketListenerI *listener)
     }	
     m_FemasMarketManager->CreateFemasBookManager(listener);	
     m_itimeout = 10;	
+    m_insts.clear();	
 }
 
 CFemasMarket::~CFemasMarket()
@@ -42,11 +43,32 @@ bool CFemasMarket::Start()
           LOG_ERROR("Error m_pUstpFtdcMduserApi is NULL ");
 	   return false;	  
      }
-     if(m_FemasMarketManager->mIConnet != 0)
-    {
-          return false;
-    }
-     time_t tmtimeout = time(NULL);	 	 
+
+     m_pUstpFtdcMduserApi->RegisterSpi(m_FemasMarketManager);
+     m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (21001, USTP_TERT_RESUME);	  
+   	 
+     std::string tmpurl = m_pFileConfig->Get("femas-market.url");
+     LOG_INFO("femas market url = ",tmpurl.c_str());
+     m_itimeout = std::atoi((m_pFileConfig->Get("femas-timeout.timeout")).c_str());		 
+     m_pUstpFtdcMduserApi->RegisterFront((char*)(tmpurl.c_str()));
+     m_pUstpFtdcMduserApi->SetHeartbeatTimeout(m_itimeout); 
+     m_pUstpFtdcMduserApi->Init();
+
+     time_t tmtimeout = time(NULL);
+     while(0 != m_FemasMarketManager->mIConnet)
+     {
+         if(time(NULL)-tmtimeout>m_itimeout)
+	  {
+              LOG_ERROR("CFemasMarket::mIConnet tiomeout ");
+	       return false;		  
+	  }
+         sleep(0.1);    
+     }	 
+     LOG_INFO("CFemasMarket::mIConnet is ok ");
+
+     Subscribe(m_insts);
+	 
+     tmtimeout = time(NULL);	 	 
      while(0 != m_FemasMarketManager->mISubSuss)
      {
          if(time(NULL)-tmtimeout>m_itimeout)
@@ -56,14 +78,16 @@ bool CFemasMarket::Start()
 	  }
          sleep(0.1);  
      }	 
-     LOG_INFO("CFemasMarket::mISubSuss is ok ");		 
+     LOG_INFO("CFemasMarket::mISubSuss is ok ");
+     m_insts.clear();	 
      return true;	 
 }
  // implement of MarketI
 void CFemasMarket::Initialize(std::vector<std::string> insts)
 {
      LOG_INFO("CFemasMarket::Initialize() ");
-	 
+     m_insts = insts;	 
+     /*	 
      if(NULL == m_pUstpFtdcMduserApi)
     {
           LOG_ERROR("Error m_pUstpFtdcMduserApi is NULL ");
@@ -112,7 +136,7 @@ void CFemasMarket::Initialize(std::vector<std::string> insts)
          sleep(0.1);    
      }	 
      LOG_INFO("CFemasMarket::mIConnet is ok ");	 
-
+     */
      return;	 
 }
 // implement of MarketI

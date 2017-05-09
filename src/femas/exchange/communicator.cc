@@ -122,7 +122,8 @@ void CUstpFtdcTraderManger::OnQryOrder(CUstpFtdcOrderField *pOrder)
     {
         //make Order begin (have something todo)
         ::pb::ems::Order tmporder;  
-        tmporder.set_client_order_id(pOrder->UserOrderLocalID);
+        //tmporder.set_client_order_id(pOrder->UserOrderLocalID);
+	 tmporder.set_client_order_id(GetOrderId(std::atoi(pOrder->UserOrderLocalID)));	
         tmporder.set_account(pOrder->UserID);
         tmporder.set_contract(pOrder->InstrumentID);
 	 if(pOrder->Direction == '0')
@@ -215,7 +216,9 @@ void CUstpFtdcTraderManger::OnActionOrder(CUstpFtdcOrderActionField *pOrderActio
     {
         ::pb::ems::Order tmporder;
         //make Order begin (have something todo) 
-	 tmporder.set_client_order_id(pOrderAction->UserOrderActionLocalID);
+	 //tmporder.set_client_order_id(pOrderAction->UserOrderActionLocalID);
+        tmporder.set_client_order_id(GetOrderId(std::atoi(pOrderAction->UserOrderActionLocalID)));
+		
         tmporder.set_account(pOrderAction->UserID);		
 	 tmporder.set_price(std::to_string(pOrderAction->LimitPrice));
         tmporder.set_quantity(pOrderAction->VolumeChange);
@@ -258,7 +261,9 @@ void CUstpFtdcTraderManger::OnInsertOrder(CUstpFtdcInputOrderField  *pInputOrder
     {
         ::pb::ems::Order tmporder;	
 	 //make Order begin (have something todo) 	
-	 tmporder.set_client_order_id(pInputOrder->UserOrderLocalID);
+	 //tmporder.set_client_order_id(pInputOrder->UserOrderLocalID);
+        tmporder.set_client_order_id(GetOrderId(std::atoi(pInputOrder->UserOrderLocalID)));
+	 
         tmporder.set_account(pInputOrder->UserID);
         tmporder.set_contract(pInputOrder->InstrumentID);
 	 if(pInputOrder->Direction == '0')
@@ -312,7 +317,10 @@ void CUstpFtdcTraderManger::OnOrder(CUstpFtdcOrderField  *pOrder)
     {
         ::pb::ems::Order tmporder;
         //make Order begin (have something todo) 	
-        tmporder.set_client_order_id(pOrder->OrderUserID);
+        //tmporder.set_client_order_id(pOrder->OrderUserID);
+        tmporder.set_client_order_id(GetOrderId(std::atoi(pOrder->OrderUserID)));
+
+		
         tmporder.set_account(pOrder->UserID);
         tmporder.set_contract(pOrder->InstrumentID);
 	 if(pOrder->Direction == '0')
@@ -421,7 +429,9 @@ void CUstpFtdcTraderManger::OnFill(CUstpFtdcTradeField *pTrade)
         tmpfill.set_fill_price(std::to_string(pTrade->TradePrice));
         tmpfill.set_fill_quantity(pTrade->TradeVolume);		
         //tmpfill.set_client_order_id(pTrade->OrderUserID);
-	 tmpfill.set_client_order_id(pTrade->UserOrderLocalID);
+	 //tmpfill.set_client_order_id(pTrade->UserOrderLocalID);
+        tmpfill.set_client_order_id(GetOrderId(std::atoi(pTrade->UserOrderLocalID)));
+		
         tmpfill.set_exchange_order_id(pTrade->OrderSysID);		
 	 std::string tmpTradeTime = pTrade->TradeTime;	
         fh::core::assist::utility::To_pb_time(tmpfill.mutable_fill_time(), tmpTradeTime);	
@@ -446,6 +456,37 @@ void CUstpFtdcTraderManger::SetFileConfigData(const std::string &FileConfig)
     LOG_INFO("CUstpFtdcTraderManger::SetFileConfigData file =  ",FileConfig.c_str());
     m_pFileConfig = new fh::core::assist::Settings(FileConfig); 
 }
+
+void CUstpFtdcTraderManger::AddOrderId(std::string cl_orderid,int i_key)
+{
+    if(i_key != -1)
+    {
+        if(m_ordermap.count(i_key) == 0)
+	 {
+            m_ordermap[i_key] = cl_orderid;
+	 }
+    }
+    else
+    {
+        if(m_ordermap.count(MaxOrderLocalID) == 0)
+	 {
+            m_ordermap[MaxOrderLocalID] = cl_orderid;
+	 }
+    }
+    return;	
+}
+
+std::string CUstpFtdcTraderManger::GetOrderId(int i_key)
+{
+    if(m_ordermap.count(i_key) != 0)
+    {
+        return m_ordermap[i_key];
+    }
+    else
+    {
+        return "";
+    }		
+} 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////CFemasGlobexCommunicator//////////////////////////////////////////////////
@@ -552,11 +593,19 @@ void CFemasGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contr
 
 void CFemasGlobexCommunicator::Add(const ::pb::ems::Order& order)
 {
-        LOG_INFO("CFemasGlobexCommunicator::Add ");        
+        LOG_INFO("CFemasGlobexCommunicator::Add ");  
+	 if(NULL == m_pUstpFtdcTraderManger)
+	 {
+            return ;
+	 }	
 	//make SInputOrder begin (have something todo) 	
         CUstpFtdcInputOrderField SInputOrder;
 	 memset(&SInputOrder,0,sizeof(CUstpFtdcInputOrderField));	
-	 strncpy(SInputOrder.UserOrderLocalID,order.client_order_id().c_str(),order.client_order_id().length());	
+	 //strncpy(SInputOrder.UserOrderLocalID,order.client_order_id().c_str(),order.client_order_id().length());
+	 strncpy(SInputOrder.UserOrderLocalID,std::to_string(m_pUstpFtdcTraderManger->MaxOrderLocalID).c_str(),std::to_string(m_pUstpFtdcTraderManger->MaxOrderLocalID).length());
+        m_pUstpFtdcTraderManger->AddOrderId(order.client_order_id());
+
+	 
 	 std::string BrokerID = m_pFileConfig->Get("femas-user.BrokerID");
 	 strncpy(SInputOrder.BrokerID,BrokerID.c_str(),BrokerID.length());
 	 std::string UserID = order.account();
@@ -601,7 +650,9 @@ void CFemasGlobexCommunicator::Add(const ::pb::ems::Order& order)
             SInputOrder.OrderPriceType = '1';
 	 }
 	 SInputOrder.VolumeCondition=(m_pFileConfig->Get("femas-exchange.VolumeCondition")).c_str()[0];
-	 SInputOrder.ForceCloseReason=(m_pFileConfig->Get("femas-exchange.ForceCloseReason")).c_str()[0];;
+	 SInputOrder.ForceCloseReason=(m_pFileConfig->Get("femas-exchange.ForceCloseReason")).c_str()[0];
+	 
+	 
 	 //end	
         //print message
         LOG_INFO("CUstpFtdcInputOrderField: ");
@@ -622,7 +673,7 @@ void CFemasGlobexCommunicator::Add(const ::pb::ems::Order& order)
 	 LOG_INFO("VolumeCondition: ",SInputOrder.VolumeCondition);
 	 LOG_INFO("ForceCloseReason: ",SInputOrder.ForceCloseReason);
 	 // send message
-        m_pUserApi->ReqOrderInsert(&SInputOrder, std::atoi(order.client_order_id().c_str()));
+        m_pUserApi->ReqOrderInsert(&SInputOrder, m_pUstpFtdcTraderManger->MaxOrderLocalID++);
         return;
 }
 
@@ -642,7 +693,9 @@ void CFemasGlobexCommunicator::Delete(const ::pb::ems::Order& order)
         //femas 
         //strncpy(OrderAction.UserOrderLocalID,order.client_order_id().c_str(),order.client_order_id().length()); 
 	 strcpy(OrderAction.UserOrderLocalID,"");	
-	 strncpy(OrderAction.UserOrderActionLocalID,order.client_order_id().c_str(),order.client_order_id().length());
+	 strncpy(OrderAction.UserOrderActionLocalID,std::to_string(m_pUstpFtdcTraderManger->MaxOrderLocalID).c_str(),std::to_string(m_pUstpFtdcTraderManger->MaxOrderLocalID).length());
+        m_pUstpFtdcTraderManger->AddOrderId(order.client_order_id());
+	 
         std::string ExchangeID = m_pFileConfig->Get("femas-exchange.ExchangeID");
 	 strcpy(OrderAction.ExchangeID , ExchangeID.c_str());
         std::string BrokerID = m_pFileConfig->Get("femas-user.BrokerID");
@@ -653,7 +706,7 @@ void CFemasGlobexCommunicator::Delete(const ::pb::ems::Order& order)
 	 strcpy(OrderAction.InvestorID , InvestorID.c_str());  		 
 	 OrderAction.ActionFlag=USTP_FTDC_AF_Delete;
 	 // send message	
-	 m_pUserApi->ReqOrderAction(&OrderAction, std::atoi(OrderAction.UserOrderActionLocalID));	
+	 m_pUserApi->ReqOrderAction(&OrderAction, m_pUstpFtdcTraderManger->MaxOrderLocalID++);	
         return;
 }
 
@@ -662,7 +715,10 @@ void CFemasGlobexCommunicator::Query(const ::pb::ems::Order& order)
         LOG_INFO("CFemasGlobexCommunicator::Query ");
         //make QryOrder begin (have something todo)
         CUstpFtdcQryOrderField QryOrder;
-        memset(&QryOrder,0,sizeof(CUstpFtdcQryOrderField));		
+        memset(&QryOrder,0,sizeof(CUstpFtdcQryOrderField));
+       
+        m_pUstpFtdcTraderManger->AddOrderId(order.client_order_id());
+		
         std::string ExchangeID = m_pFileConfig->Get("femas-exchange.ExchangeID");
 	 strcpy(QryOrder.ExchangeID , ExchangeID.c_str());
         std::string BrokerID = m_pFileConfig->Get("femas-user.BrokerID");
@@ -672,8 +728,37 @@ void CFemasGlobexCommunicator::Query(const ::pb::ems::Order& order)
 	 std::string InvestorID = m_pFileConfig->Get("femas-exchange.InvestorID");
 	 strcpy(QryOrder.InvestorID , InvestorID.c_str()); 
 	 strcpy(QryOrder.OrderSysID,order.exchange_order_id().c_str());
+
+        if(order.status() == pb::ems::OrderStatus::OS_Cancelled)
+	 {
+            QryOrder.OrderStatus = '5';
+	 }
+	 else
+	 if(order.status() == pb::ems::OrderStatus::OS_Filled)
+	 {
+            QryOrder.OrderStatus = '0';
+	 }
+	 else
+	 if(order.status() == pb::ems::OrderStatus::OS_Rejected)
+	 {
+            QryOrder.OrderStatus = '4';
+	 }
+	 else
+	 if(order.status() == pb::ems::OrderStatus::OS_Working)
+	 {
+            QryOrder.OrderStatus = '3';
+	 }
+	 else
+	 if(order.status() == pb::ems::OrderStatus::OS_Pending)
+	 {
+            QryOrder.OrderStatus = '6';
+	 }
+	 else
+	 {
+            LOG_ERROR("order.status = ",order.status());
+	 }
 	 // send message
-	 m_pUserApi->ReqQryOrder(&QryOrder,std::atoi(order.client_order_id().c_str()));		
+	 m_pUserApi->ReqQryOrder(&QryOrder,m_pUstpFtdcTraderManger->MaxOrderLocalID++);		
         return;
 }
 
