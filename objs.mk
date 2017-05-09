@@ -211,4 +211,7 @@ $(BIN_PATH)/mut_market_manager.o: $(TEST_PATH)/cme/market/mut_market_manager.cc
 
 $(BIN_PATH)/mut_dat_saver.o: $(TEST_PATH)/cme/market/mut_dat_saver.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
+  
+$(BIN_PATH)/mut_globex_communicator.o: $(TEST_PATH)/cme/exchange/mut_globex_communicator.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
     

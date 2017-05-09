@@ -41,6 +41,8 @@ namespace common
         Market_State_Message_5 = 20,
         Sdmfo_1 = 21,
         Sdmff_1 = 22,
+        qty_pc_1st_instr =23,   // 4Confirm quantities and prices on the book for the first instrument (non implied)
+        qty_pc_2nd_instr =24,   // 7Confirm quantities and prices on the book for the second instrument (non implied)
         UNKNOW_VALUE = 255
     };
     

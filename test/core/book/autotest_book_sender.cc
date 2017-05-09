@@ -117,7 +117,9 @@ namespace book
         if( (m_current_caseid!=fh::core::assist::common::CaseIdValue::MakePrice_1) 
             && (m_current_caseid!=fh::core::assist::common::CaseIdValue::MakePrice_2)
             && (m_current_caseid!=fh::core::assist::common::CaseIdValue::ChannelReset_MakePrice_1)
-            && (m_current_caseid!=fh::core::assist::common::CaseIdValue::ChannelReset_MakePrice_2) )
+            && (m_current_caseid!=fh::core::assist::common::CaseIdValue::ChannelReset_MakePrice_2)
+            && (m_current_caseid!=fh::core::assist::common::CaseIdValue::qty_pc_1st_instr)
+            && (m_current_caseid!=fh::core::assist::common::CaseIdValue::qty_pc_2nd_instr) )
         {
             return;
         }
@@ -1169,7 +1171,37 @@ namespace book
                 }
                                
                 break;
-            }            
+            }
+            case fh::core::assist::common::CaseIdValue::qty_pc_1st_instr: // case: BookManager_Test028
+            {
+                auto iterL2 = m_L2ValueMap.find(contract);
+                if(iterL2!=m_L2ValueMap.end())
+                {
+                    LOG_DEBUG("[qty_pc_1st_instr] check L2Vale = ", iterL2->second.c_str());
+                    // EXPECT_STRNE EXPECT_STREQ
+                    EXPECT_STREQ("contract=1DVEU7, bid=[price=24135.000000, size=40][price=24130.000000, size=22][price=24125.000000, size=54][price=24120.000000, size=76], offer=[price=24155.000000, size=159][price=24160.000000, size=184][price=24165.000000, size=133][price=24170.000000, size=9]",
+                        iterL2->second.c_str());
+                        
+                    m_L2ValueMap.erase(contract);
+                }
+
+                break;
+            } 
+            case fh::core::assist::common::CaseIdValue::qty_pc_2nd_instr: // case: BookManager_Test029
+            {
+                auto iterL2 = m_L2ValueMap.find(contract);
+                if(iterL2!=m_L2ValueMap.end())
+                {
+                    LOG_DEBUG("[qty_pc_2nd_instr] check L2Vale = ", iterL2->second.c_str());
+                    // EXPECT_STRNE EXPECT_STREQ
+                    EXPECT_STREQ("contract=0EMDU7, bid=[price=167740.000000, size=69][price=167730.000000, size=35][price=167720.000000, size=53][price=167710.000000, size=57][price=167700.000000, size=28][price=167690.000000, size=1][price=167680.000000, size=94][price=167670.000000, size=38][price=167660.000000, size=21], offer=[price=167780.000000, size=126][price=167790.000000, size=207][price=167800.000000, size=191][price=167810.000000, size=172][price=167820.000000, size=85][price=167830.000000, size=33][price=167840.000000, size=179]",
+                        iterL2->second.c_str());
+                        
+                    m_L2ValueMap.erase(contract);
+                }
+
+                break;
+            }               
             default:
             {
                 LOG_INFO("ignore m_current_caseid: ", m_current_caseid);
