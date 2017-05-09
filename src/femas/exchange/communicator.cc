@@ -545,25 +545,7 @@ void CFemasGlobexCommunicator::Stop()
 
 void CFemasGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contracts)
 {
-        // make Initialize
-        /*m_pUserApi->SubscribePrivateTopic(USTP_TERT_RESUME);	 
-        m_pUserApi->SubscribePublicTopic(USTP_TERT_RESUME);
-        std::string tmpurl = m_pFileConfig->Get("femas-exchange.url");
-        LOG_INFO("femas exchange url = ",tmpurl.c_str());	 
-        m_pUserApi->RegisterFront((char*)(tmpurl.c_str()));	
-        m_pUserApi->Init();
-        m_itimeout = std::atoi((m_pFileConfig->Get("femas-timeout.timeout")).c_str());
-	 time_t tmtimeout = time(NULL);
-        while(0 != m_pUstpFtdcTraderManger->mIConnet)
-        {
-             if(time(NULL)-tmtimeout>m_itimeout)
-	      {
-                  LOG_ERROR("CFemasGlobexCommunicator::mIConnet tiomeout ");
-	           return;		  
-	      }
-             sleep(0.1);    
-         }	 	
-         LOG_INFO("CFemasGlobexCommunicator::mIConnet is ok ");*/	
+        // make Initialize	
          LOG_INFO("CFemasGlobexCommunicator::Initialize ");	
          return;	
 }
