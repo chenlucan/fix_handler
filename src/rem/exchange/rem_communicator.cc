@@ -187,7 +187,9 @@ void CEESTraderApiManger::SendOrderAccept(EES_OrderAcceptField* pAccept)
     {
         ::pb::ems::Order tmporder;	
 
-        tmporder.set_client_order_id(std::to_string(pAccept->m_ClientOrderToken));
+        tmporder.set_client_order_id(GetOrderId(pAccept->m_ClientOrderToken));
+	 AddOrderToken(pAccept->m_ClientOrderToken,pAccept->m_MarketOrderToken);	
+		
 	 tmporder.set_account(std::to_string(pAccept->m_UserID));	
 	 tmporder.set_exchange_order_id(std::to_string(pAccept->m_MarketOrderToken));
 	 if(pAccept->m_OrderState == EES_OrderState_order_dead)
@@ -220,7 +222,7 @@ void CEESTraderApiManger::SendOrderAccept(EES_OrderAcceptField* pAccept)
 	}
 	else
 	{
-            tmporder.set_tif(pb::ems::TimeInForce::TIF_GTC);
+            tmporder.set_tif(pb::ems::TimeInForce::TIF_GFD);
 	}
 				
 		
@@ -248,14 +250,14 @@ void CEESTraderApiManger::SendOrderMarketAccept(EES_OrderMarketAcceptField* pAcc
     {
         ::pb::ems::Order tmporder;	
 
-        tmporder.set_client_order_id(std::to_string(pAccept->m_MarketOrderToken));
+        tmporder.set_client_order_id(GetOrderId(GetOrderToken(pAccept->m_MarketOrderToken)));
 	 tmporder.set_account(pAccept->m_Account);	
-	 tmporder.set_exchange_order_id(pAccept->m_MarketOrderId);
-	 tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
+	 tmporder.set_exchange_order_id(std::to_string(pAccept->m_MarketOrderToken));
+	 tmporder.set_status(pb::ems::OrderStatus::OS_Working);
 	 
         LOG_INFO("account:",pAccept->m_Account);
 	 LOG_INFO("client_order_id:",pAccept->m_MarketOrderToken);
-	 LOG_INFO("exchange_order_id:",pAccept->m_MarketOrderId);
+	 LOG_INFO("exchange_order_id:",pAccept->m_MarketOrderToken);
 		
 	 m_strategy->OnOrder(tmporder);	
     }	
@@ -268,8 +270,9 @@ void CEESTraderApiManger::SendOrderReject(EES_OrderRejectField* pReject)
         ::pb::ems::Order tmporder;	
 
         tmporder.set_account(std::to_string(pReject->m_Userid));
-	 tmporder.set_client_order_id(std::to_string(pReject->m_ClientOrderToken));
+	 tmporder.set_client_order_id(GetOrderId(pReject->m_ClientOrderToken));
         tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
+	 //AddOrderToken(pReject->m_ClientOrderToken,pReject->m_MarketOrderToken);		
 	 
 	 LOG_INFO("account:",pReject->m_Userid);
 	 LOG_INFO("client_order_id:",pReject->m_ClientOrderToken);
@@ -285,6 +288,7 @@ void CEESTraderApiManger::SendOrderMarketReject(EES_OrderMarketRejectField* pRej
         ::pb::ems::Order tmporder;	
 
         tmporder.set_account(pReject->m_Account);
+	 tmporder.set_client_order_id(GetOrderId(GetOrderToken(pReject->m_MarketOrderToken)));	
 	 tmporder.set_exchange_order_id(std::to_string(pReject->m_MarketOrderToken));	
         tmporder.set_status(pb::ems::OrderStatus::OS_Rejected); 
 	 
@@ -301,9 +305,10 @@ void CEESTraderApiManger::SendOrderExecution(EES_OrderExecutionField* pExec)
     {
         ::pb::ems::Fill tmpfill;
 
-        tmpfill.set_client_order_id(std::to_string(pExec->m_ClientOrderToken));
+        tmpfill.set_client_order_id(GetOrderId(pExec->m_ClientOrderToken));
 	 tmpfill.set_account(std::to_string(pExec->m_Userid));	
 	 tmpfill.set_exchange_order_id(std::to_string(pExec->m_MarketOrderToken));
+	 AddOrderToken(pExec->m_ClientOrderToken,pExec->m_MarketOrderToken);
 	 
 	 tmpfill.set_fill_price(std::to_string(pExec->m_Price));
         tmpfill.set_fill_quantity(pExec->m_Quantity);
@@ -328,8 +333,11 @@ void CEESTraderApiManger::SendOrderCxled(EES_OrderCxled* pCxled)
         ::pb::ems::Order tmporder;	
 
         tmporder.set_account(std::to_string(pCxled->m_Userid));
-	 tmporder.set_client_order_id(std::to_string(pCxled->m_ClientOrderToken));	
+	 tmporder.set_client_order_id(GetOrderId(pCxled->m_ClientOrderToken));	
 	 tmporder.set_exchange_order_id(std::to_string(pCxled->m_MarketOrderToken));
+
+        AddOrderToken(pCxled->m_ClientOrderToken,pCxled->m_MarketOrderToken);
+	 
         tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled); 
 	 
 	 LOG_INFO("client_order_id:",pCxled->m_ClientOrderToken);
@@ -347,6 +355,7 @@ void CEESTraderApiManger::SendCxlOrderReject(EES_CxlOrderRej* pReject)
         ::pb::ems::Order tmporder;	
 
         tmporder.set_account(pReject->m_account);
+	 tmporder.set_client_order_id(GetOrderId(GetOrderToken(pReject->m_MarketOrderToken)));		
 	 tmporder.set_exchange_order_id(std::to_string(pReject->m_MarketOrderToken));	
         tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
 	 
@@ -363,9 +372,11 @@ void CEESTraderApiManger::SendQueryTradeOrder(const char* pAccount, EES_QueryAcc
     {
         ::pb::ems::Order tmporder;	
 
-        tmporder.set_client_order_id(std::to_string(pQueryOrder->m_ClientOrderToken));
+        tmporder.set_client_order_id(GetOrderId(pQueryOrder->m_ClientOrderToken));
 	 tmporder.set_account(std::to_string(pQueryOrder->m_Userid));	
 	 tmporder.set_exchange_order_id(std::to_string(pQueryOrder->m_MarketOrderToken));
+        AddOrderToken(pQueryOrder->m_ClientOrderToken,pQueryOrder->m_MarketOrderToken); 
+	 
 	 if(pQueryOrder->m_OrderStatus == EES_OrderStatus_cancelled)//OS_Cancelled
 	 {
             tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled);
@@ -429,6 +440,55 @@ void CEESTraderApiManger::SendQueryTradeOrder(const char* pAccount, EES_QueryAcc
     }	
 }
 
+void CEESTraderApiManger::AddOrderToken(int MarketOrderToken,int i_key)
+{
+    if(m_orderTokenmap.count(i_key) == 0)
+    {
+        m_orderTokenmap[i_key] = MarketOrderToken;		
+    } 
+    else
+    {
+        m_orderTokenmap[i_key] = MarketOrderToken;
+    }
+    return;
+}
+void CEESTraderApiManger::AddOrderId(std::string cl_orderid,int i_key)
+{
+
+    if(m_ordermap.count(i_key) == 0)
+    {
+        m_ordermap[i_key] = cl_orderid;		
+    } 
+    else
+    {
+        m_ordermap[i_key] = cl_orderid;
+    }		
+    return;	
+}
+
+int CEESTraderApiManger::GetOrderToken(int i_key)
+{
+    if(m_orderTokenmap.count(i_key) != 0)
+    {
+        return m_orderTokenmap[i_key];
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+std::string CEESTraderApiManger::GetOrderId(int i_key)
+{
+    if(m_ordermap.count(i_key) != 0)
+    {
+        return m_ordermap[i_key];
+    }
+    else
+    {
+        return "";
+    }		
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -533,6 +593,11 @@ void CRemGlobexCommunicator::Initialize(std::vector<::pb::dms::Contract> contrac
 void CRemGlobexCommunicator::Add(const ::pb::ems::Order& order)
 {
         LOG_INFO("CRemGlobexCommunicator::Add ");
+        if(NULL == m_pEESTraderApiManger)
+	 {
+            return ;
+	 }
+		
         EES_ClientToken order_token = 0;
 	 m_pUserApi->GetMaxToken(&order_token);
 
@@ -589,6 +654,7 @@ temp.m_Price = 2100.0;
 temp.m_Qty = 1;
 */
 	temp.m_ClientOrderToken = order_token + 1;
+       m_pEESTraderApiManger->AddOrderId(order.client_order_id(),temp.m_ClientOrderToken);
 
 	LOG_INFO("Tif:",temp.m_Tif);
 	LOG_INFO("HedgeFlag:",(int)(temp.m_HedgeFlag));
@@ -620,6 +686,7 @@ void CRemGlobexCommunicator::Delete(const ::pb::ems::Order& order)
         strncpy(tmpCxlOrder.m_Account,UserID.c_str(),UserID.length());
 
         tmpCxlOrder.m_Quantity = order.quantity();
+		
 	 tmpCxlOrder.m_MarketOrderToken = std::atoi(order.exchange_order_id().c_str());
 
 	 m_pUserApi->CancelOrder(&tmpCxlOrder);	

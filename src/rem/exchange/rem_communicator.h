@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
+#include <map>
 #include "EesTraderApi.h"
 #include "core/exchange/exchangei.h"
 #include "pb/ems/ems.pb.h"
@@ -19,7 +20,11 @@ namespace rem
 namespace exchange
 {
 
-
+    /*struct SOrderToken
+    {
+        std::string cl_order_id;
+	 int MarketOrderToken;  	
+    };*/
 
     class CEESTraderApiManger : public EESTraderEvent
     {
@@ -30,6 +35,8 @@ namespace exchange
                       mIConnet = -1;
 			MaxOrderLocalID = 0;
 			m_InitQueryNum = 0;
+			m_orderTokenmap.clear();
+			m_ordermap.clear();
 		   }
 	          ~CEESTraderApiManger ()
 	          {
@@ -77,9 +84,17 @@ namespace exchange
                       m_strategy = strategy;
 		   }
 		   void SetFileConfigData(const std::string &FileConfig);	
+		   void AddOrderId(std::string cl_orderid,int i_key);
+		   void AddOrderToken(int MarketOrderToken,int i_key);
+		   std::string GetOrderId(int i_key);
+		   int GetOrderToken(int i_key);
 		   int mIConnet;
 		   int MaxOrderLocalID;
 		   int m_InitQueryNum;
+		   // ClientOrderToken , cl_order_id
+		   std::map <int, std::string> m_ordermap;
+		   // OrderToken , ClientOrderToken
+		   std::map <int, int> m_orderTokenmap;
 		   
         private:
 		   core::exchange::ExchangeListenerI *m_strategy;	 

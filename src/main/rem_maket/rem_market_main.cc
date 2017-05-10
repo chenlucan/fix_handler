@@ -92,11 +92,12 @@ int main(int argc, char* argv[])
           pRemMarletApp->SetFileConfigData(FileConfigstr);	  
       
           Depthstruments.clear();
-          Subminstruments.clear();	 
+          Subminstruments.clear();
+	   Subminstruments.push_back("*");	  
 
-          pRemMarletApp->Initialize(Depthstruments);
-          Subminstruments.push_back("*");
-	   pRemMarletApp->Subscribe(Subminstruments);	   
+          pRemMarletApp->Initialize(Subminstruments);
+          
+	   //pRemMarletApp->Subscribe(Subminstruments);	   
 	  
           if(!pRemMarletApp->Start())
           {

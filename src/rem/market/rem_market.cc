@@ -25,6 +25,7 @@ CRemMarket::CRemMarket(fh::core::market::MarketListenerI *listener)
     }
     m_RemMarkrtManager->CreateRemBookManager(listener);
     m_itimeout = 10;	
+    m_insts.clear();	
 }
 
 CRemMarket::~CRemMarket()
@@ -42,40 +43,11 @@ CRemMarket::~CRemMarket()
 bool CRemMarket::Start()
 {
      LOG_INFO("CRemMarket::Start() ");
-     if(NULL == m_pEESQuoteApi)
+     if(NULL == m_pEESQuoteApi || NULL == m_RemMarkrtManager)
      {
-          LOG_ERROR("Error m_pEESQuoteApi is NULL ");
+          LOG_ERROR("Error m_pEESQuoteApi or m_RemMarkrtManager is NULL ");
 	   return false;	  
      }
-     if(m_RemMarkrtManager->mIConnet != 0)
-    {
-          return false;
-    }
-     time_t tmtimeout = time(NULL);	 	 
-     while(0 != m_RemMarkrtManager->mISubSuss)
-     {
-         if(time(NULL)-tmtimeout>m_itimeout)
-	  {
-              LOG_ERROR("CFemasMarket::mISubSuss tiomeout ");
-		return false;	  
-	  }
-         sleep(0.1);  
-     }	 
-     LOG_INFO("CFemasMarket::mISubSuss is ok ");	 
-    		 
-     return true;	 
-}
- // implement of MarketI
-void CRemMarket::Initialize(std::vector<std::string> insts)
-{
-     LOG_INFO("CRemMarket::Initialize() ");
-     if(NULL == m_pEESQuoteApi)
-     {
-          LOG_ERROR("Error m_pEESQuoteApi is NULL ");
-	   return ;	  
-     }
-
-
      m_itimeout = std::atoi((m_pFileConfig->Get("rem-timeout.timeout")).c_str());
 	 
      EqsTcpInfo			info;
@@ -98,12 +70,33 @@ void CRemMarket::Initialize(std::vector<std::string> insts)
          if(time(NULL)-tmtimeout>m_itimeout)
 	  {
               LOG_ERROR("CFemasMarket::mIConnet tiomeout ");
-	       return;		  
+	       return false;		  
 	  }
          sleep(0.1);    
      }	 
-     LOG_INFO("CFemasMarket::mIConnet is ok ");	 
+     LOG_INFO("CFemasMarket::mIConnet is ok ");
 
+     Subscribe(m_insts);	 
+     
+     tmtimeout = time(NULL);	 	 
+     while(0 != m_RemMarkrtManager->mISubSuss)
+     {
+         if(time(NULL)-tmtimeout>m_itimeout)
+	  {
+              LOG_ERROR("CFemasMarket::mISubSuss tiomeout ");
+		return false;	  
+	  }
+         sleep(0.1);  
+     }	 
+     LOG_INFO("CFemasMarket::mISubSuss is ok ");	 
+     m_insts.clear();		 
+     return true;	 
+}
+ // implement of MarketI
+void CRemMarket::Initialize(std::vector<std::string> insts)
+{
+     LOG_INFO("CRemMarket::Initialize() ");
+     m_insts = insts;	 
      return;	 
 	 
 }

@@ -66,7 +66,7 @@ void CRemMarkrtManager::OnQuoteUpdated(EesEqsIntrumentType chInstrumentType, EES
 	LOG_INFO("BidVolume1: ",pDepthQuoteData->BidVolume1);
 
 //ÉêÂò¶þ
-	 if (pDepthQuoteData->BidPrice2==DBL_MAX)
+/*	 if (pDepthQuoteData->BidPrice2==DBL_MAX)
 		LOG_INFO("BidPrice2:NULL");
 	else
 		LOG_INFO("BidPrice2:",pDepthQuoteData->BidPrice2);
@@ -96,7 +96,7 @@ void CRemMarkrtManager::OnQuoteUpdated(EesEqsIntrumentType chInstrumentType, EES
 		LOG_INFO("BidPrice5:",pDepthQuoteData->BidPrice5);
 
 	LOG_INFO("BidVolume5:",pDepthQuoteData->BidVolume5);
-
+*/
 //ÉêÂôÒ»	
 	if (pDepthQuoteData->AskPrice1==DBL_MAX)
 		LOG_INFO("AskPrice1:NULL");
@@ -106,7 +106,7 @@ void CRemMarkrtManager::OnQuoteUpdated(EesEqsIntrumentType chInstrumentType, EES
 	LOG_INFO("AskVolume1:",pDepthQuoteData->AskVolume1);	
 
 //ÉêÂô¶þ
-	if (pDepthQuoteData->AskPrice2==DBL_MAX)
+/*	if (pDepthQuoteData->AskPrice2==DBL_MAX)
 		LOG_INFO("AskPrice2:NULL");
 	else
 		LOG_INFO("AskPrice2:",pDepthQuoteData->AskPrice2);
@@ -136,7 +136,7 @@ void CRemMarkrtManager::OnQuoteUpdated(EesEqsIntrumentType chInstrumentType, EES
 		LOG_INFO("AskPrice5:",pDepthQuoteData->AskPrice5);
 
 	LOG_INFO("AskVolume5:",pDepthQuoteData->AskVolume5);	
-	
+*/	
 	LOG_INFO("OnQuoteUpdated::end");	
 
        m_pRemBookManager->SendRemmarketData(pDepthQuoteData);

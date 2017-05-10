@@ -49,7 +49,8 @@ class CRemMarket : public fh::core::market::MarketI
 	     EESQuoteApi *m_pEESQuoteApi;	 
 	     fh::rem::market::CRemMarkrtManager *m_RemMarkrtManager; 
 
-	     int m_itimeout;	 
+	     int m_itimeout;
+	     std::vector<std::string> m_insts;		 
 		 
 };
 
