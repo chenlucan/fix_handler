@@ -54,7 +54,33 @@ TEST_F(CMutFemasMarket, CMutFemasMarket_Test003)
 
 TEST_F(CMutFemasMarket, CMutFemasMarket_Test004)
 {
-	
+    CFemasMarket *ptestFemasMarket = new CFemasMarket(NULL);  
+    std::string FileConfigstr= "femas_config.ini";	
+    ptestFemasMarket->m_pFileConfig = new fh::core::assist::Settings(FileConfigstr); 
+    ptestFemasMarket->m_FemasMarketManager->SetFileData(FileConfigstr);
+  
+    std::vector<std::string> insts;
+    insts.clear();	
+    insts.push_back("cu1711P35500");	
+    insts.push_back("HO1706-P-2450");	
+    insts.push_back("SR801P7400");		
+    ptestFemasMarket->Subscribe(insts);	
+    EXPECT_EQ(3,ptestFemasMarket->m_FemasMarketManager->mISubSuss);
+    delete ptestFemasMarket;		
+}
+
+TEST_F(CMutFemasMarket, CMutFemasMarket_Test005)
+{
+    CFemasMarket *ptestFemasMarket = new CFemasMarket(NULL);  
+    std::string FileConfigstr= "femas_config.ini";	
+    ptestFemasMarket->m_pFileConfig = new fh::core::assist::Settings(FileConfigstr); 
+    ptestFemasMarket->m_FemasMarketManager->SetFileData(FileConfigstr);
+  
+    std::vector<std::string> insts;
+    insts.clear();			
+    ptestFemasMarket->Subscribe(insts);	
+    EXPECT_EQ(1,ptestFemasMarket->m_FemasMarketManager->mISubSuss);
+    delete ptestFemasMarket;		
 }
 
 
