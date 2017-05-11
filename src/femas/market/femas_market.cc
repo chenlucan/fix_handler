@@ -25,6 +25,7 @@ CFemasMarket::CFemasMarket(fh::core::market::MarketListenerI *listener)
     m_FemasMarketManager->CreateFemasBookManager(listener);	
     m_itimeout = 10;	
     m_insts.clear();	
+    m_pFileConfig = NULL;
 }
 
 CFemasMarket::~CFemasMarket()
@@ -38,7 +39,7 @@ CFemasMarket::~CFemasMarket()
 bool CFemasMarket::Start()
 {
      LOG_INFO("CFemasMarket::Start() ");
-     if(NULL == m_pUstpFtdcMduserApi)
+     if(NULL == m_pUstpFtdcMduserApi || NULL == m_pFileConfig)
      {
           LOG_ERROR("Error m_pUstpFtdcMduserApi is NULL ");
 	   return false;	  

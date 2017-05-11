@@ -1,7 +1,8 @@
 #include "core/assist/logger.h"
 #include "gmock/gmock.h"
 
-#include "mut_femas_book_manager.h"
+#include "mut_femas_market_manager.h"
+
 
 namespace fh
 {
@@ -10,28 +11,24 @@ namespace femas
 namespace market
 {
 
-
-CMutFemasBookManager::CMutFemasBookManager()
+CMutFemasMarketManager::CMutFemasMarketManager()
 {
         // noop
         
 }      
 
 
-CMutFemasBookManager::~CMutFemasBookManager()
+CMutFemasMarketManager::~CMutFemasMarketManager()
 {
         // noop
 }   
 
-
-TEST_F(CMutFemasBookManager, FemasBookManager_Test001)
+TEST_F(CMutFemasMarketManager, CMutFemasMarketManager_Test001)
 {
     
 }
 
 
-	
 } // namespace market
 } // namespace femas
-} // namespace fh
-
+} // na

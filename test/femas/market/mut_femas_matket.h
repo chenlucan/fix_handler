@@ -1,5 +1,5 @@
-#ifndef __TEST_FEMA_MARKET_CFemasBookManger_H__
-#define __TEST_FEMA_MARKET_CFemasBookManger_H__
+#ifndef __TEST_FEMA_MARKET_CFemasMarket_H__
+#define __TEST_FEMA_MARKET_CFemasMarket_H__
 
 #include <gtest/gtest.h>
 #include <stdio.h>
@@ -10,6 +10,8 @@
 #include "core/zmq/zmq_sender.h"
 #include "core/market/marketlisteneri.h"
 #include "USTPFtdcMduserApi.h"
+#include "femas/market/femas_market.h"
+
 
 namespace fh
 {
@@ -17,18 +19,20 @@ namespace femas
 {
 namespace market
 {
-    class CMutFemasBookManager : public testing::Test
+
+    class CMutFemasMarket : public testing::Test
     {
 
          public:
-            explicit CMutFemasBookManager();
-            virtual ~CMutFemasBookManager();
+            explicit CMutFemasMarket();
+            virtual ~CMutFemasMarket();
 	
     };
+
+
 } // namespace market
 } // namespace femas
 } // namespace fh
 
 
 #endif
-
