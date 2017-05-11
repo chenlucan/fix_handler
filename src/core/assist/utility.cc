@@ -26,8 +26,14 @@ namespace utility
     // get current time in "yyyy-MM-dd HH:mm:ss.ssssss" format
     std::string Current_time_str()
     {
+        return Current_time_str("%Y-%m-%d %H:%M:%S.%f");
+    }
+
+    // get current time in special format
+    std::string Current_time_str(const std::string &format)
+    {
         std::ostringstream ss;
-        auto *facet = new boost::posix_time::time_facet("%Y-%m-%d %H:%M:%S.%f");    // not required to delete it
+        auto *facet = new boost::posix_time::time_facet(format);    // not required to delete it
         ss.imbue(std::locale(ss.getloc(), facet));
         boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
         ss << now;
