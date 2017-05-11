@@ -226,8 +226,8 @@ void CEESTraderApiManger::SendOrderAccept(EES_OrderAcceptField* pAccept)
 	}
 				
 		
-	 //std::string tmpActionDay = pAccept->m_AcceptTime;	
-        //fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpActionDay);
+	 	
+        fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), fh::core::assist::utility::To_time_str(pAccept->m_AcceptTime));
 
 	 LOG_INFO("client_order_id:",pAccept->m_ClientOrderToken);
 	 LOG_INFO("account:",pAccept->m_UserID);
@@ -254,6 +254,7 @@ void CEESTraderApiManger::SendOrderMarketAccept(EES_OrderMarketAcceptField* pAcc
 	 tmporder.set_account(pAccept->m_Account);	
 	 tmporder.set_exchange_order_id(std::to_string(pAccept->m_MarketOrderToken));
 	 tmporder.set_status(pb::ems::OrderStatus::OS_Working);
+	 fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), fh::core::assist::utility::To_time_str(pAccept->m_MarketTime));
 	 
         LOG_INFO("account:",pAccept->m_Account);
 	 LOG_INFO("client_order_id:",pAccept->m_MarketOrderToken);
@@ -272,7 +273,8 @@ void CEESTraderApiManger::SendOrderReject(EES_OrderRejectField* pReject)
         tmporder.set_account(std::to_string(pReject->m_Userid));
 	 tmporder.set_client_order_id(GetOrderId(pReject->m_ClientOrderToken));
         tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
-	 //AddOrderToken(pReject->m_ClientOrderToken,pReject->m_MarketOrderToken);		
+	 //AddOrderToken(pReject->m_ClientOrderToken,pReject->m_MarketOrderToken);	
+	 fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), fh::core::assist::utility::To_time_str(pReject->m_Timestamp));
 	 
 	 LOG_INFO("account:",pReject->m_Userid);
 	 LOG_INFO("client_order_id:",pReject->m_ClientOrderToken);
@@ -291,6 +293,7 @@ void CEESTraderApiManger::SendOrderMarketReject(EES_OrderMarketRejectField* pRej
 	 tmporder.set_client_order_id(GetOrderId(GetOrderToken(pReject->m_MarketOrderToken)));	
 	 tmporder.set_exchange_order_id(std::to_string(pReject->m_MarketOrderToken));	
         tmporder.set_status(pb::ems::OrderStatus::OS_Rejected); 
+	 fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), fh::core::assist::utility::To_time_str(pReject->m_MarketTimestamp));	
 	 
 	 LOG_INFO("account:",pReject->m_Account);
 	 LOG_INFO("exchange_order_id:",pReject->m_MarketOrderToken);	
@@ -313,6 +316,7 @@ void CEESTraderApiManger::SendOrderExecution(EES_OrderExecutionField* pExec)
 	 tmpfill.set_fill_price(std::to_string(pExec->m_Price));
         tmpfill.set_fill_quantity(pExec->m_Quantity);
 	 tmpfill.set_fill_id(pExec->m_MarketExecID);
+	 fh::core::assist::utility::To_pb_time(tmpfill.mutable_fill_time(), fh::core::assist::utility::To_time_str(pExec->m_Timestamp));
 
 
 	 LOG_INFO("client_order_id:",pExec->m_ClientOrderToken);
@@ -339,6 +343,7 @@ void CEESTraderApiManger::SendOrderCxled(EES_OrderCxled* pCxled)
         AddOrderToken(pCxled->m_ClientOrderToken,pCxled->m_MarketOrderToken);
 	 
         tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled); 
+	 fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), fh::core::assist::utility::To_time_str(pCxled->m_Timestamp));	
 	 
 	 LOG_INFO("client_order_id:",pCxled->m_ClientOrderToken);
 	 LOG_INFO("account:",pCxled->m_Userid);	
@@ -358,6 +363,7 @@ void CEESTraderApiManger::SendCxlOrderReject(EES_CxlOrderRej* pReject)
 	 tmporder.set_client_order_id(GetOrderId(GetOrderToken(pReject->m_MarketOrderToken)));		
 	 tmporder.set_exchange_order_id(std::to_string(pReject->m_MarketOrderToken));	
         tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
+	 	
 	 
 	 LOG_INFO("account:",pReject->m_account);	
 	 LOG_INFO("exchange_order_id:",pReject->m_MarketOrderToken);
@@ -424,6 +430,7 @@ void CEESTraderApiManger::SendQueryTradeOrder(const char* pAccount, EES_QueryAcc
 		
 	 //std::string tmpActionDay = pAccept->m_AcceptTime;	
         //fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpActionDay);
+        fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), fh::core::assist::utility::To_time_str(pQueryOrder->m_Timestamp));	
 
 	 LOG_INFO("client_order_id:",pQueryOrder->m_ClientOrderToken);
 	 LOG_INFO("account:",pQueryOrder->m_Userid);
