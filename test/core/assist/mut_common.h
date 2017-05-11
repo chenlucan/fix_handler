@@ -5,9 +5,28 @@
 #include <string>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <quickfix/Message.h>
+#include <quickfix/DataDictionaryProvider.h>
+#include <quickfix/fix42/Logon.h>
+#include <quickfix/fix42/Logout.h>
+#include <quickfix/fix42/Heartbeat.h>
+#include <quickfix/fix42/TestRequest.h>
+#include <quickfix/fix42/SequenceReset.h>
+#include <quickfix/fix42/ResendRequest.h>
+#include <quickfix/fix42/Reject.h>
+#include <quickfix/fix42/NewOrderSingle.h>
+#include <quickfix/fix42/ExecutionReport.h>
+#include <quickfix/fix42/BusinessMessageReject.h>
+#include <quickfix/fix42/OrderCancelReject.h>
+#include <quickfix/fix42/OrderStatusRequest.h>
+#include <quickfix/fix42/OrderCancelRequest.h>
+#include <quickfix/fix42/OrderCancelReplaceRequest.h>
+
 #include "core/global.h"
 #include "pb/ems/ems.pb.h"
 #include "pb/dms/dms.pb.h"
+
+#include "cme/exchange/order_manager.h"
+
 
 namespace fh
 {
@@ -151,6 +170,35 @@ namespace common
     // std::vector<std::string>
     void Read_packets(std::vector<std::string> &packets, const std::string &filename, const std::string &packet_from, const std::string &packet_start_indicate = "=");
 
+    void fillHeader( FIX::Header& header, const char* sender, const char* target, int seq );
+    
+    FIX42::ResendRequest createResendRequest( const char* sender, const char* target, int seq, int begin, int end );
+    
+    FIX42::ExecutionReport createExecutionReport( const char* sender, const char* target, int seq );    
+        
+    FIX42::Logon createLogon( const char* sender, const char* target, int seq );
+    
+    FIX42::Logout createLogout( const char* sender, const char* target, int seq );
+    
+    FIX42::Heartbeat createHeartbeat( const char* sender, const char* target, int seq );
+    
+    FIX42::TestRequest createTestRequest( const char* sender, const char* target, int seq, const char* id );
+    
+    FIX42::SequenceReset createSequenceReset( const char* sender, const char* target, int seq, int newSeq );
+    
+    FIX42::Message createMessage(const char* sender, const char* target, int seq, const char* type );
+    
+    FIX42::OrderCancelRequest createOrderCancelRequest42(
+            const std::string &cl_order_id,
+            const std::string &orig_cl_order_id,
+            char side,
+            const std::string &symbol,
+            const std::string &order_id,
+            const std::string &security_desc,
+            const char* sender, 
+            const char* target,
+            int seq);
+    
 } // namespace utility
 } // namespace assist
 } // namespace core

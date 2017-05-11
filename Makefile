@@ -42,7 +42,7 @@ UT_MARKET_SETTINGS =  $(BIN_PATH)/mut_cmemarket_revbuf.log $(BIN_PATH)/market_by
 					  $(BIN_PATH)/market_627_5_3_msm_5.log $(BIN_PATH)/market_627_5_3_msm_6.log $(BIN_PATH)/market_627_5_3_msm_7.log \
 					  $(BIN_PATH)/market_609_5_3_sdmfo_1.log $(BIN_PATH)/market_627_5_3_sdmff_1.log $(BIN_PATH)/market_627_5_3_qty_pc_1st_instr.log \
 					  $(BIN_PATH)/market_627_5_3_qty_pc_2nd_instr.log
-SETTINGS += $(UT_MARKET_SETTINGS);
+SETTINGS += $(UT_MARKET_SETTINGS)
 
 ALL_OBJS =  $(filter-out $(wildcard $(BIN_PATH)/*_test.o), $(wildcard $(BIN_PATH)/*.o)) 
 TEST_OBJS = $(BIN_PATH)/utility_unittest.o $(BIN_PATH)/mut_common.o $(BIN_PATH)/mut_market_simulater.o $(BIN_PATH)/mut_exchange_simulater.o $(BIN_PATH)/mut_book_sender.o $(BIN_PATH)/mut_book_manager.o  \

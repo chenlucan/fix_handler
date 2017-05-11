@@ -10,6 +10,9 @@
 
 #include "cme/market/message/message_utility.h"
 
+#include "cme/exchange/order_manager.h"
+
+
 #include "mut_common.h"
 
 namespace fh
@@ -139,7 +142,134 @@ namespace common
 
         return;
     }
+    
+    void fillHeader( FIX::Header& header, const char* sender, const char* target, int seq )
+    {
+        header.setField( FIX::SenderCompID( sender ) );
+        header.setField( FIX::TargetCompID( target ) );
+        header.setField( FIX::SendingTime() );
+        header.setField( FIX::MsgSeqNum( seq ) );
+    }
 
+    FIX42::ResendRequest createResendRequest( const char* sender, const char* target, int seq, int begin, int end )
+    {
+        FIX42::ResendRequest resendRequest;
+        resendRequest.set( FIX::BeginSeqNo( begin ) );
+        resendRequest.set( FIX::EndSeqNo( end ) );
+        fillHeader( resendRequest.getHeader(), sender, target, seq );
+        return resendRequest;
+    }
+
+    FIX42::ExecutionReport createExecutionReport( const char* sender, const char* target, int seq )
+    {
+        //using namespace FIX;
+        FIX42::ExecutionReport executionReport( FIX::OrderID("ID"), FIX::ExecID("ID"), FIX::ExecTransType('0'), FIX::ExecType('0'), FIX::OrdStatus('0'), FIX::Symbol("SYMBOL"), FIX::Side(FIX::Side_BUY), FIX::LeavesQty(100), FIX::CumQty(0), FIX::AvgPx(0) );
+        fillHeader( executionReport.getHeader(), sender, target, seq );
+        FIX42::ExecutionReport::NoContraBrokers noContraBrokers;
+        noContraBrokers.set( FIX::ContraBroker("BROKER") );
+        noContraBrokers.set( FIX::ContraTrader("TRADER") );
+        noContraBrokers.set( FIX::ContraTradeQty(100) );
+        noContraBrokers.set( FIX::ContraTradeTime() );
+        executionReport.addGroup( noContraBrokers );
+        noContraBrokers.set( FIX::ContraBroker("BROKER2") );
+        noContraBrokers.set( FIX::ContraTrader("TRADER2") );
+        noContraBrokers.set( FIX::ContraTradeQty(100) );
+        noContraBrokers.set( FIX::ContraTradeTime() );
+        executionReport.addGroup( noContraBrokers );
+        return executionReport;
+    }
+    
+    
+    
+    FIX42::Logon createLogon( const char* sender, const char* target, int seq )
+    {
+        FIX42::Logon logon;
+        logon.set( FIX::EncryptMethod( 0 ) );
+        logon.set( FIX::HeartBtInt( 30 ) );
+        fillHeader( logon.getHeader(), sender, target, seq );
+        return logon;
+    }
+    
+    FIX42::Logout createLogout( const char* sender, const char* target, int seq )
+    {
+        FIX42::Logout logout;
+        fillHeader( logout.getHeader(), sender, target, seq );
+        return logout;
+    }
+    
+    FIX42::Heartbeat createHeartbeat( const char* sender, const char* target, int seq )
+    {
+        FIX42::Heartbeat heartbeat;
+        fillHeader( heartbeat.getHeader(), sender, target, seq );
+        return heartbeat;
+    }
+    
+    FIX42::TestRequest createTestRequest( const char* sender, const char* target, int seq, const char* id )
+    {
+        FIX42::TestRequest testRequest;
+        testRequest.set( FIX::TestReqID( id ) );
+        fillHeader( testRequest.getHeader(), sender, target, seq );
+        return testRequest;
+    }
+    
+    FIX42::SequenceReset createSequenceReset( const char* sender, const char* target, int seq, int newSeq )
+    {
+        FIX42::SequenceReset sequenceReset;
+        sequenceReset.set( FIX::NewSeqNo( newSeq ) );
+        fillHeader( sequenceReset.getHeader(), sender, target, seq );
+        return sequenceReset;
+    }
+    
+    FIX42::Message createMessage(const char* sender, const char* target, int seq, const char* type )
+    {
+        FIX::Message message;
+        message.getHeader().setField(FIX::BeginString("FIX.4.2"));
+        message.getHeader().setField(FIX::SenderCompID(sender)); //"CME"
+        message.getHeader().setField(FIX::TargetCompID(target)); // "2E0004N"
+        message.getHeader().setField(FIX::MsgType(type)); // FIX::MsgType_OrderMassActionReport
+        message.getHeader().setField(FIX::MsgSeqNum( seq ));
+        message.setField(FIX::Account("ACCOUNT"));
+        message.setField(FIX::ClOrdID("CLORDID"));
+        
+        return message;
+    }
+    
+    
+    FIX42::OrderCancelRequest createOrderCancelRequest42(
+            const std::string &cl_order_id,
+            const std::string &orig_cl_order_id,
+            char side,
+            const std::string &symbol,
+            const std::string &order_id,
+            const std::string &security_desc,            
+            const char* sender, 
+            const char* target,
+            int seq)
+    {
+        FIX42::OrderCancelRequest orderCancelRequest;
+        orderCancelRequest.set(FIX::Account("account"));
+        orderCancelRequest.set(FIX::ClOrdID(cl_order_id));
+        orderCancelRequest.set(FIX::OrderID(order_id));
+        orderCancelRequest.set(FIX::OrigClOrdID(orig_cl_order_id));
+        orderCancelRequest.set(FIX::Side(side));  // FIX::Side(FIX::Side_BUY)
+        //orderCancelRequest.set(FIX::Symbol(symbol));		// 目前用不到
+        orderCancelRequest.set(FIX::TransactTime(true));
+        orderCancelRequest.set(FIX::SecurityDesc(security_desc));
+        orderCancelRequest.set(FIX::SecurityType("security_type"));
+
+        // 下面的 tag，目前 quickfix 不支持，所以用下面这种方式设置
+        orderCancelRequest.setField(fh::cme::exchange::CmeFixField::CorrelationClOrdID, cl_order_id);
+
+        // 下面的 tag，目前 quickfix 的 OrderCancelRequest 不支持，所以用下面这种方式设置
+        orderCancelRequest.setField(FIX::FIELD::ManualOrderIndicator, "Y");
+
+        fillHeader( orderCancelRequest.getHeader(), sender, target, seq );
+        orderCancelRequest.getHeader().setField( FIX::MsgType( FIX::MsgType_OrderCancelReject ) );
+        
+        return orderCancelRequest;
+    }
+
+    
     
 } // namespace utility
 } // namespace assist
