@@ -30,7 +30,7 @@ namespace utility
     }
 
     // get current time in special format
-    std::string Current_time_str(const std::string &format)
+    std::string Current_time_str(const char *format)
     {
         std::ostringstream ss;
         auto *facet = new boost::posix_time::time_facet(format);    // not required to delete it
