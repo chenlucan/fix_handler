@@ -55,13 +55,14 @@ ORIGINAL_SENDER_TARGET = $(BIN_PATH)/original_sender_test
 TEST_TARGET = $(BIN_PATH)/utest
 REM_MARKET_TARGET = $(BIN_PATH)/rem_market_test
 REM_EXCHANGE_TARGET = $(BIN_PATH)/rem_exchange_test
+REM_EFH_MARKET_TARGET = $(BIN_PATH)/rem_efhmarket_test
     
 default: all;
     
 include objs.mk
 include rem.mk
     
-all: createdir rem_exchange_test rem_market usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender
+all: createdir rem_efhmarket rem_exchange_test rem_market usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender
 
 rem_exchange_test: $(BIN_PATH)/rem_exchange_main.o $(BIN_PATH)/rem_exchange_application.o $(BIN_PATH)/rem_communicator.o \
 			 $(COMM_OBJS) 
@@ -71,6 +72,10 @@ rem_market: $(BIN_PATH)/rem_market_main.o $(BIN_PATH)/rem_market_manager.o $(BIN
               $(BIN_PATH)/rem_book_manager.o \
 			 $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(REM_MARKET_TARGET) $?	 
+	
+rem_efhmarket: $(BIN_PATH)/rem_efh_market_main.o $(BIN_PATH)/rem_efhmarket.o $(BIN_PATH)/rem_guava_quote.o $(BIN_PATH)/rem_socket_multicast.o $(BIN_PATH)/rem_efhmarket_manager.o \
+			 $(COMM_OBJS) 
+	$(COMPILE_COMMAND) -o $(REM_EFH_MARKET_TARGET) $?	 	
 
  
 createdir:
