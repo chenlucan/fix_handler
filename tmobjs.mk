@@ -41,3 +41,6 @@ $(BIN_PATH)/mut_market_simulater.o: $(TEST_PATH)/tmalpha/market/mut_market_simul
 $(BIN_PATH)/mut_exchange_simulater.o: $(TEST_PATH)/tmalpha/exchange/mut_exchange_simulater.cc
 	$(TEST_COMPILE_COMMAND) -c -o $@ $<
     
+$(BIN_PATH)/mut_trade_simulater.o: $(TEST_PATH)/tmalpha/trade/mut_trade_simulater.cc
+	$(TEST_COMPILE_COMMAND) -c -o $@ $<
+    
