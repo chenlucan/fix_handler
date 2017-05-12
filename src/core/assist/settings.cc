@@ -1,4 +1,5 @@
 
+#include <stdexcept>
 #include <boost/property_tree/ini_parser.hpp>
 #include "core/assist/settings.h"
 
@@ -21,14 +22,28 @@ namespace assist
 
     const std::string &Settings::Get(const std::string &key) const
     {
-        auto pos = key.find(".");
-        if(pos == std::string::npos) throw std::invalid_argument("key[" + key + "] is invalid");
-        return m_sections.at(key.substr(0, pos)).at(key.substr(pos+1));
+        try
+        {
+            auto pos = key.find(".");
+            if(pos == std::string::npos) throw std::invalid_argument("setting key[" + key + "] is invalid");
+            return m_sections.at(key.substr(0, pos)).at(key.substr(pos+1));
+        }
+        catch(const std::out_of_range& oor)
+        {
+            throw std::invalid_argument("setting key[" + key + "] not found");
+        }
     }
 
     const std::unordered_map<std::string, std::string> &Settings::Get_section(const std::string &key) const
     {
-        return m_sections.at(key);
+        try
+        {
+            return m_sections.at(key);
+        }
+        catch(const std::out_of_range& oor)
+        {
+            throw std::invalid_argument("setting key[" + key + "] not found");
+        }
     }
 
     void Settings::Read_settings(const std::string &setting_file)
