@@ -2,13 +2,13 @@
 #ifndef __FH_TMALPHA_TRADE_TRADE_ORDER_BOX_H__
 #define __FH_TMALPHA_TRADE_TRADE_ORDER_BOX_H__
 
+#include <mutex>
 #include <string>
 #include <list>
 #include <map>
 #include "core/global.h"
 #include "pb/ems/ems.pb.h"
 #include "tmalpha/trade/comparable_price.h"
-#include "tmalpha/trade/order_expired_listener.h"
 
 namespace fh
 {
@@ -16,11 +16,11 @@ namespace tmalpha
 {
 namespace trade
 {
-    // 每个合约的所有订单，按照价位分组，且最优价位靠前
+    // 某个合约的所有订单，按照价位分组，且最优价位靠前
     class TradeOrderBox
     {
         public:
-            TradeOrderBox(const std::string &contract_name, OrderExpiredListener *expired_listener);
+            explicit TradeOrderBox(const std::string &contract_name);
             virtual ~TradeOrderBox();
 
         public:
@@ -38,8 +38,8 @@ namespace trade
             pb::ems::Fill Fill_order(const pb::ems::Order *order, const std::string &fill_id, OrderSize filled_quantity, OrderPrice fill_price);
             // 一个未成交订单成交后需要将成交订单信息插入到成交列表，同时修改未成交订单信息
             pb::ems::Fill Fill_working_order(pb::ems::Order *working_order, const std::string &fill_id, OrderSize filled_quantity, OrderPrice fill_price);
-            // 查看当前未成交订单中有没有过期的，有的话就将它删除
-            void Delete_expired_order();
+            // 查看当前未成交订单中有没有过期的，有的话就将它删除并返回
+            std::list<pb::ems::Order*> Delete_expired_order();
             // 查询指定订单状态，返回： 1：已删除 2：未成交（或者部分成交） 3：全部已成交  4：找不到
             int Order_status(const std::string &client_order_id) const;
             // 找到未成交订单，不存在的场合返回 null
@@ -62,8 +62,6 @@ namespace trade
         private:
             // 合约名称
             std::string m_contract_name;
-            // 订单过期监听
-            OrderExpiredListener *m_expired_listener;
             // 每个价位的 bid 未成交订单列表（价位由高到低）
             std::map<ComparablePrice, std::list<pb::ems::Order*>> m_bid;
             // 每个价位的 ask 未成交订单列表（价位由低到高）
@@ -74,6 +72,8 @@ namespace trade
             std::map<std::string, pb::ems::Order*> m_canceled_orders;
             // 所有的已成交订单（以 client order id 为 key）
             std::multimap<std::string, pb::ems::Fill> m_filled_orders;
+            // 内部数据的读写需要加锁
+            mutable std::mutex m_mutex;
 
         private:
             DISALLOW_COPY_AND_ASSIGN(TradeOrderBox);

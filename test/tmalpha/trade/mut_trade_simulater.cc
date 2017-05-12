@@ -55,7 +55,7 @@ TEST(TradeSimulaterTest, Test002_AddInvalidOrder)
     // 此时由于订单的合约不存在，会被拒绝
     auto received_result = exchange_listener.orders();
     EXPECT_EQ(received_result.size(), 1);
-    EXPECT_EQ(received_result[0].message(), "contract not exist");
+    EXPECT_EQ(received_result[0].message(), (const char *)fh::tmalpha::trade::Message::CONTRACT_NOT_FOUND);
 
     trade_simulater.Stop();
 }

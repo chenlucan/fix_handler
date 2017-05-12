@@ -127,7 +127,7 @@ tmalphaex: $(BIN_PATH)/trade_matching_exchange_alpha_test.o $(BIN_PATH)/tmalpha_
 	$(COMPILE_COMMAND) -o $(TRADE_MATCHING_EXCHANGE_ALPHA_TARGET) $? 
 				     
 tmalphatrade: $(BIN_PATH)/trade_matching_trade_alpha_test.o	$(BIN_PATH)/trade_market_state.o $(BIN_PATH)/trade_market_manager.o \
-						   $(BIN_PATH)/trade_order_box.o $(BIN_PATH)/trade_simulater.o $(BIN_PATH)/tmalpha_trade_application.o \
+						   $(BIN_PATH)/trade_order_box.o $(BIN_PATH)/trade_order_manager.o $(BIN_PATH)/trade_simulater.o $(BIN_PATH)/tmalpha_trade_application.o \
 						   $(BIN_PATH)/book_sender.o $(BIN_PATH)/strategy_communicator.o $(COMM_OBJS)
 	$(COMPILE_COMMAND) -o $(TRADE_MATCHING_TRADE_ALPHA_TARGET) $? 
 						   			     

@@ -20,6 +20,9 @@ $(BIN_PATH)/trade_market_manager.o: $(SRC_PATH)/tmalpha/trade/trade_market_manag
 $(BIN_PATH)/trade_order_box.o: $(SRC_PATH)/tmalpha/trade/trade_order_box.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
+$(BIN_PATH)/trade_order_manager.o: $(SRC_PATH)/tmalpha/trade/trade_order_manager.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/trade_simulater.o: $(SRC_PATH)/tmalpha/trade/trade_simulater.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 

@@ -10,10 +10,11 @@
 #include "core/exchange/exchangei.h"
 #include "core/exchange/exchangelisteneri.h"
 #include "pb/ems/ems.pb.h"
-#include "tmalpha/trade/trade_order_box.h"
+#include "tmalpha/trade/trade_order_manager.h"
 #include "tmalpha/trade/trade_market_manager.h"
 #include "tmalpha/trade/trade_contract_assist.h"
 #include "tmalpha/trade/trade_algorithm.h"
+
 
 namespace fh
 {
@@ -21,6 +22,26 @@ namespace tmalpha
 {
 namespace trade
 {
+    // 用于返回处理结果（response）时的消息文字
+    struct Message
+    {
+        static constexpr const char *CLIENT_ORDER_ID_EXIST = "client order id already exist";
+        static constexpr const char *WORKING_ORDER_NOT_FOUND = "working order not found";
+        static constexpr const char *ORDER_CANCELLED = "order cancelled";
+        static constexpr const char *CONTRACT_NOT_FOUND = "order's contract not found";
+        static constexpr const char *ORDER_ALREADY_CANCELLED = "order is already deleted";
+        static constexpr const char *ORDER_ALREADY_FILLED = "order is already filled";
+        static constexpr const char *ORDER_NOT_FOUND = "order not found";
+        static constexpr const char *ORDER_EXPIRED = "order expired";
+        static constexpr const char *ORDER_PRICE_TOO_LOW = "order price too low";
+        static constexpr const char *ORDER_PRICE_TOO_HIGH = "order price too high";
+        static constexpr const char *ORDER_PRICE_INVALID = "order price invalid";
+        static constexpr const char *ORDER_TYPE_INVALID = "order type invalid";
+        static constexpr const char *ORDER_BS_INVALID = "order must be buy or sell";
+        static constexpr const char *LIMIT_ORDER_QUANTITY_INVALID = "limit order must set quantity";
+        static constexpr const char *MARKET_ORDER_QUANTITY_INVALID = "market order's quantity must be 0";
+    };
+
     class TradeSimulater : public core::exchange::ExchangeI, public OrderExpiredListener
     {
         public:
@@ -65,7 +86,7 @@ namespace trade
             std::string Next_exchange_order_id();
             std::string Next_fill_id();
             std::string Check_order(const pb::ems::Order& order) const;
-            void Match_order(TradeOrderBox *order_box, pb::ems::Order &order);
+            void Match_order(pb::ems::Order &order);
             static pb::ems::Order Make_reject_response(const pb::ems::Order& org_order, const std::string &reject_reason);
             static pb::ems::Order Make_cancel_response(const pb::ems::Order& org_order, const std::string &cancel_reason);
 
@@ -75,7 +96,7 @@ namespace trade
             TradeAlgorithm *m_match_algorithm;
             TradeContractAssist m_contract_assist;
             TradeMarketManager m_market_manager;
-            std::unordered_map<std::string, TradeOrderBox*> m_trade_orders;
+            TradeOrderManager m_order_manager;
             std::atomic<std::uint32_t> m_exchange_order_id;
             std::atomic<std::uint32_t> m_fill_id;
 

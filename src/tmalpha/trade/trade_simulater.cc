@@ -2,7 +2,6 @@
 #include <boost/algorithm/string.hpp>
 #include "core/assist/utility.h"
 #include "core/assist/logger.h"
-#include "core/strategy/invalid_order.h"
 #include "tmalpha/trade/trade_simulater.h"
 
 namespace fh
@@ -13,11 +12,10 @@ namespace trade
 {
 
     TradeSimulater::TradeSimulater(
-            fh::core::market::MarketListenerI *market_listener,
-            fh::core::exchange::ExchangeListenerI *exchange_listener)
+            fh::core::market::MarketListenerI *market_listener, fh::core::exchange::ExchangeListenerI *exchange_listener)
     : fh::core::exchange::ExchangeI(exchange_listener),
       m_exchange_listener(exchange_listener), m_init_orders(), m_match_algorithm(nullptr),
-      m_contract_assist(), m_market_manager(market_listener), m_trade_orders(),
+      m_contract_assist(), m_market_manager(market_listener), m_order_manager(this),
       m_exchange_order_id(0), m_fill_id(0)
     {
         // noop
@@ -25,7 +23,7 @@ namespace trade
 
     TradeSimulater::~TradeSimulater()
     {
-        for(const auto &t : m_trade_orders) { delete t.second; }
+        // noop
     }
 
     // 加载初期合约定义信息
@@ -43,8 +41,8 @@ namespace trade
             m_contract_assist.Add(tc);
             // 初期化行情管理模块
             m_market_manager.Add_contract(tc.name, tc.depth);
-            // 初期化每个合约的订单管理模块
-            m_trade_orders[name] = new TradeOrderBox(name, this);
+            // 初期化订单管理模块
+            m_order_manager.Add_contract(tc.name);
         }
     }
 
@@ -95,15 +93,12 @@ namespace trade
             return;
         }
 
-        // 找到该合约的所有订单信息
-        TradeOrderBox *order_box = m_trade_orders[order.contract()];
-
         // 新订单的 client order id 不能已存在
         // 1：已删除；2：未成交（或者部分成交）；3：全部已成交；4：找不到
-        int status = order_box->Order_status(order.client_order_id());
+        int status = m_order_manager.Order_status(order.contract(), order.client_order_id());
         if(status != 4)
         {
-            m_exchange_listener->OnOrder(TradeSimulater::Make_reject_response(order, "client order id duplicated"));
+            m_exchange_listener->OnOrder(TradeSimulater::Make_reject_response(order, Message::CLIENT_ORDER_ID_EXIST));
             return;
         }
 
@@ -113,7 +108,8 @@ namespace trade
         pending.set_status(pb::ems::OrderStatus::OS_Pending);
         m_exchange_listener->OnOrder(pending);
 
-        this->Match_order(order_box, pending);
+        // 看看能否成交
+        this->Match_order(pending);
     }
 
     // implement of ExchangeI
@@ -129,15 +125,12 @@ namespace trade
             return;
         }
 
-        // 找到该合约的所有订单信息
-        TradeOrderBox *order_box = m_trade_orders[order.contract()];
-
         // 必须存在指定的未成交订单
         // 1：已删除；2：未成交（或者部分成交）；3：全部已成交；4：找不到
-        int status = order_box->Order_status(order.client_order_id());
+        int status = m_order_manager.Order_status(order.contract(), order.client_order_id());
         if(status != 2)
         {
-            m_exchange_listener->OnOrder(TradeSimulater::Make_reject_response(order, "client order id not working"));
+            m_exchange_listener->OnOrder(TradeSimulater::Make_reject_response(order, Message::WORKING_ORDER_NOT_FOUND));
             return;
         }
 
@@ -147,12 +140,13 @@ namespace trade
         m_exchange_listener->OnOrder(pending);
 
         // 删除旧订单（不需要放入删除订单列表），并将结果发送出去
-        pb::ems::Order deleted_order = order_box->Delete_order(order, false);
-        m_exchange_listener->OnOrder(TradeSimulater::Make_cancel_response(deleted_order, "order deleted"));
+        pb::ems::Order deleted_order = m_order_manager.Delete_order(order, false);
+        m_exchange_listener->OnOrder(TradeSimulater::Make_cancel_response(deleted_order, Message::ORDER_CANCELLED));
         // 修改并发送行情数据
         m_market_manager.Change_market_on_order_deleted(&deleted_order);
 
-        this->Match_order(order_box, pending);
+        // 看看能否成交
+        this->Match_order(pending);
     }
 
     // implement of ExchangeI
@@ -163,24 +157,23 @@ namespace trade
         // 订单对应的合约不存在
         if(!m_contract_assist.Is_contract_exist(order.contract()))
         {
-            m_exchange_listener->OnOrder(TradeSimulater::Make_reject_response(order, "order contract not found"));
+            m_exchange_listener->OnOrder(TradeSimulater::Make_reject_response(order, Message::CONTRACT_NOT_FOUND));
             return;
         }
 
-        // 查询指定订单的状态
-        TradeOrderBox *order_box = m_trade_orders[order.contract()];
         // 1：已删除；2：未成交（或者部分成交）；3：全部已成交；4：找不到
-        int status = order_box->Order_status(order.client_order_id());
+        int status = m_order_manager.Order_status(order.contract(), order.client_order_id());
         if(status != 2)
         {
-            static std::string reject_reasons[]{"", "order is already deleted", "", "order is all filled", "order not found"};
+            static std::string reject_reasons[]{
+                    "", Message::ORDER_ALREADY_CANCELLED, "", Message::ORDER_ALREADY_FILLED, Message::ORDER_NOT_FOUND};
             m_exchange_listener->OnOrder(TradeSimulater::Make_reject_response(order, reject_reasons[status]));
             return;
         }
 
         // 删除指定订单，并将结果发送出去
-        pb::ems::Order deleted_order = order_box->Delete_order(order);
-        m_exchange_listener->OnOrder(TradeSimulater::Make_cancel_response(deleted_order, "order deleted"));
+        pb::ems::Order deleted_order = m_order_manager.Delete_order(order);
+        m_exchange_listener->OnOrder(TradeSimulater::Make_cancel_response(deleted_order, Message::ORDER_CANCELLED));
 
         // 修改并发送行情数据
         m_market_manager.Change_market_on_order_deleted(&deleted_order);
@@ -194,13 +187,18 @@ namespace trade
         // 订单对应的合约不存在
         if(!m_contract_assist.Is_contract_exist(order.contract()))
         {
-            m_exchange_listener->OnOrder(TradeSimulater::Make_reject_response(order, "order contract not found"));
+            m_exchange_listener->OnOrder(TradeSimulater::Make_reject_response(order, Message::CONTRACT_NOT_FOUND));
             return;
         }
 
         // 查询指定订单的状态
-        TradeOrderBox *order_box = m_trade_orders[order.contract()];
-        pb::ems::Order result = order_box->Query_order(order);
+        pb::ems::Order result = m_order_manager.Query_order(order);
+        // Reject 说明指定订单没找到
+        if(result.status() == pb::ems::OrderStatus::OS_Rejected)
+        {
+            result.set_message(Message::ORDER_NOT_FOUND);
+        }
+
         m_exchange_listener->OnOrder(result);
     }
 
@@ -220,7 +218,7 @@ namespace trade
     void TradeSimulater::On_order_expired(const pb::ems::Order *order)
     {
         // 通知订单监听者
-        m_exchange_listener->OnOrder(TradeSimulater::Make_cancel_response(*order, "order expired"));
+        m_exchange_listener->OnOrder(TradeSimulater::Make_cancel_response(*order, Message::ORDER_EXPIRED));
         // 修改并发送行情数据
         m_market_manager.Change_market_on_order_deleted(order);
     }
@@ -243,41 +241,28 @@ namespace trade
         TradeOrderPreCheckStatus ocs = m_contract_assist.Check_order(order);
         if(ocs != TradeOrderPreCheckStatus::NORMAL)
         {
-            static std::string reject_reasons[]{"", "contract not exist", "price too low", "price too high", "price not valid"};
+            static std::string reject_reasons[]{
+                    "", Message::CONTRACT_NOT_FOUND, Message::ORDER_PRICE_TOO_LOW, Message::ORDER_PRICE_TOO_HIGH, Message::ORDER_PRICE_INVALID};
             return reject_reasons[(int)ocs];
         }
 
         // 新订单类型要是 Limit 或者 Market
-        if(order.order_type() == pb::ems::OrderType::OT_None)
-        {
-            return "order type invalid";
-        }
-
+        if(order.order_type() == pb::ems::OrderType::OT_None) return Message::ORDER_TYPE_INVALID;
         // 新订单处理只能是买或者卖
-        if(order.buy_sell() == pb::ems::BuySell::BS_None)
-        {
-            return "order must be buy or sell";
-        }
-
-        // market 订单数量要为 0
-        if(order.order_type() == pb::ems::OrderType::OT_Limit && order.quantity() == 0)
-        {
-            return "limit order must set quantity";
-        }
-
+        if(order.buy_sell() == pb::ems::BuySell::BS_None) return Message::ORDER_BS_INVALID;
         // limit 订单数量要大于 0
-        if(order.order_type() == pb::ems::OrderType::OT_Market && order.quantity() != 0)
-        {
-            return "market order's quantity must be 0";
-        }
+        if(order.order_type() == pb::ems::OrderType::OT_Limit && order.quantity() == 0) return Message::LIMIT_ORDER_QUANTITY_INVALID;
+        // market 订单数量要为 0
+        if(order.order_type() == pb::ems::OrderType::OT_Market && order.quantity() != 0) return Message::MARKET_ORDER_QUANTITY_INVALID;
 
         return "";
     }
 
-    void TradeSimulater::Match_order(TradeOrderBox *order_box, pb::ems::Order &order)
+    void TradeSimulater::Match_order(pb::ems::Order &order)
     {
         // 看看能否成交
-        const std::map<ComparablePrice, std::list<pb::ems::Order*>> &opposite_working_orders = order_box->Opposite_working_orders(order.buy_sell());
+        const std::map<ComparablePrice, std::list<pb::ems::Order*>> &opposite_working_orders
+                        = m_order_manager.Opposite_working_orders(order.contract(), order.buy_sell());
         std::vector<MatchedOrder> matched_orders;
         // 返回：剩余未成交数量，是否需要马上删除该数量
         std::pair<OrderSize, bool> remainder = m_match_algorithm->Matches(matched_orders, order, opposite_working_orders);
@@ -290,9 +275,9 @@ namespace trade
 
             // 记录订单成交信息并发送出去
             std::string fill_id = this->Next_fill_id();
-            pb::ems::Fill fill = order_box->Fill_order(&order, fill_id, oppo.match_quantity, oppo.match_price);
+            pb::ems::Fill fill = m_order_manager.Fill_order(&order, fill_id, oppo.match_quantity, oppo.match_price);
             m_exchange_listener->OnFill(fill);
-            pb::ems::Fill wfill = order_box->Fill_working_order(oppo.match_order, fill_id, oppo.match_quantity, oppo.match_price);
+            pb::ems::Fill wfill = m_order_manager.Fill_working_order(oppo.match_order, fill_id, oppo.match_quantity, oppo.match_price);
             m_exchange_listener->OnFill(wfill);
 
             // 发送交易信息
@@ -313,13 +298,13 @@ namespace trade
             if(remainder.second)
             {
                 // 订单的剩余数量需要马上删除掉
-                const pb::ems::Order *deleted_order = order_box->Add_deleted_order(order);
-                m_exchange_listener->OnOrder(TradeSimulater::Make_cancel_response(*deleted_order, "order deleted"));
+                const pb::ems::Order *deleted_order = m_order_manager.Add_deleted_order(order);
+                m_exchange_listener->OnOrder(TradeSimulater::Make_cancel_response(*deleted_order, Message::ORDER_CANCELLED));
             }
             else
             {
                 // 订单的剩余数量需要加入到未成交订单列表
-                const pb::ems::Order *working_order = order_box->Add_order(order);
+                const pb::ems::Order *working_order = m_order_manager.Add_order(order);
                 m_exchange_listener->OnOrder(*working_order);
                 m_market_manager.Change_market_on_order_created(working_order);
             }
