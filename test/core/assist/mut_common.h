@@ -198,6 +198,8 @@ namespace common
             const char* sender, 
             const char* target,
             int seq);
+           
+    FIX42::NewOrderSingle createNewOrderSingle( const char* sender, const char* target, int seq );
     
 } // namespace utility
 } // namespace assist

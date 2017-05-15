@@ -269,6 +269,13 @@ namespace common
         return orderCancelRequest;
     }
 
+    FIX42::NewOrderSingle createNewOrderSingle( const char* sender, const char* target, int seq )
+    {
+      FIX42::NewOrderSingle newOrderSingle
+        ( FIX::ClOrdID("ID"), FIX::HandlInst('1'), FIX::Symbol("SYMBOL"), FIX::Side(FIX::Side_BUY), FIX::TransactTime(), FIX::OrdType(FIX::OrdType_MARKET) );
+      fillHeader( newOrderSingle.getHeader(), sender, target, seq );
+      return newOrderSingle;
+    }
     
     
 } // namespace utility
