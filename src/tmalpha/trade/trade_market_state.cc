@@ -1,4 +1,5 @@
 
+#include <sstream>
 #include "core/assist/logger.h"
 #include "tmalpha/trade/trade_market_state.h"
 
@@ -35,6 +36,7 @@ namespace trade
         else current_states[price] = size;
 
         LOG_INFO("add(", m_contract_name, "): ", price.To_string(), ", size=", size);
+        LOG_INFO("current books: ", this->To_string());
 
         // 如果影响到了最大深度内的数据，返回 1（只影响 L2）或者 2（影响 BBO），否则返回 0
         int level = std::distance(current_states.begin(), current_states.find(price));
@@ -45,7 +47,7 @@ namespace trade
     // 返回 0：不影响最大深度内的数据；1：影响 L2，不影响 BBO；2：影响 BBO
     int TradeMarketState::On_order_deleted(const pb::ems::Order *order)
     {
-        return this->On_order_deleted(order, order->quantity());
+        return this->Delete_order(order, order->quantity());
     }
 
     // 订单成交指定数量
@@ -53,7 +55,7 @@ namespace trade
     int TradeMarketState::On_order_filled(const pb::ems::Order *order, OrderSize filled_size)
     {
         // 订单成交，就把成交掉的价位上的数量相应的减少
-        return this->On_order_deleted(order, filled_size);
+        return this->Delete_order(order, filled_size);
     }
 
     // 按照本合约的最大深度，提取出 L2 行情数据
@@ -61,13 +63,15 @@ namespace trade
     {
         pb::dms::L2 l2_info;
         l2_info.set_contract(m_contract_name);
-        for(auto p = m_bid.cbegin(); p != m_bid.cend() && p != std::next(m_bid.cbegin(), m_depth); ++p)
+        for(auto p = m_bid.begin(); p != m_bid.end() ; ++p)
         {
             TradeMarketState::Fill_data_point(l2_info.add_bid(), *p);
+            if(l2_info.bid_size() >= (int)m_depth) break;
         }
-        for(auto p = m_ask.cbegin(); p != m_ask.cend() && p != std::next(m_ask.cbegin(), m_depth); ++p)
+        for(auto p = m_ask.begin(); p != m_ask.end(); ++p)
         {
             TradeMarketState::Fill_data_point(l2_info.add_offer(), *p);
+            if(l2_info.offer_size() >= (int)m_depth) break;
         }
 
         return l2_info;
@@ -92,7 +96,7 @@ namespace trade
 
     // 删除一个订单的指定数量
     // 返回 0：不影响最大深度内的数据；1：影响 L2，不影响 BBO；2：影响 BBO
-    int TradeMarketState::On_order_deleted(const pb::ems::Order *order, OrderSize delete_size)
+    int TradeMarketState::Delete_order(const pb::ems::Order *order, OrderSize delete_size)
     {
         // market 订单不影响行情
         if(order->order_type() == pb::ems::OrderType::OT_Market) return 0;
@@ -112,7 +116,8 @@ namespace trade
         // 如果删除过后该价位的数量为 0 了，就删除该价位
         if(current_states[price] == 0) current_states.erase(price);
 
-        LOG_INFO("delete", m_contract_name, ": ", price, ", size=", size);
+        LOG_INFO("delete(", m_contract_name, "): ", price, ", size=", size);
+        LOG_INFO("current books: ", this->To_string());
 
         // 如果影响到了最大深度内的数据，返回 1（只影响 L2）或者 2（影响 BBO），否则返回 0
         return level >= (int)m_depth ? 0 : (level == 0 ? 2 : 1);
@@ -123,6 +128,18 @@ namespace trade
     {
         dp->set_price(TO_REAL_PRICE(kv.first.Price()));
         dp->set_size(kv.second);
+    }
+
+    // 显示成字符串
+    std::string TradeMarketState::To_string() const
+    {
+        std::ostringstream os;
+        os << m_contract_name << "(" << m_depth <<"): ";
+        os << "bid=";
+        for(auto &b : m_bid) os << "[" << TO_REAL_PRICE(b.first.Price()) << ", " << b.second << "]";
+        os << "offer=";
+        for(auto &b : m_ask) os << "[" << TO_REAL_PRICE(b.first.Price()) << ", " << b.second << "]";
+        return os.str();
     }
 
 } // namespace trade

@@ -4,6 +4,7 @@
 
 #include <vector>
 #include "core/global.h"
+#include "core/assist/logger.h"
 #include "core/exchange/exchangelisteneri.h"
 
 namespace fh
@@ -23,12 +24,14 @@ namespace trade
             // implement of ExchangeListenerI
             void OnOrder(const ::pb::ems::Order &order) override
             {
+                LOG_INFO("On Order: ", fh::core::assist::utility::Format_pb_message(order));
                 m_orders.push_back(order);
             }
 
             // implement of ExchangeListenerI
             void OnFill(const ::pb::ems::Fill &fill) override
             {
+                LOG_INFO("On Fill: ", fh::core::assist::utility::Format_pb_message(fill));
                 m_fills.push_back(fill);
             }
 

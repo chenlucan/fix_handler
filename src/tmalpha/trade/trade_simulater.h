@@ -38,8 +38,9 @@ namespace trade
         static constexpr const char *ORDER_PRICE_INVALID = "order price invalid";
         static constexpr const char *ORDER_TYPE_INVALID = "order type invalid";
         static constexpr const char *ORDER_BS_INVALID = "order must be buy or sell";
-        static constexpr const char *LIMIT_ORDER_QUANTITY_INVALID = "limit order must set quantity";
-        static constexpr const char *MARKET_ORDER_QUANTITY_INVALID = "market order's quantity must be 0";
+        static constexpr const char *LIMIT_ORDER_PRICE_INVALID = "limit order must set price";
+        static constexpr const char *MARKET_ORDER_PRICE_INVALID = "market order's price must be 0";
+        static constexpr const char *ORDER_QUANTITY_INVALID = "order quantity invalid";
     };
 
     class TradeSimulater : public core::exchange::ExchangeI, public OrderExpiredListener

@@ -82,6 +82,7 @@ namespace trade
                 double price = std::stod(order.price());
                 OrderPrice nprice = TO_ORDER_PRICE(price);
 
+                if(price == 0) return TradeOrderPreCheckStatus::NORMAL;        // 价格有些场合下可以不设置
                 if(price != TO_REAL_PRICE(nprice)) return TradeOrderPreCheckStatus::INVALID_PRICE;     // 出现不足 1 分的价格
                 if(nprice > tc.max) return TradeOrderPreCheckStatus::PRICE_TOO_HIGH;
                 if(nprice < tc.min) return TradeOrderPreCheckStatus::PRICE_TOO_LOW;

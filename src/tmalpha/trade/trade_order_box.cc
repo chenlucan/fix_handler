@@ -1,4 +1,5 @@
 
+#include <sstream>
 #include <ctime>
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
@@ -41,6 +42,7 @@ namespace trade
         pb::ems::Order *new_order = new pb::ems::Order(order);
         this->Add_working_order(new_order);
 
+        LOG_INFO("Price Map: ", this->Price_orders_to_string());
         return new_order;
     }
 
@@ -71,6 +73,7 @@ namespace trade
         if(is_add_to_cancelled) m_canceled_orders.insert({order.client_order_id(), target});
         else  delete target;
 
+        LOG_INFO("Price Map: ", this->Price_orders_to_string());
         return result;
     }
 
@@ -141,6 +144,7 @@ namespace trade
         // 修改原始未成交订单数量（减去已成交数量）
         this->Working_order_filled(working_order, filled_quantity);
 
+        LOG_INFO("Price Map: ", this->Price_orders_to_string());
         return fill;
     }
 
@@ -167,6 +171,7 @@ namespace trade
             LOG_INFO("order is expired: ", fh::core::assist::utility::Format_pb_message(*target));
         }
 
+        LOG_INFO("Price Map: ", this->Price_orders_to_string());
         return deleted;
     }
 
@@ -247,12 +252,12 @@ namespace trade
         fill.set_exchange_order_id(org_order->exchange_order_id());
         fill.set_contract(org_order->contract());
         fill.set_buy_sell(org_order->buy_sell());
-        fh::core::assist::utility::To_pb_time(fill.mutable_fill_time(), fh::core::assist::utility::Current_time_str("yyyyMMdd- HH:mm:ss.sss"));
+        fh::core::assist::utility::To_pb_time(fill.mutable_fill_time(), fh::core::assist::utility::Current_time_str("%Y%m%d-%H:%M:%S.%f").substr(0, 21));
 
         // 登记到已成交订单列表
         m_filled_orders.insert({fill.client_order_id(), fill});
 
-        LOG_INFO("add filled order:", fh::core::assist::utility::Format_pb_message(fill));
+        LOG_DEBUG("order filled:", fh::core::assist::utility::Format_pb_message(fill));
         return fill;
     }
 
@@ -264,7 +269,7 @@ namespace trade
         OrderSize current_filled_quantity = order->filled_quantity();
         if(working_quantity == fill_quantity)
         {
-            LOG_INFO("order full filled: ", fill_quantity);
+            LOG_DEBUG("order full filled: ", fill_quantity);
 
             // 全部成交了，要从价位中删除
             pb::ems::Order *target = this->Remove_working_order(order->client_order_id());
@@ -273,7 +278,7 @@ namespace trade
         }
         else
         {
-            LOG_INFO("order partial filled: ", working_quantity, " - ", fill_quantity);
+            LOG_DEBUG("order partial filled: ", fill_quantity, " / ", working_quantity);
 
             // 部分成交，修改未成交数量和已成交数量
             order->set_quantity(working_quantity - fill_quantity);
@@ -299,6 +304,29 @@ namespace trade
         if(utc.tm_mon + 1 < (int)order_date.month()) return false;
 
         return utc.tm_mday > (int)order_date.day();
+    }
+
+    // 将当前的待匹配订单的价位订单信息转换成字符串
+    std::string TradeOrderBox::Price_orders_to_string()
+    {
+        std::ostringstream os;
+        os << m_contract_name << ": ";
+        os << "bid=";
+        for(auto &b : m_bid)
+        {
+            os << "[" << TO_REAL_PRICE(b.first.Price()) << ", {";
+            for(auto &o : b.second) os << "(id=" << o->client_order_id() << ",price=" << o->price() << ",size=" << o->quantity() << ")";
+            os << "}]";
+        }
+        os << "offer=";
+        for(auto &b : m_ask)
+        {
+            os << "[" << TO_REAL_PRICE(b.first.Price()) << ", {";
+            for(auto &o : b.second) os << "(id=" << o->client_order_id() << ",price=" << o->price() << ",size=" << o->quantity() << ")";
+            os << "}]";
+        }
+
+        return os.str();
     }
 
 } // namespace trade

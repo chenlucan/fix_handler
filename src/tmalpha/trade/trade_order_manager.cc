@@ -68,7 +68,7 @@ namespace trade
         TradeOrderBox *box = this->Order_box(order.contract());
         pb::ems::Order result = box->Query_order(order);
 
-        LOG_INFO("query canceled:", fh::core::assist::utility::Format_pb_message(result));
+        LOG_INFO("query result:", fh::core::assist::utility::Format_pb_message(result));
         return result;
     }
 

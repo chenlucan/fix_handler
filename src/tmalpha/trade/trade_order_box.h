@@ -58,6 +58,8 @@ namespace trade
             void Working_order_filled(pb::ems::Order *order, OrderSize fill_quantity);
             // 看看一个交易中订单是否过期了
             static bool Is_expired(const pb::ems::Order* order);
+            // 将当前的待匹配订单的价位订单信息转换成字符串
+            std::string Price_orders_to_string();
 
         private:
             // 合约名称

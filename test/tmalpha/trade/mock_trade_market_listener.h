@@ -38,35 +38,35 @@ namespace trade
             // implement of MarketListenerI
             void OnContractDefinition(const pb::dms::Contract &contract)
             {
-                LOG_INFO("OnContractDefinition");
+                LOG_INFO("OnContractDefinition: ", fh::core::assist::utility::Format_pb_message(contract));
                 m_contracts.push_back(contract);
             }
 
             // implement of MarketListenerI
             void OnBBO(const pb::dms::BBO &bbo)
             {
-                LOG_INFO("OnBBO");
+                LOG_INFO("OnBBO: ", fh::core::assist::utility::Format_pb_message(bbo));
                 m_bbos.push_back(bbo);
             }
 
             // implement of MarketListenerI
             void OnBid(const pb::dms::Bid &bid)
             {
-                LOG_INFO("OnBid");
+                LOG_INFO("OnBid: ", fh::core::assist::utility::Format_pb_message(bid));
                 m_bids.push_back(bid);
             }
 
             // implement of MarketListenerI
             void OnOffer(const pb::dms::Offer &offer)
             {
-                LOG_INFO("OnOffer");
+                LOG_INFO("OnOffer: ", fh::core::assist::utility::Format_pb_message(offer));
                 m_offers.push_back(offer);
             }
 
             // implement of MarketListenerI
             void OnL2(const pb::dms::L2 &l2)
             {
-                LOG_INFO("OnL2");
+                LOG_INFO("OnL2: ", fh::core::assist::utility::Format_pb_message(l2));
                 m_l2s.push_back(l2);
             }
 
@@ -79,7 +79,7 @@ namespace trade
             // implement of MarketListenerI
             void OnTrade(const pb::dms::Trade &trade)
             {
-                LOG_INFO("OnTrade");
+                LOG_INFO("OnTrade: ", fh::core::assist::utility::Format_pb_message(trade));
                 m_trades.push_back(trade);
             }
 

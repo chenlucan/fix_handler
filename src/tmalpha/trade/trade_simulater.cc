@@ -250,11 +250,13 @@ namespace trade
         if(order.order_type() == pb::ems::OrderType::OT_None) return Message::ORDER_TYPE_INVALID;
         // 新订单处理只能是买或者卖
         if(order.buy_sell() == pb::ems::BuySell::BS_None) return Message::ORDER_BS_INVALID;
-        // limit 订单数量要大于 0
-        if(order.order_type() == pb::ems::OrderType::OT_Limit && order.quantity() == 0) return Message::LIMIT_ORDER_QUANTITY_INVALID;
-        // market 订单数量要为 0
-        if(order.order_type() == pb::ems::OrderType::OT_Market && order.quantity() != 0) return Message::MARKET_ORDER_QUANTITY_INVALID;
-
+        // limit 订单价格要大于 0
+        if(order.order_type() == pb::ems::OrderType::OT_Limit && std::stod(order.price()) == 0) return Message::LIMIT_ORDER_PRICE_INVALID;
+        // market 订单价格要为 0
+        if(order.order_type() == pb::ems::OrderType::OT_Market && std::stod(order.price()) != 0) return Message::MARKET_ORDER_PRICE_INVALID;
+        // 订单数量要大于 0
+        if(order.quantity() == 0) return Message::ORDER_QUANTITY_INVALID;
+        
         return "";
     }
 
@@ -270,8 +272,9 @@ namespace trade
         // 对每一个成交订单处理
         for(const auto &oppo : matched_orders)
         {
-            LOG_INFO("order matched: ", fh::core::assist::utility::Format_pb_message(*oppo.match_order));
-            LOG_INFO("    match price: ", TO_REAL_PRICE(oppo.match_price), ", match size: ", oppo.match_quantity);
+            pb::ems::Order matched = *oppo.match_order;
+            LOG_INFO("order matched: ", fh::core::assist::utility::Format_pb_message(matched));
+            LOG_INFO("match price: ", TO_REAL_PRICE(oppo.match_price), ", match size: ", oppo.match_quantity);
 
             // 记录订单成交信息并发送出去
             std::string fill_id = this->Next_fill_id();
@@ -283,17 +286,17 @@ namespace trade
             // 发送交易信息
             m_market_manager.Send_trade(order.contract(), oppo.match_price, oppo.match_quantity);
             // 发送行情信息
-            m_market_manager.Change_market_on_order_filled(oppo.match_order, oppo.match_quantity);
+            m_market_manager.Change_market_on_order_filled(&matched, oppo.match_quantity);
         }
 
-        LOG_INFO("remainder: ", remainder.first, ", cancel?:", remainder.second);
+        LOG_INFO("remainder unmatch size: ", remainder.first, ", cancel?:", remainder.second);
 
         // 还有剩余数量的话
         if(remainder.first > 0)
         {
             // 记录剩余数量和已成交数量
-            order.set_quantity(remainder.first);
             order.set_filled_quantity(order.quantity() - remainder.first);
+            order.set_quantity(remainder.first);
 
             if(remainder.second)
             {
@@ -317,7 +320,7 @@ namespace trade
         pb::ems::Order result(org_order);
         result.set_status(pb::ems::OrderStatus::OS_Rejected);
         result.set_message(reject_reason);
-        LOG_INFO("reject response:", fh::core::assist::utility::Format_pb_message(result));
+        LOG_DEBUG("reject response:", fh::core::assist::utility::Format_pb_message(result));
         return result;
     }
 
@@ -327,7 +330,7 @@ namespace trade
         pb::ems::Order result(org_order);
         result.set_status(pb::ems::OrderStatus::OS_Cancelled);
         result.set_message(cancel_reason);
-        LOG_INFO("cancel response:", fh::core::assist::utility::Format_pb_message(result));
+        LOG_DEBUG("cancel response:", fh::core::assist::utility::Format_pb_message(result));
         return result;
     }
 

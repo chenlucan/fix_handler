@@ -40,9 +40,11 @@ namespace trade
         private:
             // 删除一个订单的指定数量
             // 返回 0：不影响最大深度内的数据；1：影响 L2，不影响 BBO；2：影响 BBO
-            int On_order_deleted(const pb::ems::Order *order, OrderSize delete_size);
+            int Delete_order(const pb::ems::Order *order, OrderSize delete_size);
             // 生成行情数据：价位，数量
             static void Fill_data_point(pb::dms::DataPoint *dp, const std::pair<ComparablePrice, OrderSize> &kv);
+            // 显示成字符串
+            std::string To_string() const;
 
         private:
             // 合约名称
