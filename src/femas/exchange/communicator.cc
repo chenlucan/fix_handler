@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <time.h>
+#include <boost/container/flat_map.hpp>
 #include "communicator.h"
 #include "core/assist/logger.h"
 
@@ -193,7 +194,9 @@ void CUstpFtdcTraderManger::OnQryOrder(CUstpFtdcOrderField *pOrder)
         tmporder.set_filled_quantity(pOrder->VolumeTraded);
 		
 	 std::string tmpActionDay = pOrder->ActionDay;	
-        fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpActionDay);
+	 std::string tmpActiontime = pOrder->InsertTime;
+	 std::string tmpalltime = tmpActionDay + "-" + tmpActiontime + ".000";
+        fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpalltime);
 	 //end	
         //print message
         LOG_INFO("client_order_id:",pOrder->UserOrderLocalID);
@@ -292,7 +295,9 @@ void CUstpFtdcTraderManger::OnInsertOrder(CUstpFtdcInputOrderField  *pInputOrder
             tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
 	 }	
 	 std::string tmpActionDay = pInputOrder->ActionDay;	
-        fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpActionDay);	
+	 std::string tmpActiontime = "00:00:00";
+	 std::string tmpalltime = tmpActionDay + "-" + tmpActiontime + ".000";
+        fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpalltime);	
         //end	
         //print message
         LOG_INFO("client_order_id:",pInputOrder->OrderSysID);
@@ -390,7 +395,9 @@ void CUstpFtdcTraderManger::OnOrder(CUstpFtdcOrderField  *pOrder)
    
         //tmporder.set_message(report.single_report.text);
 	 std::string tmpActionDay = pOrder->ActionDay;	
-        fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpActionDay);	
+	 std::string tmpActiontime = pOrder->InsertTime;
+	 std::string tmpalltime = tmpActionDay + "-" + tmpActiontime + ".000";
+        fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpalltime);	
         //end	
         //print message
         LOG_INFO("client_order_id:",pOrder->OrderUserID);
@@ -433,8 +440,11 @@ void CUstpFtdcTraderManger::OnFill(CUstpFtdcTradeField *pTrade)
         tmpfill.set_client_order_id(GetOrderId(std::atoi(pTrade->UserOrderLocalID)));
 		
         tmpfill.set_exchange_order_id(pTrade->OrderSysID);		
-	 std::string tmpTradeTime = pTrade->TradeTime;	
-        fh::core::assist::utility::To_pb_time(tmpfill.mutable_fill_time(), tmpTradeTime);	
+
+	 std::string tmpActionDay = pTrade->ActionDay;	
+	 std::string tmpActiontime = pTrade->TradeTime;
+	 std::string tmpalltime = tmpActionDay + "-" + tmpActiontime + ".000";
+        fh::core::assist::utility::To_pb_time(tmpfill.mutable_fill_time(), tmpalltime);
         //end	
         //print message
         LOG_INFO("fill_id:",pTrade->TradeID);
@@ -563,6 +573,7 @@ bool CFemasGlobexCommunicator::Start(const std::vector<::pb::ems::Order> &init_o
 	 }
 	 sleep(0.1);  
     } 
+    m_strategy->OnExchangeReady(boost::container::flat_map<std::string, std::string>());	
     LOG_INFO("CFemasGlobexCommunicator::InitQuery is over ");	
     return true;
 }

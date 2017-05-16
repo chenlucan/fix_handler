@@ -39,7 +39,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	pb::dms::DataPoint *bid;// = l2_info.add_bid();
 	pb::dms::DataPoint *ask;// = l2_info.add_offer();
 	
-	if (pMarketData->BidPrice1==DBL_MAX)
+	if (pMarketData->BidPrice1==DBL_MAX || pMarketData->BidVolume1 <= 0)
 	{
            //bid->set_price(0.0);
 	}
@@ -50,7 +50,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	    bid->set_size(pMarketData->BidVolume1);	   
 	}	
 		
-	if (pMarketData->AskPrice1==DBL_MAX)
+	if (pMarketData->AskPrice1==DBL_MAX || pMarketData->AskVolume1 <= 0)
 	{
            //ask->set_price(0.0);
 	}
@@ -62,7 +62,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	}
 	
 
-	if (pMarketData->BidPrice2==DBL_MAX)
+	if (pMarketData->BidPrice2==DBL_MAX || pMarketData->BidVolume2 <= 0)
 	{
            //bid->set_price(0.0);
 	}
@@ -74,7 +74,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	}	
 	
 
-	if (pMarketData->AskPrice2==DBL_MAX)
+	if (pMarketData->AskPrice2==DBL_MAX || pMarketData->AskVolume2 <= 0)
 	{
            //ask->set_price(0.0);
 	}
@@ -85,7 +85,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	    ask->set_size(pMarketData->AskVolume2);	   
 	}
 	
-	if (pMarketData->BidPrice3==DBL_MAX)
+	if (pMarketData->BidPrice3==DBL_MAX || pMarketData->BidVolume3 <= 0)
 	{
            //bid->set_price(0.0);
 	}
@@ -97,7 +97,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	}	
 	
 
-	if (pMarketData->AskPrice3==DBL_MAX)
+	if (pMarketData->AskPrice3==DBL_MAX || pMarketData->AskVolume3 <= 0)
 	{
            //ask->set_price(0.0);
 	}
@@ -108,7 +108,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	    ask->set_size(pMarketData->AskVolume3);	   
 	}
 	
-	if (pMarketData->BidPrice4==DBL_MAX)
+	if (pMarketData->BidPrice4==DBL_MAX || pMarketData->BidVolume4 <= 0)
 	{
            //bid->set_price(0.0);
 	}
@@ -120,7 +120,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	}	
 	
 
-	if (pMarketData->AskPrice4==DBL_MAX)
+	if (pMarketData->AskPrice4==DBL_MAX || pMarketData->AskVolume4 <= 0)
 	{
            //ask->set_price(0.0);
 	}
@@ -131,7 +131,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	    ask->set_size(pMarketData->AskVolume4);	   
 	}
 	
-	if (pMarketData->BidPrice5==DBL_MAX)
+	if (pMarketData->BidPrice5==DBL_MAX || pMarketData->BidVolume5 <= 0)
 	{
            //bid->set_price(0.0);
 	}
@@ -143,7 +143,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	}	
 	
 
-	if (pMarketData->AskPrice5==DBL_MAX)
+	if (pMarketData->AskPrice5==DBL_MAX || pMarketData->AskVolume5 <= 0)
 	{
            //ask->set_price(0.0);
 	}
@@ -159,12 +159,12 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	//以上发送L2 行情
 
 	//发送最优价
-	if(pMarketData->BidPrice1 == DBL_MAX && pMarketData->AskPrice1 == DBL_MAX)
+	if((pMarketData->BidPrice1 == DBL_MAX || pMarketData->BidVolume1 <= 0) && (pMarketData->AskVolume1 <= 0 || pMarketData->AskPrice1 == DBL_MAX))
 	{
            LOG_INFO("Bid and Offer NULL ");
 	}
 	else
-	if(pMarketData->BidPrice1 == DBL_MAX)	
+	if(pMarketData->BidPrice1 == DBL_MAX || pMarketData->BidVolume1 <= 0)	
 	{
            pb::dms::Offer offer_info;
 	    offer_info.set_contract(pMarketData->InstrumentID);	   
@@ -174,7 +174,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	    m_book_sender->OnOffer(offer_info);
 	}
 	else
-	if(pMarketData->AskPrice1 == DBL_MAX)	
+	if(pMarketData->AskPrice1 == DBL_MAX || pMarketData->AskVolume1 <= 0)	
 	{
            pb::dms::Bid bid_info;
 	    bid_info.set_contract(pMarketData->InstrumentID);	   
@@ -189,6 +189,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	    bbo_info.set_contract(pMarketData->InstrumentID);		
            pb::dms::DataPoint *bid = bbo_info.mutable_bid();
 	    bid->set_price(pMarketData->BidPrice1);
+	    bid->set_price(pMarketData->BidVolume1);	
            pb::dms::DataPoint *ask = bbo_info.mutable_offer();
            ask->set_price(pMarketData->AskPrice1);
            ask->set_size(pMarketData->AskVolume1);	   
