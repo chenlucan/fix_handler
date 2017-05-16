@@ -40,13 +40,20 @@ class CRemEfhMarkrtManager : public guava_quote_event
 
 		virtual void on_receive_nomal(guava_udp_normal* data);
 
+		bool run();
+		void SetFileData(std::string &FileConfig);
+
 		void SendRemmarketData(guava_udp_normal *pMarketData);
 	       void SendRemToDB(const std::string &message);
 
 		void StructToJSON(guava_udp_normal *pMarketData);
 		void RemDateToString(bsoncxx::builder::basic::document& json);   
 
+     public:
 		fh::core::market::MarketListenerI *m_book_sender;
+		fh::core::assist::Settings *m_pFileConfig;
+		multicast_info m_mcinfo;
+		guava_quote m_guava;
 
 };
 

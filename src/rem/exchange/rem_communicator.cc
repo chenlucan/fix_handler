@@ -2,6 +2,7 @@
 #include <time.h>
 #include "rem_communicator.h"
 #include "core/assist/logger.h"
+#include <boost/container/flat_map.hpp>
 
 
 namespace fh
@@ -576,6 +577,7 @@ bool CRemGlobexCommunicator::Start(const std::vector<::pb::ems::Order> &init_ord
 	 }
 	 sleep(0.1);  
     } 
+    m_strategy->OnExchangeReady(boost::container::flat_map<std::string, std::string>());	
     LOG_INFO("CRemGlobexCommunicator::InitQuery is over ");	
     return true;
 }
