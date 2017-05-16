@@ -11,6 +11,7 @@
 #include <quickfix/Exceptions.h>
 #include <quickfix/SessionSettings.h>
 #include <quickfix/Initiator.h>
+#include <quickfix/SessionState.h>
 
 #include <quickfix/Application.h>
 #include <quickfix/MessageCracker.h>
@@ -59,10 +60,12 @@ namespace exchange
            m_pSession = pS;
         }
     
-        void setMsgType( const FIX::MsgType &msgType )
+        void setMsgType( const FIX::MsgType &msgType, const FIX::MsgType &nextMsgType)
         {
            m_msgType = msgType;
+           m_nextMsgType = nextMsgType;
         }
+
     private:
         /// TestResponderCallback implementation of Responder.
         bool send( const std::string& );
@@ -71,6 +74,7 @@ namespace exchange
 
         FIX::Session *m_pSession;
         FIX::MsgType m_msgType;
+        FIX::MsgType m_nextMsgType;
     };
     
     class TestInitiator : public FIX::Initiator
@@ -114,6 +118,14 @@ namespace exchange
         virtual ~TestQuickFix();
         
         void Order_response(const fh::cme::exchange::OrderReport& report);
+		
+		std::string make_order();
+		fh::cme::exchange::Order Create_order(const ::pb::ems::Order& strategy_order);
+        
+        void setContinueSendFlag(bool isConSendFlag);
+        bool getContinueSendFlag();
+        
+        void setAppMsgType(const FIX::MsgType appMsgType);
         
     public:
         fh::cme::exchange::ExchangeSettings m_app_settings;
@@ -121,6 +133,8 @@ namespace exchange
         FIX::SessionSettings m_settings;
         FIX::FileStoreFactory m_store;
         fh::cme::exchange::GlobexLogFactory m_logger;
+        bool m_isContinueSend;
+        FIX::MsgType m_appMsgType;
         
     };
     

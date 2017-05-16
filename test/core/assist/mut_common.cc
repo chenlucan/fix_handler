@@ -277,6 +277,14 @@ namespace common
       return newOrderSingle;
     }
     
+    FIX42::Reject createReject( const char* sender, const char* target, int seq, int refSeq )
+    {
+      FIX42::Reject reject;
+      reject.set( FIX::RefSeqNum( refSeq ) );
+      fillHeader( reject.getHeader(), sender, target, seq );
+      return reject;
+    }
+    
     
 } // namespace utility
 } // namespace assist

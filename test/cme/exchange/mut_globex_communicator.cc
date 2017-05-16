@@ -328,7 +328,7 @@ namespace exchange
         std::string fix_setting_file;
         std::string app_setting_file;
         fh::core::assist::common::getAbsolutePath(fix_setting_file);   
-        app_setting_file = fix_setting_file;     
+        app_setting_file = fix_setting_file;
         fix_setting_file +="exchange_client.cfg";
         app_setting_file +="exchange_settings.ini";
         

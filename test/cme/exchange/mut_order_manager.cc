@@ -1,6 +1,11 @@
 
 #include <gmock/gmock.h>
 
+#include <gtest/gtest.h>
+
+
+#include <semaphore.h>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include "cme/exchange/order_manager.h"
@@ -18,6 +23,7 @@ namespace cme
 {
 namespace exchange
 {
+    sem_t sem;
     void fillHeader( FIX::Header& header, const char* sender, const char* target, int seq )
     {
       header.setField( FIX::SenderCompID( sender ) );
@@ -37,7 +43,8 @@ namespace exchange
     
     // TestResponderCallback
     TestResponderCallback::TestResponderCallback()
-    :m_pSession(0), m_msgType(FIX::MsgType_Logon)
+    :m_pSession(0), m_msgType(FIX::MsgType_Logon),
+    m_nextMsgType(FIX::MsgType_Logon)
     {
     }
     
@@ -48,26 +55,50 @@ namespace exchange
     bool TestResponderCallback::send( const std::string& )
     {
         LOG_DEBUG("===== TestResponderCallback::send ====="); 
-                
+        
+        FIX::SessionState* pSessionState = static_cast < FIX::SessionState*> (m_pSession->getLog());
+        pSessionState->setNextTargetMsgSeqNum(1);
+        
         if(m_pSession)
         {
             LOG_DEBUG("================== m_msgType = [", m_msgType, "] =====================");
             
             if(FIX::MsgType_Logon == m_msgType)  // FixValues.h
             {
-                m_pSession->next( fh::core::assist::common::createLogon( "CME", "2E0004N", 2 ), FIX::UtcTimeStamp() );
+                LOG_DEBUG("===== [FIX::MsgType_Logon == m_msgType] =====");
+                
+                FIX::MsgType tmpMsgType(m_nextMsgType);
+                m_msgType = tmpMsgType;
+                LOG_DEBUG("===== after m_msgType = ", m_msgType, "=====");
+		        
+
+				pSessionState->initiate(true);
+				pSessionState->sentLogon(true);
+				pSessionState->receivedReset(true);                
+                m_pSession->next( fh::core::assist::common::createLogon( "CME", "2E0004N", 1 ), FIX::UtcTimeStamp() );    
             }
             else if(FIX::MsgType_Logout == m_msgType)
             {
-                m_pSession->next( fh::core::assist::common::createLogout( "CME", "2E0004N", 2 ), FIX::UtcTimeStamp() );
+                m_pSession->next( fh::core::assist::common::createLogout( "CME", "2E0004N", 1 ), FIX::UtcTimeStamp() );
             }
             else if(FIX::MsgType_ExecutionReport == m_msgType)
-            {                
-                m_pSession->next( fh::core::assist::common::createLogon( "CME", "2E0004N", 2 ), FIX::UtcTimeStamp() );                
+            { 
+                LOG_DEBUG("===== [FIX::MsgType_ExecutionReport == m_msgType] =====");                
+                m_pSession->next( fh::core::assist::common::createExecutionReport( "CME", "2E0004N", 1 ), FIX::UtcTimeStamp() );
+            }
+            else if(FIX::MsgType_OrderCancelReject== m_msgType)
+            {
+                pSessionState->setNextTargetMsgSeqNum(3);
+                LOG_DEBUG("===== [FIX::MsgType_OrderCancelReject== m_msgType] =====");
+                m_pSession->next( fh::core::assist::common::createReject( "CME", "2E0004N", 3, 2 ), FIX::UtcTimeStamp() );
+                                
+                LOG_DEBUG("===== pSessionState->getNextTargetMsgSeqNum() = [", pSessionState->getNextTargetMsgSeqNum(), "] =====");
+                
+                sem_post(&sem);
             }
             else
             {
-                m_pSession->next( fh::core::assist::common::createSequenceReset( "CME", "2E0004N", 2, 5 ), FIX::UtcTimeStamp() );
+                //m_pSession->next( fh::core::assist::common::createSequenceReset( "CME", "2E0004N", 2, 5 ), FIX::UtcTimeStamp() );
             }
         }
         
@@ -77,6 +108,9 @@ namespace exchange
     void TestResponderCallback::disconnect()
     {
         LOG_DEBUG("===== TestResponderCallback::disconnect =====");
+        LOG_DEBUG("===== [1] before sem_post =====");
+        sem_post(&sem);
+        LOG_DEBUG("===== [2] after sem_post =====");
     }
     
     // TestInitiator
@@ -121,7 +155,7 @@ namespace exchange
         // send message from exchange input file
         if(FIX::MsgType_Logon == m_msgType)  // FixValues.h
         {
-            fh::cme::exchange::OrderManager *orderManager = dynamic_cast < fh::cme::exchange::OrderManager* > ( m_application ); 
+            // fh::cme::exchange::OrderManager *orderManager = dynamic_cast < fh::cme::exchange::OrderManager* > ( m_application ); 
 
             FIX42::Logout logout = fh::core::assist::common::createLogon( "2E0004N", "CME", 2 );
             std::string strLogOut = fh::core::assist::utility::Format_fix_message(logout.toString());
@@ -137,11 +171,11 @@ namespace exchange
         }
         else if(FIX::MsgType_OrderMassStatusRequest == m_msgType)
         {
-            fh::cme::exchange::OrderManager *orderManager = dynamic_cast < fh::cme::exchange::OrderManager* > ( m_application );
+            // fh::cme::exchange::OrderManager *orderManager = dynamic_cast < fh::cme::exchange::OrderManager* > ( m_application );
             
             FIX::SessionID sessionID( FIX::BeginString( "FIX.4.2" ),    
                  FIX::SenderCompID( "2E0004N" ), FIX::TargetCompID( "CME" ) ); 
-            FIX::Session *pSession = getSession(sessionID);
+            FIX::Session *pSession= getSession(sessionID);
             
             // logon
             FIX42::Logon logon = fh::core::assist::common::createLogon( "2E0004N", "CME", 1 );
@@ -167,6 +201,13 @@ namespace exchange
                 //pSession->next( msg, FIX::UtcTimeStamp() );
                 
             }
+        }
+        else if(FIX::MsgType_NewOrderSingle == m_msgType)
+        {
+            // logon
+            FIX42::Logon logon = fh::core::assist::common::createLogon( "2E0004N", "CME", 1 );
+            std::string strLogOn = fh::core::assist::utility::Format_fix_message(logon.toString());
+            EXPECT_TRUE(FIX::Session::sendToTarget(logon));
         }
         else
         {
@@ -201,7 +242,8 @@ namespace exchange
     /////////////////////////////////////////////////////////////////////////////////////
     // TestQuickFix
     TestQuickFix::TestQuickFix(const std::string &app_file, const std::string &config_file)
-    :m_app_settings(app_file), m_order_manager(m_app_settings), m_settings(config_file), m_store(m_settings), m_logger(m_settings)    
+    :m_app_settings(app_file), m_order_manager(m_app_settings), m_settings(config_file), m_store(m_settings), m_logger(m_settings),
+    m_isContinueSend(false), m_appMsgType(FIX::MsgType_NewOrderSingle)   
     {
         m_order_manager.setCallback(std::bind(&TestQuickFix::Order_response, this, std::placeholders::_1));
     }
@@ -211,27 +253,146 @@ namespace exchange
         // noop
     }
     
+    void TestQuickFix::setContinueSendFlag(bool isConSendFlag)
+    {
+        m_isContinueSend = isConSendFlag;
+    }   
+
+    bool TestQuickFix::getContinueSendFlag()
+    {
+        return m_isContinueSend;
+    }     
+    
+    	
+    void TestQuickFix::setAppMsgType(const FIX::MsgType appMsgType)
+    {
+        m_appMsgType = appMsgType;
+    }
+	
+    fh::cme::exchange::Order TestQuickFix::Create_order(const ::pb::ems::Order& strategy_order)
+    {
+        LOG_INFO("received order:  ", fh::core::assist::utility::Format_pb_message(strategy_order));
+
+        fh::cme::exchange::Order order;
+        order.cl_order_id = strategy_order.client_order_id();
+        //order. = strategy_order.account();        // 这个域从配置文件读取
+        order.symbol = strategy_order.contract();
+        order.security_desc = strategy_order.contract();      // 这个域和 symbol 使用同一个值
+        order.side = 0;
+        order.price = std::stod(strategy_order.price());
+        order.order_qty = strategy_order.quantity();
+        order.time_in_force = 0;
+        order.order_type = 0;
+        order.order_id = strategy_order.exchange_order_id();
+        //order. = strategy_order.status();         // 这个域是回传订单结果的
+        //order. = strategy_order.working_price();        // 这个域是回传订单结果的
+        //order. = strategy_order.working_quantity();         // 这个域是回传订单结果的
+        //order. = strategy_order.filled_quantity();          // 这个域是回传订单结果的
+        //order. = strategy_order.message();          // 这个域是回传订单结果的
+        //order. = strategy_order.submit_time();          // 这个域是回传订单结果的
+        //order.stop_px = ;                                  // 这个域只在 OrdType = stop and stop-limit orders 时有用，目前不需要
+        //order.expire_date = ;                          // 这个域只在 TimeInForce = Good Till Date (GTD) 时有用，目前不需要
+        order.orig_cl_order_id = order.cl_order_id;                 // 这个域设置成和 cl_order_id 一样
+
+        return order;
+    }	
+
     // check the result of response
     void TestQuickFix::Order_response(const fh::cme::exchange::OrderReport& report)
     {
         LOG_DEBUG("===== TestQuickFix::Order_response =====");
         if(report.message_type == "")
         {
-            // 登录成功，说明可以开始交易了            
+			LOG_DEBUG("===== 1111111111111111111  =====");
+            // 登录成功，说明可以开始交易了 
+            if(getContinueSendFlag())   
+            {
+                if(FIX::MsgType_NewOrderSingle == m_appMsgType)
+                {
+                    pb::ems::Order order;
+                    order.set_client_order_id("X" + std::to_string(fh::core::assist::utility::Current_time_ns()));
+                    order.set_account("YYC");   // unuse
+                    order.set_contract("1EHV8");
+                    order.set_buy_sell(pb::ems::BuySell::BS_Buy);
+                    order.set_price(std::to_string(398));
+                    order.set_quantity(0+20);
+                    order.set_tif(pb::ems::TimeInForce::TIF_GFD);
+                    order.set_order_type(pb::ems::OrderType::OT_Limit);
+                    order.set_exchange_order_id("9923898474");
+                    order.set_status(pb::ems::OrderStatus::OS_Pending);
+                    order.set_working_price("398");
+                    order.set_working_quantity(0 / 2+ 10);
+                    order.set_filled_quantity(0 - 0 / 2 + 10);
+                    order.set_message("cme test order");
+                    auto order_d = Create_order(order);
+                    m_order_manager.sendNewOrderSingleRequest(order_d);                    
+                }
+                else if(FIX::MsgType_OrderCancelRequest == m_appMsgType)
+                {
+                    pb::ems::Order order;
+                    order.set_client_order_id("X" + std::to_string(fh::core::assist::utility::Current_time_ns()));
+                    order.set_account("YYC");   // unuse
+                    order.set_contract("1EHV8");
+                    order.set_buy_sell(pb::ems::BuySell::BS_Buy);
+                    order.set_price(std::to_string(398));
+                    order.set_quantity(0+20);
+                    order.set_tif(pb::ems::TimeInForce::TIF_GFD);
+                    order.set_order_type(pb::ems::OrderType::OT_Limit);
+                    order.set_exchange_order_id("9923898474");
+                    order.set_status(pb::ems::OrderStatus::OS_Pending);
+                    order.set_working_price("398");
+                    order.set_working_quantity(0 / 2+ 10);
+                    order.set_filled_quantity(0 - 0 / 2 + 10);
+                    order.set_message("cme test order");
+                    auto order_f = Create_order(order);
+                    m_order_manager.sendOrderCancelRequest(order_f); 
+                }
+                else if(FIX::MsgType_OrderCancelReplaceRequest== m_appMsgType)
+                {
+                    pb::ems::Order order;
+                    order.set_client_order_id("X" + std::to_string(fh::core::assist::utility::Current_time_ns()));
+                    order.set_account("YYC");   // unuse
+                    order.set_contract("1EHV8");
+                    order.set_buy_sell(pb::ems::BuySell::BS_Buy);
+                    order.set_price(std::to_string(398));
+                    order.set_quantity(0+20);
+                    order.set_tif(pb::ems::TimeInForce::TIF_GFD);
+                    order.set_order_type(pb::ems::OrderType::OT_Limit);
+                    order.set_exchange_order_id("9923898474");
+                    order.set_status(pb::ems::OrderStatus::OS_Pending);
+                    order.set_working_price("398");
+                    order.set_working_quantity(0 / 2+ 10);
+                    order.set_filled_quantity(0 - 0 / 2 + 10);
+                    order.set_message("cme test order");
+                    auto order_f = Create_order(order);
+                    m_order_manager.sendOrderCancelReplaceRequest(order_f); 
+                }
+                else
+                {
+                }
+                
+                setContinueSendFlag(false); 
+            }      
         }
         else if(report.message_type == "BZ")
         {
+            LOG_DEBUG("===== [BZ]  =====");
             // Order Mass Action Report
+            sem_post(&sem);
             return;      // TODO 目前 protobuf 中还没有定义
         }
         else if(report.message_type == "8" && report.single_report.order_status == 'H')
         {
+            LOG_DEBUG("===== [8-H]  =====");
             // Execution Report - Trade Cancel
             // 这个不用发送回去
+            sem_post(&sem);
             return;
         }
         else if(report.message_type == "8" && (report.single_report.order_status == '1' || report.single_report.order_status == '2'))
         {
+            LOG_DEBUG("===== [8-1-2]  =====");
+
             // Fill Notice
             pb::ems::Fill fill;
             fill.set_fill_id(report.single_report.exec_id);
@@ -243,12 +404,16 @@ namespace exchange
             fill.set_contract(report.single_report.security_desc);
             //fill.set_buy_sell(GlobexCommunicator::Convert_buy_sell(report.single_report.side));
             fh::core::assist::utility::To_pb_time(fill.mutable_fill_time(), report.single_report.transact_time);
-
+            
+            sem_post(&sem);
             //m_strategy->OnFill(fill);
         }
         else
         {
             // 9：Order Cancel Reject  8：Execution Report （other）
+            LOG_DEBUG("===== report.message_type = [", report.message_type, "]  =====");
+            
+            sem_post(&sem);
             // pb::ems::Order order;
             // order.set_client_order_id(report.single_report.cl_order_id);
             // order.set_account(report.single_report.account);
@@ -314,8 +479,9 @@ namespace exchange
                 pTestQuickFix = nullptr;
                 return;
             }
-            FIX::MsgType msgType(FIX::MsgType_Logout); 
-            pTestResponderCallback->setMsgType(msgType);
+            FIX::MsgType msgType(FIX::MsgType_Logout);      
+            FIX::MsgType nextMsgType(FIX::MsgType_Logout);             
+            pTestResponderCallback->setMsgType(msgType, nextMsgType);
 
             fh::cme::exchange::TestInitiator *pTestInitiator = new TestInitiator(
                                                                                 pTestQuickFix->m_order_manager, 
@@ -397,7 +563,8 @@ namespace exchange
                 return;
             }
             FIX::MsgType msgType("7"); // FIX::MsgType_Logout
-            pTestResponderCallback->setMsgType(msgType);
+            FIX::MsgType nextMsgType(FIX::MsgType_Logout);     
+            pTestResponderCallback->setMsgType(msgType, nextMsgType);
 
             fh::cme::exchange::TestInitiator *pTestInitiator = new TestInitiator(
                                                                                 pTestQuickFix->m_order_manager, 
@@ -424,7 +591,7 @@ namespace exchange
                 
                 
                 
-                std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+                //std::this_thread::sleep_for(std::chrono::milliseconds(2000));
                 //pTestInitiator->stop();
                 
                 delete pTestInitiator;
@@ -455,11 +622,15 @@ namespace exchange
         
         try
         {
+            sem_init(&sem,0,0);
+            
             fh::cme::exchange::TestQuickFix *pTestQuickFix = new fh::cme::exchange::TestQuickFix(app_setting_file, fix_setting_file);
             if(nullptr == pTestQuickFix)
             {
                 return;
             }
+            
+            pTestQuickFix->setContinueSendFlag(true);  
             
             TestResponderCallback *pTestResponderCallback = new TestResponderCallback();
             if(nullptr == pTestResponderCallback)
@@ -468,8 +639,9 @@ namespace exchange
                 pTestQuickFix = nullptr;
                 return;
             }
-            FIX::MsgType responseMsgType(FIX::MsgType_ExecutionReport); 
-            pTestResponderCallback->setMsgType(responseMsgType);
+            FIX::MsgType responseMsgType(FIX::MsgType_Logon); 
+            FIX::MsgType nextRespMsgType(FIX::MsgType_ExecutionReport); 
+            pTestResponderCallback->setMsgType(responseMsgType, nextRespMsgType);
 
             fh::cme::exchange::TestInitiator *pTestInitiator = new TestInitiator(
                                                                                 pTestQuickFix->m_order_manager, 
@@ -496,8 +668,12 @@ namespace exchange
                 LOG_DEBUG("==============pSession ", pSession, "=====================");
                 
                 
-                std::this_thread::sleep_for(std::chrono::milliseconds(9000));
-                //pTestInitiator->stop();
+                //std::this_thread::sleep_for(std::chrono::milliseconds(9000));
+                
+                LOG_DEBUG("===== [1] before sem_wait =====");
+                sem_wait(&sem);
+                LOG_DEBUG("===== [2] after sem_wait =====");
+                pTestInitiator->stop();
                 
                 delete pTestInitiator;
                 pTestInitiator = nullptr;                
@@ -508,6 +684,91 @@ namespace exchange
 
             delete pTestQuickFix;
             pTestQuickFix = nullptr;
+            
+            sem_destroy(&sem);
+        }
+        catch ( std::exception& e)
+        {
+            LOG_DEBUG("catch exception: ", e.what());
+        }
+    }
+    
+    //MsgType_NewOrderSingle
+    TEST_F(MutOrderManager, OrderManager_Test004)
+    {        
+        std::string fix_setting_file;
+        std::string app_setting_file;
+        fh::core::assist::common::getAbsolutePath(fix_setting_file);   
+        app_setting_file = fix_setting_file;     
+        fix_setting_file +="exchange_client.cfg";
+        app_setting_file +="exchange_settings.ini";
+        
+        try
+        {
+            sem_init(&sem,0,0);
+            
+            fh::cme::exchange::TestQuickFix *pTestQuickFix = new fh::cme::exchange::TestQuickFix(app_setting_file, fix_setting_file);
+            if(nullptr == pTestQuickFix)
+            {
+                return;
+            }
+            
+            pTestQuickFix->setContinueSendFlag(true);  
+            
+            TestResponderCallback *pTestResponderCallback = new TestResponderCallback();
+            if(nullptr == pTestResponderCallback)
+            {
+                delete pTestQuickFix;
+                pTestQuickFix = nullptr;
+                return;
+            }
+            FIX::MsgType responseMsgType(FIX::MsgType_Logon); 
+            FIX::MsgType nextRespMsgType(FIX::MsgType_OrderCancelReject); 
+            pTestResponderCallback->setMsgType(responseMsgType, nextRespMsgType);
+
+            fh::cme::exchange::TestInitiator *pTestInitiator = new TestInitiator(
+                                                                                pTestQuickFix->m_order_manager, 
+                                                                                pTestQuickFix->m_store, 
+                                                                                pTestQuickFix->m_settings, 
+                                                                                pTestQuickFix->m_logger);
+            if(pTestInitiator!=nullptr)
+            {
+                FIX::MsgType reqMsgType(FIX::MsgType_NewOrderSingle);
+                pTestInitiator->setMsgType(reqMsgType);
+                FIX::Initiator * pInitiator = static_cast < FIX::Initiator* > ( pTestInitiator );  
+                
+                FIX::SessionID sessionID( FIX::BeginString( "FIX.4.2" ),    
+                 FIX::SenderCompID( "2E0004N" ), FIX::TargetCompID( "CME" ) ); 
+                FIX::Session *pSession = pInitiator->getSession(sessionID, *pTestResponderCallback);
+
+                //pSession->setResponder(pTestResponderCallback);       
+                
+                pTestResponderCallback->setSession(pSession);  
+                
+                
+                pTestInitiator->start(); 
+                
+                LOG_DEBUG("==============pSession ", pSession, "=====================");
+                
+                
+                //std::this_thread::sleep_for(std::chrono::milliseconds(9000));
+                
+                LOG_DEBUG("===== [1] before sem_wait =====");
+                sem_wait(&sem);
+                LOG_DEBUG("===== [2] after sem_wait =====");
+                pTestInitiator->stop();
+                
+                delete pTestInitiator;
+                pTestInitiator = nullptr;                
+            }
+            
+            delete pTestResponderCallback;
+            pTestResponderCallback = nullptr;
+
+            delete pTestQuickFix;
+            pTestQuickFix = nullptr;
+            
+            sem_destroy(&sem);
         }
         catch ( std::exception& e)
         {
