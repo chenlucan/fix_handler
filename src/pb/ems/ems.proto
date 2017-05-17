@@ -34,7 +34,15 @@ enum OrderStatus {
   OS_Working    = 4;
   OS_Pending    = 5;
 }
-  
+
+enum OrderFlag {
+  OF_None    = 0;
+  OF_Open    = 1;  // 开仓
+  OF_Close   = 2;  // 平仓
+  OF_YClose  = 3;  // 平昨
+  OF_TClose  = 4;  // 平今
+}
+
 enum TimeInForce {
   TIF_None  = 0;
   TIF_FAK   = 1;  // allow partial fill
@@ -81,6 +89,8 @@ message Order {
   optional string      message            = 50;
   
   optional Timestamp   submit_time        = 60;
+  
+  optional OrderFlag   order_flag      = 100;
 }
 
 message Fill {
@@ -93,14 +103,23 @@ message Fill {
   optional string    client_order_id   = 10;
   optional string    exchange_order_id = 11;
   optional string    contract          = 12;
-  optional BuySell   buy_sell          = 13;
+  optional BuySell   buy_sell          = 13;  
   
   optional Timestamp   fill_time    = 60;
+  
+  optional OrderFlag order_flag        = 100;
 }
 
 message Position {
   optional string contract      = 1;
   optional string account       = 2;
 
-  optional int64  position      = 10;
+  optional int64  position       = 10;
+  optional int64  long_position  = 11;
+  optional int64  short_position = 12;
+
+  optional int64  yesterday_long   = 13;
+  optional int64  yesterday_short  = 14;
+  optional int64  today_long       = 15;
+  optional int64  today_short      = 16;
 }

@@ -31,6 +31,7 @@ namespace exchange
 			m_strategy = NULL;
 			m_InitQueryNum = 0;
 			m_ordermap.clear();
+			m_startfinish = false;
 		   }
 	          ~CUstpFtdcTraderManger ()
 	          {
@@ -48,12 +49,20 @@ namespace exchange
 		   virtual void OnRspOrderAction(CUstpFtdcOrderActionField *pOrderAction, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast); 
 		   virtual void OnErrRtnOrderAction(CUstpFtdcOrderActionField *pOrderAction, CUstpFtdcRspInfoField *pRspInfo);
 		   virtual void OnRspQryOrder(CUstpFtdcOrderField *pOrder, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+                  ///成交单查询应答
+	           virtual void OnRspQryTrade(CUstpFtdcTradeField *pTrade, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+		    ///投资者持仓查询应答
+	           virtual void OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pRspInvestorPosition, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);		  
+		   
 		   void OnQryOrder(CUstpFtdcOrderField *pOrder);
 		   void SetFileConfigData(const std::string &FileConfig);
 		   void OnInsertOrder(CUstpFtdcInputOrderField  *pInputOrder,CUstpFtdcRspInfoField  *pRspInfo);
 		   void OnOrder(CUstpFtdcOrderField  *pOrder);
 		   void OnFill(CUstpFtdcTradeField *pTrade);
 		   void OnActionOrder(CUstpFtdcOrderActionField *pOrderAction, CUstpFtdcRspInfoField *pRspInfo);
+                  void OnQryTrade(CUstpFtdcTradeField *pTrade, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+		    void OnQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pRspInvestorPosition, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);		  
+		   
 		   void SetStrategy(core::exchange::ExchangeListenerI *strategy)
 		   {
                       m_strategy = strategy;
@@ -64,6 +73,7 @@ namespace exchange
 		   int MaxOrderLocalID;
 		   int m_InitQueryNum;
 		   std::map <int, std::string> m_ordermap;
+		   bool m_startfinish;
 		   
         private:
 		   core::exchange::ExchangeListenerI *m_strategy;	 
@@ -99,12 +109,14 @@ namespace exchange
                 // implement of ExchangeI
                 void Delete_mass(const char *data, size_t size) override;
 
-				 
+		  bool SendReqQryTrade(const std::vector<::pb::ems::Order> &init_orders);
+		  bool SendReqQryInvestorPosition(const std::vector<::pb::ems::Order> &init_orders);
 	  public:			 
                  CUstpFtdcTraderManger* m_pUstpFtdcTraderManger;
                  fh::core::assist::Settings *m_pFileConfig;
 		   CUstpFtdcTraderApi *m_pUserApi;
 		   int m_itimeout;
+		   int m_ReqId;
   
 
 	  private:

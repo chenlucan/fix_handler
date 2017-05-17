@@ -115,6 +115,19 @@ void CUstpFtdcTraderManger::OnRspQryOrder(CUstpFtdcOrderField *pOrder, CUstpFtdc
 	
 }
 
+///成交单查询应答
+void CUstpFtdcTraderManger::OnRspQryTrade(CUstpFtdcTradeField *pTrade, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+    LOG_INFO("CUstpFtdcTraderManger::OnRspQryTrade");
+    OnQryTrade(pTrade,pRspInfo,nRequestID,bIsLast);	
+}
+///投资者持仓查询应答
+void CUstpFtdcTraderManger::OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pRspInvestorPosition, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+    LOG_INFO("CUstpFtdcTraderManger::OnRspQryInvestorPosition");
+    OnQryInvestorPosition(pRspInvestorPosition,pRspInfo,nRequestID,bIsLast);	
+}
+
 
 void CUstpFtdcTraderManger::OnQryOrder(CUstpFtdcOrderField *pOrder)
 {
@@ -461,6 +474,36 @@ void CUstpFtdcTraderManger::OnFill(CUstpFtdcTradeField *pTrade)
     }	
 }
 
+void CUstpFtdcTraderManger::OnQryTrade(CUstpFtdcTradeField *pTrade, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+    LOG_INFO("CUstpFtdcTraderManger::OnQryTrade");
+    if(NULL != m_strategy)
+    {
+
+    }
+	
+    if(bIsLast)
+    {
+        m_startfinish =  bIsLast;
+    }	
+    return;	
+}
+
+void CUstpFtdcTraderManger::OnQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pRspInvestorPosition, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+    LOG_INFO("CUstpFtdcTraderManger::OnQryInvestorPosition");
+    if(NULL != m_strategy)
+    {
+
+    }
+	
+    if(bIsLast)
+    {
+        m_startfinish =  bIsLast;
+    }	
+    return;	
+}
+
 void CUstpFtdcTraderManger::SetFileConfigData(const std::string &FileConfig)
 {
     LOG_INFO("CUstpFtdcTraderManger::SetFileConfigData file =  ",FileConfig.c_str());
@@ -517,7 +560,7 @@ CFemasGlobexCommunicator::CFemasGlobexCommunicator(core::exchange::ExchangeListe
      {
          m_pUstpFtdcTraderManger->SetStrategy(m_strategy);
      }
-     	 
+     m_ReqId = 0;	 
 }
 
 CFemasGlobexCommunicator::~CFemasGlobexCommunicator()
@@ -573,6 +616,20 @@ bool CFemasGlobexCommunicator::Start(const std::vector<::pb::ems::Order> &init_o
 	 }
 	 sleep(0.1);  
     } 
+
+    //check suss order
+    if(!SendReqQryTrade(init_orders))
+    {
+        LOG_ERROR("CFemasGlobexCommunicator::SendReqQryTrade is over ");
+        return false;
+    }
+    //check suss position
+    if(!SendReqQryInvestorPosition(init_orders))
+    {
+        LOG_ERROR("CFemasGlobexCommunicator::SendReqQryInvestorPosition is over ");
+        return false;
+    }
+	
     m_strategy->OnExchangeReady(boost::container::flat_map<std::string, std::string>());	
     LOG_INFO("CFemasGlobexCommunicator::InitQuery is over ");	
     return true;
@@ -785,7 +842,81 @@ void CFemasGlobexCommunicator::Delete_mass(const char *data, size_t size)
         return;
 }
 
+bool CFemasGlobexCommunicator::SendReqQryTrade(const std::vector<::pb::ems::Order> &init_orders)
+{
+    LOG_INFO("CFemasGlobexCommunicator::SendReqQryTrade ");
+    for(int i=0;i<init_orders.size();i++)
+    {
+        CUstpFtdcQryTradeField mQryTrade;
+	 memset(&mQryTrade,0,sizeof(CUstpFtdcQryTradeField));	
+	 std::string ExchangeID = m_pFileConfig->Get("femas-exchange.ExchangeID");
+	 strcpy(mQryTrade.ExchangeID , ExchangeID.c_str());
 
+	 std::string BrokerID = m_pFileConfig->Get("femas-user.BrokerID");
+	 strncpy(mQryTrade.BrokerID,BrokerID.c_str(),BrokerID.length());
+
+	 std::string InvestorID = m_pFileConfig->Get("femas-exchange.InvestorID");
+	 strcpy(mQryTrade.InvestorID , InvestorID.c_str()); 
+
+        std::string UserID = init_orders[i].account();
+	 strcpy(mQryTrade.UserID,UserID.c_str());
+	 
+        m_pUserApi->ReqQryTrade(&mQryTrade,m_ReqId++);    
+
+	 time_t tmtimeout = time(NULL);
+	 m_pUstpFtdcTraderManger->m_startfinish = false;
+	 while(!m_pUstpFtdcTraderManger->m_startfinish)
+	 {
+            if(time(NULL)-tmtimeout>m_itimeout)
+	     {
+                 LOG_ERROR("CRemGlobexCommunicator::SendReqQryTrade tiomeout ");
+	         return false;
+	     }
+	     sleep(0.1);		
+	 }
+    }	
+    return true;	
+}
+
+bool CFemasGlobexCommunicator::SendReqQryInvestorPosition(const std::vector<::pb::ems::Order> &init_orders)
+{
+    LOG_INFO("CFemasGlobexCommunicator::SendReqQryInvestorPosition ");
+    for(int i=0;i<init_orders.size();i++)
+    {
+        CUstpFtdcQryInvestorPositionField mQryInvestorPosition;
+        memset(&mQryInvestorPosition,0,sizeof(CUstpFtdcQryInvestorPositionField));
+
+	 std::string ExchangeID = m_pFileConfig->Get("femas-exchange.ExchangeID");
+	 strcpy(mQryInvestorPosition.ExchangeID , ExchangeID.c_str());
+
+	 std::string BrokerID = m_pFileConfig->Get("femas-user.BrokerID");
+	 strncpy(mQryInvestorPosition.BrokerID,BrokerID.c_str(),BrokerID.length());
+
+	 std::string InvestorID = m_pFileConfig->Get("femas-exchange.InvestorID");
+	 strcpy(mQryInvestorPosition.InvestorID , InvestorID.c_str()); 	
+
+	 std::string UserID = init_orders[i].account();
+	 strcpy(mQryInvestorPosition.UserID,UserID.c_str());
+
+	 std::string InstrumentID = init_orders[i].contract();
+        strncpy(mQryInvestorPosition.InstrumentID,InstrumentID.c_str(),InstrumentID.length()); 
+		
+        m_pUserApi->ReqQryInvestorPosition(&mQryInvestorPosition,m_ReqId++);
+
+	 time_t tmtimeout = time(NULL);
+	 m_pUstpFtdcTraderManger->m_startfinish = false;
+	 while(!m_pUstpFtdcTraderManger->m_startfinish)
+	 {
+            if(time(NULL)-tmtimeout>m_itimeout)
+	     {
+                 LOG_ERROR("CRemGlobexCommunicator::SendReqQryInvestorPosition tiomeout ");
+	         return false;
+	     }
+	     sleep(0.1);		
+	 }	
+    }
+    return true;	
+}
 
 
 
