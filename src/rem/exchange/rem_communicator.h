@@ -37,6 +37,7 @@ namespace exchange
 			m_InitQueryNum = 0;
 			m_orderTokenmap.clear();
 			m_ordermap.clear();
+			m_startfinish = false;
 		   }
 	          ~CEESTraderApiManger ()
 	          {
@@ -78,6 +79,8 @@ namespace exchange
 		   void SendOrderCxled(EES_OrderCxled* pCxled);
 		   void SendCxlOrderReject(EES_CxlOrderRej* pReject);
 		   void SendQueryTradeOrder(const char* pAccount, EES_QueryAccountOrder* pQueryOrder);
+		   void SendQueryTradeOrderExec(const char* pAccount, EES_QueryOrderExecution* pQueryOrderExec, bool bFinish);
+		   void SendQueryAccountPosition(const char* pAccount, EES_AccountPosition* pAccoutnPosition, int nReqId, bool bFinish);
 				  
 		   void SetStrategy(core::exchange::ExchangeListenerI *strategy)
 		   {
@@ -95,6 +98,7 @@ namespace exchange
 		   std::map <int, std::string> m_ordermap;
 		   // OrderToken , ClientOrderToken
 		   std::map <int, int> m_orderTokenmap;
+		   bool m_startfinish;
 		   
         private:
 		   core::exchange::ExchangeListenerI *m_strategy;	 
@@ -136,6 +140,7 @@ namespace exchange
                  fh::core::assist::Settings *m_pFileConfig;
 		   EESTraderApi *m_pUserApi;
 		   int m_itimeout;
+		   int m_ReqId;
 		   
   
 

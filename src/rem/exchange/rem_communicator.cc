@@ -146,6 +146,7 @@ void CEESTraderApiManger::OnQueryTradeOrder(const char* pAccount, EES_QueryAccou
 void CEESTraderApiManger::OnQueryTradeOrderExec(const char* pAccount, EES_QueryOrderExecution* pQueryOrderExec, bool bFinish  )
 {
     LOG_INFO("CEESTraderApiManger::OnQueryTradeOrderExec");
+    SendQueryTradeOrderExec(pAccount,pQueryOrderExec,bFinish);	
 }
 void CEESTraderApiManger::OnPostOrder(EES_PostOrder* pPostOrder )
 {
@@ -448,6 +449,24 @@ void CEESTraderApiManger::SendQueryTradeOrder(const char* pAccount, EES_QueryAcc
     }	
 }
 
+void CEESTraderApiManger::SendQueryTradeOrderExec(const char* pAccount, EES_QueryOrderExecution* pQueryOrderExec, bool bFinish)
+{
+    if(bFinish)
+    {
+        m_startfinish =  bFinish;
+    }
+    return;
+}
+
+void CEESTraderApiManger::SendQueryAccountPosition(const char* pAccount, EES_AccountPosition* pAccoutnPosition, int nReqId, bool bFinish)
+{
+    if(bFinish)
+    {
+        m_startfinish =  bFinish;
+    }
+    return;
+}
+
 void CEESTraderApiManger::AddOrderToken(int MarketOrderToken,int i_key)
 {
     if(m_orderTokenmap.count(i_key) == 0)
@@ -518,6 +537,7 @@ CRemGlobexCommunicator::CRemGlobexCommunicator(core::exchange::ExchangeListenerI
          m_pEESTraderApiManger->SetStrategy(m_strategy);
      }	 
      m_itimeout = 10;
+     m_ReqId = 0;	 
       
 }
 
@@ -577,6 +597,52 @@ bool CRemGlobexCommunicator::Start(const std::vector<::pb::ems::Order> &init_ord
 	 }
 	 sleep(0.1);  
     } 
+//check suss order
+    std::string oldaccount = "";
+    for(int i=0;i<init_orders.size();i++)
+    {
+        if(oldaccount == "" || oldaccount != init_orders[i].account())
+	 {
+	     oldaccount =  init_orders[i].account();
+            m_pUserApi->QueryAccountOrderExecution(init_orders[i].account().c_str()); 
+	     tmtimeout = time(NULL);
+	     m_pEESTraderApiManger->m_startfinish = false;	 
+	     while(!m_pEESTraderApiManger->m_startfinish)	
+	     {
+                 if(time(NULL)-tmtimeout>m_itimeout)
+		   {
+                      LOG_ERROR("CRemGlobexCommunicator::QueryAccountOrderExecution tiomeout ");
+			 return false; 		  
+		   }
+		   sleep(0.1);		 
+	     }	 	 
+	 }
+           
+    }
+
+//check suss position
+    oldaccount = "";
+    for(int i=0;i<init_orders.size();i++)
+    {
+        if(oldaccount == "" || oldaccount != init_orders[i].account())
+	 {
+	     oldaccount =  init_orders[i].account();
+            m_pUserApi->QueryAccountPosition(init_orders[i].account().c_str(),m_ReqId++); 
+	     tmtimeout = time(NULL);
+	     m_pEESTraderApiManger->m_startfinish = false;	 
+	     while(!m_pEESTraderApiManger->m_startfinish)	
+	     {
+                 if(time(NULL)-tmtimeout>m_itimeout)
+		   {
+                      LOG_ERROR("CRemGlobexCommunicator::QueryAccountPosition tiomeout ");
+			 return false; 		  
+		   }
+		   sleep(0.1);		 
+	     }	 	 
+	 }
+           
+    }    
+	
     m_strategy->OnExchangeReady(boost::container::flat_map<std::string, std::string>());	
     LOG_INFO("CRemGlobexCommunicator::InitQuery is over ");	
     return true;
