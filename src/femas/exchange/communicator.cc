@@ -479,7 +479,39 @@ void CUstpFtdcTraderManger::OnQryTrade(CUstpFtdcTradeField *pTrade, CUstpFtdcRsp
     LOG_INFO("CUstpFtdcTraderManger::OnQryTrade");
     if(NULL != m_strategy)
     {
+        ::pb::ems::Order tmporder;
 
+	 tmporder.set_client_order_id(GetOrderId(std::atoi(pTrade->UserOrderLocalID)));	
+
+	 tmporder.set_account(pTrade->UserID);
+        tmporder.set_contract(pTrade->InstrumentID);
+	 if(pTrade->Direction == '0')
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Buy);
+	 }
+	 else
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Sell);
+	 }	
+	 tmporder.set_price(std::to_string(pTrade->TradePrice));
+        tmporder.set_quantity(pTrade->TradeVolume);
+        tmporder.set_tif(pb::ems::TimeInForce::TIF_GFD);
+
+	 	     		
+        tmporder.set_exchange_order_id(pTrade->OrderSysID);
+
+	 tmporder.set_status(pb::ems::OrderStatus::OS_Filled);	
+
+	 tmporder.set_working_price(std::to_string(pTrade->TradePrice));
+	 tmporder.set_working_quantity(0);
+        tmporder.set_filled_quantity(pTrade->TradeVolume);
+		
+	 std::string tmpActionDay = pTrade->ActionDay;	
+	 std::string tmpActiontime = pTrade->TradeTime;
+	 std::string tmpalltime = tmpActionDay + "-" + tmpActiontime + ".000";
+        fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpalltime);
+
+	 m_strategy->OnOrder(tmporder);	
     }
 	
     if(bIsLast)
@@ -494,7 +526,28 @@ void CUstpFtdcTraderManger::OnQryInvestorPosition(CUstpFtdcRspInvestorPositionFi
     LOG_INFO("CUstpFtdcTraderManger::OnQryInvestorPosition");
     if(NULL != m_strategy)
     {
+        ::pb::ems::Position tmpPosition;
+	 core::exchange::PositionVec tmpPositionVec;
+	 tmpPositionVec.clear();
+		
+        tmpPosition.set_account(pRspInvestorPosition->InvestorID);
+        tmpPosition.set_contract(pRspInvestorPosition->InstrumentID);
+        tmpPosition.set_position(pRspInvestorPosition->Position);
 
+        if(pRspInvestorPosition->Direction == '0')
+	 {
+            tmpPosition.set_today_long(pRspInvestorPosition->Position);
+	 }
+	 else
+	 if(pRspInvestorPosition->Direction == '1')	
+	 {
+            tmpPosition.set_today_short(pRspInvestorPosition->Position);
+	 }
+
+        tmpPositionVec.push_back(tmpPosition);
+	 	
+
+	 m_strategy->OnPosition(tmpPositionVec);	
     }
 	
     if(bIsLast)
