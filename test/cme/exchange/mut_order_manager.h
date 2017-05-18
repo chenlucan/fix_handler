@@ -121,6 +121,7 @@ namespace exchange
 		
 		std::string make_order();
 		fh::cme::exchange::Order Create_order(const ::pb::ems::Order& strategy_order);
+        fh::cme::exchange::MassOrder Create_mass_order(const char *data, size_t size);
         
         void setContinueSendFlag(bool isConSendFlag);
         bool getContinueSendFlag();

@@ -203,6 +203,8 @@ namespace common
     
     FIX42::Reject createReject( const char* sender, const char* target, int seq, int refSeq );
     
+    FIX42::OrderCancelReject createOrderCancelReject( const char* sender, const char* target, int seq);
+    
 } // namespace utility
 } // namespace assist
 } // namespace core

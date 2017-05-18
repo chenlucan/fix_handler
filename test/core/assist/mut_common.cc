@@ -285,6 +285,19 @@ namespace common
       return reject;
     }
     
+    FIX42::OrderCancelReject createOrderCancelReject( const char* sender, const char* target, int seq)
+    {
+      FIX42::OrderCancelReject orderCancelReject;
+      orderCancelReject.set( FIX::OrderID( "ORDERID" ) );
+      orderCancelReject.set( FIX::ClOrdID( "CLIENTID" ) );
+      orderCancelReject.set( FIX::OrigClOrdID( "ORIGINALID" ) );
+      orderCancelReject.set( FIX::OrdStatus( '1' ) );
+      orderCancelReject.set( FIX::CxlRejResponseTo( '2' ) );
+      fillHeader( orderCancelReject.getHeader(), sender, target, seq );
+      LOG_DEBUG("orderCancelReject = ", orderCancelReject.toString());
+      return orderCancelReject;
+    }
+    
     
 } // namespace utility
 } // namespace assist

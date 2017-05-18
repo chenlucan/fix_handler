@@ -148,7 +148,7 @@ namespace exchange
         // id（20 byte）：CA 消息的场合是 cl_order_id，AF 消息的场合是 mass_status_req_id
         // req_type（1 byte）：CA 消息的场合不使用，AF 消息的场合是 mass_status_req_type
         // name（20 byte）：CA 消息的场合 security_desc，AF 消息的场合 security_desc 或者 symbol
-        fh::cme::exchange::MassOrder mass_order;
+        fh::cme::exchange::MassOrder mass_order{};
         mass_order.cl_order_id =  std::string(data, 20);                              // （CA）
         mass_order.mass_action_type = 3;      // （CA）
         mass_order.mass_action_scope = 1;               // （CA）     1: Instrument  9: Market Segment ID   10: Instrument Group

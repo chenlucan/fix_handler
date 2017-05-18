@@ -44,7 +44,19 @@ namespace exchange
         char time_in_force;                                 // （AF/CA）  0: Day  1: Good Till Cancel  6: Good Till Date
         std::string mass_status_req_id;                // （AF）
         std::uint8_t mass_status_req_type;         // （AF）         1: Instrument  3: Instrument Group  7: All Orders  100: Market Segment
-        std::uint8_t ord_status_req_type;            // （AF）         100: SenderSubID  101: Account
+        std::uint8_t ord_status_req_type;            // （AF）         100: SenderSubID  101: Account        
+
+		MassOrder()
+		{
+			mass_action_type               = 0;
+			mass_action_scope              = 0;
+		    mass_cancel_req_type           = 0;
+			side                           = '0';
+			order_type                     = '0';
+			time_in_force                  = '0';
+			mass_status_req_type           = 0;
+			ord_status_req_type            = 0;
+		}
     };
 
     // 从 CME 接受的订单处理结果；对应消息类型：

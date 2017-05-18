@@ -587,8 +587,16 @@ namespace exchange
 
         // 下面的 tag，目前 quickfix 的 OrderMassActionRequest 不支持，所以用下面这种方式设置
         orderMassAction.setField(FIX::FIELD::Account, account);
-        orderMassAction.setField(FIX::FIELD::OrdType, std::string(1, order_type));
-        orderMassAction.setField(FIX::FIELD::TimeInForce, std::string(1, time_in_force));
+        if(order_type!=0)
+        {
+            orderMassAction.setField(FIX::FIELD::OrdType, std::string(1, order_type));
+        }
+        if(time_in_force!=0)
+        {
+            orderMassAction.setField(FIX::FIELD::TimeInForce, std::string(1, time_in_force));
+        }
+        //orderMassAction.setField(FIX::FIELD::OrdType, std::string(1, order_type));
+        //orderMassAction.setField(FIX::FIELD::TimeInForce, std::string(1, time_in_force));
         orderMassAction.setField(FIX::FIELD::ManualOrderIndicator, m_manual_flag ? "Y" : "N");
 
         setHeader(orderMassAction.getHeader());
