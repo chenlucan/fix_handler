@@ -145,42 +145,72 @@ class OrderResultReceiver : public fh::core::zmq::ZmqReceiver
 
 std::string make_order()
 {
-    std::uint32_t r = fh::core::assist::utility::Random_number(0, 5);
-    char type = '1' + r;     // 1:D 2:F 3:G 4:H 5:AF 6:CA
+    std::uint32_t r = fh::core::assist::utility::Random_number(0, 100);
+    char type = '1';     // 1:D 2:F 3:G 4:H 5:AF 6:CA
+    if(r < 10) type += 5;
+    else if(r < 15) type += 4;
+    else if(r < 25) type += 3;
+    else if(r < 30) type += 2;
+    else if(r < 35) type += 1;
 
-    if(r <= 3)
+    // AF, CA
+    if(type >= '5')
     {
-        pb::ems::Order order;
-        order.set_client_order_id("X" + std::to_string(fh::core::assist::utility::Current_time_ns()));
-        order.set_account("YYC");   // unuse
-        order.set_contract("1EHV8");
-        order.set_buy_sell(pb::ems::BuySell::BS_Buy);
-        order.set_price(std::to_string(398));
-        order.set_quantity(r+20);
-        order.set_tif(pb::ems::TimeInForce::TIF_GFD);
-        order.set_order_type(pb::ems::OrderType::OT_Limit);
-        order.set_exchange_order_id("9923898474");
-        order.set_status(pb::ems::OrderStatus::OS_Pending);
-        order.set_working_price("398");
-        order.set_working_quantity(r / 2+ 10);
-        order.set_filled_quantity(r - r / 2 + 10);
-        order.set_message("cme test order");
-        //order.set_submit_time();
-
-        LOG_INFO("send order:  (", type, ")", fh::core::assist::utility::Format_pb_message(order));
-
-        std::string str = order.SerializeAsString();
-        return str.insert(0, 1, type);
-    }
-    else
-    {
-        std::string id = "X" + std::to_string(fh::core::assist::utility::Current_time_ns());
+        std::string id = "X-" + std::to_string(fh::core::assist::utility::Current_time_ns());
         std::string order_type = "3";   // 1: Instrument  3: Instrument Group  7: All Orders
         std::string name = "07";
         std::string mass_order = id + order_type + name;
         LOG_INFO("send mass order:  (", type, ")", mass_order);
         return mass_order.insert(0, 1, type);
     }
+
+    pb::ems::Order *order = new pb::ems::Order;
+    static int id = 0;
+    if(id < 5) type = '1';  // first 5 orders is new order
+
+    if(type == '1')
+    {
+        // D
+        int bsflag = fh::core::assist::utility::Random_number(0, 1);
+        int price = fh::core::assist::utility::Random_number(1, 15);
+        order->set_client_order_id("COI-" + std::to_string(++id));
+        order->set_buy_sell(bsflag == 0 ? pb::ems::BuySell::BS_Buy : pb::ems::BuySell::BS_Sell);
+        order->set_price(price < 5 ? "0" : std::to_string((bsflag == 0 ? 8 : 13) + price + (id%6 == 1 ? 0.5 : 0)));
+        order->set_quantity(price < 4 ? price + 5 : price);
+        order->set_tif(price % 5 == 0 ? pb::ems::TimeInForce::TIF_FOK :
+                (price % 5 == 3 ? pb::ems::TimeInForce::TIF_FAK : pb::ems::TimeInForce::TIF_GFD));
+        order->set_order_type(price < 4 ? pb::ems::OrderType::OT_Market : pb::ems::OrderType::OT_Limit);
+        //order->set_exchange_order_id("9923898474");
+        //order->set_status(pb::ems::OrderStatus::OS_Pending);
+        //order->set_working_price("398");
+        //order->set_working_quantity(r / 2+ 10);
+        //order->set_filled_quantity(r - r / 2 + 10);
+        //order->set_message("cme test order");
+        fh::core::assist::utility::To_pb_time(order->mutable_submit_time(),
+                fh::core::assist::utility::Current_time_str("%Y%m%d-%H:%M:%S.%f").substr(0, 21));
+    }
+    else
+    {
+        // F, G, H
+        int bsflag = fh::core::assist::utility::Random_number(0, 1);
+        int price = fh::core::assist::utility::Random_number(1, 15);
+        int target_id = fh::core::assist::utility::Random_number(1, id);
+        order->set_client_order_id("COI-" + std::to_string(target_id));
+        order->set_buy_sell(bsflag == 0 ? pb::ems::BuySell::BS_Buy : pb::ems::BuySell::BS_Sell);
+        order->set_price(price < 5 ? "0" : std::to_string((bsflag == 0 ? 8 : 13) + price + (id%6 == 1 ? 0.5 : 0)));
+        order->set_quantity(price);
+        order->set_tif(price % 5 == 0 ? pb::ems::TimeInForce::TIF_FOK :
+                (price % 5 == 3 ? pb::ems::TimeInForce::TIF_FAK : pb::ems::TimeInForce::TIF_GFD));
+        order->set_order_type(price < 4 ? pb::ems::OrderType::OT_Market : pb::ems::OrderType::OT_Limit);
+    }
+
+    //order->set_account("YYC");   // unuse
+    order->set_contract("CON-" + std::to_string(id%2 + 1));
+
+    LOG_INFO("send order:  (", type, ")", fh::core::assist::utility::Format_pb_message(*order));
+    std::string str = order->SerializeAsString();
+    delete order;
+    return str.insert(0, 1, type);
 }
 
 

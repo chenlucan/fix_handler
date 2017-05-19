@@ -83,7 +83,7 @@ namespace trade
     // implement of ExchangeI
     void TradeSimulater::Add(const pb::ems::Order& order)
     {
-        LOG_INFO("add order: ", fh::core::assist::utility::Format_pb_message(order));
+        LOG_INFO("ADD ORDER: ", fh::core::assist::utility::Format_pb_message(order));
 
         // 对订单的合约，数量，价格进行检查
         std::string err = this->Check_order(order);
@@ -115,7 +115,7 @@ namespace trade
     // implement of ExchangeI
     void TradeSimulater::Change(const pb::ems::Order& order)
     {
-        LOG_INFO("change order: ", fh::core::assist::utility::Format_pb_message(order));
+        LOG_INFO("CHANGE ORDER: ", fh::core::assist::utility::Format_pb_message(order));
 
         // 对变更后订单的合约，数量，价格进行检查
         std::string err = this->Check_order(order);
@@ -152,7 +152,7 @@ namespace trade
     // implement of ExchangeI
     void TradeSimulater::Delete(const pb::ems::Order& order)
     {
-        LOG_INFO("delete order: ", fh::core::assist::utility::Format_pb_message(order));
+        LOG_INFO("DELETE ORDER: ", fh::core::assist::utility::Format_pb_message(order));
 
         // 订单对应的合约不存在
         if(!m_contract_assist.Is_contract_exist(order.contract()))
@@ -182,7 +182,7 @@ namespace trade
     // implement of ExchangeI
     void TradeSimulater::Query(const pb::ems::Order& order)
     {
-        LOG_INFO("query order: ", fh::core::assist::utility::Format_pb_message(order));
+        LOG_INFO("QUERY ORDER: ", fh::core::assist::utility::Format_pb_message(order));
 
         // 订单对应的合约不存在
         if(!m_contract_assist.Is_contract_exist(order.contract()))
@@ -320,7 +320,7 @@ namespace trade
         pb::ems::Order result(org_order);
         result.set_status(pb::ems::OrderStatus::OS_Rejected);
         result.set_message(reject_reason);
-        LOG_DEBUG("reject response:", fh::core::assist::utility::Format_pb_message(result));
+        LOG_DEBUG("make reject response:", fh::core::assist::utility::Format_pb_message(result));
         return result;
     }
 
@@ -330,7 +330,7 @@ namespace trade
         pb::ems::Order result(org_order);
         result.set_status(pb::ems::OrderStatus::OS_Cancelled);
         result.set_message(cancel_reason);
-        LOG_DEBUG("cancel response:", fh::core::assist::utility::Format_pb_message(result));
+        LOG_DEBUG("make cancel response:", fh::core::assist::utility::Format_pb_message(result));
         return result;
     }
 

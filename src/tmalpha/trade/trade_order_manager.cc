@@ -36,7 +36,7 @@ namespace trade
     // 添加一个新的未成交订单
     const pb::ems::Order *TradeOrderManager::Add_order(const pb::ems::Order &order)
     {
-        LOG_INFO("add order: ", fh::core::assist::utility::Format_pb_message(order));
+        LOG_INFO("add working order: ", fh::core::assist::utility::Format_pb_message(order));
 
         TradeOrderBox *box = this->Order_box(order.contract());
         return box->Add_order(order);
