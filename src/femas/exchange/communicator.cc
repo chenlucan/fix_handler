@@ -137,7 +137,19 @@ void CUstpFtdcTraderManger::OnQryOrder(CUstpFtdcOrderField *pOrder)
         //make Order begin (have something todo)
         ::pb::ems::Order tmporder;  
         //tmporder.set_client_order_id(pOrder->UserOrderLocalID);
-	 tmporder.set_client_order_id(GetOrderId(std::atoi(pOrder->UserOrderLocalID)));	
+        
+        std::string tmpc_OrderId = GetOrderId(std::atoi(pOrder->UserOrderLocalID));
+        if(tmpc_OrderId == "")
+	 {
+	     //UserOrderLocalID|OrderUserID|OrderLocalID
+            tmpc_OrderId = pOrder->UserOrderLocalID;
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + pOrder->OrderUserID;
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + pOrder->OrderLocalID;	 
+	 }
+	 tmporder.set_client_order_id(tmpc_OrderId);	
+	 //tmporder.set_client_order_id(GetOrderId(std::atoi(pOrder->UserOrderLocalID)));	
         tmporder.set_account(pOrder->UserID);
         tmporder.set_contract(pOrder->InstrumentID);
 	 if(pOrder->Direction == '0')
@@ -233,7 +245,18 @@ void CUstpFtdcTraderManger::OnActionOrder(CUstpFtdcOrderActionField *pOrderActio
         ::pb::ems::Order tmporder;
         //make Order begin (have something todo) 
 	 //tmporder.set_client_order_id(pOrderAction->UserOrderActionLocalID);
-        tmporder.set_client_order_id(GetOrderId(std::atoi(pOrderAction->UserOrderActionLocalID)));
+	 std::string tmpc_OrderId = GetOrderId(std::atoi(pOrderAction->UserOrderActionLocalID));
+        if(tmpc_OrderId == "")
+	 {
+	     //UserOrderLocalID|UserOrderActionLocalID|OrderSysID            
+	     tmpc_OrderId = pOrderAction->UserOrderLocalID;
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + pOrderAction->UserOrderActionLocalID;
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + pOrderAction->OrderSysID;	 
+	 }
+	 tmporder.set_client_order_id(tmpc_OrderId);	
+        //tmporder.set_client_order_id(GetOrderId(std::atoi(pOrderAction->UserOrderActionLocalID)));
 		
         tmporder.set_account(pOrderAction->UserID);		
 	 tmporder.set_price(std::to_string(pOrderAction->LimitPrice));
@@ -278,7 +301,16 @@ void CUstpFtdcTraderManger::OnInsertOrder(CUstpFtdcInputOrderField  *pInputOrder
         ::pb::ems::Order tmporder;	
 	 //make Order begin (have something todo) 	
 	 //tmporder.set_client_order_id(pInputOrder->UserOrderLocalID);
-        tmporder.set_client_order_id(GetOrderId(std::atoi(pInputOrder->UserOrderLocalID)));
+	 std::string tmpc_OrderId = GetOrderId(std::atoi(pInputOrder->UserOrderLocalID));
+        if(tmpc_OrderId == "")
+	 {
+	     //UserOrderLocalID|OrderSysID
+	     tmpc_OrderId = pInputOrder->UserOrderLocalID;
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + pInputOrder->OrderSysID;	 
+	 }
+	 tmporder.set_client_order_id(tmpc_OrderId);
+        //tmporder.set_client_order_id(GetOrderId(std::atoi(pInputOrder->UserOrderLocalID)));
 	 
         tmporder.set_account(pInputOrder->UserID);
         tmporder.set_contract(pInputOrder->InstrumentID);
@@ -336,7 +368,18 @@ void CUstpFtdcTraderManger::OnOrder(CUstpFtdcOrderField  *pOrder)
         ::pb::ems::Order tmporder;
         //make Order begin (have something todo) 	
         //tmporder.set_client_order_id(pOrder->OrderUserID);
-        tmporder.set_client_order_id(GetOrderId(std::atoi(pOrder->OrderUserID)));
+        std::string tmpc_OrderId = GetOrderId(std::atoi(pOrder->OrderUserID));
+        if(tmpc_OrderId == "")
+	 {
+	     //UserOrderLocalID|OrderSysID|OrderUserID
+	     tmpc_OrderId = pOrder->UserOrderLocalID;
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + pOrder->OrderSysID;
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + pOrder->OrderUserID;	 
+	 }
+	 tmporder.set_client_order_id(tmpc_OrderId);
+        //tmporder.set_client_order_id(GetOrderId(std::atoi(pOrder->OrderUserID)));
 
 		
         tmporder.set_account(pOrder->UserID);
@@ -450,7 +493,18 @@ void CUstpFtdcTraderManger::OnFill(CUstpFtdcTradeField *pTrade)
         tmpfill.set_fill_quantity(pTrade->TradeVolume);		
         //tmpfill.set_client_order_id(pTrade->OrderUserID);
 	 //tmpfill.set_client_order_id(pTrade->UserOrderLocalID);
-        tmpfill.set_client_order_id(GetOrderId(std::atoi(pTrade->UserOrderLocalID)));
+	 std::string tmpc_OrderId = GetOrderId(std::atoi(pTrade->UserOrderLocalID));
+        if(tmpc_OrderId == "")
+	 {
+	     //OrderUserID|OrderSysID|UserOrderLocalID
+	     tmpc_OrderId = pTrade->OrderUserID;
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + pTrade->OrderSysID;
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + pTrade->UserOrderLocalID;	 
+	 }
+	 tmpfill.set_client_order_id(tmpc_OrderId);
+        //tmpfill.set_client_order_id(GetOrderId(std::atoi(pTrade->UserOrderLocalID)));
 		
         tmpfill.set_exchange_order_id(pTrade->OrderSysID);		
 
@@ -481,7 +535,18 @@ void CUstpFtdcTraderManger::OnQryTrade(CUstpFtdcTradeField *pTrade, CUstpFtdcRsp
     {
         ::pb::ems::Order tmporder;
 
-	 tmporder.set_client_order_id(GetOrderId(std::atoi(pTrade->UserOrderLocalID)));	
+        std::string tmpc_OrderId = GetOrderId(std::atoi(pTrade->UserOrderLocalID));
+        if(tmpc_OrderId == "")
+	 {
+	     //UserOrderLocalID|OrderSysID|OrderUserID
+	     tmpc_OrderId = pTrade->UserOrderLocalID;
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + pTrade->OrderSysID;
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + pTrade->OrderUserID;	 
+	 }
+	 tmporder.set_client_order_id(tmpc_OrderId);
+	 //tmporder.set_client_order_id(GetOrderId(std::atoi(pTrade->UserOrderLocalID)));	
 
 	 tmporder.set_account(pTrade->UserID);
         tmporder.set_contract(pTrade->InstrumentID);
@@ -571,12 +636,22 @@ void CUstpFtdcTraderManger::AddOrderId(std::string cl_orderid,int i_key)
 	 {
             m_ordermap[i_key] = cl_orderid;
 	 }
+	 else
+	 if(m_ordermap[i_key] != cl_orderid)
+	 {
+            LOG_ERROR("CUstpFtdcTraderManger::AddOrderId error");    
+	 }
     }
     else
     {
         if(m_ordermap.count(MaxOrderLocalID) == 0)
 	 {
             m_ordermap[MaxOrderLocalID] = cl_orderid;
+	 }
+	 else
+	 if(m_ordermap[MaxOrderLocalID] != cl_orderid)	
+	 {
+            LOG_ERROR("CUstpFtdcTraderManger::AddOrderId error MaxOrderLocalID");
 	 }
     }
     return;	
