@@ -189,8 +189,25 @@ void CEESTraderApiManger::SendOrderAccept(EES_OrderAcceptField* pAccept)
     {
         ::pb::ems::Order tmporder;	
 
-        tmporder.set_client_order_id(GetOrderId(pAccept->m_ClientOrderToken));
-	 AddOrderToken(pAccept->m_ClientOrderToken,pAccept->m_MarketOrderToken);	
+        std::string tmpc_OrderId = GetOrderId(pAccept->m_ClientOrderToken);
+        if(tmpc_OrderId == "")
+	 {
+	     //m_ClientOrderToken|m_MarketOrderToken
+	     tmpc_OrderId = std::to_string(pAccept->m_ClientOrderToken);
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + std::to_string(pAccept->m_MarketOrderToken); 
+	     tmporder.set_client_order_id(tmpc_OrderId);	 
+	 }
+	 else
+	 {
+            tmporder.set_client_order_id(GetOrderId(pAccept->m_ClientOrderToken));
+	     AddOrderToken(pAccept->m_ClientOrderToken,pAccept->m_MarketOrderToken);	
+	 }
+	 
+
+        
+        //tmporder.set_client_order_id(GetOrderId(pAccept->m_ClientOrderToken));
+	 //AddOrderToken(pAccept->m_ClientOrderToken,pAccept->m_MarketOrderToken);	
 		
 	 tmporder.set_account(std::to_string(pAccept->m_UserID));	
 	 tmporder.set_exchange_order_id(std::to_string(pAccept->m_MarketOrderToken));
@@ -218,6 +235,10 @@ void CEESTraderApiManger::SendOrderAccept(EES_OrderAcceptField* pAccept)
 
 	 tmporder.set_price(std::to_string(pAccept->m_Price));
         tmporder.set_quantity(pAccept->m_Qty);
+
+	 tmporder.set_working_price(std::to_string(pAccept->m_Price));
+        tmporder.set_working_quantity(pAccept->m_Qty);	
+		
         if(pAccept->m_Tif == EES_OrderTif_IOC)
 	{
             tmporder.set_tif(pb::ems::TimeInForce::TIF_FOK);
@@ -252,7 +273,17 @@ void CEESTraderApiManger::SendOrderMarketAccept(EES_OrderMarketAcceptField* pAcc
     {
         ::pb::ems::Order tmporder;	
 
-        tmporder.set_client_order_id(GetOrderId(GetOrderToken(pAccept->m_MarketOrderToken)));
+        std::string tmpc_OrderId; //= GetOrderToken(pAccept->m_MarketOrderToken);
+        if(GetOrderToken(pAccept->m_MarketOrderToken) == -1)
+	 {
+	     //m_MarketOrderToken|m_MarketOrderId
+	     tmpc_OrderId = std::to_string(pAccept->m_MarketOrderToken);
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + pAccept->m_MarketOrderId; 
+	 }
+	 tmporder.set_client_order_id(tmpc_OrderId);
+
+        //tmporder.set_client_order_id(GetOrderId(GetOrderToken(pAccept->m_MarketOrderToken)));
 	 tmporder.set_account(pAccept->m_Account);	
 	 tmporder.set_exchange_order_id(std::to_string(pAccept->m_MarketOrderToken));
 	 tmporder.set_status(pb::ems::OrderStatus::OS_Working);
@@ -273,7 +304,18 @@ void CEESTraderApiManger::SendOrderReject(EES_OrderRejectField* pReject)
         ::pb::ems::Order tmporder;	
 
         tmporder.set_account(std::to_string(pReject->m_Userid));
-	 tmporder.set_client_order_id(GetOrderId(pReject->m_ClientOrderToken));
+
+	 std::string tmpc_OrderId = GetOrderId(pReject->m_ClientOrderToken);
+        if(tmpc_OrderId == "")
+	 {
+	     //m_Userid|m_ClientOrderToken
+	     tmpc_OrderId = std::to_string(pReject->m_Userid);
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + std::to_string(pReject->m_ClientOrderToken); 
+	 }
+	 tmporder.set_client_order_id(tmpc_OrderId);
+	 
+	 //tmporder.set_client_order_id(GetOrderId(pReject->m_ClientOrderToken));
         tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
 	 //AddOrderToken(pReject->m_ClientOrderToken,pReject->m_MarketOrderToken);	
 	 fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), fh::core::assist::utility::To_time_str(pReject->m_Timestamp));
@@ -292,7 +334,18 @@ void CEESTraderApiManger::SendOrderMarketReject(EES_OrderMarketRejectField* pRej
         ::pb::ems::Order tmporder;	
 
         tmporder.set_account(pReject->m_Account);
-	 tmporder.set_client_order_id(GetOrderId(GetOrderToken(pReject->m_MarketOrderToken)));	
+
+        std::string tmpc_OrderId; //= GetOrderToken(pAccept->m_MarketOrderToken);
+        if(GetOrderToken(pReject->m_MarketOrderToken) == -1)
+	 {
+	     //m_Account|m_MarketOrderToken
+	     tmpc_OrderId = pReject->m_Account;
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + std::to_string(pReject->m_MarketOrderToken); 
+	 }
+	 tmporder.set_client_order_id(tmpc_OrderId);
+		
+	 //tmporder.set_client_order_id(GetOrderId(GetOrderToken(pReject->m_MarketOrderToken)));	
 	 tmporder.set_exchange_order_id(std::to_string(pReject->m_MarketOrderToken));	
         tmporder.set_status(pb::ems::OrderStatus::OS_Rejected); 
 	 fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), fh::core::assist::utility::To_time_str(pReject->m_MarketTimestamp));	
@@ -310,10 +363,27 @@ void CEESTraderApiManger::SendOrderExecution(EES_OrderExecutionField* pExec)
     {
         ::pb::ems::Fill tmpfill;
 
-        tmpfill.set_client_order_id(GetOrderId(pExec->m_ClientOrderToken));
+	 std::string tmpc_OrderId = GetOrderId(pExec->m_ClientOrderToken);
+        if(tmpc_OrderId == "")
+	 {
+	     //m_ClientOrderToken|m_MarketOrderToken|m_MarketExecID
+	     tmpc_OrderId = std::to_string(pExec->m_ClientOrderToken);
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + std::to_string(pExec->m_MarketOrderToken); 
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + pExec->m_MarketExecID; 	 
+	     tmpfill.set_client_order_id(tmpc_OrderId);	 
+	 }
+	 else
+	 {
+            tmpfill.set_client_order_id(GetOrderId(pExec->m_ClientOrderToken));
+	     AddOrderToken(pExec->m_ClientOrderToken,pExec->m_MarketOrderToken);
+	 }	
+
+        //tmpfill.set_client_order_id(GetOrderId(pExec->m_ClientOrderToken));
 	 tmpfill.set_account(std::to_string(pExec->m_Userid));	
 	 tmpfill.set_exchange_order_id(std::to_string(pExec->m_MarketOrderToken));
-	 AddOrderToken(pExec->m_ClientOrderToken,pExec->m_MarketOrderToken);
+	 //AddOrderToken(pExec->m_ClientOrderToken,pExec->m_MarketOrderToken);
 	 
 	 tmpfill.set_fill_price(std::to_string(pExec->m_Price));
         tmpfill.set_fill_quantity(pExec->m_Quantity);
@@ -338,11 +408,26 @@ void CEESTraderApiManger::SendOrderCxled(EES_OrderCxled* pCxled)
     {
         ::pb::ems::Order tmporder;	
 
+	 std::string tmpc_OrderId = GetOrderId(pCxled->m_ClientOrderToken);
+        if(tmpc_OrderId == "")
+	 {
+	     //m_ClientOrderToken|m_MarketOrderToken
+	     tmpc_OrderId = std::to_string(pCxled->m_ClientOrderToken);
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + std::to_string(pCxled->m_MarketOrderToken); 	 
+	     tmporder.set_client_order_id(tmpc_OrderId);	 
+	 }
+	 else
+	 {
+            tmporder.set_client_order_id(GetOrderId(pCxled->m_ClientOrderToken));
+	     AddOrderToken(pCxled->m_ClientOrderToken,pCxled->m_MarketOrderToken);
+	 }	
+
         tmporder.set_account(std::to_string(pCxled->m_Userid));
-	 tmporder.set_client_order_id(GetOrderId(pCxled->m_ClientOrderToken));	
+	 //tmporder.set_client_order_id(GetOrderId(pCxled->m_ClientOrderToken));	
 	 tmporder.set_exchange_order_id(std::to_string(pCxled->m_MarketOrderToken));
 
-        AddOrderToken(pCxled->m_ClientOrderToken,pCxled->m_MarketOrderToken);
+        //AddOrderToken(pCxled->m_ClientOrderToken,pCxled->m_MarketOrderToken);
 	 
         tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled); 
 	 fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), fh::core::assist::utility::To_time_str(pCxled->m_Timestamp));	
@@ -362,7 +447,17 @@ void CEESTraderApiManger::SendCxlOrderReject(EES_CxlOrderRej* pReject)
         ::pb::ems::Order tmporder;	
 
         tmporder.set_account(pReject->m_account);
-	 tmporder.set_client_order_id(GetOrderId(GetOrderToken(pReject->m_MarketOrderToken)));		
+        std::string tmpc_OrderId; //= GetOrderToken(pAccept->m_MarketOrderToken);
+        if(GetOrderToken(pReject->m_MarketOrderToken) == -1)
+	 {
+	     //m_account|m_MarketOrderToken
+	     tmpc_OrderId = pReject->m_account;
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + std::to_string(pReject->m_MarketOrderToken); 
+	 }
+	 tmporder.set_client_order_id(tmpc_OrderId); 
+		
+	 //tmporder.set_client_order_id(GetOrderId(GetOrderToken(pReject->m_MarketOrderToken)));		
 	 tmporder.set_exchange_order_id(std::to_string(pReject->m_MarketOrderToken));	
         tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
 	 	
@@ -380,10 +475,27 @@ void CEESTraderApiManger::SendQueryTradeOrder(const char* pAccount, EES_QueryAcc
     {
         ::pb::ems::Order tmporder;	
 
-        tmporder.set_client_order_id(GetOrderId(pQueryOrder->m_ClientOrderToken));
+        std::string tmpc_OrderId = GetOrderId(pQueryOrder->m_ClientOrderToken);
+        if(tmpc_OrderId == "")
+	 {
+	     //m_ClientOrderToken|m_MarketOrderToken|m_MarketOrderId
+	     tmpc_OrderId = std::to_string(pQueryOrder->m_ClientOrderToken);
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + std::to_string(pQueryOrder->m_MarketOrderToken); 	 
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + pQueryOrder->m_MarketOrderId; 	  
+	     tmporder.set_client_order_id(tmpc_OrderId);	 
+	 }
+	 else
+	 {
+            tmporder.set_client_order_id(GetOrderId(pQueryOrder->m_ClientOrderToken));
+	     AddOrderToken(pQueryOrder->m_ClientOrderToken,pQueryOrder->m_MarketOrderToken); 
+	 }
+
+        //tmporder.set_client_order_id(GetOrderId(pQueryOrder->m_ClientOrderToken));
 	 tmporder.set_account(std::to_string(pQueryOrder->m_Userid));	
 	 tmporder.set_exchange_order_id(std::to_string(pQueryOrder->m_MarketOrderToken));
-        AddOrderToken(pQueryOrder->m_ClientOrderToken,pQueryOrder->m_MarketOrderToken); 
+        //AddOrderToken(pQueryOrder->m_ClientOrderToken,pQueryOrder->m_MarketOrderToken); 
 	 
 	 if(pQueryOrder->m_OrderStatus == EES_OrderStatus_cancelled)//OS_Cancelled
 	 {
@@ -451,6 +563,39 @@ void CEESTraderApiManger::SendQueryTradeOrder(const char* pAccount, EES_QueryAcc
 
 void CEESTraderApiManger::SendQueryTradeOrderExec(const char* pAccount, EES_QueryOrderExecution* pQueryOrderExec, bool bFinish)
 {
+    LOG_INFO("CEESTraderApiManger::SendQueryTradeOrderExec");
+    if(NULL != m_strategy)
+    {
+        ::pb::ems::Order tmporder;
+
+        std::string tmpc_OrderId = GetOrderId(pQueryOrderExec->m_ClientOrderToken);
+        if(tmpc_OrderId == "")
+	 {
+	     //m_ClientOrderToken|m_MarketOrderToken|m_MarketExecID
+	     tmpc_OrderId = std::to_string(pQueryOrderExec->m_ClientOrderToken);
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + std::to_string(pQueryOrderExec->m_MarketOrderToken); 
+	     tmpc_OrderId = tmpc_OrderId + "|";
+	     tmpc_OrderId = tmpc_OrderId + pQueryOrderExec->m_MarketExecID;	 
+	 }
+	 tmporder.set_client_order_id(tmpc_OrderId);
+        //tmporder.set_client_order_id(GetOrderId(pQueryOrderExec->m_ClientOrderToken));
+	 tmporder.set_account(std::to_string(pQueryOrderExec->m_Userid));	
+	 tmporder.set_exchange_order_id(std::to_string(pQueryOrderExec->m_MarketOrderToken));
+	 tmporder.set_status(pb::ems::OrderStatus::OS_Filled);
+	 tmporder.set_price(std::to_string(pQueryOrderExec->m_ExecutionPrice));
+        tmporder.set_quantity(pQueryOrderExec->m_ExecutedQuantity);
+	 tmporder.set_working_price(std::to_string(pQueryOrderExec->m_ExecutionPrice))	;
+	 tmporder.set_working_quantity(0);
+	 tmporder.set_filled_quantity(pQueryOrderExec->m_ExecutedQuantity);
+	 
+        
+		
+	 fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), fh::core::assist::utility::To_time_str(pQueryOrderExec->m_Timestamp));	
+
+	 m_strategy->OnOrder(tmporder);		
+    }
+	
     if(bFinish)
     {
         m_startfinish =  bFinish;
@@ -460,6 +605,32 @@ void CEESTraderApiManger::SendQueryTradeOrderExec(const char* pAccount, EES_Quer
 
 void CEESTraderApiManger::SendQueryAccountPosition(const char* pAccount, EES_AccountPosition* pAccoutnPosition, int nReqId, bool bFinish)
 {
+    if(NULL != m_strategy)
+    {
+        ::pb::ems::Position tmpPosition;
+	 core::exchange::PositionVec tmpPositionVec;
+	 tmpPositionVec.clear();
+
+	 
+        tmpPosition.set_account(pAccoutnPosition->m_actId);
+	 tmpPosition.set_contract(pAccoutnPosition->m_Symbol);	
+	 tmpPosition.set_position(pAccoutnPosition->m_TodayQty);
+
+	 if(pAccoutnPosition->m_PosiDirection == EES_PosiDirection_long)
+	 {
+            tmpPosition.set_today_long(pAccoutnPosition->m_TodayQty);
+	 }
+	 else
+	 if(pAccoutnPosition->m_PosiDirection == EES_PosiDirection_short)	
+	 {
+            tmpPosition.set_today_short(pAccoutnPosition->m_TodayQty);
+	 }
+
+	 tmpPositionVec.push_back(tmpPosition);
+	 	
+
+	 m_strategy->OnPosition(tmpPositionVec);		
+    }
     if(bFinish)
     {
         m_startfinish =  bFinish;
@@ -474,8 +645,10 @@ void CEESTraderApiManger::AddOrderToken(int MarketOrderToken,int i_key)
         m_orderTokenmap[i_key] = MarketOrderToken;		
     } 
     else
+    if(m_orderTokenmap[i_key] != MarketOrderToken)		
     {
-        m_orderTokenmap[i_key] = MarketOrderToken;
+        //m_orderTokenmap[i_key] = MarketOrderToken;
+        LOG_ERROR("CEESTraderApiManger::AddOrderToken error");
     }
     return;
 }
@@ -487,8 +660,10 @@ void CEESTraderApiManger::AddOrderId(std::string cl_orderid,int i_key)
         m_ordermap[i_key] = cl_orderid;		
     } 
     else
+    if(m_ordermap[i_key] != cl_orderid)		
     {
-        m_ordermap[i_key] = cl_orderid;
+        //m_ordermap[i_key] = cl_orderid;
+        LOG_ERROR("CEESTraderApiManger::AddOrderId error");
     }		
     return;	
 }
