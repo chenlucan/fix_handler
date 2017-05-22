@@ -17,6 +17,21 @@
 
 #include "mut_order_manager.h"
 
+
+///////////////////////////////////////////////////////////
+// test
+#include <thread>   // std::thread
+#include <mutex>              // std::mutex, std::unique_lock
+#include <condition_variable> // std::condition_variable
+
+void thread_task(int n) {
+    std::this_thread::sleep_for(std::chrono::seconds(n));
+    std::cout << "hello thread "
+        << std::this_thread::get_id()
+        << " paused " << n << " seconds" << std::endl;
+}
+//////////////////////////////////////////////////////////
+
 namespace fh
 {
 namespace cme
@@ -500,7 +515,7 @@ namespace exchange
     void MutOrderManager::TearDown()
     {
     }
-    #if 0    
+   
     // logout
     TEST_F(MutOrderManager, OrderManager_Test001)
     {        
@@ -638,7 +653,7 @@ namespace exchange
                 
                 
                 
-                //std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+                std::this_thread::sleep_for(std::chrono::milliseconds(2000));
                 //pTestInitiator->stop();
                 
                 delete pTestInitiator;
@@ -656,7 +671,7 @@ namespace exchange
             LOG_DEBUG("catch exception: ", e.what());
         }
     }
-    #endif
+    
     //MsgType_OrderMassStatusRequest
     TEST_F(MutOrderManager, OrderManager_Test003)
     {        
@@ -1162,6 +1177,81 @@ namespace exchange
             LOG_DEBUG("catch exception: ", e.what());
         }
     }
+    
+    #if 0
+    //MsgType_
+    TEST_F(MutOrderManager, OrderManager_Test009)
+    {        
+        std::string fix_setting_file;
+        std::string app_setting_file;
+        fh::core::assist::common::getAbsolutePath(fix_setting_file);   
+        app_setting_file = fix_setting_file;     
+        fix_setting_file +="exchange_client.cfg";
+        app_setting_file +="exchange_settings.ini";
+        
+        try
+        {
+            LOG_DEBUG("===== [1] start thread =====");            
+            std::thread threads[5];
+            std::cout << "Spawning 5 threads...\n";
+            for (int i = 0; i < 5; i++) {
+                threads[i] = std::thread(thread_task, i + 1);
+            }
+            std::cout << "Done spawning threads! Now wait for them to join\n";
+            for (auto& t: threads) {
+                t.join();
+            }
+            std::cout << "All threads joined.\n";                              
+        }
+        catch ( std::exception& e)
+        {
+            LOG_DEBUG("catch exception: ", e.what());
+        }
+    }
+    
+    std::mutex mtx;
+    std::condition_variable cv;
+    bool ready = false;
+
+    void do_print_id(int id)
+    {
+        std::unique_lock <std::mutex> lck(mtx);
+        while (!ready) // 如果标志位不为 true, 则等待...
+            cv.wait(lck); // 当前线程被阻塞, 当全局标志位变为 true 之后,
+        // 线程被唤醒, 继续往下执行打印线程编号id.
+        std::cout << "thread " << id << '\n';
+    }
+
+    void go()
+    {
+        std::unique_lock <std::mutex> lck(mtx);
+        ready = true; // 设置全局标志位为 true.
+        cv.notify_all(); // 唤醒所有线程.
+    }
+
+
+    TEST_F(MutOrderManager, OrderManager_Test010)
+    { 
+        try
+        {
+            std::thread threads[10];
+            // spawn 10 threads:
+            for (int i = 0; i < 10; ++i)
+                threads[i] = std::thread(do_print_id, i);
+
+            std::cout << "10 threads ready to race...\n";
+            go(); // go!
+
+            for (auto & th:threads)
+                th.join();
+                        
+        }
+        catch ( std::exception& e)
+        {
+            LOG_DEBUG("catch exception: ", e.what());
+        }
+    }
+    #endif
     
     
 } // namespace exchange
