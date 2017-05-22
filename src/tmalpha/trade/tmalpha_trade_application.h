@@ -5,6 +5,8 @@
 #include "core/global.h"
 #include "core/strategy/strategy_communicator.h"
 #include "core/market/marketlisteneri.h"
+#include "tmalpha/trade/market/simulater_market.h"
+#include "tmalpha/trade/exchange/simulater_exchange.h"
 #include "tmalpha/trade/trade_simulater.h"
 
 
@@ -34,6 +36,8 @@ namespace trade
             std::thread *m_strategy_thread;
             TradeAlgorithm *m_algorithm;
             TradeSimulater *m_trade_simulater;
+            fh::tmalpha::trade::market::SimulaterMarket *m_market;
+            fh::tmalpha::trade::exchange::SimulaterExchange *m_exchange;
 
         private:
             DISALLOW_COPY_AND_ASSIGN(TmalphaTradeApplication);

@@ -16,10 +16,12 @@ TEST(TradeSimulaterTest, Test001_SendContracts)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     // 此时 market listener 应该收到 2 条合约定义信息
     auto &reveived_contracts = market_listener.Contracts();
@@ -47,10 +49,12 @@ TEST(TradeSimulaterTest, Test002_InvalidContract)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     pb::ems::Order order;
     order.set_client_order_id("test-1");
@@ -75,10 +79,12 @@ TEST(TradeSimulaterTest, Test003_PriceTooLow)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     pb::ems::Order order;
     order.set_client_order_id("test-1");
@@ -104,10 +110,12 @@ TEST(TradeSimulaterTest, Test004_PriceTooHigh)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     pb::ems::Order order;
     order.set_client_order_id("test-1");
@@ -133,10 +141,12 @@ TEST(TradeSimulaterTest, Test005_PriceInvalid)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     pb::ems::Order order;
     order.set_client_order_id("test-1");
@@ -162,10 +172,12 @@ TEST(TradeSimulaterTest, Test006_MarketOrderPriceInvalid)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     pb::ems::Order order;
     order.set_client_order_id("test-1");
@@ -193,10 +205,12 @@ TEST(TradeSimulaterTest, Test007_LimitOrderPriceInvalid)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     pb::ems::Order order;
     order.set_client_order_id("test-1");
@@ -224,10 +238,12 @@ TEST(TradeSimulaterTest, Test008_OrderQuantityInvalid)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     pb::ems::Order order;
     order.set_client_order_id("test-1");
@@ -256,10 +272,12 @@ TEST(TradeSimulaterTest, Test009_AddOrder)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     pb::ems::Order order;
     order.set_client_order_id("test-1");
@@ -299,10 +317,12 @@ TEST(TradeSimulaterTest, Test010_OrderClientIdDuplicate)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     pb::ems::Order order;
     order.set_client_order_id("test-1");
@@ -409,10 +429,12 @@ TEST(TradeSimulaterTest, Test011_MultiOrder)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     addInitOrder(trade_simulater);
 
@@ -445,10 +467,12 @@ TEST(TradeSimulaterTest, Test012_PartiallyTrade)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     addInitOrder(trade_simulater);
 
@@ -501,10 +525,12 @@ TEST(TradeSimulaterTest, Test013_MatchMulti)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     addInitOrder(trade_simulater);
 
@@ -555,10 +581,12 @@ TEST(TradeSimulaterTest, Test014_MultiOrderSamePrice)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     addInitOrder(trade_simulater);
 
@@ -626,10 +654,12 @@ TEST(TradeSimulaterTest, Test015_FokFill)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     addInitOrder(trade_simulater);
 
@@ -675,10 +705,12 @@ TEST(TradeSimulaterTest, Test016_FokKill)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     addInitOrder(trade_simulater);
 
@@ -718,10 +750,12 @@ TEST(TradeSimulaterTest, Test017_FakKill)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     addInitOrder(trade_simulater);
 
@@ -761,10 +795,12 @@ TEST(TradeSimulaterTest, Test018_FakFill)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     addInitOrder(trade_simulater);
 
@@ -810,10 +846,12 @@ TEST(TradeSimulaterTest, Test019_AddMarketOrder)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     {
     pb::ems::Order order;
@@ -861,10 +899,12 @@ TEST(TradeSimulaterTest, Test020_MatchMarketOrder)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     {
     pb::ems::Order order;
@@ -937,10 +977,12 @@ TEST(TradeSimulaterTest, Test021_MarketOrderMatch)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     {
     pb::ems::Order order;
@@ -996,10 +1038,12 @@ TEST(TradeSimulaterTest, Test022_ChangeFilledOrder)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     {
     pb::ems::Order order;
@@ -1051,10 +1095,12 @@ TEST(TradeSimulaterTest, Test023_ChangeOrder)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     {
     pb::ems::Order order;
@@ -1114,10 +1160,12 @@ TEST(TradeSimulaterTest, Test024_ChangeOrderAndFill)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     {
     pb::ems::Order order;
@@ -1180,10 +1228,12 @@ TEST(TradeSimulaterTest, Test025_DeleteContractNotExistOrder)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     {
     pb::ems::Order order;
@@ -1213,10 +1263,12 @@ TEST(TradeSimulaterTest, Test026_DeleteNotExistOrder)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     {
     pb::ems::Order order;
@@ -1246,10 +1298,12 @@ TEST(TradeSimulaterTest, Test027_DeleteOrder)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     addInitOrder(trade_simulater);
 
@@ -1282,10 +1336,12 @@ TEST(TradeSimulaterTest, Test028_DeleteCancelledOrder)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     addInitOrder(trade_simulater);
 
@@ -1319,10 +1375,12 @@ TEST(TradeSimulaterTest, Test029_QueryContractNotExistOrder)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     {
     pb::ems::Order order;
@@ -1352,10 +1410,12 @@ TEST(TradeSimulaterTest, Test030_QueryNotExistOrder)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     {
     pb::ems::Order order;
@@ -1381,10 +1441,12 @@ TEST(TradeSimulaterTest, Test031_QueryFilledOrder)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     addInitOrder(trade_simulater);
 
@@ -1424,10 +1486,12 @@ TEST(TradeSimulaterTest, Test032_QueryCancelledOrder)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     addInitOrder(trade_simulater);
 
@@ -1467,10 +1531,12 @@ TEST(TradeSimulaterTest, Test033_QueryWorkingOrder)
     fh::tmalpha::trade::MockTradeExchangeListener exchange_listener;
     fh::tmalpha::trade::TradeAlgorithmSimple algorithm;
 
-    fh::tmalpha::trade::TradeSimulater trade_simulater(&market_listener, &exchange_listener);
+    fh::tmalpha::trade::TradeSimulater trade_simulater;
+    trade_simulater.Set_market_listener(&market_listener);
+    trade_simulater.Set_exchange_listener(&exchange_listener);
     trade_simulater.Load_contracts(contracts);
     trade_simulater.Load_match_algorithm(&algorithm);
-    trade_simulater.Start(std::vector<::pb::ems::Order>());
+    trade_simulater.Start();
 
     addInitOrder(trade_simulater);
 

@@ -11,12 +11,10 @@ namespace tmalpha
 namespace trade
 {
 
-    TradeSimulater::TradeSimulater(
-            fh::core::market::MarketListenerI *market_listener, fh::core::exchange::ExchangeListenerI *exchange_listener)
-    : fh::core::exchange::ExchangeI(exchange_listener),
-      m_exchange_listener(exchange_listener), m_init_orders(), m_match_algorithm(nullptr),
-      m_contract_assist(), m_market_manager(market_listener), m_order_manager(this),
-      m_exchange_order_id(0), m_fill_id(0)
+    TradeSimulater::TradeSimulater()
+     : m_exchange_listener(nullptr), m_match_algorithm(nullptr),
+       m_contract_assist(), m_market_manager(), m_order_manager(this),
+       m_exchange_order_id(0), m_fill_id(0)
     {
         // noop
     }
@@ -24,6 +22,18 @@ namespace trade
     TradeSimulater::~TradeSimulater()
     {
         // noop
+    }
+
+    // 设置交易监听器
+    void TradeSimulater::Set_exchange_listener(core::exchange::ExchangeListenerI *exchange_listener)
+    {
+        m_exchange_listener = exchange_listener;
+    }
+
+    // 设置行情监听器
+    void TradeSimulater::Set_market_listener(fh::core::market::MarketListenerI *market_listener)
+    {
+        m_market_manager.Set_listener(market_listener);
     }
 
     // 加载初期合约定义信息
@@ -52,12 +62,8 @@ namespace trade
         m_match_algorithm = ta;
     }
 
-    // implement of ExchangeI
-    bool TradeSimulater::Start(const std::vector<pb::ems::Order> &init_orders)
+    bool TradeSimulater::Start()
     {
-        m_init_orders = init_orders;
-        LOG_INFO("init orders count:", init_orders.size());
-
         // 将合约信息对外通知
         for(const auto &c : m_contract_assist.Contracts())
         {
@@ -68,19 +74,11 @@ namespace trade
         return true;
     }
 
-    // implement of ExchangeI
     void TradeSimulater::Stop()
     {
         LOG_INFO("trade simulater stopped.");
     }
 
-    // implement of ExchangeI
-    void TradeSimulater::Initialize(std::vector<::pb::dms::Contract> contracts)
-    {
-        // noop
-    }
-
-    // implement of ExchangeI
     void TradeSimulater::Add(const pb::ems::Order& order)
     {
         LOG_INFO("ADD ORDER: ", fh::core::assist::utility::Format_pb_message(order));
@@ -112,7 +110,6 @@ namespace trade
         this->Match_order(pending);
     }
 
-    // implement of ExchangeI
     void TradeSimulater::Change(const pb::ems::Order& order)
     {
         LOG_INFO("CHANGE ORDER: ", fh::core::assist::utility::Format_pb_message(order));
@@ -149,7 +146,6 @@ namespace trade
         this->Match_order(pending);
     }
 
-    // implement of ExchangeI
     void TradeSimulater::Delete(const pb::ems::Order& order)
     {
         LOG_INFO("DELETE ORDER: ", fh::core::assist::utility::Format_pb_message(order));
@@ -179,7 +175,6 @@ namespace trade
         m_market_manager.Change_market_on_order_deleted(&deleted_order);
     }
 
-    // implement of ExchangeI
     void TradeSimulater::Query(const pb::ems::Order& order)
     {
         LOG_INFO("QUERY ORDER: ", fh::core::assist::utility::Format_pb_message(order));
@@ -200,18 +195,6 @@ namespace trade
         }
 
         m_exchange_listener->OnOrder(result);
-    }
-
-    // implement of ExchangeI
-    void TradeSimulater::Query_mass(const char *data, size_t size)
-    {
-        // noop
-    }
-
-    // implement of ExchangeI
-    void TradeSimulater::Delete_mass(const char *data, size_t size)
-    {
-        // noop
     }
 
     // implement of OrderExpiredListener

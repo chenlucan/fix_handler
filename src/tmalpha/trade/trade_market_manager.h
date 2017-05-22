@@ -19,8 +19,11 @@ namespace trade
     class TradeMarketManager
     {
         public:
-            explicit TradeMarketManager(fh::core::market::MarketListenerI *market_listener);
+            TradeMarketManager();
             virtual ~TradeMarketManager();
+
+        public:
+            void Set_listener(fh::core::market::MarketListenerI *market_listener);
 
         public:
             void Add_contract(const std::string &contract_name, std::uint32_t depth);

@@ -29,6 +29,12 @@ $(BIN_PATH)/trade_simulater.o: $(SRC_PATH)/tmalpha/trade/trade_simulater.cc
 $(BIN_PATH)/tmalpha_trade_application.o: $(SRC_PATH)/tmalpha/trade/tmalpha_trade_application.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
+$(BIN_PATH)/simulater_market.o: $(SRC_PATH)/tmalpha/trade/market/simulater_market.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/simulater_exchange.o: $(SRC_PATH)/tmalpha/trade/exchange/simulater_exchange.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/trade_matching_alpha_test.o: $(SRC_PATH)/main/tradematching/trade_matching_alpha_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
     

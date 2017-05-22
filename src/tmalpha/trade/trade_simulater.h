@@ -43,41 +43,31 @@ namespace trade
         static constexpr const char *ORDER_QUANTITY_INVALID = "order quantity invalid";
     };
 
-    class TradeSimulater : public core::exchange::ExchangeI, public OrderExpiredListener
+    class TradeSimulater : public OrderExpiredListener
     {
         public:
-            TradeSimulater(
-                    fh::core::market::MarketListenerI *market_listener,
-                    fh::core::exchange::ExchangeListenerI *exchange_listener);
+            TradeSimulater();
             virtual ~TradeSimulater();
 
         public:
+            // 设置交易监听器
+            void Set_exchange_listener(core::exchange::ExchangeListenerI *exchange_listener);
+            // 设置行情监听器
+            void Set_market_listener(fh::core::market::MarketListenerI *market_listener);
             // 加载初期合约定义信息
             void Load_contracts(const std::unordered_map<std::string, std::string> &contracts);
             // 加载订单匹配算法
             void Load_match_algorithm(TradeAlgorithm *ta);
 
         public:
-            // implement of ExchangeI
-            bool Start(const std::vector<pb::ems::Order> &init_orders) override;
-            // implement of ExchangeI
-            void Stop() override;
+            bool Start();
+            void Stop();
 
         public:
-            // implement of ExchangeI
-            void Initialize(std::vector<::pb::dms::Contract> contracts) override;
-            // implement of ExchangeI
-            void Add(const pb::ems::Order& order) override;
-            // implement of ExchangeI
-            void Change(const pb::ems::Order& order) override;
-            // implement of ExchangeI
-            void Delete(const pb::ems::Order& order) override;
-            // implement of ExchangeI
-            void Query(const pb::ems::Order& order) override;
-            // implement of ExchangeI
-            void Query_mass(const char *data, size_t size) override;
-            // implement of ExchangeI
-            void Delete_mass(const char *data, size_t size) override;
+            void Add(const pb::ems::Order& order) ;
+            void Change(const pb::ems::Order& order) ;
+            void Delete(const pb::ems::Order& order) ;
+            void Query(const pb::ems::Order& order) ;
 
         public:
             // implement of OrderExpiredListener
@@ -93,7 +83,6 @@ namespace trade
 
         private:
             core::exchange::ExchangeListenerI *m_exchange_listener;
-            std::vector<pb::ems::Order> m_init_orders;
             TradeAlgorithm *m_match_algorithm;
             TradeContractAssist m_contract_assist;
             TradeMarketManager m_market_manager;

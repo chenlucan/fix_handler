@@ -8,8 +8,8 @@ namespace tmalpha
 {
 namespace trade
 {
-    TradeMarketManager::TradeMarketManager(fh::core::market::MarketListenerI *market_listener)
-    : m_market_listener(market_listener), m_market_states()
+    TradeMarketManager::TradeMarketManager()
+    : m_market_listener(nullptr), m_market_states()
     {
         // noop
     }
@@ -17,6 +17,11 @@ namespace trade
     TradeMarketManager::~TradeMarketManager()
     {
         for(const auto &m : m_market_states) { delete m.second; }
+    }
+
+    void TradeMarketManager::Set_listener(fh::core::market::MarketListenerI *market_listener)
+    {
+        m_market_listener = market_listener;
     }
 
     // 添加一个合约定义
@@ -29,7 +34,7 @@ namespace trade
     // 将合约信息对外通知
     void TradeMarketManager::Send_contract(const pb::dms::Contract &contract)
     {
-        m_market_listener->OnContractDefinition(contract);
+        if(m_market_listener) m_market_listener->OnContractDefinition(contract);
     }
 
     // 订单创建时修改行情数据
@@ -65,12 +70,14 @@ namespace trade
     void TradeMarketManager::Send_l2(const TradeMarketState *market)
     {
         // 发送 L2 数据
-        m_market_listener->OnL2(market->L2());
+        if(m_market_listener) m_market_listener->OnL2(market->L2());
     }
 
     // 发布最新行情数据：BBO 行情
     void TradeMarketManager::Send_bbo(const TradeMarketState *market)
     {
+        if(m_market_listener == nullptr) return;
+
         // 发送 BBO 数据
         pb::dms::BBO bbo = market->BBO();
         if(bbo.has_bid() && bbo.has_offer())
@@ -104,6 +111,8 @@ namespace trade
     // 发布交易信息
     void TradeMarketManager::Send_trade(const std::string &contract_name, OrderPrice trade_price, OrderSize trade_quantity)
     {
+        if(m_market_listener == nullptr) return;
+
         pb::dms::Trade trade;
         trade.set_contract(contract_name);
         pb::dms::DataPoint *last = trade.mutable_last();
