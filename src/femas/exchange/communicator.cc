@@ -833,8 +833,14 @@ void CFemasGlobexCommunicator::Add(const ::pb::ems::Order& order)
 	 //
 	 if(SInputOrder.LimitPrice <=0 || SInputOrder.Volume <=0)
 	 {
-            order.set_status(pb::ems::OrderStatus::OS_Rejected);	
-	     m_strategy->OnOrder(order);		
+	     ::pb::ems::Order tmporder;
+	     tmporder.set_client_order_id(order.client_order_id());	
+            tmporder.set_account(order.account());
+            tmporder.set_contract(order.contract());	 
+            tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);	
+	     m_strategy->OnOrder(tmporder);
+	     LOG_ERROR("Add Order Error");	 
+	     return;
 	 }
 	 //
         std::string TimeCondition = m_pFileConfig->Get("femas-exchange.TimeCondition");
