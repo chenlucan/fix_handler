@@ -830,6 +830,13 @@ void CFemasGlobexCommunicator::Add(const ::pb::ems::Order& order)
         SInputOrder.HedgeFlag = HedgeFlag.c_str()[0];		
         SInputOrder.LimitPrice = atof(order.price().c_str());
         SInputOrder.Volume = order.quantity();
+	 //
+	 if(SInputOrder.LimitPrice <=0 || SInputOrder.Volume <=0)
+	 {
+            order.set_status(pb::ems::OrderStatus::OS_Rejected);	
+	     m_strategy->OnOrder(order);		
+	 }
+	 //
         std::string TimeCondition = m_pFileConfig->Get("femas-exchange.TimeCondition");
 	 SInputOrder.TimeCondition = TimeCondition.c_str()[0];
         std::string IsAutoSuspend = m_pFileConfig->Get("femas-exchange.IsAutoSuspend"); 
@@ -887,8 +894,8 @@ void CFemasGlobexCommunicator::Delete(const ::pb::ems::Order& order)
         memset(&OrderAction,0,sizeof(CUstpFtdcOrderActionField));
 	 strncpy(OrderAction.OrderSysID,order.exchange_order_id().c_str(),order.exchange_order_id().length());	
         //femas 
-        //strncpy(OrderAction.UserOrderLocalID,order.client_order_id().c_str(),order.client_order_id().length()); 
-	 strcpy(OrderAction.UserOrderLocalID,"");	
+        strncpy(OrderAction.UserOrderLocalID,order.client_order_id().c_str(),order.client_order_id().length()); 
+	 //strcpy(OrderAction.UserOrderLocalID,"");	
 	 strncpy(OrderAction.UserOrderActionLocalID,std::to_string(m_pUstpFtdcTraderManger->MaxOrderLocalID).c_str(),std::to_string(m_pUstpFtdcTraderManger->MaxOrderLocalID).length());
         m_pUstpFtdcTraderManger->AddOrderId(order.client_order_id());
 	 
