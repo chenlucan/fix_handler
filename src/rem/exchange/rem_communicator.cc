@@ -892,6 +892,11 @@ void CRemGlobexCommunicator::Add(const ::pb::ems::Order& order)
 	strncpy(temp.m_Symbol,InstrumentID.c_str(),InstrumentID.length());	
        temp.m_Price = atof(order.price().c_str());
        temp.m_Qty = order.quantity();
+	if(temp.LimitPrice <=0 || temp.Volume <=0)
+	 {
+            order.set_status(pb::ems::OrderStatus::OS_Rejected);	
+	     m_strategy->OnOrder(order);		
+	 }   
 //demo
 /*temp.m_Tif = EES_OrderTif_Day;
 temp.m_HedgeFlag = EES_HedgeFlag_Speculation;
