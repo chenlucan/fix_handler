@@ -32,7 +32,7 @@ LINT_COMMAND = $(TEST_PATH)/cpplint.py
 SETTINGS = $(BIN_PATH)/market_config.xml $(BIN_PATH)/market_settings.ini  $(BIN_PATH)/exchange_server.cfg \
 					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg $(BIN_PATH)/persist_settings.ini $(BIN_PATH)/rem_config.ini
 ALL_OBJS =  $(filter-out $(wildcard $(BIN_PATH)/*_test.o), $(wildcard $(BIN_PATH)/*.o)) 
-TEST_OBJS = $(BIN_PATH)/utility_unittest.o $(BIN_PATH)/mut_book_sender.o
+TEST_OBJS = $(BIN_PATH)/utility_unittest.o $(BIN_PATH)/mut_rem_book_manager.o $(BIN_PATH)/mut_rem_matket.o $(BIN_PATH)/mut_rem_market_manager.o
 COMM_OBJS = $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/utility.o $(BIN_PATH)/message_utility.o $(BIN_PATH)/logger.o \
 						   $(BIN_PATH)/mdp_message.o $(BIN_PATH)/sbe_to_json.o $(BIN_PATH)/sbe_decoder.o $(BIN_PATH)/settings.o \
 						   $(BIN_PATH)/time_measurer.o $(BIN_PATH)/zmq_sender.o $(BIN_PATH)/zmq_receiver.o \
@@ -64,16 +64,16 @@ include rem.mk
     
 all: createdir rem_efhmarket rem_exchange_test rem_market usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender
 
-rem_exchange_test: $(BIN_PATH)/rem_exchange_main.o $(BIN_PATH)/rem_exchange_application.o $(BIN_PATH)/rem_communicator.o \
+rem_exchange_test: $(BIN_PATH)/rem_exchange_main_test.o $(BIN_PATH)/rem_exchange_application.o $(BIN_PATH)/rem_communicator.o \
 			 $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(REM_EXCHANGE_TARGET) $?
 
-rem_market: $(BIN_PATH)/rem_market_main.o $(BIN_PATH)/rem_market_manager.o $(BIN_PATH)/rem_market.o $(BIN_PATH)/rem_market_application.o \
+rem_market: $(BIN_PATH)/rem_market_main_test.o $(BIN_PATH)/rem_market_manager.o $(BIN_PATH)/rem_market.o $(BIN_PATH)/rem_market_application.o \
               $(BIN_PATH)/rem_book_manager.o \
 			 $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(REM_MARKET_TARGET) $?	 
 	
-rem_efhmarket: $(BIN_PATH)/rem_efh_market_main.o $(BIN_PATH)/rem_efhmarket.o $(BIN_PATH)/rem_guava_quote.o $(BIN_PATH)/rem_socket_multicast.o $(BIN_PATH)/rem_efhmarket_manager.o \
+rem_efhmarket: $(BIN_PATH)/rem_efh_market_main_test.o $(BIN_PATH)/rem_efhmarket.o $(BIN_PATH)/rem_guava_quote.o $(BIN_PATH)/rem_socket_multicast.o $(BIN_PATH)/rem_efhmarket_manager.o \
 			 $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(REM_EFH_MARKET_TARGET) $?	 	
 

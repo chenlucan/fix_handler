@@ -44,7 +44,7 @@ CRemMarket::~CRemMarket()
 bool CRemMarket::Start()
 {
      LOG_INFO("CRemMarket::Start() ");
-     if(NULL == m_pEESQuoteApi || NULL == m_RemMarkrtManager)
+     if(NULL == m_pEESQuoteApi || NULL == m_RemMarkrtManager || NULL == m_pFileConfig)
      {
           LOG_ERROR("Error m_pEESQuoteApi or m_RemMarkrtManager is NULL ");
 	   return false;	  
