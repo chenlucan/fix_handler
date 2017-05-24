@@ -892,7 +892,7 @@ void CRemGlobexCommunicator::Add(const ::pb::ems::Order& order)
 	strncpy(temp.m_Symbol,InstrumentID.c_str(),InstrumentID.length());	
        temp.m_Price = atof(order.price().c_str());
        temp.m_Qty = order.quantity();
-	if(temp.LimitPrice <=0 || temp.Volume <=0)
+	if(temp.m_Price <=0 || temp.m_Qty <=0)
 	 {
 	     ::pb::ems::Order tmporder;
             tmporder.set_client_order_id(order.client_order_id());	
