@@ -139,6 +139,7 @@ namespace exchange
                  CEESTraderApiManger* m_pEESTraderApiManger;
                  fh::core::assist::Settings *m_pFileConfig;
 		   EESTraderApi *m_pUserApi;
+		   ////secs
 		   int m_itimeout;
 		   int m_ReqId;
 		   

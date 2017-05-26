@@ -132,14 +132,8 @@ TEST_F(CMutRemMarket, CMutRemMarket_Test004)
     tmpDepthQuoteData.AskVolume5=0;
     strcpy(tmpDepthQuoteData.UpdateTime,"15:28:39");
     tmpDepthQuoteData.UpdateMillisec=500;
-    tmpDepthQuoteData.AveragePrice=3525.639752;
-	
-	
-	
-
-	
-    ptestRemMarket->m_RemMarkrtManager->OnQuoteUpdated(chInstrumentType,&tmpDepthQuoteData);
-	
+    tmpDepthQuoteData.AveragePrice=3525.639752;	
+    ptestRemMarket->m_RemMarkrtManager->OnQuoteUpdated(chInstrumentType,&tmpDepthQuoteData);	
     bool bRet = true;
     ASSERT_TRUE(bRet);	
     ptestRemMarket->Stop();	

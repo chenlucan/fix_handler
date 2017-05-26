@@ -45,3 +45,6 @@ $(BIN_PATH)/mut_rem_matket.o: $(TEST_PATH)/rem/market/mut_rem_matket.cc
 	
 $(BIN_PATH)/mut_rem_market_manager.o: $(TEST_PATH)/rem/market/mut_rem_market_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<			
+	
+$(BIN_PATH)/mut_rem_exchange.o: $(TEST_PATH)/rem/exchange/mut_rem_exchange.cc
+	$(COMPILE_COMMAND) -c -o $@ $<	
