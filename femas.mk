@@ -30,3 +30,6 @@ $(BIN_PATH)/mut_femas_matket.o: $(TEST_PATH)/femas/market/mut_femas_matket.cc
 	
 $(BIN_PATH)/mut_femas_market_manager.o: $(TEST_PATH)/femas/market/mut_femas_market_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<		
+	
+$(BIN_PATH)/mut_femas_exchange.o: $(TEST_PATH)/femas/exchange/mut_femas_exchange.cc
+	$(COMPILE_COMMAND) -c -o $@ $<			

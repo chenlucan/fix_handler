@@ -726,6 +726,7 @@ bool CFemasGlobexCommunicator::Start(const std::vector<::pb::ems::Order> &init_o
     m_pUstpFtdcTraderManger->m_InitQueryNum = init_orders.size();	
     for(int i=0;i<init_orders.size();i++)
     {
+        sleep(1); 
         Query(init_orders[i]);
     }
     tmtimeout = time(NULL);	

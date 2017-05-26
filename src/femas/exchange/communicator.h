@@ -12,6 +12,7 @@
 #include "pb/ems/ems.pb.h"
 #include "core/assist/settings.h"
 #include "core/exchange/exchangelisteneri.h"
+#include <atomic>
 
 namespace fh
 {
@@ -69,9 +70,9 @@ namespace exchange
 		   }
 		   void AddOrderId(std::string cl_orderid,int i_key=-1);
 		   std::string GetOrderId(int i_key);
-		   int mIConnet;
+		   std::atomic_int mIConnet;
 		   int MaxOrderLocalID;
-		   int m_InitQueryNum;
+		   std::atomic_int m_InitQueryNum;
 		   std::map <int, std::string> m_ordermap;
 		   bool m_startfinish;
 		   
@@ -115,6 +116,7 @@ namespace exchange
                  CUstpFtdcTraderManger* m_pUstpFtdcTraderManger;
                  fh::core::assist::Settings *m_pFileConfig;
 		   CUstpFtdcTraderApi *m_pUserApi;
+		   //secs
 		   int m_itimeout;
 		   int m_ReqId;
   
