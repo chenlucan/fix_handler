@@ -45,6 +45,8 @@ class CFemasMarketApp
 	       CFemasMarket *m_pFemasMarket;	
 		fh::core::assist::Settings *m_pFileConfig;
 		fh::core::book::BookSender *m_book_sender;
+    private:
+            DISALLOW_COPY_AND_ASSIGN(CFemasMarketApp);		
 
 };
 

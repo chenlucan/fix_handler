@@ -78,6 +78,9 @@ class CFemasMarketManager : public CUstpFtdcMduserSpi
 		fh::core::assist::Settings *m_pFileConfig;
 
 		fh::femas::market::CFemasBookManager* m_pFemasBookManager;
+
+    private:
+              DISALLOW_COPY_AND_ASSIGN(CFemasMarketManager);			
 };
 
 

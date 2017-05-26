@@ -28,17 +28,17 @@ class CFemasMarket : public fh::core::market::MarketI
 
         public:
             // implement of MarketI
-            virtual bool Start();
+            bool Start() override;
             // implement of MarketI
-            virtual void Initialize(std::vector<std::string> insts);
+            void Initialize(std::vector<std::string> insts) override;
             // implement of MarketI
-            virtual void Stop();
+            void Stop() override;
             // implement of MarketI
-            virtual void Subscribe(std::vector<std::string> instruments);
+            void Subscribe(std::vector<std::string> instruments) override;
             // implement of MarketI
-            virtual void UnSubscribe(std::vector<std::string> instruments);
+            void UnSubscribe(std::vector<std::string> instruments) override;
             // implement of MarketI
-            virtual void ReqDefinitions(std::vector<std::string> instruments);   
+            void ReqDefinitions(std::vector<std::string> instruments) override; 
 
 	     void SetFileConfigData(std::string &FileConfig);		
         public:
@@ -47,7 +47,10 @@ class CFemasMarket : public fh::core::market::MarketI
 	     fh::femas::market::CFemasMarketManager *m_FemasMarketManager; 
 
 	     int m_itimeout;
-	     std::vector<std::string> m_insts;	 
+	     std::vector<std::string> m_insts;	
+		 
+	private:
+            DISALLOW_COPY_AND_ASSIGN(CFemasMarket);		 
 		 
 };
 

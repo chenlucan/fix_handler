@@ -81,6 +81,9 @@ namespace exchange
 		   CUstpFtdcTraderApi *m_pUserApi;
 		   fh::core::assist::Settings *m_pFileConfig;
 		   
+        private:
+                 DISALLOW_COPY_AND_ASSIGN(CUstpFtdcTraderManger);				   
+		   
     };
 
     class CFemasGlobexCommunicator : public core::exchange::ExchangeI
