@@ -27,6 +27,7 @@ CRemMarket::CRemMarket(fh::core::market::MarketListenerI *listener)
     m_RemMarkrtManager->CreateRemBookManager(listener);
     m_itimeout = 10;	
     m_insts.clear();	
+    m_pFileConfig = NULL;	
 }
 
 CRemMarket::~CRemMarket()
