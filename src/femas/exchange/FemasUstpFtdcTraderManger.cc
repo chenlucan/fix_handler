@@ -231,45 +231,7 @@ void CUstpFtdcTraderManger::OnQryOrder(CUstpFtdcOrderField *pOrder)
 	 }	     		
         tmporder.set_exchange_order_id(pOrder->OrderSysID);
 
-	if(pOrder->OrderStatus == '0')//OS_Filled
-	 {
-            tmporder.set_status(pb::ems::OrderStatus::OS_Filled);
-	 }
-	 else
-	 if(pOrder->OrderStatus == '1')
-	 {
-            tmporder.set_status(pb::ems::OrderStatus::OS_Working);
-	 }
-	 else
-	 if(pOrder->OrderStatus == '2')
-	 {
-	     //something fill is fill ?
-            tmporder.set_status(pb::ems::OrderStatus::OS_Filled);
-	 }
-	 else
-	 if(pOrder->OrderStatus == '3')
-	 {
-           tmporder.set_status(pb::ems::OrderStatus::OS_Working);
-	 }
-	 else
-	 if(pOrder->OrderStatus == '4')
-	 {
-            tmporder.set_status(pb::ems::OrderStatus::OS_Rejected); 
-	 }
-	 else
-	 if(pOrder->OrderStatus == '5')//OS_Cancelled
-	 {
-            tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled);
-	 }
-	 else
-	 if(pOrder->OrderStatus == '6')
-	 {
-            tmporder.set_status(pb::ems::OrderStatus::OS_Pending);
-	 }
-	 else
-	 {
-            tmporder.set_status(pb::ems::OrderStatus::OS_None);
-	 } 	
+	 SetOrderStatus(pOrder,tmporder);
 		
         tmporder.set_working_price(std::to_string(pOrder->LimitPrice));
 	 tmporder.set_working_quantity(pOrder->VolumeRemain);
@@ -462,45 +424,7 @@ void CUstpFtdcTraderManger::OnOrder(CUstpFtdcOrderField  *pOrder)
             tmporder.set_order_type(pb::ems::OrderType::OT_Market);
 	 }	        		
         tmporder.set_exchange_order_id(pOrder->OrderSysID);
-        if(pOrder->OrderStatus == '0')//OS_Filled
-	 {
-            tmporder.set_status(pb::ems::OrderStatus::OS_Filled);
-	 }
-	 else
-	 if(pOrder->OrderStatus == '1')
-	 {
-            tmporder.set_status(pb::ems::OrderStatus::OS_Working);
-	 }
-	 else
-	 if(pOrder->OrderStatus == '2')
-	 {
-	     //something fill is fill ?
-            tmporder.set_status(pb::ems::OrderStatus::OS_Filled);
-	 }
-	 else
-	 if(pOrder->OrderStatus == '3')
-	 {
-           tmporder.set_status(pb::ems::OrderStatus::OS_Working);
-	 }
-	 else
-	 if(pOrder->OrderStatus == '4')
-	 {
-            tmporder.set_status(pb::ems::OrderStatus::OS_Rejected); 
-	 }
-	 else
-	 if(pOrder->OrderStatus == '5')//OS_Cancelled
-	 {
-            tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled);
-	 }
-	 else
-	 if(pOrder->OrderStatus == '6')
-	 {
-            tmporder.set_status(pb::ems::OrderStatus::OS_Pending);
-	 }
-	 else
-	 {
-            tmporder.set_status(pb::ems::OrderStatus::OS_None);
-	 }
+        SetOrderStatus(pOrder,tmporder);
 
 	 tmporder.set_working_price(std::to_string(pOrder->LimitPrice));
 	 tmporder.set_working_quantity(pOrder->VolumeRemain);
@@ -677,6 +601,50 @@ void CUstpFtdcTraderManger::OnQryInvestorPosition(CUstpFtdcRspInvestorPositionFi
         m_startfinish =  bIsLast;
     }	
     return;	
+}
+
+void CUstpFtdcTraderManger::SetOrderStatus(CUstpFtdcOrderField *pOrder,::pb::ems::Order &tmporder)
+{
+        LOG_INFO("CUstpFtdcTraderManger::SetOrderStatus");
+        if(pOrder->OrderStatus == '0')//OS_Filled
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Filled);
+	 }
+	 else
+	 if(pOrder->OrderStatus == '1')
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Working);
+	 }
+	 else
+	 if(pOrder->OrderStatus == '2')
+	 {
+	     //something fill is fill ?
+            tmporder.set_status(pb::ems::OrderStatus::OS_Filled);
+	 }
+	 else
+	 if(pOrder->OrderStatus == '3')
+	 {
+           tmporder.set_status(pb::ems::OrderStatus::OS_Working);
+	 }
+	 else
+	 if(pOrder->OrderStatus == '4')
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Rejected); 
+	 }
+	 else
+	 if(pOrder->OrderStatus == '5')//OS_Cancelled
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled);
+	 }
+	 else
+	 if(pOrder->OrderStatus == '6')
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_Pending);
+	 }
+	 else
+	 {
+            tmporder.set_status(pb::ems::OrderStatus::OS_None);
+	 }	
 }
 
 void CUstpFtdcTraderManger::SetFileConfigData(const std::string &FileConfig)

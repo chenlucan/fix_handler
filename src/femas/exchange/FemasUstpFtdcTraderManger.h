@@ -70,6 +70,8 @@ namespace exchange
 		   }
 		   void AddOrderId(std::string cl_orderid,int i_key=-1);
 		   std::string GetOrderId(int i_key);
+                 void SetOrderStatus(CUstpFtdcOrderField *pOrder,::pb::ems::Order &tmporder);
+		   
 		   std::atomic_int mIConnet;
 		   int MaxOrderLocalID;
 		   std::atomic_int m_InitQueryNum;
