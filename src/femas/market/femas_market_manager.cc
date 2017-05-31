@@ -137,7 +137,7 @@ void CFemasMarketManager::OnRspError(CUstpFtdcRspInfoField *pRspInfo, int nReque
 
 void CFemasMarketManager::OnRspSubMarketData(CUstpFtdcSpecificInstrumentField *pSpecificInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-       if(NULL == pSpecificInstrument || NULL == pRspInfo)
+       if(NULL == pSpecificInstrument)
        {
             LOG_ERROR("CFemasMarketManager::OnRspSubMarketData Error");
 	     return ;	
@@ -154,7 +154,7 @@ void CFemasMarketManager::OnRspSubMarketData(CUstpFtdcSpecificInstrumentField *p
 
  void CFemasMarketManager::OnRspUnSubMarketData(CUstpFtdcSpecificInstrumentField *pSpecificInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-       if(NULL == pSpecificInstrument || NULL == pRspInfo)
+       if(NULL == pSpecificInstrument)
        {
             LOG_ERROR("CFemasMarketManager::OnRspUnSubMarketData Error");
 	     return ;	
