@@ -16,6 +16,7 @@
 #include <bsoncxx/builder/basic/array.hpp>
 #include <bsoncxx/builder/basic/document.hpp>
 #include "core/global.h"
+#include <atomic>
 
 namespace fh
 {
@@ -69,8 +70,8 @@ class CFemasMarketManager : public CUstpFtdcMduserSpi
 		void StructToJSON(CUstpFtdcDepthMarketDataField *pMarketData);
 		void FemasDateToString(bsoncxx::builder::basic::document& json);
 
-		int mIConnet;
-		int mISubSuss;
+		std::atomic_int mIConnet;
+		std::atomic_int mISubSuss;
 
 		
     private:
