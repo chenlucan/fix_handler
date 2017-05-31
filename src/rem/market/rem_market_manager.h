@@ -1,5 +1,5 @@
-#ifndef __FH_REM_MARKET_CRemMarkrtManager_H__
-#define __FH_REM_MARKET_CRemMarkrtManager_H__
+#ifndef __FH_REM_MARKET_REM_MARKET_MANAGER_H__
+#define __FH_REM_MARKET_REM_MARKET_MANAGER_H__
 
 #include <stdio.h>
 #include <string.h>
@@ -13,6 +13,7 @@
 #include <bsoncxx/builder/basic/array.hpp>
 #include <bsoncxx/builder/basic/document.hpp>
 #include "core/global.h"
+#include <atomic>
 
 namespace fh
 {
@@ -76,8 +77,8 @@ class CRemMarkrtManager : public EESQuoteEvent
                    return m_restart;
 		}
 
-		int mIConnet;
-		int mISubSuss;
+		std::atomic_int mIConnet;
+		std::atomic_int mISubSuss;
 		std::vector<std::string> m_SubSymbol;
 
               bool m_restart;

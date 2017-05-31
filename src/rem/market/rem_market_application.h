@@ -1,5 +1,5 @@
-#ifndef __FH_REM_MARKET_CRemMarketApp_H__
-#define __FH_REM_MARKET_CRemMarketApp_H__
+#ifndef __FH_REM_MARKET_REM_MARKET_APPLICATION_H__
+#define __FH_REM_MARKET_REM_MARKET_APPLICATION_H__
 
 #include <stdio.h>
 #include <string.h>

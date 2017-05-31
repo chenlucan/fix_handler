@@ -1,5 +1,5 @@
-#ifndef __FH_REM_EXCHANGE_APP_H__
-#define __FH_REM_EXCHANGE_APP_H__
+#ifndef __FH_REM_EXCHANGE_REM_EXCHANGE_APPLICATION_H__
+#define __FH_REM_EXCHANGE_REM_EXCHANGE_APPLICATION_H__
 
 #include <string>
 #include "core/global.h"
@@ -50,7 +50,7 @@ namespace exchange
 		      //code test end	  
 
 	  public:
-	  	      CRemGlobexCommunicator* m_pCRemGlobexCommunicator;
+	  	      CRemCommunicator* m_pCRemGlobexCommunicator;
 		      fh::core::strategy::StrategyCommunicator *m_strategy;
 		      fh::core::assist::Settings *pFileConfig;	  
 

@@ -64,7 +64,7 @@ include rem.mk
     
 all: createdir rem_efhmarket rem_exchange_test rem_market usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender
 
-rem_exchange_test: $(BIN_PATH)/rem_exchange_main_test.o $(BIN_PATH)/rem_exchange_application.o $(BIN_PATH)/rem_communicator.o \
+rem_exchange_test: $(BIN_PATH)/rem_exchange_main_test.o $(BIN_PATH)/rem_exchange_application.o $(BIN_PATH)/rem_communicator.o $(BIN_PATH)/RemEESTraderApiManger.o \
 			 $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(REM_EXCHANGE_TARGET) $?
 

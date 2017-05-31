@@ -20,7 +20,7 @@ CRemExchangeApp::CRemExchangeApp(const std::string &app_setting_file)
     LOG_INFO("CRemExchangeApp::receive_url:",receive_url);	
     LOG_INFO("CRemExchangeApp::send_url:",send_url);	
     m_strategy = new fh::core::strategy::StrategyCommunicator(send_url,receive_url );
-    m_pCRemGlobexCommunicator = new CRemGlobexCommunicator(m_strategy,app_setting_file);
+    m_pCRemGlobexCommunicator = new CRemCommunicator(m_strategy,app_setting_file);
     m_strategy->Set_exchange(m_pCRemGlobexCommunicator);
     return;
 }

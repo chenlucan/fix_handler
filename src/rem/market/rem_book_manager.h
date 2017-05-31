@@ -1,5 +1,5 @@
-#ifndef __FH_REM_MARKET_CRemBookManager_H__
-#define __FH_REM_MARKET_CRemBookManager_H__
+#ifndef __FH_REM_MARKET_REM_BOOK_MANAGER_H__
+#define __FH_REM_MARKET_REM_BOOK_MANAGER_H__
 
 #include <float.h>
 #include "core/global.h"

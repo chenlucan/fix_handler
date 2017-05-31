@@ -16,6 +16,9 @@ $(BIN_PATH)/rem_market_main_test.o: $(SRC_PATH)/main/rem_maket/rem_market_main.c
 $(BIN_PATH)/rem_communicator.o: $(SRC_PATH)/rem/exchange/rem_communicator.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 	
+$(BIN_PATH)/RemEESTraderApiManger.o: $(SRC_PATH)/rem/exchange/RemEESTraderApiManger.cc
+	$(COMPILE_COMMAND) -c -o $@ $<	
+	
 $(BIN_PATH)/rem_exchange_application.o: $(SRC_PATH)/rem/exchange/rem_exchange_application.cc
 	$(COMPILE_COMMAND) -c -o $@ $<					
 

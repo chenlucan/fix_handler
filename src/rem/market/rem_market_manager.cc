@@ -65,38 +65,6 @@ void CRemMarkrtManager::OnQuoteUpdated(EesEqsIntrumentType chInstrumentType, EES
 
 	LOG_INFO("BidVolume1: ",pDepthQuoteData->BidVolume1);
 
-//ÉêÂò¶þ
-/*	 if (pDepthQuoteData->BidPrice2==DBL_MAX)
-		LOG_INFO("BidPrice2:NULL");
-	else
-		LOG_INFO("BidPrice2:",pDepthQuoteData->BidPrice2);
-
-	LOG_INFO("BidVolume2:",pDepthQuoteData->BidVolume2);
-
-//ÉêÂòÈý
-	 if (pDepthQuoteData->BidPrice3==DBL_MAX)
-		LOG_INFO("BidPrice3:NULL");
-	else
-		LOG_INFO("BidPrice3:",pDepthQuoteData->BidPrice3);
-
-	LOG_INFO("BidVolume3:",pDepthQuoteData->BidVolume3);
-
-//ÉêÂòËÄ
-	 if (pDepthQuoteData->BidPrice4==DBL_MAX)
-		LOG_INFO("BidPrice4:NULL");
-	else
-		LOG_INFO("BidPrice4:",pDepthQuoteData->BidPrice4);
-
-	LOG_INFO("BidVolume4:",pDepthQuoteData->BidVolume4);
-
-//ÉêÂòÎå
-	 if (pDepthQuoteData->BidPrice5==DBL_MAX)
-		LOG_INFO("BidPrice5:NULL");
-	else
-		LOG_INFO("BidPrice5:",pDepthQuoteData->BidPrice5);
-
-	LOG_INFO("BidVolume5:",pDepthQuoteData->BidVolume5);
-*/
 //ÉêÂôÒ»	
 	if (pDepthQuoteData->AskPrice1==DBL_MAX)
 		LOG_INFO("AskPrice1:NULL");
@@ -104,39 +72,7 @@ void CRemMarkrtManager::OnQuoteUpdated(EesEqsIntrumentType chInstrumentType, EES
 		LOG_INFO("AskPrice1:",pDepthQuoteData->AskPrice1);
 
 	LOG_INFO("AskVolume1:",pDepthQuoteData->AskVolume1);	
-
-//ÉêÂô¶þ
-/*	if (pDepthQuoteData->AskPrice2==DBL_MAX)
-		LOG_INFO("AskPrice2:NULL");
-	else
-		LOG_INFO("AskPrice2:",pDepthQuoteData->AskPrice2);
-
-	LOG_INFO("AskVolume2:",pDepthQuoteData->AskVolume2);
-
-//ÉêÂôÈý
-	if (pDepthQuoteData->AskPrice3==DBL_MAX)
-		LOG_INFO("AskPrice3:NULL");
-	else
-		LOG_INFO("AskPrice3:",pDepthQuoteData->AskPrice3);
-
-	LOG_INFO("AskVolume3:",pDepthQuoteData->AskVolume3);
-
-//ÉêÂôËÄ	
-	if (pDepthQuoteData->AskPrice4==DBL_MAX)
-		LOG_INFO("AskPrice4:NULL");
-	else
-		LOG_INFO("AskPrice4:",pDepthQuoteData->AskPrice4);
-
-	LOG_INFO("AskVolume4:",pDepthQuoteData->AskVolume4);
-
-//ÉêÂôÎå	
-	if (pDepthQuoteData->AskPrice5==DBL_MAX)
-		LOG_INFO("AskPrice5:NULL");
-	else
-		LOG_INFO("AskPrice5:",pDepthQuoteData->AskPrice5);
-
-	LOG_INFO("AskVolume5:",pDepthQuoteData->AskVolume5);	
-*/	
+	
 	LOG_INFO("OnQuoteUpdated::end");	
 
        m_pRemBookManager->SendRemmarketData(pDepthQuoteData);
@@ -253,53 +189,53 @@ void CRemMarkrtManager::StructToJSON(EESMarketDepthQuoteData *pMarketData)
     tmjson.append(bsoncxx::builder::basic::kvp("ExchangeID", T(pMarketData->ExchangeID)));
     tmjson.append(bsoncxx::builder::basic::kvp("ExchangeInstID", T(pMarketData->ExchangeInstID)));	
     
-    tmjson.append(bsoncxx::builder::basic::kvp("PreSettlementPrice", T(pMarketData->PreSettlementPrice==DBL_MAX ? 0.0 : pMarketData->PreSettlementPrice)));	
-    tmjson.append(bsoncxx::builder::basic::kvp("PreClosePrice", T(pMarketData->PreClosePrice==DBL_MAX ? 0.0 : pMarketData->PreClosePrice)));
+    tmjson.append(bsoncxx::builder::basic::kvp("PreSettlementPrice", T(pMarketData->PreSettlementPrice)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("PreClosePrice", T(pMarketData->PreClosePrice)));
     tmjson.append(bsoncxx::builder::basic::kvp("PreOpenInterest", T(pMarketData->PreOpenInterest)));	
-    tmjson.append(bsoncxx::builder::basic::kvp("PreDelta", T(pMarketData->PreDelta==DBL_MAX ? 0.0 : pMarketData->PreDelta)));
-    tmjson.append(bsoncxx::builder::basic::kvp("OpenPrice", T(pMarketData->OpenPrice==DBL_MAX ? 0.0 : pMarketData->OpenPrice)));
-    tmjson.append(bsoncxx::builder::basic::kvp("HighestPrice", T(pMarketData->HighestPrice==DBL_MAX ? 0.0 : pMarketData->HighestPrice)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("PreDelta", T(pMarketData->PreDelta)));
+    tmjson.append(bsoncxx::builder::basic::kvp("OpenPrice", T(pMarketData->OpenPrice)));
+    tmjson.append(bsoncxx::builder::basic::kvp("HighestPrice", T(pMarketData->HighestPrice)));	
 
-    tmjson.append(bsoncxx::builder::basic::kvp("LowestPrice", T(pMarketData->LowestPrice==DBL_MAX ? 0.0 : pMarketData->LowestPrice)));
-    tmjson.append(bsoncxx::builder::basic::kvp("ClosePrice", T(pMarketData->ClosePrice==DBL_MAX ? 0.0 : pMarketData->ClosePrice)));
-    tmjson.append(bsoncxx::builder::basic::kvp("UpperLimitPrice", T(pMarketData->UpperLimitPrice==DBL_MAX ? 0.0 : pMarketData->UpperLimitPrice)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("LowestPrice", T(pMarketData->LowestPrice)));
+    tmjson.append(bsoncxx::builder::basic::kvp("ClosePrice", T(pMarketData->ClosePrice)));
+    tmjson.append(bsoncxx::builder::basic::kvp("UpperLimitPrice", T(pMarketData->UpperLimitPrice)));	
 
-    tmjson.append(bsoncxx::builder::basic::kvp("LowerLimitPrice", T(pMarketData->LowerLimitPrice==DBL_MAX ? 0.0 : pMarketData->LowerLimitPrice)));
-    tmjson.append(bsoncxx::builder::basic::kvp("SettlementPrice", T(pMarketData->SettlementPrice==DBL_MAX ? 0.0 : pMarketData->SettlementPrice)));
-    tmjson.append(bsoncxx::builder::basic::kvp("CurrDelta", T(pMarketData->CurrDelta==DBL_MAX ? 0.0 : pMarketData->CurrDelta)));
-    tmjson.append(bsoncxx::builder::basic::kvp("LastPrice", T(pMarketData->LastPrice==DBL_MAX ? 0.0 : pMarketData->LastPrice)));
+    tmjson.append(bsoncxx::builder::basic::kvp("LowerLimitPrice", T(pMarketData->LowerLimitPrice)));
+    tmjson.append(bsoncxx::builder::basic::kvp("SettlementPrice", T(pMarketData->SettlementPrice)));
+    tmjson.append(bsoncxx::builder::basic::kvp("CurrDelta", T(pMarketData->CurrDelta)));
+    tmjson.append(bsoncxx::builder::basic::kvp("LastPrice", T(pMarketData->LastPrice)));
     tmjson.append(bsoncxx::builder::basic::kvp("Volume", T(pMarketData->Volume)));
     tmjson.append(bsoncxx::builder::basic::kvp("Turnover", T(pMarketData->Turnover)));
     tmjson.append(bsoncxx::builder::basic::kvp("OpenInterest", T(pMarketData->OpenInterest)));
-    tmjson.append(bsoncxx::builder::basic::kvp("BidPrice1", T(pMarketData->BidPrice1==DBL_MAX ? 0.0 : pMarketData->BidPrice1)));
+    tmjson.append(bsoncxx::builder::basic::kvp("BidPrice1", T(pMarketData->BidPrice1)));
     tmjson.append(bsoncxx::builder::basic::kvp("BidVolume1", T(pMarketData->BidVolume1)));
-    tmjson.append(bsoncxx::builder::basic::kvp("AskPrice1", T(pMarketData->AskPrice1==DBL_MAX ? 0.0 : pMarketData->AskPrice1)));
+    tmjson.append(bsoncxx::builder::basic::kvp("AskPrice1", T(pMarketData->AskPrice1)));
     tmjson.append(bsoncxx::builder::basic::kvp("AskVolume1", T(pMarketData->AskVolume1)));
-    tmjson.append(bsoncxx::builder::basic::kvp("BidPrice2", T(pMarketData->BidPrice2==DBL_MAX ? 0.0 : pMarketData->BidPrice2)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("BidPrice2", T(pMarketData->BidPrice2)));	
 
 
     tmjson.append(bsoncxx::builder::basic::kvp("BidVolume2", T(pMarketData->BidVolume2)));
-    tmjson.append(bsoncxx::builder::basic::kvp("BidPrice3", T(pMarketData->BidPrice3==DBL_MAX ? 0.0 : pMarketData->BidPrice3)));
+    tmjson.append(bsoncxx::builder::basic::kvp("BidPrice3", T(pMarketData->BidPrice3)));
     tmjson.append(bsoncxx::builder::basic::kvp("BidVolume3", T(pMarketData->BidVolume3)));
-    tmjson.append(bsoncxx::builder::basic::kvp("AskPrice2", T(pMarketData->AskPrice2==DBL_MAX ? 0.0 : pMarketData->AskPrice2)));
+    tmjson.append(bsoncxx::builder::basic::kvp("AskPrice2", T(pMarketData->AskPrice2)));
     tmjson.append(bsoncxx::builder::basic::kvp("AskVolume2", T(pMarketData->AskVolume2)));
-    tmjson.append(bsoncxx::builder::basic::kvp("AskPrice3", T(pMarketData->AskPrice3==DBL_MAX ? 0.0 : pMarketData->AskPrice3)));
+    tmjson.append(bsoncxx::builder::basic::kvp("AskPrice3", T(pMarketData->AskPrice3)));
     tmjson.append(bsoncxx::builder::basic::kvp("AskVolume3", T(pMarketData->AskVolume3)));
-    tmjson.append(bsoncxx::builder::basic::kvp("BidPrice4", T(pMarketData->BidPrice4==DBL_MAX ? 0.0 : pMarketData->BidPrice4)));
+    tmjson.append(bsoncxx::builder::basic::kvp("BidPrice4", T(pMarketData->BidPrice4)));
     tmjson.append(bsoncxx::builder::basic::kvp("BidVolume4", T(pMarketData->BidVolume4)));
-    tmjson.append(bsoncxx::builder::basic::kvp("BidPrice5", T(pMarketData->BidPrice5==DBL_MAX ? 0.0 : pMarketData->BidPrice5)));
+    tmjson.append(bsoncxx::builder::basic::kvp("BidPrice5", T(pMarketData->BidPrice5)));
     tmjson.append(bsoncxx::builder::basic::kvp("BidVolume5", T(pMarketData->BidVolume5)));
-    tmjson.append(bsoncxx::builder::basic::kvp("AskPrice4", T(pMarketData->AskPrice4==DBL_MAX ? 0.0 : pMarketData->AskPrice4)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("AskPrice4", T(pMarketData->AskPrice4)));	
 
 
     tmjson.append(bsoncxx::builder::basic::kvp("AskVolume4", T(pMarketData->AskVolume4)));
-    tmjson.append(bsoncxx::builder::basic::kvp("AskPrice5", T(pMarketData->AskPrice5==DBL_MAX ? 0.0 : pMarketData->AskPrice5)));
+    tmjson.append(bsoncxx::builder::basic::kvp("AskPrice5", T(pMarketData->AskPrice5)));
     tmjson.append(bsoncxx::builder::basic::kvp("AskVolume5", T(pMarketData->AskVolume5)));
     tmjson.append(bsoncxx::builder::basic::kvp("InstrumentID", T(pMarketData->InstrumentID)));
     tmjson.append(bsoncxx::builder::basic::kvp("UpdateTime", T(pMarketData->UpdateTime)));
     tmjson.append(bsoncxx::builder::basic::kvp("UpdateMillisec", T(pMarketData->UpdateMillisec)));
     
-    tmjson.append(bsoncxx::builder::basic::kvp("AveragePrice", T(pMarketData->AveragePrice==DBL_MAX ? 0.0 : pMarketData->AveragePrice)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("AveragePrice", T(pMarketData->AveragePrice)));	
     	
     RemDateToString(tmjson);	
     return;

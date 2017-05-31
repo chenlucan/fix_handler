@@ -158,17 +158,17 @@ void CRemEfhMarkrtManager::StructToJSON(guava_udp_normal *pMarketData)
     tmjson.append(bsoncxx::builder::basic::kvp("update_time", T(pMarketData->m_update_time)));
     tmjson.append(bsoncxx::builder::basic::kvp("millisecond", T(pMarketData->m_millisecond)));
 		
-    tmjson.append(bsoncxx::builder::basic::kvp("last_px", T(pMarketData->m_last_px==DBL_MAX ? 0.0 : pMarketData->m_last_px)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("last_px", T(pMarketData->m_last_px)));	
 	
-    tmjson.append(bsoncxx::builder::basic::kvp("last_share", T(pMarketData->m_last_share>0 ? 0.0 : pMarketData->m_last_share)));
+    tmjson.append(bsoncxx::builder::basic::kvp("last_share", T(pMarketData->m_last_share<0 ? 0.0 : pMarketData->m_last_share)));
 	
-    tmjson.append(bsoncxx::builder::basic::kvp("total_value", T(pMarketData->m_total_value==DBL_MAX ? 0.0 : pMarketData->m_total_value)));
-    tmjson.append(bsoncxx::builder::basic::kvp("total_pos", T(pMarketData->m_total_pos>DBL_MAX ? 0.0 : pMarketData->m_total_pos)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("total_value", T(pMarketData->m_total_value)));
+    tmjson.append(bsoncxx::builder::basic::kvp("total_pos", T(pMarketData->m_total_pos)));	
 	
-    tmjson.append(bsoncxx::builder::basic::kvp("bid_px", T(pMarketData->m_bid_px==DBL_MAX ? 0.0 : pMarketData->m_bid_px)));
-    tmjson.append(bsoncxx::builder::basic::kvp("bid_share", T(pMarketData->m_bid_share>0 ? 0.0 : pMarketData->m_bid_share)));
-    tmjson.append(bsoncxx::builder::basic::kvp("ask_px", T(pMarketData->m_ask_px==DBL_MAX ? 0.0 : pMarketData->m_ask_px)));	
-    tmjson.append(bsoncxx::builder::basic::kvp("ask_share", T(pMarketData->m_ask_share>0 ? 0.0 : pMarketData->m_ask_share)));
+    tmjson.append(bsoncxx::builder::basic::kvp("bid_px", T(pMarketData->m_bid_px)));
+    tmjson.append(bsoncxx::builder::basic::kvp("bid_share", T(pMarketData->m_bid_share<0 ? 0.0 : pMarketData->m_bid_share)));
+    tmjson.append(bsoncxx::builder::basic::kvp("ask_px", T(pMarketData->m_ask_px)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("ask_share", T(pMarketData->m_ask_share<0 ? 0.0 : pMarketData->m_ask_share)));
     	
     RemDateToString(tmjson);	
     return;
