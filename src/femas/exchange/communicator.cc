@@ -145,6 +145,7 @@ void CFemasCommunicator::Add(const ::pb::ems::Order& order)
 	 //strncpy(SInputOrder.UserOrderLocalID,order.client_order_id().c_str(),order.client_order_id().length());
 	 strncpy(SInputOrder.UserOrderLocalID,std::to_string(m_pUstpFtdcTraderManger->MaxOrderLocalID).c_str(),std::to_string(m_pUstpFtdcTraderManger->MaxOrderLocalID).length());
         m_pUstpFtdcTraderManger->AddOrderId(order.client_order_id());
+	 LOG_INFO("client_order_id:",order.client_order_id());	
 
 	 
 	 std::string BrokerID = m_pFileConfig->Get("femas-user.BrokerID");

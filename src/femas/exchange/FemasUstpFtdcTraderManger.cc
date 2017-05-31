@@ -364,7 +364,8 @@ void CUstpFtdcTraderManger::OnInsertOrder(CUstpFtdcInputOrderField  *pInputOrder
         fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpalltime);	
         //end	
         //print message
-        LOG_INFO("client_order_id:",pInputOrder->OrderSysID);
+        LOG_INFO("UserOrderLocalID:",pInputOrder->UserOrderLocalID);
+        LOG_INFO("client_order_id:",tmpc_OrderId);
 	 LOG_INFO("account:",pInputOrder->UserID);
 	 LOG_INFO("contract:",pInputOrder->InstrumentID);
 	 LOG_INFO("buy_sell:",pInputOrder->Direction);
@@ -387,7 +388,7 @@ void CUstpFtdcTraderManger::OnOrder(CUstpFtdcOrderField  *pOrder)
         ::pb::ems::Order tmporder;
         //make Order begin (have something todo) 	
         //tmporder.set_client_order_id(pOrder->OrderUserID);
-        std::string tmpc_OrderId = GetOrderId(std::atoi(pOrder->OrderUserID));
+        std::string tmpc_OrderId = GetOrderId(std::atoi(pOrder->UserOrderLocalID));
         if(tmpc_OrderId == "")
 	 {
 	     //UserOrderLocalID|OrderSysID|OrderUserID
@@ -672,6 +673,7 @@ void CUstpFtdcTraderManger::AddOrderId(std::string cl_orderid,int i_key)
         if(m_ordermap.count(MaxOrderLocalID) == 0)
 	 {
             m_ordermap[MaxOrderLocalID] = cl_orderid;
+	     LOG_INFO("CUstpFtdcTraderManger::AddOrderId suss");		
 	 }
 	 else
 	 if(m_ordermap[MaxOrderLocalID] != cl_orderid)	
@@ -684,6 +686,7 @@ void CUstpFtdcTraderManger::AddOrderId(std::string cl_orderid,int i_key)
 
 std::string CUstpFtdcTraderManger::GetOrderId(int i_key)
 {
+    LOG_INFO("CUstpFtdcTraderManger::GetOrderId i_key = ",i_key);
     if(m_ordermap.count(i_key) != 0)
     {
         return m_ordermap[i_key];
