@@ -62,6 +62,11 @@ namespace market
  void CFemasMarketManager::OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserLogin, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) 
 {
 	LOG_INFO("OnRspUserLogin:");
+	if(NULL == pRspUserLogin || NULL == pRspInfo)
+       {
+            LOG_ERROR("CFemasMarketManager::OnRspUserLogin Error");
+	     return ;	
+       }
 	LOG_INFO("ErrorCode=[",pRspInfo->ErrorID,"], ErrorMsg=[",pRspInfo->ErrorMsg,"]\n" );
 	LOG_INFO("RequestID=[",nRequestID,"], Chain=[",bIsLast,"]\n" );
 		
@@ -80,6 +85,11 @@ namespace market
 
 void CFemasMarketManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pMarketData) 
 {
+       if(NULL == pMarketData)
+       {
+            LOG_ERROR("CFemasMarketManager::OnRtnDepthMarketData Error");
+	     return ;	
+       }
 		// 客户端按需处理返回的数据
 	LOG_INFO("GetDepthMarketData::begin");	
 	LOG_INFO("name : ",pMarketData->InstrumentID);
@@ -94,38 +104,6 @@ void CFemasMarketManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pM
 
 	LOG_INFO("BidVolume1: ",pMarketData->BidVolume1);
 
-/*//申买二
-	 if (pMarketData->BidPrice2==DBL_MAX)
-		LOG_INFO("BidPrice2:NULL");
-	else
-		LOG_INFO("BidPrice2:",pMarketData->BidPrice2);
-
-	LOG_INFO("BidVolume2:",pMarketData->BidVolume2);
-
-//申买三
-	 if (pMarketData->BidPrice3==DBL_MAX)
-		LOG_INFO("BidPrice3:NULL");
-	else
-		LOG_INFO("BidPrice3:",pMarketData->BidPrice3);
-
-	LOG_INFO("BidVolume3:",pMarketData->BidVolume3);
-
-//申买四
-	 if (pMarketData->BidPrice4==DBL_MAX)
-		LOG_INFO("BidPrice4:NULL");
-	else
-		LOG_INFO("BidPrice4:",pMarketData->BidPrice4);
-
-	LOG_INFO("BidVolume4:",pMarketData->BidVolume4);
-
-//申买五
-	 if (pMarketData->BidPrice5==DBL_MAX)
-		LOG_INFO("BidPrice5:NULL");
-	else
-		LOG_INFO("BidPrice5:",pMarketData->BidPrice5);
-
-	LOG_INFO("BidVolume5:",pMarketData->BidVolume5);
-*/
 //申卖一	
 	if (pMarketData->AskPrice1==DBL_MAX)
 		LOG_INFO("AskPrice1:NULL");
@@ -133,39 +111,7 @@ void CFemasMarketManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pM
 		LOG_INFO("AskPrice1:",pMarketData->AskPrice1);
 
 	LOG_INFO("AskVolume1:",pMarketData->AskVolume1);	
-
-/*//申卖二
-	if (pMarketData->AskPrice2==DBL_MAX)
-		LOG_INFO("AskPrice2:NULL");
-	else
-		LOG_INFO("AskPrice2:",pMarketData->AskPrice2);
-
-	LOG_INFO("AskVolume2:",pMarketData->AskVolume2);
-
-//申卖三
-	if (pMarketData->AskPrice3==DBL_MAX)
-		LOG_INFO("AskPrice3:NULL");
-	else
-		LOG_INFO("AskPrice3:",pMarketData->AskPrice3);
-
-	LOG_INFO("AskVolume3:",pMarketData->AskVolume3);
-
-//申卖四	
-	if (pMarketData->AskPrice4==DBL_MAX)
-		LOG_INFO("AskPrice4:NULL");
-	else
-		LOG_INFO("AskPrice4:",pMarketData->AskPrice4);
-
-	LOG_INFO("AskVolume4:",pMarketData->AskVolume4);
-
-//申卖五	
-	if (pMarketData->AskPrice5==DBL_MAX)
-		LOG_INFO("AskPrice5:NULL");
-	else
-		LOG_INFO("AskPrice5:",pMarketData->AskPrice5);
-
-	LOG_INFO("AskVolume5:",pMarketData->AskVolume5);	
-*/	
+	
 	LOG_INFO("GetDepthMarketData::end");
 
 	m_pFemasBookManager->SendFemasmarketData(pMarketData);
@@ -178,6 +124,11 @@ void CFemasMarketManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pM
 void CFemasMarketManager::OnRspError(CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) 
 {
 	LOG_INFO("OnRspError:");
+	if(NULL == pRspInfo)
+       {
+            LOG_ERROR("CFemasMarketManager::OnRspError Error");
+	     return ;	
+       }
 	LOG_INFO("ErrorCode=[",pRspInfo->ErrorID,"], ErrorMsg=[",pRspInfo->ErrorMsg,"]" );
 	LOG_INFO("RequestID=[",nRequestID,"], Chain=[",bIsLast,"]");
 		// 客户端需进行错误处理
@@ -186,7 +137,12 @@ void CFemasMarketManager::OnRspError(CUstpFtdcRspInfoField *pRspInfo, int nReque
 
 void CFemasMarketManager::OnRspSubMarketData(CUstpFtdcSpecificInstrumentField *pSpecificInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-	LOG_INFO("Sub 返回订阅合约：",pSpecificInstrument->InstrumentID);
+       if(NULL == pSpecificInstrument || NULL == pRspInfo)
+       {
+            LOG_ERROR("CFemasMarketManager::OnRspSubMarketData Error");
+	     return ;	
+       }
+	LOG_INFO("Sub  InstrumentID :",pSpecificInstrument->InstrumentID);
 	if(mISubSuss > 0)
 	{
            mISubSuss--;
@@ -198,7 +154,12 @@ void CFemasMarketManager::OnRspSubMarketData(CUstpFtdcSpecificInstrumentField *p
 
  void CFemasMarketManager::OnRspUnSubMarketData(CUstpFtdcSpecificInstrumentField *pSpecificInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-	LOG_INFO("UnSub 返回订阅合约：",pSpecificInstrument->InstrumentID);
+       if(NULL == pSpecificInstrument || NULL == pRspInfo)
+       {
+            LOG_ERROR("CFemasMarketManager::OnRspUnSubMarketData Error");
+	     return ;	
+       }
+	LOG_INFO("UnSub InstrumentID :",pSpecificInstrument->InstrumentID);
 	return;
 }
 

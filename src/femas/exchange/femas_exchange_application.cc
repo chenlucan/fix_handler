@@ -20,7 +20,7 @@ CFemasExchangeApp::CFemasExchangeApp(const std::string &app_setting_file)
     LOG_INFO("CFemasExchangeApp::receive_url:",receive_url);	
     LOG_INFO("CFemasExchangeApp::send_url:",send_url);	
     m_strategy = new fh::core::strategy::StrategyCommunicator(send_url,receive_url );
-    m_pCFemasGlobexCommunicator = new CFemasGlobexCommunicator(m_strategy,app_setting_file);
+    m_pCFemasGlobexCommunicator = new CFemasCommunicator(m_strategy,app_setting_file);
     m_strategy->Set_exchange(m_pCFemasGlobexCommunicator);
     return;
 }

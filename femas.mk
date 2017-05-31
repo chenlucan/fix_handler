@@ -16,6 +16,9 @@ $(BIN_PATH)/femas_market_main_test.o: $(SRC_PATH)/main/femas_maket/femas_market_
 $(BIN_PATH)/communicator.o: $(SRC_PATH)/femas/exchange/communicator.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 	
+$(BIN_PATH)/FemasUstpFtdcTraderManger.o: $(SRC_PATH)/femas/exchange/FemasUstpFtdcTraderManger.cc
+	$(COMPILE_COMMAND) -c -o $@ $<	
+	
 $(BIN_PATH)/femas_exchange_application.o: $(SRC_PATH)/femas/exchange/femas_exchange_application.cc
 	$(COMPILE_COMMAND) -c -o $@ $<					
 

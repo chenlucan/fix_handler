@@ -1,5 +1,5 @@
-#ifndef __FH_FEMAS_MARKET_CFemasBookManager_H__
-#define __FH_FEMAS_MARKET_CFemasBookManager_H__
+#ifndef __FH_FEMAS_MARKET_FEMAS_BOOK_MANAGER_H__
+#define __FH_FEMAS_MARKET_FEMAS_BOOK_MANAGER_H__
 
 #include <float.h>
 #include "core/global.h"

@@ -1,8 +1,8 @@
 
 
 
-#ifndef __FH_FEMAS_MARKET_CFemasMarkrtManager_H__
-#define __FH_FEMAS_MARKET_CFemasMarkrtManager_H__
+#ifndef __FH_FEMAS_MARKET_FEMAS_MARKET_MANAGER_H__
+#define __FH_FEMAS_MARKET_FEMAS_MARKET_MANAGER_H__
 
 #include <stdio.h>
 #include <string.h>

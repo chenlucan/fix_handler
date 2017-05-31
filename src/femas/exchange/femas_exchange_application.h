@@ -1,5 +1,5 @@
-#ifndef __FH_FEMA_EXCHANGE_APP_H__
-#define __FH_FEMA_EXCHANGE_APP_H__
+#ifndef __FH_FEMA_EXCHANGE_FEMAS_EXCHANGE_APPLICATION_H__
+#define __FH_FEMA_EXCHANGE_FEMAS_EXCHANGE_APPLICATION_H__
 
 #include <string>
 #include "core/global.h"
@@ -49,7 +49,7 @@ namespace exchange
 		      //code test end	  
 
 	  public:
-	  	      CFemasGlobexCommunicator* m_pCFemasGlobexCommunicator;
+	  	      CFemasCommunicator* m_pCFemasGlobexCommunicator;
 		      fh::core::strategy::StrategyCommunicator *m_strategy;
 		      fh::core::assist::Settings *pFileConfig;	  
 

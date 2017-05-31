@@ -1,8 +1,8 @@
 
 
 
-#ifndef __FH_FEMA_CFemasMarket_H__
-#define __FH_FEMA_CFemasMarket_H__
+#ifndef __FH_FEMA_FEMAS_MARKET_H__
+#define __FH_FEMA_FEMAS_MARKET_H__
 
 #include <stdio.h>
 #include <string.h>
@@ -41,7 +41,7 @@ class CFemasMarket : public fh::core::market::MarketI
             void ReqDefinitions(std::vector<std::string> instruments) override; 
 
 	     void SetFileConfigData(std::string &FileConfig);		
-        public:
+        private:
 	     fh::core::assist::Settings *m_pFileConfig;	
 	     CUstpFtdcMduserApi *m_pUstpFtdcMduserApi;	 
 	     fh::femas::market::CFemasMarketManager *m_FemasMarketManager; 

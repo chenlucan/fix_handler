@@ -1,7 +1,7 @@
 
 
-#ifndef __FH_FEMA_MARKET_CFemasMarketApp_H__
-#define __FH_FEMA_MARKET_CFemasMarketApp_H__
+#ifndef __FH_FEMA_MARKET_FEMAS_MARKET_APPLICATION_H__
+#define __FH_FEMA_MARKET_FEMAS_MARKET_APPLICATION_H__
 
 #include <stdio.h>
 #include <string.h>

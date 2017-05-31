@@ -87,57 +87,7 @@ bool CFemasMarket::Start()
 void CFemasMarket::Initialize(std::vector<std::string> insts)
 {
      LOG_INFO("CFemasMarket::Initialize() ");
-     m_insts = insts;	 
-     /*	 
-     if(NULL == m_pUstpFtdcMduserApi)
-    {
-          LOG_ERROR("Error m_pUstpFtdcMduserApi is NULL ");
-	   return ;	  
-    }
-      
-
-    m_pUstpFtdcMduserApi->RegisterSpi(m_FemasMarketManager);
-
-
-    if(insts.size() <= 0)
-    {
-          m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (21001, USTP_TERT_RESUME);	  
-    }
-    else
-    {
-          for(int i=0;i<insts.size();i++)
-          {
-               LOG_INFO("num =  ",i+1," ,SubscribeMarketDataTopic ID = ",std::atoi(insts[i].c_str()));
-               m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (std::atoi(insts[i].c_str()), USTP_TERT_RESUME);
-          }	
-    }
-    
-
-	 
-    std::string tmpurl = m_pFileConfig->Get("femas-market.url");
-    LOG_INFO("femas market url = ",tmpurl.c_str());
-
-    m_itimeout = std::atoi((m_pFileConfig->Get("femas-timeout.timeout")).c_str());
-	
-	 
-    m_pUstpFtdcMduserApi->RegisterFront((char*)(tmpurl.c_str()));
-
-     m_pUstpFtdcMduserApi->SetHeartbeatTimeout(m_itimeout); 
-
-     m_pUstpFtdcMduserApi->Init();
-
-     time_t tmtimeout = time(NULL);
-     while(0 != m_FemasMarketManager->mIConnet)
-     {
-         if(time(NULL)-tmtimeout>m_itimeout)
-	  {
-              LOG_ERROR("CFemasMarket::mIConnet tiomeout ");
-	       return;		  
-	  }
-         sleep(0.1);    
-     }	 
-     LOG_INFO("CFemasMarket::mIConnet is ok ");	 
-     */
+     m_insts = insts;	      
      return;	 
 }
 // implement of MarketI
@@ -162,9 +112,7 @@ void CFemasMarket::Stop()
 	 
 	
      m_pUstpFtdcMduserApi->ReqUserLogout(&reqUserLogout,0);	 
-	 
-     //m_pUstpFtdcMduserApi->Release();
-      
+	       
 }
 // implement of MarketI
 void CFemasMarket::Subscribe(std::vector<std::string> instruments)
