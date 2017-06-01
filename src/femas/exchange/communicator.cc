@@ -89,7 +89,7 @@ bool CFemasCommunicator::Start(const std::vector<::pb::ems::Order> &init_orders)
 	 }
 	 sleep(0.1);  
     } 
-    m_ReqId = m_pUstpFtdcTraderManger->MaxOrderLocalID;
+    //m_ReqId = m_pUstpFtdcTraderManger->MaxOrderLocalID;
     //check suss order
     if(!SendReqQryTrade(init_orders))
     {
@@ -348,7 +348,7 @@ bool CFemasCommunicator::SendReqQryTrade(const std::vector<::pb::ems::Order> &in
         std::string UserID = init_orders[i].account();
 	 strcpy(mQryTrade.UserID,UserID.c_str());
 	 
-        m_pUserApi->ReqQryTrade(&mQryTrade,m_ReqId++); 
+        m_pUserApi->ReqQryTrade(&mQryTrade,m_pUstpFtdcTraderManger->MaxOrderLocalID++); 
 
 	 time_t tmtimeout = time(NULL);
 	 m_pUstpFtdcTraderManger->m_startfinish = false;
@@ -388,7 +388,7 @@ bool CFemasCommunicator::SendReqQryInvestorPosition(const std::vector<::pb::ems:
 	 std::string InstrumentID = init_orders[i].contract();
         strncpy(mQryInvestorPosition.InstrumentID,InstrumentID.c_str(),InstrumentID.length()); 
 	
-        m_pUserApi->ReqQryInvestorPosition(&mQryInvestorPosition,m_ReqId++);
+        m_pUserApi->ReqQryInvestorPosition(&mQryInvestorPosition,m_pUstpFtdcTraderManger->MaxOrderLocalID++);
 
 	 time_t tmtimeout = time(NULL);
 	 m_pUstpFtdcTraderManger->m_startfinish = false;
