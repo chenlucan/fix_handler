@@ -63,7 +63,7 @@ void CEESTraderApiManger::OnUserLogon(EES_LogonResponse* pLogon)
     }
     LOG_INFO("CEESTraderApiManger::OnUserLogon  suss");	
     mIConnet = 0;
-    MaxOrderLocalID = pLogon->m_MaxToken;	
+    MaxOrderLocalID = pLogon->m_MaxToken+1;	
     return;	
 }
 void CEESTraderApiManger::OnRspChangePassword(EES_ChangePasswordResult nResult)

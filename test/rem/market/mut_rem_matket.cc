@@ -76,6 +76,29 @@ TEST_F(CMutRemMarket, CMutRemMarket_Test003)
 
 TEST_F(CMutRemMarket, CMutRemMarket_Test004)
 {
+    std::string FileConfigstr= "rem_config.ini";	
+    fh::core::assist::Settings *pFileConfig = new fh::core::assist::Settings(FileConfigstr);
+    std::string save_url_f = pFileConfig->Get("zeromq.org_url");
+    std::string save_url_s = pFileConfig->Get("zeromq.book_url");	
+    fh::core::book::BookSender *m_book_sender = new fh::core::book::BookSender("tcp://*:4557", "tcp://*:4558");	
+    CRemMarket *ptestRemMarket = new CRemMarket(m_book_sender);  
+    	
+    ptestRemMarket->SetFileConfigData(FileConfigstr); 	
+	
+    bool bRet = true;
+    if(NULL==ptestRemMarket || NULL == m_book_sender ||NULL == pFileConfig)
+    {
+        bRet = false;
+    }
+    ASSERT_TRUE(bRet);	
+    ptestRemMarket->Stop();		
+    delete ptestRemMarket;
+    delete m_book_sender;
+    delete pFileConfig;	
+}
+
+TEST_F(CMutRemMarket, CMutRemMarket_Test005)
+{
     
     std::string FileConfigstr= "rem_config.ini";	
     fh::core::assist::Settings *pFileConfig = new fh::core::assist::Settings(FileConfigstr);
@@ -135,9 +158,17 @@ TEST_F(CMutRemMarket, CMutRemMarket_Test004)
     tmpDepthQuoteData.AveragePrice=3525.639752;	
     ptestRemMarket->m_RemMarkrtManager->OnQuoteUpdated(chInstrumentType,&tmpDepthQuoteData);	
     bool bRet = true;
-    ASSERT_TRUE(bRet);	
+
+    if(strcmp(tmpDepthQuoteData.InstrumentID,"rb1707")!=0)
+    {
+        bRet = false;
+    }
+	
+    ASSERT_TRUE(bRet);		
     ptestRemMarket->Stop();	
-    delete ptestRemMarket;	
+    delete ptestRemMarket;
+    delete m_book_sender;
+    delete pFileConfig;	
 }
 
 /*TEST_F(CMutRemMarket, CMutRemMarket_Test005)

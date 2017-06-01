@@ -122,7 +122,7 @@ bool CRemCommunicator::Start(const std::vector<::pb::ems::Order> &init_orders)
         if(oldaccount == "" || oldaccount != init_orders[i].account())
 	 {
 	     oldaccount =  init_orders[i].account();
-            m_pUserApi->QueryAccountPosition(init_orders[i].account().c_str(),m_ReqId++); 
+            m_pUserApi->QueryAccountPosition(init_orders[i].account().c_str(),m_pEESTraderApiManger->MaxOrderLocalID++); 
 	     tmtimeout = time(NULL);
 	     m_pEESTraderApiManger->m_startfinish = false;	 
 	     while(!m_pEESTraderApiManger->m_startfinish)	
