@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
 
            std::string UserId = pFileConfig->Get("femas-user.UserID");	
 	 
-           morder.set_client_order_id(std::to_string(pFemasExchangeApp->GetMaxOrderLocalID()));
+           morder.set_client_order_id("wwww");
            morder.set_account(UserId);	
            morder.set_contract(userInstrumentID);	 
            morder.set_buy_sell(pb::ems::BuySell::BS_Buy);

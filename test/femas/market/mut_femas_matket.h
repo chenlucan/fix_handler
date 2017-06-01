@@ -11,6 +11,7 @@
 #include "core/market/marketlisteneri.h"
 #include "USTPFtdcMduserApi.h"
 #include "femas/market/femas_market.h"
+#include "core/book/book_sender.h"
 
 
 namespace fh
