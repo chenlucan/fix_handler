@@ -54,6 +54,7 @@ void CUstpFtdcTraderManger::OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserL
 	  mIConnet = 1;
 	  return;
     }
+    LOG_INFO("RspUserLogin MaxOrderLocalID = ", pRspUserLogin->MaxOrderLocalID);	
     LOG_INFO("MaxOrderLocalID = ", atoi(pRspUserLogin->MaxOrderLocalID));	
     MaxOrderLocalID = atoi(pRspUserLogin->MaxOrderLocalID)+1;	
     //strncpy(MaxOrderLocalID,pRspUserLogin->MaxOrderLocalID,strlen(pRspUserLogin->MaxOrderLocalID));	
@@ -116,12 +117,21 @@ void CUstpFtdcTraderManger::OnRtnTrade(CUstpFtdcTradeField *pTrade)
 
 void CUstpFtdcTraderManger::OnErrRtnOrderInsert(CUstpFtdcInputOrderField *pInputOrder, CUstpFtdcRspInfoField *pRspInfo)
 {//是否使用 待定
-    LOG_INFO("CUstpFtdcTraderManger::OnErrRtnOrderInsert");
+    LOG_ERROR("CUstpFtdcTraderManger::OnErrRtnOrderInsert");
     if(NULL == pInputOrder || NULL == pRspInfo)
     {
         LOG_ERROR("CUstpFtdcTraderManger::OnErrRtnOrderInsert Error");
 	 return ;	
-    }	
+    }		
+    LOG_ERROR("===============================");	
+    LOG_ERROR("ErrorID = ",pRspInfo->ErrorID,"ErrorMsg = ",pRspInfo->ErrorMsg);
+    LOG_ERROR("InstrumentID = ",pInputOrder->InstrumentID);	
+    LOG_ERROR("UserOrderLocalID = ",pInputOrder->UserOrderLocalID);	
+    LOG_ERROR("OrderSysID = ",pInputOrder->OrderSysID);	
+    LOG_ERROR("BrokerID = ",pInputOrder->BrokerID);	
+    LOG_ERROR("ExchangeID = ",pInputOrder->ExchangeID);		
+    LOG_ERROR("===============================");	
+    
 }
 
 void CUstpFtdcTraderManger::OnRspOrderAction(CUstpFtdcOrderActionField *pOrderAction, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) 
