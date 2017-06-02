@@ -10,6 +10,7 @@
 #include "USTPFtdcTraderApi.h"
 #include "core/exchange/exchangei.h"
 #include "pb/ems/ems.pb.h"
+#include "pb/dms/dms.pb.h"
 #include "core/assist/settings.h"
 #include "core/exchange/exchangelisteneri.h"
 #include <atomic>
@@ -53,7 +54,9 @@ namespace exchange
                   ///成交单查询应答
 	           virtual void OnRspQryTrade(CUstpFtdcTradeField *pTrade, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 		    ///投资者持仓查询应答
-	           virtual void OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pRspInvestorPosition, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);		  
+	           virtual void OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pRspInvestorPosition, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+		    ///合约查询应答
+	           virtual void OnRspQryInstrument(CUstpFtdcRspInstrumentField *pRspInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast); 	
 		   
 		   void OnQryOrder(CUstpFtdcOrderField *pOrder);
 		   void SetFileConfigData(const std::string &FileConfig);
@@ -62,7 +65,8 @@ namespace exchange
 		   void OnFill(CUstpFtdcTradeField *pTrade);
 		   void OnActionOrder(CUstpFtdcOrderActionField *pOrderAction, CUstpFtdcRspInfoField *pRspInfo);
                   void OnQryTrade(CUstpFtdcTradeField *pTrade, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-		    void OnQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pRspInvestorPosition, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);		  
+		    void OnQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pRspInvestorPosition, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+		    void OnQryInstrument(CUstpFtdcRspInstrumentField *pRspInstrument);	
 		   
 		   void SetStrategy(core::exchange::ExchangeListenerI *strategy)
 		   {

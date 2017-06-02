@@ -194,6 +194,22 @@ void CUstpFtdcTraderManger::OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositio
     }	
     OnQryInvestorPosition(pRspInvestorPosition,pRspInfo,nRequestID,bIsLast);	
 }
+///合约查询应答
+void CUstpFtdcTraderManger::OnRspQryInstrument(CUstpFtdcRspInstrumentField *pRspInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+    LOG_INFO("CUstpFtdcTraderManger::OnRspQryInvestorPosition");
+    if(NULL == pRspInstrument || NULL == pRspInfo)	
+    {
+        LOG_ERROR("CUstpFtdcTraderManger::OnRspQryInstrument error");
+    }
+    LOG_INFO("================InstrumentID = ",pRspInstrument->InstrumentID," ==================");	
+    LOG_INFO("VolumeMultiple = ",pRspInstrument->VolumeMultiple);	
+    LOG_INFO("PriceTick = ",pRspInstrument->PriceTick);
+    LOG_INFO("=========================================");
+    OnQryInstrument(pRspInstrument);	
+}
+
+
 
 
 void CUstpFtdcTraderManger::OnQryOrder(CUstpFtdcOrderField *pOrder)
@@ -707,6 +723,26 @@ std::string CUstpFtdcTraderManger::GetOrderId(int i_key)
     }		
 } 
 
+void CUstpFtdcTraderManger::OnQryInstrument(CUstpFtdcRspInstrumentField *pRspInstrument)
+{
+    LOG_INFO("CUstpFtdcTraderManger::OnQryInstrument");
+    if(NULL == m_strategy)
+    {
+         LOG_ERROR("CUstpFtdcTraderManger::OnQryInstrument m_strategy is NULL");
+	  return;
+    }
+    pb::dms::Contract tmpcontract;
+    tmpcontract.set_name(pRspInstrument->InstrumentID);
+    tmpcontract	.set_tick_size(std::to_string(pRspInstrument->PriceTick));
+    tmpcontract	.set_tick_value(std::to_string(pRspInstrument->PriceTick * pRspInstrument->VolumeMultiple));	
+    tmpcontract	.set_yesterday_close_price(std::to_string(pRspInstrument->PreSettlementPrice));
+    tmpcontract	.set_upper_limit(std::to_string(pRspInstrument->UpperLimitPrice));	
+    tmpcontract	.set_lower_limit(std::to_string(pRspInstrument->LowerLimitPrice));	
+    tmpcontract	.set_contract_type(::pb::dms::ContractType::CT_Futures);	
+    tmpcontract.set_lega(pRspInstrument->InstrumentID_1);
+    tmpcontract.set_legb(pRspInstrument->InstrumentID_2);
+    m_strategy->OnContractDefinition(tmpcontract);
+}
 
 }
 }

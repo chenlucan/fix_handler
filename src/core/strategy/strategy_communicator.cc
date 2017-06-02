@@ -131,6 +131,14 @@ namespace strategy
 
     }
 
+    // implement of MarketListenerI
+    void StrategyCommunicator::OnContractDefinition(const pb::dms::Contract &contract)
+    {
+        //
+        LOG_INFO("send Definition: ", fh::core::assist::utility::Format_pb_message(contract));
+	 m_sender.Send("C" + contract.SerializeAsString());	
+    }
+
     // implement of ExchangeListenerI
     void StrategyCommunicator::OnExchangeReady(boost::container::flat_map<std::string, std::string>)
     {

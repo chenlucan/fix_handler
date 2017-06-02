@@ -3,6 +3,7 @@
 
 #include <boost/container/flat_map.hpp>
 #include "pb/ems/ems.pb.h"
+#include "pb/dms/dms.pb.h"
 #include "core/exchange/fwd.h"
 
 namespace fh {
@@ -18,6 +19,8 @@ public:
   virtual void OnOrder(const ::pb::ems::Order &order)  = 0;
   virtual void OnFill(const ::pb::ems::Fill &fill)     = 0;
   virtual void OnPosition(const core::exchange::PositionVec&) = 0;
+
+  virtual void OnContractDefinition(const pb::dms::Contract &contract) = 0;
 
   virtual void OnContractAuctioning(const std::string &contract)   = 0;
   virtual void OnContractNoTrading(const std::string &contract)    = 0;

@@ -8,6 +8,7 @@
 #include "core/exchange/exchangelisteneri.h"
 #include "core/exchange/exchangei.h"
 #include "pb/ems/ems.pb.h"
+#include "pb/dms/dms.pb.h"
 
 namespace fh
 {
@@ -49,6 +50,8 @@ namespace strategy
             void OnFill(const ::pb::ems::Fill &fill) override;
             // implement of ExchangeListenerI
             void OnPosition(const core::exchange::PositionVec& position) override;
+	     // implement of MarketListenerI
+            void OnContractDefinition(const pb::dms::Contract &contract) override;		
             // implement of ExchangeListenerI
             void OnExchangeReady(boost::container::flat_map<std::string, std::string>) override;
             // implement of ExchangeListenerI

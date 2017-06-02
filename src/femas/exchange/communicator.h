@@ -50,6 +50,7 @@ namespace exchange
 
 		  bool SendReqQryTrade(const std::vector<::pb::ems::Order> &init_orders);
 		  bool SendReqQryInvestorPosition(const std::vector<::pb::ems::Order> &init_orders);
+		  bool SendReqQryInstrument();
 	  public:			 
                  fh::femas::exchange::CUstpFtdcTraderManger* m_pUstpFtdcTraderManger;
                  fh::core::assist::Settings *m_pFileConfig;
