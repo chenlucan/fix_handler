@@ -237,10 +237,10 @@ void CRemMarkrtManager::StructToJSON(EESMarketDepthQuoteData *pMarketData)
     
     tmjson.append(bsoncxx::builder::basic::kvp("AveragePrice", T(pMarketData->AveragePrice)));	
     	
-    RemDateToString(tmjson);	
+    RemDateToString(tmjson,pMarketData->InstrumentID);	
     return;
 }
-void CRemMarkrtManager::RemDateToString(bsoncxx::builder::basic::document& json)
+void CRemMarkrtManager::RemDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID)
 {
     bsoncxx::builder::basic::document tmjson;
     tmjson.append(bsoncxx::builder::basic::kvp("market", T("REM")));		  

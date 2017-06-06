@@ -49,6 +49,8 @@ namespace exchange
                 // implement of ExchangeI
                 void Delete_mass(const char *data, size_t size) override;
 
+		 bool SendQuerySymbolList();		
+
 				 
 	  public:			 
                  CEESTraderApiManger* m_pEESTraderApiManger;

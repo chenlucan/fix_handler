@@ -70,7 +70,7 @@ class CRemMarkrtManager : public EESQuoteEvent
 		void CreateRemBookManager(fh::core::market::MarketListenerI *sender);
 
 		void StructToJSON(EESMarketDepthQuoteData *pMarketData);
-		void RemDateToString(bsoncxx::builder::basic::document& json);
+		void RemDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID);
 
 		bool GetReatart()
 		{

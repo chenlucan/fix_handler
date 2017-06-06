@@ -10,8 +10,14 @@
 #include "EesTraderApi.h"
 #include "core/exchange/exchangei.h"
 #include "pb/ems/ems.pb.h"
+#include "pb/dms/dms.pb.h"
 #include "core/assist/settings.h"
 #include "core/exchange/exchangelisteneri.h"
+#include <bsoncxx/json.hpp>
+#include <bsoncxx/builder/basic/array.hpp>
+#include <bsoncxx/builder/basic/document.hpp>
+#include "core/assist/utility.h"
+#include "core/global.h"
 #include <atomic>
 
 namespace fh
@@ -20,6 +26,11 @@ namespace rem
 {
 namespace exchange
 {
+template <typename IntType>
+inline std::string T(IntType v){return std::to_string(v);}
+inline std::string T(const std::string &v){return fh::core::assist::utility::Trim_null(v);}
+inline std::string T(const char *v){return std::string(v);}
+inline std::string T(char *v){return std::string(v);}
 
     class CEESTraderApiManger : public EESTraderEvent
     {
@@ -76,6 +87,10 @@ namespace exchange
 		   void SendQueryTradeOrder(const char* pAccount, EES_QueryAccountOrder* pQueryOrder);
 		   void SendQueryTradeOrderExec(const char* pAccount, EES_QueryOrderExecution* pQueryOrderExec, bool bFinish);
 		   void SendQueryAccountPosition(const char* pAccount, EES_AccountPosition* pAccoutnPosition, int nReqId, bool bFinish);
+		   void SendQuerySymbol(EES_SymbolField* pSymbol);
+		   
+		   void StructToJSON(EES_SymbolField *pSymbol);
+		   void RemDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID,int VolumeMultiple);
 				  
 		   void SetStrategy(core::exchange::ExchangeListenerI *strategy)
 		   {

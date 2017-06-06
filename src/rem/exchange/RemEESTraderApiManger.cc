@@ -85,6 +85,20 @@ void CEESTraderApiManger::OnQueryAccountBP(const char* pAccount, EES_AccountBP* 
 void CEESTraderApiManger::OnQuerySymbol(EES_SymbolField* pSymbol, bool bFinish)
 {
     LOG_INFO("CEESTraderApiManger::OnQuerySymbol");
+    if(NULL == pSymbol)
+    {
+        LOG_ERROR("CEESTraderApiManger::OnQuerySymbol Error");
+	 return;	
+    }
+    if(bFinish)	
+    {
+        LOG_INFO("CEESTraderApiManger::OnQuerySymbol over");
+        m_startfinish = true;
+    }
+    LOG_INFO("InstrumentID = ",pSymbol->m_symbol);	
+    LOG_INFO("VolumeMultiple = ",pSymbol->m_VolumeMultiple);	
+    LOG_INFO("PriceTick = ",pSymbol->m_PriceTick);	
+    SendQuerySymbol(pSymbol);	
 }
 void CEESTraderApiManger::OnQueryAccountTradeMargin(const char* pAccount, EES_AccountMargin* pSymbolMargin, bool bFinish )
 {
@@ -687,6 +701,76 @@ void CEESTraderApiManger::SendQueryAccountPosition(const char* pAccount, EES_Acc
     {
         m_startfinish =  bFinish;
     }
+    return;
+}
+
+void CEESTraderApiManger::SendQuerySymbol(EES_SymbolField* pSymbol)
+{
+    LOG_INFO("CEESTraderApiManger::SendQuerySymbol");
+    if(NULL == m_strategy)
+    {
+         LOG_ERROR("CEESTraderApiManger::SendQuerySymbol m_strategy is NULL");
+	  return;
+    }
+    pb::dms::Contract tmpcontract;
+    tmpcontract.set_name(pSymbol->m_symbol);
+    tmpcontract	.set_tick_size(std::to_string(pSymbol->m_PriceTick));
+    tmpcontract	.set_tick_value(std::to_string(pSymbol->m_PriceTick * pSymbol->m_VolumeMultiple));	
+    //tmpcontract	.set_yesterday_close_price(std::to_string(pRspInstrument->PreSettlementPrice));
+    //tmpcontract	.set_upper_limit(std::to_string(pRspInstrument->UpperLimitPrice));	
+   // tmpcontract	.set_lower_limit(std::to_string(pRspInstrument->LowerLimitPrice));	
+    tmpcontract	.set_contract_type(::pb::dms::ContractType::CT_Futures);	
+    //tmpcontract.set_lega(pRspInstrument->InstrumentID_1);
+    //tmpcontract.set_legb(pRspInstrument->InstrumentID_2);
+    m_strategy->OnContractDefinition(tmpcontract); 
+    StructToJSON(pSymbol);
+}
+
+void CEESTraderApiManger::StructToJSON(EES_SymbolField *pSymbol)
+{
+    if(NULL == pSymbol)
+    {
+        return;
+    }
+    bsoncxx::builder::basic::document tmjson;
+    tmjson.append(bsoncxx::builder::basic::kvp("SecType", T(pSymbol->m_SecType)));
+    tmjson.append(bsoncxx::builder::basic::kvp("symbol", T(pSymbol->m_symbol)));
+    tmjson.append(bsoncxx::builder::basic::kvp("symbolName", T(pSymbol->m_symbolName)));
+    tmjson.append(bsoncxx::builder::basic::kvp("ExchangeID", T(pSymbol->m_ExchangeID)));
+    tmjson.append(bsoncxx::builder::basic::kvp("ProdID", T(pSymbol->m_ProdID)));
+    tmjson.append(bsoncxx::builder::basic::kvp("DeliveryYear", T(pSymbol->m_DeliveryYear)));
+    tmjson.append(bsoncxx::builder::basic::kvp("DeliveryMonth", T(pSymbol->m_DeliveryMonth)));
+    tmjson.append(bsoncxx::builder::basic::kvp("MaxMarketOrderVolume", T(pSymbol->m_MaxMarketOrderVolume)));
+    tmjson.append(bsoncxx::builder::basic::kvp("MinMarketOrderVolume", T(pSymbol->m_MinMarketOrderVolume)));
+    tmjson.append(bsoncxx::builder::basic::kvp("MaxLimitOrderVolume", T(pSymbol->m_MaxLimitOrderVolume)));
+    tmjson.append(bsoncxx::builder::basic::kvp("MinLimitOrderVolume", T(pSymbol->m_MinLimitOrderVolume)));
+    tmjson.append(bsoncxx::builder::basic::kvp("VolumeMultiple", T(pSymbol->m_VolumeMultiple)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("PriceTick", T(pSymbol->m_PriceTick)));
+    tmjson.append(bsoncxx::builder::basic::kvp("CreateDate", T(pSymbol->m_CreateDate)));
+    tmjson.append(bsoncxx::builder::basic::kvp("OpenDate", T(pSymbol->m_OpenDate)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("ExpireDate", T(pSymbol->m_ExpireDate)));
+    tmjson.append(bsoncxx::builder::basic::kvp("StartDelivDate", T(pSymbol->m_StartDelivDate)));
+    tmjson.append(bsoncxx::builder::basic::kvp("EndDelivDate", T(pSymbol->m_EndDelivDate)));		
+    tmjson.append(bsoncxx::builder::basic::kvp("InstLifePhase", T(pSymbol->m_InstLifePhase)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("IsTrading", T(pSymbol->m_IsTrading)));		
+	
+    RemDateToString(tmjson,pSymbol->m_symbol,pSymbol->m_VolumeMultiple);
+}
+
+void CEESTraderApiManger::RemDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID,int VolumeMultiple)
+{
+    LOG_INFO("CEESTraderApiManger::FemasDateToString");
+    bsoncxx::builder::basic::document tmjson;
+    tmjson.append(bsoncxx::builder::basic::kvp("market", T("REM_contract")));		  
+    tmjson.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
+    tmjson.append(bsoncxx::builder::basic::kvp("sendingTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));	
+    tmjson.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(fh::core::assist::utility::Current_time_str())));	
+    tmjson.append(bsoncxx::builder::basic::kvp("receivedTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));	
+    tmjson.append(bsoncxx::builder::basic::kvp("InstrumentID", T(InstrumentID)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("VolumeMultiple", T(VolumeMultiple)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("message", json));	
+
+    m_strategy->OnOrginalMessage(bsoncxx::to_json(tmjson.view()));
     return;
 }
 

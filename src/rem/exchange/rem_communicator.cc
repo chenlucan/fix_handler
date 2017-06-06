@@ -136,10 +136,16 @@ bool CRemCommunicator::Start(const std::vector<::pb::ems::Order> &init_orders)
 	     }	 	 
 	 }
            
-    }    
+    } 
+
+    if(!SendQuerySymbolList())
+    {
+        LOG_ERROR("CRemGlobexCommunicator::SendQuerySymbolList tiomeout ");
+	 return false; 	
+    }
 	
     m_strategy->OnExchangeReady(boost::container::flat_map<std::string, std::string>());	
-    LOG_INFO("CRemGlobexCommunicator::InitQuery is over ");	
+    LOG_INFO("CRemGlobexCommunicator::Start is over ");	
     return true;
 }
 
@@ -295,7 +301,23 @@ void CRemCommunicator::Delete_mass(const char *data, size_t size)
 }
 
 
-
+bool CRemCommunicator::SendQuerySymbolList()
+{
+    LOG_INFO("CRemCommunicator::SendQuerySymbolList");
+    m_pUserApi->QuerySymbolList();
+    time_t tmtimeout = time(NULL);
+    m_pEESTraderApiManger->m_startfinish = false;	 
+    while(!m_pEESTraderApiManger->m_startfinish)	
+    {
+        if(time(NULL)-tmtimeout>m_itimeout)
+	 {
+             LOG_ERROR("CRemGlobexCommunicator::QueryAccountPosition tiomeout ");
+	      return false; 		  
+         }
+	  sleep(0.1);		 
+    }
+    return true;	
+}
 
 
 
