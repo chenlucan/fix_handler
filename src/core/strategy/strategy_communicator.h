@@ -36,7 +36,8 @@ namespace strategy
     class StrategyCommunicator : public core::exchange::ExchangeListenerI
     {
         public:
-            StrategyCommunicator(const std::string &send_url, const std::string &receive_url);
+            StrategyCommunicator(const std::string &send_url,const std::string &org_url, const std::string &receive_url);
+	     StrategyCommunicator(const std::string &send_url,const std::string &receive_url);		
             virtual ~StrategyCommunicator();
 
         public:
@@ -60,6 +61,8 @@ namespace strategy
             void OnContractNoTrading(const std::string &contract) override;
             // implement of ExchangeListenerI
             void OnContractTrading(const std::string &contract) override;
+	     // implement of ExchangeListenerI
+            void OnOrginalMessage(const std::string &message) override;		
 
         private:
             void On_from_strategy(char *data, size_t size);
@@ -67,6 +70,7 @@ namespace strategy
             static ::pb::ems::Order Create_order(const char *data, size_t size);
 
         private:
+	     fh::core::zmq::ZmqSender m_org_sender;		 
             fh::core::zmq::ZmqSender m_sender;
             StrategyReceiver m_receiver;
             core::exchange::ExchangeI *m_exchange;

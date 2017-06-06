@@ -17,9 +17,10 @@ CFemasExchangeApp::CFemasExchangeApp(const std::string &app_setting_file)
     pFileConfig = new fh::core::assist::Settings(app_setting_file);
     std::string receive_url = pFileConfig->Get("strategy.receive_url");
     std::string send_url = pFileConfig->Get("strategy.send_url");
+    std::string org_url =	pFileConfig->Get("strategy.org_url");
     LOG_INFO("CFemasExchangeApp::receive_url:",receive_url);	
     LOG_INFO("CFemasExchangeApp::send_url:",send_url);	
-    m_strategy = new fh::core::strategy::StrategyCommunicator(send_url,receive_url );
+    m_strategy = new fh::core::strategy::StrategyCommunicator(send_url,org_url,receive_url );
     m_pCFemasGlobexCommunicator = new CFemasCommunicator(m_strategy,app_setting_file);
     m_strategy->Set_exchange(m_pCFemasGlobexCommunicator);
     return;

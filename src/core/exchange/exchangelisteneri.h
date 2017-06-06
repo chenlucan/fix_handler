@@ -28,6 +28,8 @@ public:
 
   typedef boost::container::flat_map<std::string, std::string> ValueMap;
   virtual void OnExchangeReady(ValueMap)         = 0;
+
+  virtual void OnOrginalMessage(const std::string &message) = 0;
 };
 
 } // exchange

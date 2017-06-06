@@ -68,7 +68,7 @@ class CFemasMarketManager : public CUstpFtdcMduserSpi
 		void CreateFemasBookManager(fh::core::market::MarketListenerI *sender);
 
 		void StructToJSON(CUstpFtdcDepthMarketDataField *pMarketData);
-		void FemasDateToString(bsoncxx::builder::basic::document& json);
+		void FemasDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID);
 
 		std::atomic_int mIConnet;
 		std::atomic_int mISubSuss;

@@ -197,15 +197,19 @@ void CUstpFtdcTraderManger::OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositio
 ///合约查询应答
 void CUstpFtdcTraderManger::OnRspQryInstrument(CUstpFtdcRspInstrumentField *pRspInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-    LOG_INFO("CUstpFtdcTraderManger::OnRspQryInvestorPosition");
+    LOG_INFO("CUstpFtdcTraderManger::OnRspQryInstrument");
     if(NULL == pRspInstrument || NULL == pRspInfo)	
     {
         LOG_ERROR("CUstpFtdcTraderManger::OnRspQryInstrument error");
     }
-    LOG_INFO("================InstrumentID = ",pRspInstrument->InstrumentID," ==================");	
+    if(bIsLast)
+    {
+        LOG_INFO("QryInstrument is over");
+	 m_startfinish = bIsLast;	
+    }
+    LOG_INFO("InstrumentID = ",pRspInstrument->InstrumentID);	
     LOG_INFO("VolumeMultiple = ",pRspInstrument->VolumeMultiple);	
     LOG_INFO("PriceTick = ",pRspInstrument->PriceTick);
-    LOG_INFO("=========================================");
     OnQryInstrument(pRspInstrument);	
 }
 
@@ -742,6 +746,77 @@ void CUstpFtdcTraderManger::OnQryInstrument(CUstpFtdcRspInstrumentField *pRspIns
     tmpcontract.set_lega(pRspInstrument->InstrumentID_1);
     tmpcontract.set_legb(pRspInstrument->InstrumentID_2);
     m_strategy->OnContractDefinition(tmpcontract);
+
+    StructToJSON(pRspInstrument);	
+}
+
+void CUstpFtdcTraderManger::StructToJSON(CUstpFtdcRspInstrumentField *pRspInstrument)
+{
+    LOG_INFO("CUstpFtdcTraderManger::StructToJSON");
+    if(NULL == pRspInstrument)
+    {
+        return;
+    }
+    bsoncxx::builder::basic::document tmjson;
+    tmjson.append(bsoncxx::builder::basic::kvp("ExchangeID", T(pRspInstrument->ExchangeID)));
+    tmjson.append(bsoncxx::builder::basic::kvp("ProductID", T(pRspInstrument->ProductID)));
+    tmjson.append(bsoncxx::builder::basic::kvp("ProductName", T(pRspInstrument->ProductName)));
+    tmjson.append(bsoncxx::builder::basic::kvp("InstrumentID", T(pRspInstrument->InstrumentID)));
+    tmjson.append(bsoncxx::builder::basic::kvp("InstrumentName", T(pRspInstrument->InstrumentName)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("DeliveryYear", T(pRspInstrument->DeliveryYear)));
+    tmjson.append(bsoncxx::builder::basic::kvp("DeliveryMonth", T(pRspInstrument->DeliveryMonth)));
+    tmjson.append(bsoncxx::builder::basic::kvp("MaxLimitOrderVolume", T(pRspInstrument->MaxLimitOrderVolume)));
+    tmjson.append(bsoncxx::builder::basic::kvp("MinLimitOrderVolume", T(pRspInstrument->MinLimitOrderVolume)));
+    tmjson.append(bsoncxx::builder::basic::kvp("MaxMarketOrderVolume", T(pRspInstrument->MaxMarketOrderVolume)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("MinMarketOrderVolume", T(pRspInstrument->MinMarketOrderVolume)));
+    tmjson.append(bsoncxx::builder::basic::kvp("VolumeMultiple", T(pRspInstrument->VolumeMultiple)));
+    tmjson.append(bsoncxx::builder::basic::kvp("PriceTick", T(pRspInstrument->PriceTick)));
+    tmjson.append(bsoncxx::builder::basic::kvp("Currency", T(pRspInstrument->Currency)));
+    tmjson.append(bsoncxx::builder::basic::kvp("LongPosLimit", T(pRspInstrument->LongPosLimit)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("ShortPosLimit", T(pRspInstrument->ShortPosLimit)));
+    tmjson.append(bsoncxx::builder::basic::kvp("LowerLimitPrice", T(pRspInstrument->LowerLimitPrice)));
+    tmjson.append(bsoncxx::builder::basic::kvp("UpperLimitPrice", T(pRspInstrument->UpperLimitPrice)));
+    tmjson.append(bsoncxx::builder::basic::kvp("PreSettlementPrice", T(pRspInstrument->PreSettlementPrice)));
+    tmjson.append(bsoncxx::builder::basic::kvp("InstrumentStatus", T(pRspInstrument->InstrumentStatus)));		
+    tmjson.append(bsoncxx::builder::basic::kvp("CreateDate", T(pRspInstrument->CreateDate)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("OpenDate", T(pRspInstrument->OpenDate)));
+    tmjson.append(bsoncxx::builder::basic::kvp("ExpireDate", T(pRspInstrument->ExpireDate)));
+    tmjson.append(bsoncxx::builder::basic::kvp("StartDelivDate", T(pRspInstrument->StartDelivDate)));
+    tmjson.append(bsoncxx::builder::basic::kvp("EndDelivDate", T(pRspInstrument->EndDelivDate)));
+    tmjson.append(bsoncxx::builder::basic::kvp("BasisPrice", T(pRspInstrument->BasisPrice)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("IsTrading", T(pRspInstrument->IsTrading)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("UnderlyingInstrID", T(pRspInstrument->UnderlyingInstrID)));
+    tmjson.append(bsoncxx::builder::basic::kvp("UnderlyingMultiple", T(pRspInstrument->UnderlyingMultiple)));
+    tmjson.append(bsoncxx::builder::basic::kvp("PositionType", T(pRspInstrument->PositionType)));
+    tmjson.append(bsoncxx::builder::basic::kvp("StrikePrice", T(pRspInstrument->StrikePrice)));
+    tmjson.append(bsoncxx::builder::basic::kvp("OptionsType", T(pRspInstrument->OptionsType)));		
+    tmjson.append(bsoncxx::builder::basic::kvp("CurrencyID", T(pRspInstrument->CurrencyID)));
+    tmjson.append(bsoncxx::builder::basic::kvp("ArbiType", T(pRspInstrument->ArbiType)));
+    tmjson.append(bsoncxx::builder::basic::kvp("InstrumentID_1", T(pRspInstrument->InstrumentID_1)));
+    tmjson.append(bsoncxx::builder::basic::kvp("Direction_1", T(pRspInstrument->Direction_1)));
+    tmjson.append(bsoncxx::builder::basic::kvp("Ratio_1", T(pRspInstrument->Ratio_1)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("InstrumentID_2", T(pRspInstrument->InstrumentID_2)));
+    tmjson.append(bsoncxx::builder::basic::kvp("Direction_2", T(pRspInstrument->Direction_2)));
+    tmjson.append(bsoncxx::builder::basic::kvp("Ratio_2", T(pRspInstrument->Ratio_2)));
+    FemasDateToString(tmjson,pRspInstrument->InstrumentID,pRspInstrument->VolumeMultiple);	
+	
+}
+
+void CUstpFtdcTraderManger::FemasDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID,int VolumeMultiple)
+{
+    LOG_INFO("CUstpFtdcTraderManger::FemasDateToString");
+    bsoncxx::builder::basic::document tmjson;
+    tmjson.append(bsoncxx::builder::basic::kvp("market", T("FEMAS_contract")));		  
+    tmjson.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
+    tmjson.append(bsoncxx::builder::basic::kvp("sendingTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));	
+    tmjson.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(fh::core::assist::utility::Current_time_str())));	
+    tmjson.append(bsoncxx::builder::basic::kvp("receivedTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));	
+    tmjson.append(bsoncxx::builder::basic::kvp("InstrumentID", T(InstrumentID)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("VolumeMultiple", T(VolumeMultiple)));	
+    tmjson.append(bsoncxx::builder::basic::kvp("message", json));	
+
+    m_strategy->OnOrginalMessage(bsoncxx::to_json(tmjson.view()));
+    return;	
 }
 
 }

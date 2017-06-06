@@ -274,10 +274,10 @@ void CFemasMarketManager::StructToJSON(CUstpFtdcDepthMarketDataField *pMarketDat
     
 	
 	
-    FemasDateToString(tmjson);	
+    FemasDateToString(tmjson,pMarketData->InstrumentID);	
     return;	
 }
-void CFemasMarketManager::FemasDateToString(bsoncxx::builder::basic::document& json)
+void CFemasMarketManager::FemasDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID)
 {
     bsoncxx::builder::basic::document tmjson;
     tmjson.append(bsoncxx::builder::basic::kvp("market", T("FEMAS")));		  
@@ -285,6 +285,7 @@ void CFemasMarketManager::FemasDateToString(bsoncxx::builder::basic::document& j
     tmjson.append(bsoncxx::builder::basic::kvp("sendingTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));	
     tmjson.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(fh::core::assist::utility::Current_time_str())));	
     tmjson.append(bsoncxx::builder::basic::kvp("receivedTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));	
+    tmjson.append(bsoncxx::builder::basic::kvp("InstrumentID", T(InstrumentID)));		
     tmjson.append(bsoncxx::builder::basic::kvp("message", json));	
 
     m_pFemasBookManager->SendFemasToDB(bsoncxx::to_json(tmjson.view()));

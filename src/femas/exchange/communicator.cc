@@ -110,7 +110,7 @@ bool CFemasCommunicator::Start(const std::vector<::pb::ems::Order> &init_orders)
     }
 	
     m_strategy->OnExchangeReady(boost::container::flat_map<std::string, std::string>());	
-    LOG_INFO("CFemasGlobexCommunicator::InitQuery is over ");	
+    LOG_INFO("CFemasGlobexCommunicator::Start is over ");	
     return true;
 }
 
@@ -420,6 +420,19 @@ bool CFemasCommunicator::SendReqQryInstrument()
     std::string ExchangeID = m_pFileConfig->Get("femas-exchange.ExchangeID");
     strcpy(tmpQryInstrument.ExchangeID , ExchangeID.c_str());  	
     m_pUserApi->ReqQryInstrument(&tmpQryInstrument,m_pUstpFtdcTraderManger->MaxOrderLocalID++);
+    time_t tmtimeout = time(NULL);
+    m_pUstpFtdcTraderManger->m_startfinish = false;
+
+    while(!m_pUstpFtdcTraderManger->m_startfinish)
+    {
+        if(time(NULL)-tmtimeout>m_itimeout)
+	 {
+            LOG_ERROR("CRemGlobexCommunicator::SendReqQryInvestorPosition tiomeout ");
+	     return false;
+	 }
+	 sleep(0.1);		
+    }
+	
     return true;
 	
 }

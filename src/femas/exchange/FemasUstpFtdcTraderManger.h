@@ -13,6 +13,11 @@
 #include "pb/dms/dms.pb.h"
 #include "core/assist/settings.h"
 #include "core/exchange/exchangelisteneri.h"
+#include <bsoncxx/json.hpp>
+#include <bsoncxx/builder/basic/array.hpp>
+#include <bsoncxx/builder/basic/document.hpp>
+#include "core/assist/utility.h"
+#include "core/global.h"
 #include <atomic>
 
 namespace fh
@@ -21,6 +26,11 @@ namespace femas
 {
 namespace exchange
 {
+template <typename IntType>
+inline std::string T(IntType v){return std::to_string(v);}
+inline std::string T(const std::string &v){return fh::core::assist::utility::Trim_null(v);}
+inline std::string T(const char *v){return std::string(v);}
+inline std::string T(char *v){return std::string(v);}
 
     class CUstpFtdcTraderManger : public CUstpFtdcTraderSpi
     {
@@ -67,6 +77,10 @@ namespace exchange
                   void OnQryTrade(CUstpFtdcTradeField *pTrade, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 		    void OnQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pRspInvestorPosition, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 		    void OnQryInstrument(CUstpFtdcRspInstrumentField *pRspInstrument);	
+
+                  void StructToJSON(CUstpFtdcRspInstrumentField *pRspInstrument);
+		    void FemasDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID,int VolumeMultiple);
+			
 		   
 		   void SetStrategy(core::exchange::ExchangeListenerI *strategy)
 		   {

@@ -32,8 +32,14 @@ namespace strategy
         m_processor(data, size);
     }
 
+    StrategyCommunicator::StrategyCommunicator(const std::string &send_url,const std::string &org_url, const std::string &receive_url)
+    : m_sender(send_url), m_receiver(receive_url), m_org_sender(org_url), m_exchange(nullptr)
+    {
+        // noop
+    }
+
     StrategyCommunicator::StrategyCommunicator(const std::string &send_url, const std::string &receive_url)
-    : m_sender(send_url), m_receiver(receive_url), m_exchange(nullptr)
+    : m_sender(send_url), m_receiver(receive_url), m_org_sender(nullptr),m_exchange(nullptr)
     {
         // noop
     }
@@ -138,6 +144,12 @@ namespace strategy
         LOG_INFO("send Definition: ", fh::core::assist::utility::Format_pb_message(contract));
 	 m_sender.Send("C" + contract.SerializeAsString());	
     }
+
+    void StrategyCommunicator::OnOrginalMessage(const std::string &message)
+    {
+        LOG_INFO("send Original Message, size=", message.size(), " message=", message);
+        m_org_sender.Send(message);
+    }		
 
     // implement of ExchangeListenerI
     void StrategyCommunicator::OnExchangeReady(boost::container::flat_map<std::string, std::string>)
