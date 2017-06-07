@@ -46,7 +46,7 @@ bool CFemasMarket::Start()
      }
 
      m_pUstpFtdcMduserApi->RegisterSpi(m_FemasMarketManager);
-     m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (21001, USTP_TERT_RESUME);	  
+     m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (100, USTP_TERT_RESUME);	  
    	 
      std::string tmpurl = m_pFileConfig->Get("femas-market.url");
      LOG_INFO("femas market url = ",tmpurl.c_str());
@@ -87,7 +87,8 @@ bool CFemasMarket::Start()
 void CFemasMarket::Initialize(std::vector<std::string> insts)
 {
      LOG_INFO("CFemasMarket::Initialize() ");
-     m_insts = insts;	      
+     m_insts = insts;
+     m_FemasMarketManager->instruments = insts;	 
      return;	 
 }
 // implement of MarketI

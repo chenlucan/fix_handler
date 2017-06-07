@@ -30,6 +30,13 @@ namespace market
            LOG_ERROR("Error m_pUserApi is NULL.");
 	    return;	   
 	}   
+
+       //======
+       if(0 == mISubSuss)
+	{
+           m_pUserApi->SubscribeMarketDataTopic (100, USTP_TERT_RESUME);	 
+	}
+       //======
 	   
 	CUstpFtdcReqUserLoginField reqUserLogin;
 	strcpy(reqUserLogin.TradingDay, m_pUserApi->GetTradingDay());
@@ -77,7 +84,12 @@ namespace market
 		mIConnet = 1;
 		return;
 	}
-	
+	//==
+	if(0 == mIConnet)
+	{
+           Subscribe();
+	}
+	//==
 	mIConnet = 0;
        return;
 }
@@ -294,6 +306,40 @@ void CFemasMarketManager::FemasDateToString(bsoncxx::builder::basic::document& j
     //OnOrginalMessage	
 }
 
+void CFemasMarketManager::Subscribe()
+{
+     if(NULL == m_pUserApi)
+      {
+          return;
+      }
+      if(instruments.size() <= 0)
+      {
+          char *contracts[1];
+	   contracts[0] = new char[100];
+          memset(contracts[0],0,100);
+          strcpy(contracts[0], "*"); 	  
+          m_pUserApi->SubMarketData (contracts,1);
+	   delete []contracts[0];	  
+          return;		  
+      }
+      else
+      {
+          char **contracts = new char*[instruments.size()];
+          for(int i=0;i<instruments.size();i++)
+	   {
+               contracts[i] = new char[instruments[i].length()+1];
+	        memset(contracts[i],0,instruments[i].length()+1);
+	        strcpy(contracts[i],instruments[i].c_str());	
+		 LOG_INFO("num = ",i+1,",sub contracts = ",contracts[i]);	
+	   }	   	  
+	   m_pUserApi->SubMarketData (contracts,instruments.size());
+	   for(int i=0;i<instruments.size();i++)
+	   {
+              delete [] contracts[i];   
+	   }
+	   delete [] contracts;
+      }
+}
 
 }
 }
