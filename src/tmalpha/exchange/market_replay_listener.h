@@ -22,11 +22,12 @@ namespace exchange
     {
         public:
             MarketReplayListener(const std::string &org_url, const std::string &book_url)
-            : m_book_sender(org_url, book_url), m_on_l2_changed() {}
+            : m_book_sender(org_url, book_url), m_on_l2_changed(), m_last_turnover({0, 0}) {}
             virtual ~MarketReplayListener() {}
 
         public:
-            void Add_l2_changed_callback(std::function<void(const pb::dms::L2 &)> on_l2_changed)
+            // L2 行情数据发生变化时通过这个 callback 通知外部（L2 行情，bid 成交数量，ask成交数量）
+            void Add_l2_changed_callback(std::function<void(const pb::dms::L2 &, std::uint32_t, std::uint32_t)> on_l2_changed)
             {
                 m_on_l2_changed = on_l2_changed;
             }
@@ -72,7 +73,7 @@ namespace exchange
             void OnL2(const pb::dms::L2 &l2) override
             {
                 m_book_sender.OnL2(l2);
-                if(m_on_l2_changed) m_on_l2_changed(l2);
+                if(m_on_l2_changed) m_on_l2_changed(l2, m_last_turnover.first, m_last_turnover.second);
             }
 
             // implement of MarketListenerI
@@ -108,12 +109,19 @@ namespace exchange
             // implement of MarketListenerI
             void OnOrginalMessage(const std::string &message) override
             {
-                m_book_sender.OnOrginalMessage(message);
+                // 数据回放时，不需要处理原始行情数据
+                // 所以各个交易所的回放模块使用本接口来传递行情发生变化时计算出的买/卖成交量
+                // 内部保存这些数量后，在接下来的 onL2 时通知外部
+                // 参数的字符串格式为："bid_volumn(bid 成交量),ask_volumn(ask 成交量)"
+                auto pos = message.find(",");
+                if(pos == std::string::npos) throw std::invalid_argument("orginal message invalid: " + message);
+                m_last_turnover = {std::stoi(message.substr(0, pos)), std::stoi(message.substr(pos + 1))};
             }
 
         private:
             fh::core::book::BookSender m_book_sender;
-            std::function<void(const pb::dms::L2 &)> m_on_l2_changed;
+            std::function<void(const pb::dms::L2 &, std::uint32_t, std::uint32_t)> m_on_l2_changed;
+            std::pair<std::uint32_t, std::uint32_t> m_last_turnover;
     };
 }   // namespace exchange
 }   // namespace tmalpha

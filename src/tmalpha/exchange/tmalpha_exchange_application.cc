@@ -38,8 +38,8 @@ namespace exchange
         std::string market = app_settings.Get("alpha.market");
         std::string start_include = app_settings.Get("alpha.start_include");
         std::string end_exclude = app_settings.Get("alpha.end_exclude");
-        std::string book_receive_url = app_settings.Get("alpha-market.book_url");
         float speed = std::stof(app_settings.Get("alpha.speed"));
+        int trade_rate = std::stoi(app_settings.Get("alpha.trade_rate"));   // 利用这个比率（[0,100]）和实际成交数量来决定一个订单是否成交
 
         // 初期化数据提供者
         m_provider = new fh::tmalpha::market::MarketDataProvider(market, db_settings);
@@ -56,8 +56,8 @@ namespace exchange
             throw std::invalid_argument("unknow market");
         }
 
-        // 初期化数据接受者（由于不需要发送原始数据，所以第一个参数不设置了）
-        m_market_listener = new fh::tmalpha::exchange::MarketReplayListener("", book_receive_url);
+        // 初期化数据接受者（由于不需要对外发送行情数据以及原始数据，所以参数都不设置了）
+        m_market_listener = new fh::tmalpha::exchange::MarketReplayListener("", "");
 
         // 初期化重放控制模块
         m_market = new fh::tmalpha::market::MarketSimulater(m_market_listener, m_provider, m_consumer);
@@ -68,7 +68,7 @@ namespace exchange
         std::string send_url = app_settings.Get("alpha-order.send_url");
         std::string receive_url = app_settings.Get("alpha-order.receive_url");
         m_strategy = new fh::core::strategy::StrategyCommunicator(send_url, receive_url);
-        m_exchange_simulater = new ExchangeSimulater(m_market, m_strategy);
+        m_exchange_simulater = new ExchangeSimulater(m_market, m_strategy, trade_rate);
         m_strategy->Set_exchange(m_exchange_simulater);
     }
 
