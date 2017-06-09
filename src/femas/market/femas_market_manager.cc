@@ -108,6 +108,7 @@ void CFemasMarketManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pM
 		
 	LOG_INFO("UpdateTime=",pMarketData->UpdateTime,"--",pMarketData->UpdateMillisec);
 
+
 //ÉêÂòÒ»
        if (pMarketData->BidPrice1==DBL_MAX)
 		LOG_INFO("BidPrice1:NULL");
@@ -124,10 +125,12 @@ void CFemasMarketManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pM
 
 	LOG_INFO("AskVolume1:",pMarketData->AskVolume1);	
 	
-	LOG_INFO("GetDepthMarketData::end");
+	
 
 	m_pFemasBookManager->SendFemasmarketData(pMarketData);
        StructToJSON(pMarketData);
+
+	LOG_INFO("GetDepthMarketData::end");   
 
 	return;
 }
@@ -286,16 +289,79 @@ void CFemasMarketManager::StructToJSON(CUstpFtdcDepthMarketDataField *pMarketDat
     
 	
 	
-    FemasDateToString(tmjson,pMarketData->InstrumentID);	
+    FemasDateToString(tmjson,pMarketData->InstrumentID,GetUpdateTimeStr(pMarketData),GetUpdateTimeInt(pMarketData));	
     return;	
 }
-void CFemasMarketManager::FemasDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID)
+
+
+ullong CFemasMarketManager::str2stmp(const char *strTime)
+{
+     if (strTime != NULL)
+     {
+         struct tm sTime;
+ #ifdef __GNUC__
+         strptime(strTime, "%Y-%m-%d %H:%M:%S", &sTime);
+ #else
+         sscanf(strTime, "%d-%d-%d %d:%d:%d", &sTime.tm_year, &sTime.tm_mon, &sTime.tm_mday, &sTime.tm_hour, &sTime.tm_min, &sTime.tm_sec);
+         sTime.tm_year -= 1900;
+         sTime.tm_mon -= 1;
+ #endif
+         ullong ft = mktime(&sTime);
+         return ft;
+     }
+     else {
+         return time(0);
+     }
+}
+
+ullong CFemasMarketManager::GetUpdateTimeInt(CUstpFtdcDepthMarketDataField *pMarketData)
+{
+    std::string timestr="";
+    char ctmp[20]={0};	
+    strncpy(ctmp,pMarketData->ActionDay,4);
+    ctmp[4] = '-';
+    strncpy(ctmp+5,pMarketData->ActionDay+4,2);	
+    ctmp[7] = '-';
+    strncpy(ctmp+8,pMarketData->ActionDay+6,2);
+    ctmp[10] = ' ';
+    timestr = ctmp;	
+    timestr+=pMarketData->UpdateTime;
+    ullong tmp_time = 0;
+    tmp_time = str2stmp(timestr.c_str());	
+    tmp_time *= 1000;
+    tmp_time += pMarketData->UpdateMillisec;
+    tmp_time *= 1000;
+    tmp_time *= 1000;	
+    return tmp_time;	
+}
+
+std::string CFemasMarketManager::GetUpdateTimeStr(CUstpFtdcDepthMarketDataField *pMarketData)
+{
+    std::string timestr="";
+    char ctmp[20]={0};	
+    strncpy(ctmp,pMarketData->ActionDay,4);
+    ctmp[4] = '-';
+    strncpy(ctmp+5,pMarketData->ActionDay+4,2);	
+    ctmp[7] = '-';
+    strncpy(ctmp+8,pMarketData->ActionDay+6,2);	
+    ctmp[10] = ' ';
+    timestr = ctmp;	
+    timestr+=pMarketData->UpdateTime;
+    timestr+=".";	 
+    std::string tmp = std::to_string(pMarketData->UpdateMillisec);
+    tmp += "000";
+    timestr += tmp;	
+    	
+    return timestr;
+}
+
+void CFemasMarketManager::FemasDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID,std::string updatetime,ullong tmp_time)
 {
     bsoncxx::builder::basic::document tmjson;
     tmjson.append(bsoncxx::builder::basic::kvp("market", T("FEMAS")));		  
     tmjson.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
-    tmjson.append(bsoncxx::builder::basic::kvp("sendingTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));	
-    tmjson.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(fh::core::assist::utility::Current_time_str())));	
+    tmjson.append(bsoncxx::builder::basic::kvp("sendingTime", T(std::to_string(tmp_time))));	
+    tmjson.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(updatetime)));	
     tmjson.append(bsoncxx::builder::basic::kvp("receivedTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));	
     tmjson.append(bsoncxx::builder::basic::kvp("InstrumentID", T(InstrumentID)));		
     tmjson.append(bsoncxx::builder::basic::kvp("message", json));	

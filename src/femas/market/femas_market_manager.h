@@ -17,6 +17,11 @@
 #include <bsoncxx/builder/basic/document.hpp>
 #include "core/global.h"
 #include <atomic>
+#include <time.h>
+#include <ctime>
+#include <stdlib.h>
+
+typedef unsigned long long  ullong;
 
 namespace fh
 {
@@ -68,8 +73,12 @@ class CFemasMarketManager : public CUstpFtdcMduserSpi
 		void CreateFemasBookManager(fh::core::market::MarketListenerI *sender);
 
 		void StructToJSON(CUstpFtdcDepthMarketDataField *pMarketData);
-		void FemasDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID);
+		void FemasDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID,std::string updatetime,ullong tmp_time);
 		void Subscribe();
+
+		std::string GetUpdateTimeStr(CUstpFtdcDepthMarketDataField *pMarketData);
+		ullong str2stmp(const char *strTime);
+		ullong GetUpdateTimeInt(CUstpFtdcDepthMarketDataField *pMarketData);
 
 		std::atomic_int mIConnet;
 		std::atomic_int mISubSuss;

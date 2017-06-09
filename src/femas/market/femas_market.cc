@@ -46,7 +46,11 @@ bool CFemasMarket::Start()
      }
 
      m_pUstpFtdcMduserApi->RegisterSpi(m_FemasMarketManager);
-     m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (100, USTP_TERT_RESUME);	  
+     //m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (100, USTP_TERT_RESUME);	
+     //m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (21001, USTP_TERT_RESUME);
+     std::string strTopicID = m_pFileConfig->Get("femas-DepthTopicID.TopicID");
+     std::string strTYPE = m_pFileConfig->Get("femas-DepthTopicID.USTP_TE_RESUME_TYPE");
+     m_pUstpFtdcMduserApi->SubscribeMarketDataTopic (std::atoi(strTopicID.c_str()), (USTP_TE_RESUME_TYPE)(std::atoi(strTYPE.c_str())));	 
    	 
      std::string tmpurl = m_pFileConfig->Get("femas-market.url");
      LOG_INFO("femas market url = ",tmpurl.c_str());

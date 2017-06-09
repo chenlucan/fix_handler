@@ -68,7 +68,7 @@ femas_exchange_test: $(BIN_PATH)/femas_exchange_main_test.o $(BIN_PATH)/femas_ex
 	$(COMPILE_COMMAND) -o $(FEMAS_EXCHANGE_TARGET) $?
 
 femas_market: $(BIN_PATH)/femas_market_main_test.o $(BIN_PATH)/femas_market_manager.o $(BIN_PATH)/femas_market.o $(BIN_PATH)/femas_market_application.o \
-              $(BIN_PATH)/femas_book_manager.o \
+              $(BIN_PATH)/femas_book_manager.o $(BIN_PATH)/Femas_book_replayer.o \
 			 $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(FEMAS_MARKET_TARGET) $?	 
  
