@@ -53,6 +53,7 @@ STRATEGY_TARGET = $(BIN_PATH)/strategy_test
 EXCHANGE_CLIENT_TARGET = $(BIN_PATH)/exchange_client_test
 ORIGINAL_SAVER_TARGET = $(BIN_PATH)/original_saver_test
 ORIGINAL_SENDER_TARGET = $(BIN_PATH)/original_sender_test
+ORIGINAL_READER_TARGET = $(BIN_PATH)/original_reader_test
 TRADE_MATCHING_ALPHA_TARGET = $(BIN_PATH)/trade_matching_alpha_test
 TRADE_MATCHING_EXCHANGE_ALPHA_TARGET = $(BIN_PATH)/trade_matching_exchange_alpha_test
 TRADE_MATCHING_TRADE_ALPHA_TARGET = $(BIN_PATH)/trade_matching_trade_alpha_test
@@ -63,7 +64,7 @@ default: all;
 include tmobjs.mk
 include objs.mk
     
-all: createdir usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender tmalpha tmalphaex tmalphatrade
+all: createdir usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend orgread ufsender tmalpha tmalphaex tmalphatrade
  
 createdir:
 	mkdir -p ${BIN_PATH}
@@ -110,6 +111,9 @@ original: $(BIN_PATH)/original_saver_test.o $(BIN_PATH)/mongo.o $(BIN_PATH)/orig
 		
 orgsend: $(BIN_PATH)/original_sender_test.o $(COMM_OBJS)
 	$(COMPILE_COMMAND) -o $(ORIGINAL_SENDER_TARGET) $? 
+
+orgread: $(BIN_PATH)/original_reader_test.o $(BIN_PATH)/mongo.o $(COMM_OBJS)
+	$(COMPILE_COMMAND) -o $(ORIGINAL_READER_TARGET) $? 
 
 tmalpha: $(BIN_PATH)/trade_matching_alpha_test.o $(BIN_PATH)/tmalpha_market_application.o $(BIN_PATH)/market_simulater.o $(BIN_PATH)/book_replayer.o \
                 $(BIN_PATH)/book_sender.o $(BIN_PATH)/message_parser_d.o $(BIN_PATH)/message_parser_f.o $(BIN_PATH)/message_parser_r.o \

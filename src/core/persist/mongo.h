@@ -3,9 +3,11 @@
 #define __FH_CORE_PERSIST_MONGO_H__
 
 #include <vector>
+#include <set>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/client.hpp>
 #include <mongocxx/database.hpp>
+#include <bsoncxx/document/value.hpp>
 #include "core/global.h"
 
 namespace fh
@@ -31,6 +33,12 @@ namespace persist
                                   std::uint64_t prev_last_record_insert_time = 0);
             // 检索指定日期时间范围内指定 market 的行情数据件数
             std::uint64_t Count(const std::string &market, const std::string &start_date_include, const std::string &end_date_exclude);
+
+        private:
+            // 获取 json 中某个 key 对应的 value 的字符串值，key 不存在的时候返回 default_value
+            static std::string Get_value(const bsoncxx::document::view &doc, const std::string &key, const std::string &default_value = "");
+            // 检索附加合约信息
+            std::map<std::string, std::string> Query_contracts(const std::string &contract_collection, const std::set<std::string> &contract_ids);
 
         private:
             mongocxx::instance m_instance;
