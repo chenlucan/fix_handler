@@ -28,6 +28,9 @@ $(BIN_PATH)/femas_exchange_main_test.o: $(SRC_PATH)/main/femas_exchange/femas_ex
 $(BIN_PATH)/Femas_book_replayer.o: $(SRC_PATH)/femas/market/replayer/Femas_book_replayer.cc
 	$(COMPILE_COMMAND) -c -o $@ $<			
 	
+$(BIN_PATH)/Femas_book_convert.o: $(SRC_PATH)/femas/market/convert/Femas_book_convert.cc
+	$(COMPILE_COMMAND) -c -o $@ $<		
+	
 $(BIN_PATH)/mut_femas_book_manager.o: $(TEST_PATH)/femas/market/mut_femas_book_manager.cc
 	$(COMPILE_COMMAND) -c -o $@ $<	
 	
