@@ -56,6 +56,7 @@ namespace market
     {
         LOG_INFO("replay is stopping...");
         m_is_stopped = true;
+        m_condition.notify_all();
     }
 
     void MarketSimulater::Join()

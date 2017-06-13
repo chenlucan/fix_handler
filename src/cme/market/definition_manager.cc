@@ -56,9 +56,9 @@ namespace market
             if(count == 0)
             {
                 // 原来就没有对应的信息
-                LOG_WARN("can not find origin instrument to delete: ", instrument.securityID);
-                return;
+                LOG_WARN("can not find origin instrument to delete: ", instrument.securityID);                
             }
+            return;
         }
         else
         {

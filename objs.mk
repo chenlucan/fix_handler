@@ -19,7 +19,10 @@ $(BIN_PATH)/dat_replayer.o: $(SRC_PATH)/cme/market/dat_replayer.cc
 
 $(BIN_PATH)/dat_saver.o: $(SRC_PATH)/cme/market/dat_saver.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
-
+	
+$(BIN_PATH)/cme_data.o: $(SRC_PATH)/cme/market/cme_data.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+	
 $(BIN_PATH)/recovery_saver.o: $(SRC_PATH)/cme/market/recovery_saver.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
@@ -219,4 +222,7 @@ $(BIN_PATH)/mut_exchange_application.o: $(TEST_PATH)/cme/exchange/mut_exchange_a
 	$(COMPILE_COMMAND) -c -o $@ $<
     
 $(BIN_PATH)/mut_order_manager.o: $(TEST_PATH)/cme/exchange/mut_order_manager.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+    
+$(BIN_PATH)/mut_strategy_communicator.o: $(TEST_PATH)/cme/exchange/mut_strategy_communicator.cc
 	$(COMPILE_COMMAND) -c -o $@ $<

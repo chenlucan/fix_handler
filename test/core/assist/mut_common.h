@@ -27,6 +27,10 @@
 
 #include "cme/exchange/order_manager.h"
 
+#include "cme/market/message/message_utility.h"
+#include "cme/market/setting/market_settings.h"
+#include "cme/market/setting/channel_settings.h"
+
 
 namespace fh
 {
@@ -204,6 +208,10 @@ namespace common
     FIX42::Reject createReject( const char* sender, const char* target, int seq, int refSeq );
     
     FIX42::OrderCancelReject createOrderCancelReject( const char* sender, const char* target, int seq);
+    
+    
+    std::vector<fh::cme::market::setting::Channel> Get_target_channels(
+            const std::string &channel_ids, const std::string &channel_setting_file);
     
 } // namespace utility
 } // namespace assist

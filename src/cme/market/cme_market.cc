@@ -20,7 +20,13 @@ namespace market
 
     CmeMarket::~CmeMarket()
     {
-        for(const auto &m : m_market_managers) { delete m.second; }
+        for(const auto &m : m_market_managers) 
+        {
+            if(m.second!=nullptr)
+            {
+                delete m.second; 
+            }
+        }
     }
 
     void CmeMarket::Initial_market(

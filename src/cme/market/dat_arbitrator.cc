@@ -26,11 +26,10 @@ namespace market
     // or return first sequence in gap
     std::uint32_t DatArbitrator::Check_feed_packet(std::uint32_t packet_seq_num)
     {
-        std::lock_guard<std::mutex> lock(m_mutex);
-
-        if(m_current_sequence == std::numeric_limits<std::uint32_t>::max())
+        //std::lock_guard<std::mutex> lock(m_mutex);
+        if(packet_seq_num == m_current_sequence + 1)
         {
-            // first packet is treated as normal packet
+            // normal packet
             m_current_sequence = packet_seq_num;
             return 0;
         }
@@ -41,39 +40,42 @@ namespace market
             return std::numeric_limits<std::uint32_t>::max();
         }
 
-        if(packet_seq_num == m_current_sequence + 1)
+        if(m_current_sequence == std::numeric_limits<std::uint32_t>::max())
         {
-            // normal packet
+            // first packet is treated as normal packet
             m_current_sequence = packet_seq_num;
             return 0;
         }
 
-        if(packet_seq_num < m_current_sequence)
         {
-            auto index = m_lost_sequences.find(packet_seq_num);
-            if(index == m_lost_sequences.end())
+            std::lock_guard<std::mutex> lock(m_mutex);
+            if(packet_seq_num < m_current_sequence)
             {
-                // discard the packet if it's sequence number is already processed
-                return std::numeric_limits<std::uint32_t>::max();
+                auto index = m_lost_sequences.find(packet_seq_num);
+                if(index == m_lost_sequences.end())
+                {
+                    // discard the packet if it's sequence number is already processed
+                    return std::numeric_limits<std::uint32_t>::max();
+                }
+                else
+                {
+                    // if it is a lost sequence, process it and remove from lost list
+                    m_lost_sequences.erase(index);
+                    return 0;
+                }
             }
-            else
+            else // packet_seq_num > m_current_sequence + 1
             {
-                // if it is a lost sequence, process it and remove from lost list
-                m_lost_sequences.erase(index);
-                return 0;
-            }
-        }
-        else // packet_seq_num > m_current_sequence + 1
-        {
-            // gap detected
-            std::uint32_t old_seq = m_current_sequence + 1;
-            // save lost sequence number
-            m_lost_sequences.insert(
-                boost::counting_iterator<std::uint32_t>(old_seq), 
-                boost::counting_iterator<std::uint32_t>(packet_seq_num));
+                // gap detected
+                std::uint32_t old_seq = m_current_sequence + 1;
+                // save lost sequence number
+                m_lost_sequences.insert(
+                    boost::counting_iterator<std::uint32_t>(old_seq), 
+                    boost::counting_iterator<std::uint32_t>(packet_seq_num));
 
-            m_current_sequence = packet_seq_num;
-            return old_seq;
+                m_current_sequence = packet_seq_num;
+                return old_seq;
+            }
         }
     }
 

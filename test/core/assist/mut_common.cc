@@ -8,9 +8,6 @@
 
 #include "core/assist/logger.h"
 
-#include "cme/market/message/message_utility.h"
-
-#include "cme/exchange/order_manager.h"
 
 
 #include "mut_common.h"
@@ -134,7 +131,7 @@ namespace common
                         }
                     });
                     packets.push_back(std::string(bytes.cbegin(), bytes.cend()));
-                    LOG_DEBUG("read packet: size=", bytes.size(), "\n", byte_line.str());
+                    // LOG_DEBUG("read packet: size=", bytes.size(), "\n", byte_line.str());
                 }
             }
             
@@ -296,6 +293,30 @@ namespace common
       fillHeader( orderCancelReject.getHeader(), sender, target, seq );
       LOG_DEBUG("orderCancelReject = ", orderCancelReject.toString());
       return orderCancelReject;
+    }
+    
+    std::vector<fh::cme::market::setting::Channel> Get_target_channels(
+            const std::string &channel_ids, const std::string &channel_setting_file)
+    {
+        fh::cme::market::setting::ChannelSettings channel_settings(channel_setting_file);
+        if(channel_ids.empty())
+        {
+            return channel_settings.All_channels();
+        }
+        else
+        {
+            std::vector<std::string> channel_id_list;
+            boost::split(channel_id_list, channel_ids, boost::is_any_of(","));
+            std::vector<fh::cme::market::setting::Channel> channels;
+            for (const auto &c : channel_id_list)
+            {
+                // 如果找到 id 对应的 channel，就保存下来
+                auto channel = channel_settings.Get_channel(c);
+                if(channel) channels.push_back(channel.get());
+                else LOG_WARN("channel ", c, " not found");
+            }
+            return channels;
+        }
     }
     
     

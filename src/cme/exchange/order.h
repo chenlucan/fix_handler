@@ -22,6 +22,7 @@ namespace exchange
         double price;                         //  （D/G）
         double stop_px;                     // （D/G）
         char time_in_force;               // （D/G）            0: Day  1: Good Till Cancel  3: Fill and Kill  6: Good Till Date
+        std::uint64_t  min_qty;         // （D/G）1: FAK, max: FOK, 0:other
         std::string expire_date;         // （D/G）
         std::string order_id;               // （F/G/H）
         std::string orig_cl_order_id;  // （F/G）
@@ -85,6 +86,7 @@ namespace exchange
         std::string security_desc;      //  （8，9）
         char cancel_rej_response_to;       // （9）       1: Order Cancel Request   2: Order Cancel/Replace Request
         char time_in_force;                    // （8-1,2,3,4,5）  0: Day  1: Good Till Cancel  3: Fill and Kill  6: Good Till Date
+        std::uint64_t  min_qty;               // 1: FAK, max: FOK, 0:other
         std::uint64_t  cum_qty;               // （8）
         std::uint64_t  leaves_qty;               // （8-1,2,3,4,5）
         std::uint64_t  order_qty;               // （8-1,2,3,4,5）

@@ -107,6 +107,10 @@ namespace utility
 
     // 把一个字符串中的第一个 null(\0) 以及后面的字符都删除掉
     std::string Trim_null(const std::string &str);
+
+    // 判断Price 字段有效性
+    bool Is_price_valid(const std::string &str);
+   
 } // namespace utility
 } // namespace assist
 } // namespace core

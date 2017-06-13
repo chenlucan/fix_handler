@@ -155,46 +155,47 @@ namespace market
                 
                 return;
             }
-        }
-        
-        std::string recvBufFileName;
-        fh::core::assist::common::getAbsolutePath(recvBufFileName);        
-        recvBufFileName +="mut_cmemarket_revbuf.log";
+            
+            std::string recvBufFileName;
+            fh::core::assist::common::getAbsolutePath(recvBufFileName);        
+            recvBufFileName +="mut_cmemarket_revbuf.log";
 
-        fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "[MutBookManager_BookManager_Test002] ");
-        
-        std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
-                [this, book_manager](const std::string &revPacket)
-                {
-                    // decode
-                    std::vector<fh::cme::market::message::MdpMessage> mdp_messages;
-                    std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(revPacket.data(), revPacket.size(), mdp_messages);
-
-                    LOG_INFO("seq=", seq, ", mdp_messages count=", mdp_messages.size());
-                    
-                    // logic                    
-                    std::for_each(mdp_messages.begin(), mdp_messages.end(), 
-                      [this](fh::cme::market::message::MdpMessage &m){ m_datas.insert(std::move(m)); });
-
-                      
-                    std::vector<char> message_types;
-                    std::for_each(mdp_messages.cbegin(), mdp_messages.cend(), [&message_types](const fh::cme::market::message::MdpMessage &m)
-                            {
-                                message_types.push_back(m.message_type());
-                            });
-                      
-                    auto message = m_datas.begin();
-                    if(message!=m_datas.end())
+            fh::core::assist::common::Read_packets(m_vecRevPacket, recvBufFileName, "[MutBookManager_BookManager_Test002] ");
+            
+            std::for_each(m_vecRevPacket.cbegin(), m_vecRevPacket.cend(),
+                    [this, book_manager](const std::string &revPacket)
                     {
-                        book_manager->Parse_to_send(*message);
-                        LOG_INFO("{BE}processed: seq=", message->packet_seq_num(), ", type=", message->message_type());
-                    }
-                    
-                    m_datas.clear();
-                }
-        );  
+                        // decode
+                        std::vector<fh::cme::market::message::MdpMessage> mdp_messages;
+                        std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(revPacket.data(), revPacket.size(), mdp_messages);
 
-        m_vecRevPacket.clear();        
+                        LOG_INFO("seq=", seq, ", mdp_messages count=", mdp_messages.size());
+                        
+                        // logic                    
+                        std::for_each(mdp_messages.begin(), mdp_messages.end(), 
+                          [this](fh::cme::market::message::MdpMessage &m){ m_datas.insert(std::move(m)); });
+
+                          
+                        std::vector<char> message_types;
+                        std::for_each(mdp_messages.cbegin(), mdp_messages.cend(), [&message_types](const fh::cme::market::message::MdpMessage &m)
+                                {
+                                    message_types.push_back(m.message_type());
+                                });
+                          
+                        auto message = m_datas.begin();
+                        if(message!=m_datas.end())
+                        {
+                            book_manager->Parse_to_send(*message);
+                            LOG_INFO("{BE}processed: seq=", message->packet_seq_num(), ", type=", message->message_type());
+                        }
+                        
+                        m_datas.clear();
+                    }
+            );  
+
+            m_vecRevPacket.clear();  
+        }       
+              
         
         delete book_manager;
         book_manager = nullptr;

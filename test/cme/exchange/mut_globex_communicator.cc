@@ -381,6 +381,60 @@ namespace exchange
             pMockStrategyCommunicator = nullptr;
         }
     }
+    
+    TEST_F(MutGlobexCommunicator, GlobexCommunicator_Test007)
+    {       
+        FIX::Message message;
+        message.getHeader().setField(FIX::BeginString("FIX.4.2"));
+        message.getHeader().setField(FIX::SenderCompID("CME")); //"CME"
+        message.getHeader().setField(FIX::TargetCompID("2E0004N")); // "2E0004N"
+        message.getHeader().setField(FIX::MsgType(FIX::MsgType_NewOrderSingle));
+        message.getHeader().setField(FIX::MsgSeqNum( 1 ));
+        char time_in_force = '3';
+        message.setField(FIX::FIELD::TimeInForce, std::string(1, time_in_force));        
+        message.setField(FIX::FIELD::OrderQty, std::to_string(100));
+        
+        double minQty(1.000);
+        message.setField(FIX::FIELD::MinQty, std::to_string(minQty));
+        
+        FIX::MinQty min_qty;
+        message.getField(min_qty);
+        int iMinQty = min_qty.getValue();
+        LOG_DEBUG("***** iMinQty = [", iMinQty, "], min_qty.getValue() = [", min_qty.getValue(), "] *****");
+        
+        LOG_DEBUG("message(xml): ", message.toXML());
+        LOG_INFO("message(string): ", fh::core::assist::utility::Format_fix_message(message.toString()));
+    }
+    
+    template <typename IntType>
+    void Try_pick_int1(const FIX::Message &message, IntType &target, int num)
+    {
+        FIX::FieldBase fb(num, "");
+        target = (message.getFieldIfSet(fb) && !fb.getString().empty()) ? boost::lexical_cast<IntType>(fb.getString()) : 0;
+    }
+    
+    TEST_F(MutGlobexCommunicator, GlobexCommunicator_Test008)
+    {       
+        FIX::Message message;
+        message.getHeader().setField(FIX::BeginString("FIX.4.2"));
+        message.getHeader().setField(FIX::SenderCompID("CME")); //"CME"
+        message.getHeader().setField(FIX::TargetCompID("2E0004N")); // "2E0004N"
+        message.getHeader().setField(FIX::MsgType(FIX::MsgType_NewOrderSingle));
+        message.getHeader().setField(FIX::MsgSeqNum( 1 ));
+        char time_in_force = '3';
+        message.setField(FIX::FIELD::TimeInForce, std::string(1, time_in_force));        
+        message.setField(FIX::FIELD::OrderQty, std::to_string(100));
+        
+        int minQty = 1;
+        message.setField(FIX::FIELD::MinQty, std::to_string(minQty));
+                        
+        LOG_DEBUG("message(xml): ", message.toXML());
+        LOG_INFO("message(string): ", fh::core::assist::utility::Format_fix_message(message.toString()));
+                
+        Try_pick_int1(message, minQty, FIX::FIELD::MinQty);
+        EXPECT_EQ(minQty, 1);
+    }  
+    
 } // namespace exchange
 } // namespace cme
 } // namespace fh

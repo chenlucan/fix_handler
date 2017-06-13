@@ -46,12 +46,16 @@ namespace market
 
     std::vector<fh::cme::market::message::MdpMessage> *RecoverySaver::Get_data()
     {
+        //std::lock_guard<std::mutex> lock(m_recovery_mutex); 
+        // 业务流程无并发处理，写完读取，此处无需加锁
         return &m_recovery_datas;
     }
 
     // return true if all messages are saved
     bool RecoverySaver::Save_packet(char *buffer, const size_t data_length, const std::uint32_t packet_seq_num)
     {
+        // 业务写线程合并，去掉加锁逻辑
+        //std::lock_guard<std::mutex> lock(m_recovery_mutex);  // for 2 write thread
         if(packet_seq_num == 1)
         {
             m_recovery_datas.clear();

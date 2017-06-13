@@ -12,7 +12,6 @@ namespace cme
 {
 namespace market
 {
-
     MarketApplication::MarketApplication(
             const std::string &channel_id,
             const std::string &channel_setting_file,
@@ -35,14 +34,14 @@ namespace market
         m_book_sender = new fh::core::book::BookSender(save_url.first, save_url.second);
 
         std::vector<fh::cme::market::setting::Channel> target_channels = this->Get_target_channels(channel_id, channel_setting_file);
-        m_market = new CmeMarket(m_book_sender, target_channels, app_settings);
-
         if(target_channels.empty())
         {
             // 如果没有 channel，直接终止
             LOG_WARN("all channels not found, exit");
             exit(1);
         }
+        
+        m_market = new CmeMarket(m_book_sender, target_channels, app_settings);
     }
 
     void MarketApplication::Start()

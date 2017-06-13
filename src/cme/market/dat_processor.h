@@ -7,6 +7,7 @@
 #include "cme/market/dat_arbitrator.h"
 #include "cme/market/dat_saver.h"
 #include "cme/market/dat_replayer.h"
+#include "cme/market/cme_data.h"
 
 namespace fh
 {
@@ -17,7 +18,7 @@ namespace market
     class DatProcessor
     {
         public:
-            DatProcessor(fh::cme::market::DatSaver *, fh::cme::market::DatReplayer *, std::function<void(void)> on_error);
+            DatProcessor(fh::cme::market::CmeData *, fh::cme::market::DatReplayer *, std::function<void(void)> on_error);
             virtual ~DatProcessor();
 
         public:
@@ -33,7 +34,9 @@ namespace market
 
         private:
             fh::cme::market::DatArbitrator m_arbitrator;
-            fh::cme::market::DatSaver *m_saver;
+			
+            fh::cme::market::CmeData *m_pData;
+
             fh::cme::market::DatReplayer *m_replayer;
             std::function<void(void)> m_on_error;
 

@@ -139,13 +139,23 @@ namespace market
     bool BookStateController::Update_price(const fh::cme::market::message::Book &b, BookState &book_state)
     {
         if(b.type == 'W')
-        {
+        {        
             // recovery book - 35=W, 全部当作 MDUpdateAction::New 来处理
+            if(Check_price_level(b, book_state) == false)
+            {
+                return false;
+            }
+            
             return this->New_price(b, book_state);
         }
         else if(b.type == 'X')
         {
             // increment book - 35=X
+            if(Check_price_level(b, book_state, b.mDUpdateAction) == false)
+            {
+                return false;
+            }
+            
             switch(b.mDUpdateAction)
             {
                 case mktdata::MDUpdateAction::Value::New:
@@ -173,12 +183,6 @@ namespace market
     bool BookStateController::New_price(const fh::cme::market::message::Book &b, BookState &book_state)
     {
         LOG_INFO("create price: level=", (int)b.mDPriceLevel, ", securityID=", b.securityID, ", type=", (char)b.mDEntryType);
-
-        if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
-        {
-            LOG_WARN("price level invalid, ignore:", (int)b.mDPriceLevel);
-            return false;
-        }
 
         std::uint8_t depth = book_state.marketDepth;
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
@@ -214,18 +218,8 @@ namespace market
     {
         LOG_INFO("change price: level=", (int)b.mDPriceLevel, ", securityID=", b.securityID, ", type=", (char)b.mDEntryType);
 
-        if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
-        {
-            LOG_WARN("price level invalid, ignore:", (int)b.mDPriceLevel);
-            return false;
-        }
 
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
-        if(target.size() < (std::size_t)b.mDPriceLevel)
-        {
-            LOG_WARN("price level not exist, ignore");
-            return false;
-        }
 
         BookPrice &price = target.at(b.mDPriceLevel - 1);
         price.numberOfOrders = b.numberOfOrders;
@@ -240,18 +234,7 @@ namespace market
     {
         LOG_INFO("delete price: level=", (int)b.mDPriceLevel, ", securityID=", b.securityID, ", type=", (char)b.mDEntryType);
 
-        if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
-        {
-            LOG_WARN("price level invalid, ignore:", (int)b.mDPriceLevel);
-            return false;
-        }
-
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
-        if(target.size() < (std::size_t)b.mDPriceLevel)
-        {
-            LOG_WARN("price level not exist, ignore");
-            return false;
-        }
 
         target.erase(target.begin() + b.mDPriceLevel - 1);
 
@@ -274,16 +257,52 @@ namespace market
     {
         LOG_INFO("delete top price: level=", (int)b.mDPriceLevel, ", securityID=", b.securityID, ", type=", (char)b.mDEntryType);
 
-        if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
-        {
-            LOG_WARN("price level invalid, ignore:", (int)b.mDPriceLevel);
-            return false;
-        }
-
         std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
         target.erase(target.begin(), target.begin() + std::min((std::size_t)b.mDPriceLevel, target.size()));
 
         LOG_INFO("delete ok");
+        return true;
+    }
+
+    bool BookStateController::Check_price_level(const fh::cme::market::message::Book &b, BookState &book_state, const mktdata::MDUpdateAction::Value &mDUpdateAction)
+    {
+        LOG_INFO("check price: level=", (int)b.mDPriceLevel, ", securityID=", b.securityID, ", type=", (char)b.mDEntryType, ", mDUpdateAction= [", (int)mDUpdateAction, "]");
+
+        switch(mDUpdateAction)
+        {
+            case mktdata::MDUpdateAction::Value::New:
+            case mktdata::MDUpdateAction::Value::DeleteFrom:
+            {
+                if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
+                {
+                    LOG_WARN("price level invalid, ignore:", (int)b.mDPriceLevel);
+                    return false;
+                }
+            }
+            break;
+            case mktdata::MDUpdateAction::Value::Change:
+            case mktdata::MDUpdateAction::Value::Delete:
+            {
+                if(b.mDPriceLevel == 0 || b.mDPriceLevel > book_state.marketDepth)
+                {
+                    LOG_WARN("price level invalid, ignore:", (int)b.mDPriceLevel);
+                    return false;
+                }
+
+                std::deque<BookPrice> &target = (b.mDEntryType == mktdata::MDEntryType::Value::Bid ? book_state.bid : book_state.ask);
+                if(target.size() < (std::size_t)b.mDPriceLevel)
+                {
+                    LOG_WARN("price level not exist, ignore");
+                    return false;
+                }
+            }
+            break;
+            default:
+            {
+            }
+            break;
+        }
+
         return true;
     }
 

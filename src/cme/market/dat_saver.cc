@@ -10,54 +10,14 @@ namespace cme
 {
 namespace market
 {
-    DatSaver::DatSaver(fh::core::market::MarketListenerI *book_sender)
-    : m_last_seq(std::numeric_limits<std::uint32_t>::max()), m_unreceived_seqs(),
-      m_mutex(), m_recovery_mutex(), m_datas(),
-      m_definition_datas(nullptr), m_recovery_datas(nullptr),
+    DatSaver::DatSaver(fh::cme::market::CmeData *cme_data, fh::core::market::MarketListenerI *book_sender)
+    : m_pData(cme_data),
       m_book_sender(book_sender), m_book_manager(book_sender),
       m_recovery_first_seq(0), m_is_stopped(false)
     {
         // noop
     }
-
-    // 把接受到的行情数据保存到内存，如果有 GAP 那么就记录下丢失的序号
-    void DatSaver::Insert_data(std::uint32_t packet_seq_num, std::vector<fh::cme::market::message::MdpMessage> &mdp_messages)
-    {
-        std::lock_guard<std::mutex> lock(m_mutex);
-
-        std::for_each(mdp_messages.begin(), mdp_messages.end(), 
-                      [this](fh::cme::market::message::MdpMessage &m){ m_datas.insert(std::move(m)); });
-
-        if(m_last_seq == std::numeric_limits<std::uint32_t>::max())
-        {
-            // 说明这次来的是第一条数据，更新已保存最大序列号
-            m_last_seq = packet_seq_num;
-        }
-        else if(packet_seq_num < m_last_seq)
-        {
-            // 说明这次来的是以前丢失的数据，从丢失列表中去掉它（如果有的话）
-            m_unreceived_seqs.erase(packet_seq_num);
-        }
-        else
-        {
-            // 说明这次来的是后续数据，如果有 GAP 就记录下丢失的序号，同时更新已保存最大序列号
-            m_unreceived_seqs.insert(
-                boost::counting_iterator<std::uint32_t>(m_last_seq + 1), 
-                boost::counting_iterator<std::uint32_t>(packet_seq_num));
-            m_last_seq = packet_seq_num;
-        }
-    }
-
-    // set received definition,recovery messages
-    void DatSaver::Set_recovery_data(
-            std::vector<fh::cme::market::message::MdpMessage> *definition_datas,
-            std::vector<fh::cme::market::message::MdpMessage> *recovery_datas)
-    {
-        std::lock_guard<std::mutex> lock(m_recovery_mutex);
-        m_definition_datas = definition_datas;
-        m_recovery_datas = recovery_datas;
-    }
-
+	
     // process the messages in memory and save to zeroqueue
     void DatSaver::Start_save()
     {
@@ -69,50 +29,42 @@ namespace market
             // 说明是从周末就开始启动了，这样才能接受到第 1 条行情数据，
             // 此时无需处理恢复数据，直接从第一条行情数据开始处理即可
         }
+        else if(first_seq == 0)
+        {
+            return;  // m_is_stopped=true
+        }
         else
         {
             // 说明是周中才启动的，此时需要从恢复数据开始处理
             // 这里会等待接受到所有的恢复数据，然后处理之（解析，发送）
             Process_recovery_data();
         }
-
         while(!m_is_stopped)
         {
-           auto message = Pick_next_message();  // 返回：{数据内容, 有无数据}
-           if(message.second)
-           {
-               bool should_send_now = this->Convert_message(message.first);
-               if(should_send_now)
-               {
+            auto message = m_pData->Pick_next_message();  // 返回：{数据内容, 有无数据}
+            if(message.second)
+            {
+                bool should_send_now = this->Convert_message(message.first);
+                if(should_send_now)
+                {
                    this->Send_message(*message.first);
-               }
+                }
 
-               Remove_past_message(message.first);
-           }
-           else
-           {
-               std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
-           }
+                Remove_past_message(message.first);
+            }
+            else
+            {
+                break;
+            }
        }
     }
 
     // 获取到第一条数据的 sequence number（如果没有数据，则一直等待）
     std::uint32_t DatSaver::Get_first_data_seq()
     {
-        while(!m_is_stopped)
-        {
-            { // for release mutex
-                std::lock_guard<std::mutex> lock(m_mutex);
-                if(!m_datas.empty())
-                {
-                    return m_datas.cbegin()->packet_seq_num();
-                }
-            }
-            std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
-        }
-
-        // 说明被终止了
-        return 0;
+        LOG_DEBUG("===== DatSaver::Get_first_data_seq =====");
+        std::uint32_t first_seq_num = m_pData->Get_increment_first_data_seq(); 
+        return first_seq_num;
     }
 
     // 处理恢复数据（如果没有恢复数据，则一直等待）
@@ -120,8 +72,8 @@ namespace market
     {
         while(!m_is_stopped)
         {
-            { // for release mutex
-                std::lock_guard<std::mutex> lock(m_recovery_mutex);
+            { 
+                std::vector<fh::cme::market::message::MdpMessage> *m_recovery_datas = m_pData->Get_recovery_data();
                 if(m_recovery_datas != nullptr)
                 {
                     break;
@@ -135,66 +87,44 @@ namespace market
 
         LOG_INFO("recovery messages received.");
 
-        m_book_manager.Set_definition_data(m_definition_datas);
-        m_book_manager.Set_recovery_data(m_recovery_datas);
+        m_book_manager.Set_definition_data(m_pData->Get_definition_data());
+        m_book_manager.Set_recovery_data(m_pData->Get_recovery_data());
 
-        m_recovery_first_seq = m_recovery_datas->front().last_msg_seq_num_processed();
+        m_recovery_first_seq = m_pData->Get_recovery_data()->front().last_msg_seq_num_processed();
 
         // 发送接受到的恢复数据
         this->Send_definition_messages();
         this->Send_recovery_messages();
     }
 
-    // pick first message to serialize and remove it from memory
-    std::pair<std::multiset<fh::cme::market::message::MdpMessage>::iterator, bool> DatSaver::Pick_next_message()
-    {
-        std::lock_guard<std::mutex> lock(m_mutex);
-
-        if(m_datas.empty())
-        {
-            // 暂无数据
-            return {m_datas.end(), false};
-        }
-
-        auto message = m_datas.begin();
-        std::uint32_t first_unreceived = m_unreceived_seqs.empty() ? 0 : *m_unreceived_seqs.begin();
-
-        if(first_unreceived != 0 && message->packet_seq_num() >= first_unreceived)
-        {
-            // 下一个 seq 的数据缺失，需要等待
-            LOG_DEBUG("wait for seq=", first_unreceived);
-            return {m_datas.end(), false};
-        }
-
-        return {message, true};
-    }
-
     void DatSaver::Send_definition_messages()
     {
-        if(m_definition_datas == nullptr)
+        std::vector<fh::cme::market::message::MdpMessage> *pDefinition_datas = m_pData->Get_definition_data();
+        if(pDefinition_datas == nullptr)
         {
             LOG_INFO("no definition message.");
             return;
         }
 
-        std::for_each(m_definition_datas->cbegin(), m_definition_datas->cend(),
+        std::for_each(pDefinition_datas->cbegin(), pDefinition_datas->cend(),
                 [this](const fh::cme::market::message::MdpMessage &m){ this->Send_message(m); });
 
-        LOG_INFO("{DB}all definition message sent: ", m_definition_datas->size());
+        LOG_INFO("{DB}all definition message sent: ", pDefinition_datas->size());
     }
 
     void DatSaver::Send_recovery_messages()
     {
-        if(m_recovery_datas == nullptr)
+        std::vector<fh::cme::market::message::MdpMessage> *pRecovery_datas = m_pData->Get_recovery_data();
+        if(pRecovery_datas == nullptr)
         {
             LOG_INFO("no recovery message.");
             return;
         }
 
-        std::for_each(m_recovery_datas->cbegin(), m_recovery_datas->cend(),
+        std::for_each(pRecovery_datas->cbegin(), pRecovery_datas->cend(),
                 [this](const fh::cme::market::message::MdpMessage &m){ this->Send_message(m); });
 
-        LOG_INFO("{DB}all recovery message sent: ", m_recovery_datas->size());
+        LOG_INFO("{DB}all recovery message sent: ", pRecovery_datas->size());
     }
 
     bool DatSaver::Convert_message(std::multiset<fh::cme::market::message::MdpMessage>::iterator message)
@@ -217,6 +147,8 @@ namespace market
 
     void DatSaver::Send_message(const fh::cme::market::message::MdpMessage &message)
     {
+        LOG_DEBUG("===== DatSaver::Send_message =====");
+
         static fh::core::assist::TimeMeasurer t;
 
         // send to db
@@ -234,13 +166,25 @@ namespace market
 
     void DatSaver::Remove_past_message(std::multiset<fh::cme::market::message::MdpMessage>::iterator message)
     {
-        std::lock_guard<std::mutex> lock(m_mutex);
-        m_datas.erase(message);
+        m_pData->Remove_increment_data(message);
     }
 
     void DatSaver::Stop()
     {
+        LOG_DEBUG("===== DatSaver::Stop() =====");
         m_is_stopped = true;
+        m_pData->Stop();
+    }
+
+    // mut_test
+    std::uint32_t DatSaver::Get_data_count()
+    {
+        return m_pData->Get_increment_data_count();
+    }
+
+    fh::cme::market::CmeData * DatSaver::Get_cme_data()
+    {
+        return m_pData;
     }
 
     DatSaver::~DatSaver()

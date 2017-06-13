@@ -34,6 +34,7 @@ namespace market
             bool Delete_price(const fh::cme::market::message::Book &b, BookState &book_state);
             bool Delete_all_price(const fh::cme::market::message::Book &b, BookState &book_state);
             bool Delete_top_price(const fh::cme::market::message::Book &b, BookState &book_state);
+            bool Check_price_level(const fh::cme::market::message::Book &b, BookState &book_state, const mktdata::MDUpdateAction::Value &mDUpdateAction=mktdata::MDUpdateAction::Value::New);
 
         private:
             // 保存每个 SecurityID 对应的  multiple depth book state 情报

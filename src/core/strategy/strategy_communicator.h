@@ -42,6 +42,9 @@ namespace strategy
             void Start_receive();
             void Set_exchange(core::exchange::ExchangeI *exchange);
 
+            void Check_order(const ::pb::ems::Order &strategy_order);
+            void Reject_order(const ::pb::ems::Order &order);
+
         public:
             // implement of ExchangeListenerI
             void OnOrder(const ::pb::ems::Order &order) override;

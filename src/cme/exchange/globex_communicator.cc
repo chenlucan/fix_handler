@@ -127,6 +127,17 @@ namespace exchange
         order.price = std::stod(strategy_order.price());
         order.order_qty = strategy_order.quantity();
         order.time_in_force = strategy_order.has_tif() ? GlobexCommunicator::Convert_tif(strategy_order.tif()) : 0;
+        // For FAK, MinQty can also be specified, 1: FAK, max:FOK
+        order.min_qty = 0; 
+        if(strategy_order.tif() == pb::ems::TimeInForce::TIF_FOK)
+        {
+            order.min_qty = strategy_order.quantity();
+        }
+        else if (strategy_order.tif() == pb::ems::TimeInForce::TIF_FAK)
+        {
+            order.min_qty = 1;
+        }
+        
         order.order_type = strategy_order.has_order_type() ? GlobexCommunicator::Convert_order_type(strategy_order.order_type()) : 0;
         order.order_id = strategy_order.exchange_order_id();
         //order. = strategy_order.status();         // 这个域是回传订单结果的
@@ -168,18 +179,18 @@ namespace exchange
             // 登录成功，说明可以开始交易了
             m_strategy->OnExchangeReady(boost::container::flat_map<std::string, std::string>());
         }
-        else if(report.message_type == "BZ")
+        else if(report.message_type == FIX::MsgType_OrderMassActionReport)
         {
             // Order Mass Action Report
             return;      // TODO 目前 protobuf 中还没有定义
         }
-        else if(report.message_type == "8" && report.single_report.order_status == 'H')
+        else if(report.message_type == FIX::MsgType_ExecutionReport && report.single_report.order_status == 'H')
         {
             // Execution Report - Trade Cancel
             // 这个不用发送回去
             return;
         }
-        else if(report.message_type == "8" && (report.single_report.order_status == '1' || report.single_report.order_status == '2'))
+        else if(report.message_type == FIX::MsgType_ExecutionReport && (report.single_report.order_status == '1' || report.single_report.order_status == '2'))
         {
             // Fill Notice
             pb::ems::Fill fill;
@@ -205,7 +216,16 @@ namespace exchange
             order.set_buy_sell(GlobexCommunicator::Convert_buy_sell(report.single_report.side));
             order.set_price(std::to_string(report.single_report.price));
             order.set_quantity(report.single_report.order_qty);
-            order.set_tif(GlobexCommunicator::Convert_tif(report.single_report.time_in_force));
+            
+             // 根据 tag 110（MinQty） 区分 FAK 和 FOK
+            pb::ems::TimeInForce tif = GlobexCommunicator::Convert_tif(report.single_report.time_in_force);
+            if( (tif == pb::ems::TimeInForce::TIF_FAK) 
+                && (report.single_report.order_qty == report.single_report.min_qty) )
+            {
+                tif = pb::ems::TimeInForce::TIF_FOK;
+            }
+            order.set_tif(tif);
+            
             order.set_order_type(GlobexCommunicator::Convert_order_type(report.single_report.order_type));
             order.set_exchange_order_id(report.single_report.order_id);
             order.set_status(GlobexCommunicator::Convert_order_status(report.single_report.order_status));
@@ -217,7 +237,7 @@ namespace exchange
 
             m_strategy->OnOrder(order);
 
-            if(report.message_type == "8" && report.single_report.exec_type == 'I')
+            if(report.message_type == FIX::MsgType_ExecutionReport && report.single_report.exec_type == 'I')
             {
                 // 是查询订单状态的应答消息的话，就消去该订单
                 this->On_order_status_sent(report.single_report.cl_order_id);
@@ -241,7 +261,7 @@ namespace exchange
 
     char GlobexCommunicator::Convert_tif(pb::ems::TimeInForce tif)
     {
-        // TODO FAK 和 FOK 需要区分，FOK 的场合需要设置  tag 110（MinQty）
+        // FAK 和 FOK 需要区分，FAK 的场合需要设置  tag 110（MinQty）
         switch(tif)
         {
             case pb::ems::TimeInForce::TIF_FAK:
@@ -260,11 +280,10 @@ namespace exchange
     {
         switch(tif)
         {
-            // TODO 要根据 tag 110（MinQty） 区分 FAK 和 FOK
             case '0':
                 return pb::ems::TimeInForce::TIF_GFD;
             case '3':
-                return pb::ems::TimeInForce::TIF_FAK;
+                return pb::ems::TimeInForce::TIF_FAK; // 根据 tag 110（MinQty） 区分 FAK 和 FOK
             case '1':
                 return pb::ems::TimeInForce::TIF_GTC;
             default:

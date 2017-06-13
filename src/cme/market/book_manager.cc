@@ -44,6 +44,10 @@ namespace market
 
         std::vector<fh::cme::market::message::Book> increment_books = this->Parse_increment(message);
         LOG_INFO("parsed. books count in message=", increment_books.size());
+        if(increment_books.empty())
+        {
+            return;
+        }
 
         // 和恢复数据进行 merge：删除 increment 中过时的 book
         m_recovery_manager.Remove_past_books(message.packet_seq_num(), increment_books);
@@ -159,6 +163,14 @@ namespace market
     void BookManager::Send_trade(fh::core::market::MarketListenerI *sender, const fh::cme::market::message::Book *trade_book, const std::string &contract)
     {
         // 发送 trade 数据 TODO 这里要根据 mDUpdateAction 区分下不同的动作吧
+        if( (trade_book->mDUpdateAction == mktdata::MDUpdateAction::Value::Delete) 
+            || (trade_book->mDUpdateAction == mktdata::MDUpdateAction::Value::DeleteThru) 
+            || (trade_book->mDUpdateAction == mktdata::MDUpdateAction::Value::DeleteFrom) )
+        {
+            LOG_WARN("Don't need to send trade, mktdata::MDUpdateAction::Value = [", (int)trade_book->mDUpdateAction, "] , return!");
+            return;
+        }
+        
         pb::dms::Trade trade;
         trade.set_contract(contract);
         pb::dms::DataPoint *last = trade.mutable_last();

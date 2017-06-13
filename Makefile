@@ -47,7 +47,7 @@ SETTINGS += $(UT_MARKET_SETTINGS)
 ALL_OBJS =  $(filter-out $(wildcard $(BIN_PATH)/*_test.o), $(wildcard $(BIN_PATH)/*.o)) 
 TEST_OBJS = $(BIN_PATH)/utility_unittest.o $(BIN_PATH)/mut_common.o $(BIN_PATH)/mut_market_simulater.o $(BIN_PATH)/mut_exchange_simulater.o $(BIN_PATH)/mut_book_sender.o $(BIN_PATH)/mut_book_manager.o  \
 						   $(BIN_PATH)/mut_market_manager.o $(BIN_PATH)/autotest_book_sender.o $(BIN_PATH)/mut_dat_saver.o $(BIN_PATH)/mut_globex_communicator.o $(BIN_PATH)/mut_exchange_application.o \
-						   $(BIN_PATH)/mut_order_manager.o
+						   $(BIN_PATH)/mut_order_manager.o $(BIN_PATH)/mut_strategy_communicator.o
 COMM_OBJS = $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/utility.o $(BIN_PATH)/message_utility.o $(BIN_PATH)/logger.o \
 						   $(BIN_PATH)/mdp_message.o $(BIN_PATH)/sbe_to_json.o $(BIN_PATH)/sbe_decoder.o $(BIN_PATH)/settings.o \
 						   $(BIN_PATH)/time_measurer.o $(BIN_PATH)/zmq_sender.o $(BIN_PATH)/zmq_receiver.o \
@@ -91,7 +91,7 @@ ufsender: $(BIN_PATH)/udp_file_sender_test.o $(COMM_OBJS)
 tsender: $(BIN_PATH)/tcp_sender_test.o $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(TSENDER_TARGET) $?
 	
-market: $(BIN_PATH)/market_test.o $(BIN_PATH)/dat_processor.o $(BIN_PATH)/udp_receiver.o $(BIN_PATH)/dat_saver.o \
+market: $(BIN_PATH)/market_test.o $(BIN_PATH)/dat_processor.o $(BIN_PATH)/udp_receiver.o $(BIN_PATH)/dat_saver.o $(BIN_PATH)/cme_data.o\
                $(BIN_PATH)/tcp_receiver.o $(BIN_PATH)/dat_arbitrator.o $(BIN_PATH)/market_application.o $(BIN_PATH)/market_settings.o \
                $(BIN_PATH)/recovery_saver.o $(BIN_PATH)/dat_replayer.o $(BIN_PATH)/book_manager.o $(BIN_PATH)/book_state_controller.o \
                $(BIN_PATH)/message_parser_d.o $(BIN_PATH)/message_parser_f.o $(BIN_PATH)/message_parser_r.o $(BIN_PATH)/channel_settings.o \

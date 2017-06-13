@@ -25,10 +25,20 @@ void handler(int sig)
 #endif
 }
 
+void  Sig_hand(int signo)
+{
+    LOG_DEBUG("[Sig_hand] signal ", signo, " received");
+    pthread_t             self = pthread_self();
+
+    LOG_DEBUG("==== sighand self = [", (void *)self, "] =====");
+    
+    pthread_exit(0);
+    return;
+}
+    
 int main(int argc, char* argv[])
 {
-    signal(SIGSEGV, handler);
-
+    //signal(SIGSEGV, handler);
     try
     {
         if (argc != 1 && argc != 2)
@@ -37,7 +47,19 @@ int main(int argc, char* argv[])
             return 1;
         }
 
-        fh::core::assist::Logger::Set_level(fh::core::assist::Logger::Level::TRACE);
+        //fh::core::assist::Logger::Set_level(fh::core::assist::Logger::Level::TRACE);
+        fh::core::assist::Logger::Set_level(fh::core::assist::Logger::Level::ERR);
+
+        struct sigaction        sa_usr;
+        memset(&sa_usr, 0, sizeof(sa_usr));
+        sigemptyset(&sa_usr.sa_mask);
+        sa_usr.sa_flags = 0;
+        sa_usr.sa_handler = Sig_hand;
+
+        int rc = sigaction(SIGUSR1, &sa_usr, NULL);
+        LOG_DEBUG("===== sigaction rc=[", rc, "] =====");
+
+
         fh::cme::market::MarketApplication a(argc == 2 ? argv[1] : "");
 
         a.Start();

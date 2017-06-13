@@ -689,6 +689,7 @@ namespace exchange
             fh::cme::exchange::TestQuickFix *pTestQuickFix = new fh::cme::exchange::TestQuickFix(app_setting_file, fix_setting_file);
             if(nullptr == pTestQuickFix)
             {
+                sem_destroy(&sem);
                 return;
             }
             
@@ -699,6 +700,8 @@ namespace exchange
             {
                 delete pTestQuickFix;
                 pTestQuickFix = nullptr;
+                
+                sem_destroy(&sem);
                 return;
             }
             FIX::MsgType responseMsgType(FIX::MsgType_Logon); 
@@ -772,6 +775,7 @@ namespace exchange
             fh::cme::exchange::TestQuickFix *pTestQuickFix = new fh::cme::exchange::TestQuickFix(app_setting_file, fix_setting_file);
             if(nullptr == pTestQuickFix)
             {
+                sem_destroy(&sem);
                 return;
             }
             
@@ -782,6 +786,8 @@ namespace exchange
             {
                 delete pTestQuickFix;
                 pTestQuickFix = nullptr;
+                
+                sem_destroy(&sem);
                 return;
             }
             FIX::MsgType responseMsgType(FIX::MsgType_Logon); 
@@ -854,7 +860,8 @@ namespace exchange
             
             fh::cme::exchange::TestQuickFix *pTestQuickFix = new fh::cme::exchange::TestQuickFix(app_setting_file, fix_setting_file);
             if(nullptr == pTestQuickFix)
-            {
+            {                
+                sem_destroy(&sem);
                 return;
             }
             
@@ -866,7 +873,9 @@ namespace exchange
             if(nullptr == pTestResponderCallback)
             {
                 delete pTestQuickFix;
-                pTestQuickFix = nullptr;
+                pTestQuickFix = nullptr;                
+                
+                sem_destroy(&sem);
                 return;
             }
             FIX::MsgType responseMsgType(FIX::MsgType_Logon); 
@@ -939,7 +948,8 @@ namespace exchange
             
             fh::cme::exchange::TestQuickFix *pTestQuickFix = new fh::cme::exchange::TestQuickFix(app_setting_file, fix_setting_file);
             if(nullptr == pTestQuickFix)
-            {
+            {                
+                sem_destroy(&sem);
                 return;
             }
             
@@ -951,7 +961,9 @@ namespace exchange
             if(nullptr == pTestResponderCallback)
             {
                 delete pTestQuickFix;
-                pTestQuickFix = nullptr;
+                pTestQuickFix = nullptr;                
+                
+                sem_destroy(&sem);
                 return;
             }
             FIX::MsgType responseMsgType(FIX::MsgType_Logon); 
@@ -1024,7 +1036,8 @@ namespace exchange
             
             fh::cme::exchange::TestQuickFix *pTestQuickFix = new fh::cme::exchange::TestQuickFix(app_setting_file, fix_setting_file);
             if(nullptr == pTestQuickFix)
-            {
+            {                
+                sem_destroy(&sem);
                 return;
             }
             
@@ -1037,6 +1050,8 @@ namespace exchange
             {
                 delete pTestQuickFix;
                 pTestQuickFix = nullptr;
+                
+                sem_destroy(&sem);
                 return;
             }
             FIX::MsgType responseMsgType(FIX::MsgType_Logon); 
@@ -1109,7 +1124,8 @@ namespace exchange
             
             fh::cme::exchange::TestQuickFix *pTestQuickFix = new fh::cme::exchange::TestQuickFix(app_setting_file, fix_setting_file);
             if(nullptr == pTestQuickFix)
-            {
+            {                
+                sem_destroy(&sem);
                 return;
             }
             
@@ -1122,6 +1138,8 @@ namespace exchange
             {
                 delete pTestQuickFix;
                 pTestQuickFix = nullptr;
+                
+                sem_destroy(&sem);
                 return;
             }
             FIX::MsgType responseMsgType(FIX::MsgType_Logon); 

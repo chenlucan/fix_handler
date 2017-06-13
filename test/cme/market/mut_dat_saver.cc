@@ -2,6 +2,11 @@
 #include "gmock/gmock.h"
 
 #include <boost/iterator/counting_iterator.hpp>
+
+#include <thread>                // std::thread, std::this_thread::yield
+#include <mutex>                // std::mutex, std::unique_lock
+#include <condition_variable>    // std::condition_variable
+
 #include "cme/market/dat_saver.h"
 #include "core/assist/time_measurer.h"
 #include "cme/market/message/message_utility.h"
@@ -42,6 +47,11 @@ namespace market
     {
     }
     
+        
+    std::mutex mtx;
+    std::condition_variable cv;
+    std::atomic_bool is_finished(false);
+    
     // case desc: 
     // Security Definition Messages For Options and Spreads.
     // Instrument: 0EMDH8 C1330 SecurityID: 998870
@@ -56,10 +66,21 @@ namespace market
         
         if(autotest_book_sender!=nullptr)
         {
-            dat_saver = new DatSaver(autotest_book_sender);
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data == nullptr)                
+            {
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+            
+            dat_saver = new DatSaver(pcme_data, autotest_book_sender);
             if(nullptr == dat_saver)
             {
-                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");       
+                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------"); 
+                delete pcme_data;
+                pcme_data = nullptr;
+                
                 delete autotest_book_sender;
                 autotest_book_sender = nullptr;
                 return;
@@ -129,6 +150,9 @@ namespace market
             delete dat_saver;
             dat_saver = nullptr;
             
+            delete pcme_data;
+            pcme_data = nullptr;
+            
             delete autotest_book_sender;
             autotest_book_sender = nullptr;
         }
@@ -149,10 +173,20 @@ namespace market
         
         if(autotest_book_sender!=nullptr)
         {
-            dat_saver = new DatSaver(autotest_book_sender);
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data == nullptr)                
+            {
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+            
+            dat_saver = new DatSaver(pcme_data, autotest_book_sender);
             if(nullptr == dat_saver)
             {
-                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");       
+                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");    
+                delete pcme_data;
+                pcme_data = nullptr;                    
                 delete autotest_book_sender;
                 autotest_book_sender = nullptr;
                 return;
@@ -242,6 +276,9 @@ namespace market
             delete dat_saver;
             dat_saver = nullptr;
             
+            delete pcme_data;
+            pcme_data = nullptr;
+            
             delete autotest_book_sender;
             autotest_book_sender = nullptr;
         }
@@ -262,10 +299,21 @@ namespace market
         
         if(autotest_book_sender!=nullptr)
         {
-            dat_saver = new DatSaver(autotest_book_sender);
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data == nullptr)                
+            {
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+            
+            dat_saver = new DatSaver(pcme_data, autotest_book_sender);
             if(nullptr == dat_saver)
             {
-                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");       
+                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");
+                delete pcme_data;
+                pcme_data = nullptr;   
+                
                 delete autotest_book_sender;
                 autotest_book_sender = nullptr;
                 return;
@@ -331,10 +379,13 @@ namespace market
                 std::string securityID = "securityID=996791";
                 autotest_book_sender_check->CheckResult(securityID);
                 //autotest_book_sender_check->OnOrginalMessage(securityID);
-            }
+            }           
 
             delete dat_saver;
             dat_saver = nullptr;
+            
+            delete pcme_data;
+            pcme_data = nullptr;
             
             delete autotest_book_sender;
             autotest_book_sender = nullptr;
@@ -356,10 +407,20 @@ namespace market
         
         if(autotest_book_sender!=nullptr)
         {
-            dat_saver = new DatSaver(autotest_book_sender);
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data == nullptr)                
+            {
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+            
+            dat_saver = new DatSaver(pcme_data, autotest_book_sender);
             if(nullptr == dat_saver)
             {
-                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");       
+                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");
+                delete pcme_data;
+                pcme_data = nullptr;                
                 delete autotest_book_sender;
                 autotest_book_sender = nullptr;
                 return;
@@ -430,6 +491,9 @@ namespace market
             delete dat_saver;
             dat_saver = nullptr;
             
+            delete pcme_data;
+            pcme_data = nullptr;
+            
             delete autotest_book_sender;
             autotest_book_sender = nullptr;
         }
@@ -450,10 +514,20 @@ namespace market
         
         if(autotest_book_sender!=nullptr)
         {
-            dat_saver = new DatSaver(autotest_book_sender);
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data == nullptr)                
+            {
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+            
+            dat_saver = new DatSaver(pcme_data, autotest_book_sender);
             if(nullptr == dat_saver)
             {
-                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");       
+                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");
+                delete pcme_data;
+                pcme_data = nullptr;                
                 delete autotest_book_sender;
                 autotest_book_sender = nullptr;
                 return;
@@ -541,6 +615,9 @@ namespace market
             delete dat_saver;
             dat_saver = nullptr;
             
+            delete pcme_data;
+            pcme_data = nullptr;
+            
             delete autotest_book_sender;
             autotest_book_sender = nullptr;
         }
@@ -563,10 +640,20 @@ namespace market
         
         if(autotest_book_sender!=nullptr)
         {
-            dat_saver = new DatSaver(autotest_book_sender);
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data == nullptr)                
+            {
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+            
+            dat_saver = new DatSaver(pcme_data, autotest_book_sender);
             if(nullptr == dat_saver)
             {
-                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");       
+                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");
+                delete pcme_data;
+                pcme_data = nullptr;                
                 delete autotest_book_sender;
                 autotest_book_sender = nullptr;
                 return;
@@ -654,6 +741,9 @@ namespace market
             delete dat_saver;
             dat_saver = nullptr;
             
+            delete pcme_data;
+            pcme_data = nullptr;
+            
             delete autotest_book_sender;
             autotest_book_sender = nullptr;
         }
@@ -676,10 +766,20 @@ namespace market
         
         if(autotest_book_sender!=nullptr)
         {
-            dat_saver = new DatSaver(autotest_book_sender);
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data == nullptr)                
+            {
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+            
+            dat_saver = new DatSaver(pcme_data, autotest_book_sender);
             if(nullptr == dat_saver)
             {
-                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");       
+                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");
+                delete pcme_data;
+                pcme_data = nullptr;                
                 delete autotest_book_sender;
                 autotest_book_sender = nullptr;
                 return;
@@ -767,6 +867,9 @@ namespace market
             delete dat_saver;
             dat_saver = nullptr;
             
+            delete pcme_data;
+            pcme_data = nullptr;
+            
             delete autotest_book_sender;
             autotest_book_sender = nullptr;
         }
@@ -788,10 +891,20 @@ namespace market
         
         if(autotest_book_sender!=nullptr)
         {
-            dat_saver = new DatSaver(autotest_book_sender);
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data == nullptr)                
+            {
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+            
+            dat_saver = new DatSaver(pcme_data, autotest_book_sender);
             if(nullptr == dat_saver)
             {
-                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");       
+                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");
+                delete pcme_data;
+                pcme_data = nullptr;                
                 delete autotest_book_sender;
                 autotest_book_sender = nullptr;
                 return;
@@ -880,6 +993,9 @@ namespace market
             delete dat_saver;
             dat_saver = nullptr;
             
+            delete pcme_data;
+            pcme_data = nullptr;
+    
             delete autotest_book_sender;
             autotest_book_sender = nullptr;
         }
@@ -901,10 +1017,20 @@ namespace market
         
         if(autotest_book_sender!=nullptr)
         {
-            dat_saver = new DatSaver(autotest_book_sender);
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data == nullptr)                
+            {
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+    
+            dat_saver = new DatSaver(pcme_data, autotest_book_sender);
             if(nullptr == dat_saver)
             {
-                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");       
+                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");
+                delete pcme_data;
+                pcme_data = nullptr;                
                 delete autotest_book_sender;
                 autotest_book_sender = nullptr;
                 return;
@@ -992,6 +1118,9 @@ namespace market
 
             delete dat_saver;
             dat_saver = nullptr;
+
+            delete pcme_data;
+            pcme_data = nullptr;
             
             delete autotest_book_sender;
             autotest_book_sender = nullptr;
@@ -1014,10 +1143,20 @@ namespace market
         
         if(autotest_book_sender!=nullptr)
         {
-            dat_saver = new DatSaver(autotest_book_sender);
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data == nullptr)                
+            {
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+    
+            dat_saver = new DatSaver(pcme_data, autotest_book_sender);
             if(nullptr == dat_saver)
             {
-                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");       
+                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");
+                delete pcme_data;
+                pcme_data = nullptr;                
                 delete autotest_book_sender;
                 autotest_book_sender = nullptr;
                 return;
@@ -1106,6 +1245,9 @@ namespace market
             delete dat_saver;
             dat_saver = nullptr;
             
+            delete pcme_data;
+            pcme_data = nullptr;
+            
             delete autotest_book_sender;
             autotest_book_sender = nullptr;
         }
@@ -1127,10 +1269,20 @@ namespace market
         
         if(autotest_book_sender!=nullptr)
         {
-            dat_saver = new DatSaver(autotest_book_sender);
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data == nullptr)                
+            {
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+    
+            dat_saver = new DatSaver(pcme_data, autotest_book_sender);
             if(nullptr == dat_saver)
             {
-                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");       
+                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");
+                delete pcme_data;
+                pcme_data = nullptr;                
                 delete autotest_book_sender;
                 autotest_book_sender = nullptr;
                 return;
@@ -1219,6 +1371,9 @@ namespace market
             delete dat_saver;
             dat_saver = nullptr;
             
+            delete pcme_data;
+            pcme_data = nullptr;
+            
             delete autotest_book_sender;
             autotest_book_sender = nullptr;
         }
@@ -1240,10 +1395,20 @@ namespace market
         
         if(autotest_book_sender!=nullptr)
         {
-            dat_saver = new DatSaver(autotest_book_sender);
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data == nullptr)                
+            {
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+    
+            dat_saver = new DatSaver(pcme_data, autotest_book_sender);
             if(nullptr == dat_saver)
             {
-                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");       
+                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");
+                delete pcme_data;
+                pcme_data = nullptr;                
                 delete autotest_book_sender;
                 autotest_book_sender = nullptr;
                 return;
@@ -1332,6 +1497,9 @@ namespace market
             delete dat_saver;
             dat_saver = nullptr;
             
+            delete pcme_data;
+            pcme_data = nullptr;
+            
             delete autotest_book_sender;
             autotest_book_sender = nullptr;
         }
@@ -1352,10 +1520,20 @@ namespace market
         
         if(autotest_book_sender!=nullptr)
         {
-            dat_saver = new DatSaver(autotest_book_sender);
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data == nullptr)                
+            {
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+            
+            dat_saver = new DatSaver(pcme_data, autotest_book_sender);
             if(nullptr == dat_saver)
             {
-                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");       
+                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");     
+                delete pcme_data;
+                pcme_data = nullptr;                
                 delete autotest_book_sender;
                 autotest_book_sender = nullptr;
                 return;
@@ -1425,6 +1603,9 @@ namespace market
             delete dat_saver;
             dat_saver = nullptr;
             
+            delete pcme_data;
+            pcme_data = nullptr;
+            
             delete autotest_book_sender;
             autotest_book_sender = nullptr;
         }
@@ -1445,10 +1626,20 @@ namespace market
         
         if(autotest_book_sender!=nullptr)
         {
-            dat_saver = new DatSaver(autotest_book_sender);
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data == nullptr)                
+            {
+                delete autotest_book_sender;
+                autotest_book_sender = nullptr;
+                return;
+            }
+    
+            dat_saver = new DatSaver(pcme_data, autotest_book_sender);
             if(nullptr == dat_saver)
             {
-                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");       
+                LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");  
+                delete pcme_data;
+                pcme_data = nullptr;                
                 delete autotest_book_sender;
                 autotest_book_sender = nullptr;
                 return;
@@ -1517,12 +1708,380 @@ namespace market
 
             delete dat_saver;
             dat_saver = nullptr;
+                        
+            delete pcme_data;
+            pcme_data = nullptr;    
             
             delete autotest_book_sender;
             autotest_book_sender = nullptr;
         }
                   
     }
+
+    // 消费者线程.
+    void consume_15(/* int n */void *pObject)
+    {
+        LOG_DEBUG("===== [begin] consume_15 =====");
+        if(!pObject)
+        {
+            LOG_DEBUG("===== [exit] consume_15 : pObject is null, exit! =====");
+            return;
+        }
+        
+        while(!is_finished)
+        {
+            std::this_thread::sleep_for(std::chrono::nanoseconds(1000));
+        }        
+        
+        fh::cme::market::DatSaver *dat_saver = (fh::cme::market::DatSaver *)pObject;
+        
+        // for (int i = 0; i < n; ++i) {
+            // std::unique_lock <std::mutex> lck(mtx);
+            // cv.wait(lck, shipment_available);
+            // std::cout << cargo << '\n';
+            // cargo = 0;
+        // }
+        
+        dat_saver->Start_save();
+        LOG_DEBUG("===== [end] consume_15 =====");
+    }
+    
+    // 生产者线程.
+    void produce_15(void *pObject)
+    {
+        LOG_DEBUG("===== [begin] produce_15 =====");
+        if(!pObject)
+        {
+            LOG_DEBUG("===== [exit] produce_15 : pObject is null, exit! =====");
+            return;
+        }
+        
+        fh::cme::market::DatSaver *dat_saver = (fh::cme::market::DatSaver *)pObject;
+        std::string recvBufFileName;
+        fh::core::assist::common::getAbsolutePath(recvBufFileName);    
+        recvBufFileName += "market_609_5_3_sdmfo_1.log";            
+
+        std::vector<fh::cme::market::message::MdpMessage> definition_datas; // define message
+        // received define message
+        // udp received from [224.0.28.122:16609](1176)=01
+        std::vector<std::string> vecRevPacket;
+        vecRevPacket.clear();
+        
+        fh::core::assist::common::Read_packets(vecRevPacket, recvBufFileName, "udp received from [224.0.28.122:16609](", "=");
+        for(auto &revPacket : vecRevPacket)
+        {
+            // printf("*********** [begin] define message **************\n");
+            
+            definition_datas.clear();
+            // decode                                                
+            std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(revPacket.data(), revPacket.size(), definition_datas);
+            //if(seq==1)
+            {
+                //dat_saver->Insert_data(seq, definition_datas);
+                dat_saver->Get_cme_data()->Insert_increment_data(seq, definition_datas);
+            }            
+            
+            LOG_INFO("seq=", seq, ", definition_datas count=", definition_datas.size());
+
+            // printf("*********** [end] define message **************\n");
+        }
+        
+        is_finished = true;
+        
+        while(dat_saver->Get_data_count()!=0)
+        {
+            LOG_DEBUG("===== data isn't null, sleep =====");
+            std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
+        }
+        
+        dat_saver->Stop();
+        LOG_DEBUG("===== [end] produce_15 =====");
+    }
+    
+    TEST_F(MutDatSaver, DatSaver_Test015)
+    {        
+        is_finished = false;
+        
+        fh::core::market::MarketListenerI *autotest_book_sender = nullptr; 
+        fh::cme::market::DatSaver *dat_saver = nullptr;
+        
+        autotest_book_sender = new fh::core::book::AutoTestBookSender(); 
+        
+        if(autotest_book_sender!=nullptr)
+        {
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data)                
+            {
+                dat_saver = new DatSaver(pcme_data, autotest_book_sender);
+                if(nullptr == dat_saver)
+                {
+                    LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");     
+                    delete pcme_data;
+                    pcme_data = nullptr;    
+                    
+                    delete autotest_book_sender;
+                    autotest_book_sender = nullptr;
+                    return;
+                }
+
+                // logic 
+                std::thread threads[2];
+
+                threads[0] = std::thread(produce_15, dat_saver);  // producer
+                threads[1] = std::thread(consume_15, dat_saver);  // consumer
+
+                //std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
+                //dat_saver->Stop();
+
+                for (auto & th:threads)
+                {
+                    th.join();
+                }
+            }
+
+        
+
+            delete dat_saver;
+            dat_saver = nullptr;
+            
+            delete pcme_data;
+            pcme_data = nullptr;
+            
+            delete autotest_book_sender;
+            autotest_book_sender = nullptr;
+        }
+                  
+    }
+    //#endif
+    
+    // 消费者线程.
+    void consume_16(/* int n */void *pObject)
+    {
+        LOG_DEBUG("===== [begin] consume_16 =====");
+        if(!pObject)
+        {
+            LOG_DEBUG("===== [exit] consume_16 : pObject is null, exit! =====");
+            return;
+        }
+        
+        /*while(!is_finished)
+        {
+            std::this_thread::sleep_for(std::chrono::nanoseconds(1000));
+        }*/
+        
+        fh::cme::market::DatSaver *dat_saver = (fh::cme::market::DatSaver *)pObject;
+        
+        // for (int i = 0; i < n; ++i) {
+            // std::unique_lock <std::mutex> lck(mtx);
+            // cv.wait(lck, shipment_available);
+            // std::cout << cargo << '\n';
+            // cargo = 0;
+        // }
+        
+        dat_saver->Start_save();        
+        LOG_DEBUG("===== [end] consume_16 =====");
+    }
+    
+    // 生产者线程.
+    void produce_16(void *pObject)
+    {
+        LOG_DEBUG("===== [begin] produce_16 =====");
+        if(!pObject)
+        {
+            LOG_DEBUG("===== [exit] produce_16 : pObject is null, exit! =====");
+            return;
+        }
+        
+        fh::cme::market::DatSaver *dat_saver = (fh::cme::market::DatSaver *)pObject;
+        std::string recvBufFileName;
+        fh::core::assist::common::getAbsolutePath(recvBufFileName);    
+        recvBufFileName += "market_609_5_3_sdmfo_1.log";            
+
+        std::vector<fh::cme::market::message::MdpMessage> definition_datas; // define message
+        // received define message
+        // udp received from [224.0.28.122:16609](1176)=01
+        std::vector<std::string> vecRevPacket;
+        vecRevPacket.clear();
+        
+        std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
+        
+        fh::core::assist::common::Read_packets(vecRevPacket, recvBufFileName, "udp received from [224.0.28.122:16609](", "=");
+        for(auto &revPacket : vecRevPacket)
+        {
+            // printf("*********** [begin] define message **************\n");
+            
+            definition_datas.clear();
+            // decode                                                
+            std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(revPacket.data(), revPacket.size(), definition_datas);
+            
+            //dat_saver->Insert_data(seq, definition_datas);  
+            dat_saver->Get_cme_data()->Insert_increment_data(seq, definition_datas);            
+            
+            LOG_INFO("seq=", seq, ", definition_datas count=", definition_datas.size());
+
+            // printf("*********** [end] define message **************\n");
+        }
+        
+        is_finished = true;
+        
+        while(dat_saver->Get_data_count()!=0)
+        {
+            LOG_DEBUG("===== data isn't null, sleep =====");
+            std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
+        }
+        
+        dat_saver->Stop();
+        LOG_DEBUG("===== [end] produce_16 =====");
+    }
+    // Get_first_data_seq wait
+    TEST_F(MutDatSaver, DatSaver_Test016)
+    {
+        is_finished = false;
+        
+        fh::core::market::MarketListenerI *autotest_book_sender = nullptr; 
+        fh::cme::market::DatSaver *dat_saver = nullptr;        
+
+        
+        autotest_book_sender = new fh::core::book::AutoTestBookSender(); 
+        
+        if(autotest_book_sender!=nullptr)
+        {
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data)
+            {
+                dat_saver = new DatSaver(pcme_data, autotest_book_sender);
+                if(nullptr == dat_saver)
+                {
+                    LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");   
+                    delete pcme_data;
+                    pcme_data = nullptr;    
+                    
+                    delete autotest_book_sender;
+                    autotest_book_sender = nullptr;
+                    return;
+                }
+
+                // logic 
+                std::thread threads[2];
+                
+                threads[0] = std::thread(consume_16, dat_saver);  // consumer
+                threads[1] = std::thread(produce_16, dat_saver);  // producer
+
+                
+                //std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
+                //dat_saver->Stop();
+                
+                for (auto & th:threads)
+                {
+                    th.join();
+                }
+            }
+            
+        
+
+            delete dat_saver;
+            dat_saver = nullptr;
+            
+            delete pcme_data;
+            pcme_data = nullptr;
+            
+            delete autotest_book_sender;
+            autotest_book_sender = nullptr;
+        }                  
+    }
+    
+    // 消费者线程.
+    void consume_17(/* int n */void *pObject)
+    {
+        LOG_DEBUG("===== [begin] consume_17 =====");
+        if(!pObject)
+        {
+            LOG_DEBUG("===== [exit] consume_17 : pObject is null, exit! =====");
+            return;
+        }
+
+        
+        fh::cme::market::DatSaver *dat_saver = (fh::cme::market::DatSaver *)pObject;
+        
+        dat_saver->Start_save();
+        LOG_DEBUG("===== [end] consume_17 =====");
+    }
+    
+    // 生产者线程.
+    void produce_17(void *pObject)
+    {
+        LOG_DEBUG("===== [begin] produce_17 =====");
+        if(!pObject)
+        {
+            LOG_DEBUG("===== [exit] produce_17 : pObject is null, exit! =====");
+            return;
+        }
+        
+        fh::cme::market::DatSaver *dat_saver = (fh::cme::market::DatSaver *)pObject;
+        
+        int i=10;
+        while(i--)
+        {
+            LOG_DEBUG("===== sleep =====");
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+        
+        dat_saver->Stop();
+        LOG_DEBUG("===== [end] produce_17 =====");
+    }
+    // read thread: no data, Get_increment_first_data_seq wait, other thread call stop
+    TEST_F(MutDatSaver, DatSaver_Test017)
+    {
+        is_finished = false;
+        
+        fh::core::market::MarketListenerI *autotest_book_sender = nullptr; 
+        fh::cme::market::DatSaver *dat_saver = nullptr;        
+
+        
+        autotest_book_sender = new fh::core::book::AutoTestBookSender(); 
+        
+        if(autotest_book_sender!=nullptr)
+        {
+            fh::cme::market::CmeData *pcme_data = new fh::cme::market::CmeData();
+            if(pcme_data)
+            {
+                dat_saver = new DatSaver(pcme_data, autotest_book_sender);
+                if(nullptr == dat_saver)
+                {
+                    LOG_ERROR("----- dat_saver is nullptr, malloc failed! ------");   
+                    delete pcme_data;
+                    pcme_data = nullptr;    
+                    
+                    delete autotest_book_sender;
+                    autotest_book_sender = nullptr;
+                    return;
+                }
+
+                // logic 
+                std::thread threads[2];
+                
+                threads[0] = std::thread(consume_17, dat_saver);  // consumer
+                threads[1] = std::thread(produce_17, dat_saver);  // producer
+               
+                for (auto & th:threads)
+                {
+                    th.join();
+                }
+            }
+            
+        
+
+            delete dat_saver;
+            dat_saver = nullptr;
+            
+            delete pcme_data;
+            pcme_data = nullptr;
+            
+            delete autotest_book_sender;
+            autotest_book_sender = nullptr;
+        }
+    }
+    
 } // namespace market
 } // namespace cme
 } // namespace fh

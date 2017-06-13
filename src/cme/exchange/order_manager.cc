@@ -79,17 +79,17 @@ namespace exchange
         auto type = fh::core::assist::utility::Fix_message_type(message);
 
         // Logon message 的场合需要添加一些字段
-        if( type == "A" )
+        if( type == FIX::MsgType_Logon )
         {
             this->appendLogonField(message, sessionID);
         }
         // Logout message 的场合需要添加一些字段
-        else if( type == "5" )
+        else if( type == FIX::MsgType_Logout )
         {
             this->appendLogoutField(message, sessionID);
         }
         // Resend request message 的场合需要添加一些字段
-        else if( type == "2" )
+        else if( type == FIX::MsgType_ResendRequest )
         {
             this->appendResendRequestField(message, sessionID);
         }
@@ -131,7 +131,7 @@ namespace exchange
         fh::core::assist::TimeMeasurer t;
 
         fh::cme::exchange::OrderReport result;
-        result.message_type = "8";
+        result.message_type = FIX::MsgType_ExecutionReport;
         result.single_report = this->processOrderResult(message);
         m_processor(result);
 
@@ -145,7 +145,7 @@ namespace exchange
         fh::core::assist::TimeMeasurer t;
 
         fh::cme::exchange::OrderReport result;
-        result.message_type = "9";
+        result.message_type = FIX::MsgType_OrderCancelReject;
         result.single_report = this->processOrderResult(message);
         m_processor(result);
 
@@ -190,13 +190,13 @@ namespace exchange
     {
         LOG_DEBUG("on other message: ", sessionID, " - ", fh::core::assist::utility::Format_fix_message(message));
 
-        if( fh::core::assist::utility::Fix_message_type(message)  == "BZ")
+        if( fh::core::assist::utility::Fix_message_type(message)  == FIX::MsgType_OrderMassActionReport)
         {
             fh::core::assist::TimeMeasurer t;
 
             // 是 Order Mass Action Report 的场合需要返回到策略模块
             fh::cme::exchange::OrderReport result;
-            result.message_type = "BZ";
+            result.message_type = FIX::MsgType_OrderMassActionReport;
             result.mass_report = this->processMassOrderResult(message);
             m_processor(result);
 
@@ -233,6 +233,7 @@ namespace exchange
                 order.side,
                 order.symbol,
                 order.time_in_force,
+                order.min_qty,
                 order.order_qty,
                 order.price,
                 order.stop_px,
@@ -272,6 +273,7 @@ namespace exchange
                 order.side,
                 order.symbol,
                 order.time_in_force,
+                order.min_qty,
                 order.orig_cl_order_id,
                 order.order_qty,
                 order.price,
@@ -373,6 +375,7 @@ namespace exchange
             char side,
             const std::string &symbol,
             char time_in_force,
+            std::uint64_t min_qty,
             std::uint64_t order_qty,
             double price,
             double stop_px,
@@ -388,6 +391,7 @@ namespace exchange
         newOrderSingle.set(FIX::Side(side));
         newOrderSingle.set(FIX::Symbol(symbol));
         if(time_in_force != 0) newOrderSingle.set(FIX::TimeInForce(time_in_force));
+        if(min_qty != 0) newOrderSingle.set(FIX::MinQty(min_qty));
         newOrderSingle.set(FIX::TransactTime(true));
         newOrderSingle.set(FIX::SecurityDesc(security_desc));
         newOrderSingle.set(FIX::SecurityType(m_security_type));
@@ -454,6 +458,7 @@ namespace exchange
             char side,
             const std::string &symbol,
             char time_in_force,
+            std::uint64_t min_qty,
             const std::string &orig_cl_order_id,
             std::uint64_t order_qty,
             double price,
@@ -472,6 +477,7 @@ namespace exchange
         cancelReplaceRequest.set(FIX::Side(side));
         //cancelReplaceRequest.set(FIX::Symbol(symbol));		// 目前用不到
         if(time_in_force != 0) cancelReplaceRequest.set(FIX::TimeInForce(time_in_force));
+        if(min_qty != 0) cancelReplaceRequest.set(FIX::MinQty(min_qty));
         cancelReplaceRequest.set(FIX::TransactTime(true));
         cancelReplaceRequest.set(FIX::SecurityDesc(security_desc));
         cancelReplaceRequest.set(FIX::SecurityType(m_security_type));
@@ -692,6 +698,7 @@ namespace exchange
         OrderManager::Try_pick_value(message, report.security_desc, FIX::SecurityDesc());
         OrderManager::Try_pick_value(message, report.cancel_rej_response_to, FIX::CxlRejResponseTo());
         OrderManager::Try_pick_value(message, report.time_in_force, FIX::TimeInForce());
+        OrderManager::Try_pick_int(message, report.min_qty, FIX::FIELD::MinQty);
         OrderManager::Try_pick_value(message, report.cum_qty, FIX::CumQty());
         OrderManager::Try_pick_value(message, report.leaves_qty, FIX::LeavesQty());
         OrderManager::Try_pick_value(message, report.order_qty, FIX::OrderQty());
@@ -754,7 +761,6 @@ namespace exchange
         FIX::FieldBase fb(num, "");
         target = (message.getFieldIfSet(fb) && !fb.getString().empty()) ? boost::lexical_cast<IntType>(fb.getString()) : 0;
     }
-
 } // namespace exchange
 } // namespace cme
 } // namespace fh

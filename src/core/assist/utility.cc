@@ -357,6 +357,40 @@ namespace utility
         return str.substr(0, pos);
     }
 
+    bool Is_price_valid(const std::string &str)
+    {
+        int len = str.length();
+        if(!len)
+        {
+            return false;
+        }
+
+        if( (0 == isdigit(str[0])) || (0 == isdigit(str[len-1])) )
+        {
+            return false;
+        }
+
+        int count=0;
+        for(int i = 1; i<len-1; i++)
+        { 
+            if( (0 == isdigit(str[i])) && (str[i] != '.') )
+            {
+                return false;
+            }
+            else if(str[i] == '.')
+            {
+                count++;
+            }            
+        }
+
+        if(count>1)
+        {
+            return false;
+        }
+        
+        return true;
+    }
+
 } // namespace utility
 } // namespace assist
 } // namespace core
