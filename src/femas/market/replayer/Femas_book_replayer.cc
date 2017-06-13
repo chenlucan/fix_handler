@@ -118,7 +118,7 @@ void FemasBookReplayer::FemasmarketData(const JSON_ELEMENT &message,int volumeMu
     strcpy(tmpMarketData.InstrumentID_2,GET_STR_FROM_JSON(message, "InstrumentID_2").c_str());
     strcpy(tmpMarketData.InstrumentName,GET_STR_FROM_JSON(message, "InstrumentName").c_str());	
  
-    int BidPrice_x = 0;
+    /*int BidPrice_x = 0;
     try
     {
         BidPrice_x = (tmpMarketData.Turnover-tmpMarketData.BidPrice1*tmpMarketData.Volume*volumeMultiple)/((tmpMarketData.AskPrice1-tmpMarketData.BidPrice1)*volumeMultiple);           
@@ -137,9 +137,40 @@ void FemasBookReplayer::FemasmarketData(const JSON_ELEMENT &message,int volumeMu
     if(AskVolume_y < 0)
     {
         AskVolume_y = 0;
+    }*/
+    int BidVolume_x = 0;
+    try
+    {
+        if(volumeMultiple <= 0)
+	 {
+            BidVolume_x = 0;    
+	 }
+	 else
+	 {
+            BidVolume_x = (tmpMarketData.Turnover-tmpMarketData.BidPrice1*tmpMarketData.Volume*volumeMultiple)/((tmpMarketData.AskPrice1-tmpMarketData.BidPrice1)*volumeMultiple);
+	 }	                   
+    }
+    catch(...)
+    {
+        BidVolume_x = 0;
+    }		
+	
+    int AskVolume_y = tmpMarketData.Volume-BidVolume_x;
+    if(volumeMultiple <= 0)
+    {
+        AskVolume_y = 0;
     }
 
-    std::string tmpmessage = std::to_string(BidPrice_x)+",";
+    if(BidVolume_x < 0)
+    {
+        BidVolume_x = 0;
+    }	
+    if(AskVolume_y < 0)
+    {
+        AskVolume_y = 0;
+    }  
+
+    std::string tmpmessage = std::to_string(BidVolume_x)+",";
     tmpmessage += std::to_string(AskVolume_y);	
 
     m_femas_book_manager->SendFemasToDB(tmpmessage);
