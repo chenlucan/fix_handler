@@ -164,9 +164,11 @@ void FemasBookReplayer::FemasmarketData(const JSON_ELEMENT &message,int volumeMu
     if(BidVolume_x < 0)
     {
         BidVolume_x = 0;
+	 AskVolume_y = 0;	
     }	
     if(AskVolume_y < 0)
     {
+        BidVolume_x = 0;
         AskVolume_y = 0;
     }  
 
