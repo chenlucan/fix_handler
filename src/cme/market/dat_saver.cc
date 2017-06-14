@@ -73,8 +73,8 @@ namespace market
         while(!m_is_stopped)
         {
             { 
-                std::vector<fh::cme::market::message::MdpMessage> *m_recovery_datas = m_pData->Get_recovery_data();
-                if(m_recovery_datas != nullptr)
+                std::vector<fh::cme::market::message::MdpMessage> *recovery_datas = m_pData->Get_recovery_data();
+                if( (recovery_datas!=nullptr) && (!recovery_datas->empty()) )
                 {
                     break;
                 }
@@ -108,7 +108,7 @@ namespace market
     void DatSaver::Send_definition_messages()
     {
         std::vector<fh::cme::market::message::MdpMessage> *pDefinition_datas = m_pData->Get_definition_data();
-        if(pDefinition_datas == nullptr)
+        if( (pDefinition_datas==nullptr) || (pDefinition_datas->empty()) )
         {
             LOG_INFO("no definition message.");
             return;
@@ -123,7 +123,7 @@ namespace market
     void DatSaver::Send_recovery_messages()
     {
         std::vector<fh::cme::market::message::MdpMessage> *pRecovery_datas = m_pData->Get_recovery_data();
-        if(pRecovery_datas == nullptr)
+        if( (pRecovery_datas==nullptr) || (pRecovery_datas->empty()) )
         {
             LOG_INFO("no recovery message.");
             return;
