@@ -32,10 +32,10 @@ namespace market
 	}   
 
        //======
-       if(0 == mISubSuss)
-	{
-           m_pUserApi->SubscribeMarketDataTopic (100, USTP_TERT_RESUME);	 
-	}
+       //if(0 == mISubSuss)
+	//{
+       //    m_pUserApi->SubscribeMarketDataTopic (100, USTP_TERT_RESUME);	 
+	//}
        //======
 	   
 	CUstpFtdcReqUserLoginField reqUserLogin;
@@ -72,6 +72,7 @@ namespace market
 	if(NULL == pRspUserLogin || NULL == pRspInfo)
        {
             LOG_ERROR("CFemasMarketManager::OnRspUserLogin Error");
+	     mIConnet = 1;		
 	     return ;	
        }
 	LOG_INFO("ErrorCode=[",pRspInfo->ErrorID,"], ErrorMsg=[",pRspInfo->ErrorMsg,"]\n" );
@@ -85,10 +86,10 @@ namespace market
 		return;
 	}
 	//==
-	if(0 == mIConnet)
-	{
-           Subscribe();
-	}
+	//if(0 == mIConnet)
+	//{
+       Subscribe();
+	//}
 	//==
 	mIConnet = 0;
        return;
@@ -374,7 +375,12 @@ void CFemasMarketManager::FemasDateToString(bsoncxx::builder::basic::document& j
 
 void CFemasMarketManager::Subscribe()
 {
-     if(NULL == m_pUserApi)
+      LOG_INFO("CFemasMarketManager::Subscribe ");
+      if(NULL == m_pUserApi)
+      {
+          return;
+      }
+      if(-1 == mIConnet)
       {
           return;
       }
