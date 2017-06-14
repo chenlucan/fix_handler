@@ -105,6 +105,28 @@ inline bool OrderStatus_Parse(
   return ::google::protobuf::internal::ParseNamedEnum<OrderStatus>(
     OrderStatus_descriptor(), name, value);
 }
+enum OrderFlag {
+  OF_None = 0,
+  OF_Open = 1,
+  OF_Close = 2,
+  OF_YClose = 3,
+  OF_TClose = 4
+};
+bool OrderFlag_IsValid(int value);
+const OrderFlag OrderFlag_MIN = OF_None;
+const OrderFlag OrderFlag_MAX = OF_TClose;
+const int OrderFlag_ARRAYSIZE = OrderFlag_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* OrderFlag_descriptor();
+inline const ::std::string& OrderFlag_Name(OrderFlag value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    OrderFlag_descriptor(), value);
+}
+inline bool OrderFlag_Parse(
+    const ::std::string& name, OrderFlag* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<OrderFlag>(
+    OrderFlag_descriptor(), name, value);
+}
 enum TimeInForce {
   TIF_None = 0,
   TIF_FAK = 1,
@@ -773,6 +795,13 @@ class Order : public ::google::protobuf::Message {
   inline ::pb::ems::Timestamp* release_submit_time();
   inline void set_allocated_submit_time(::pb::ems::Timestamp* submit_time);
 
+  // optional .pb.ems.OrderFlag order_flag = 100;
+  inline bool has_order_flag() const;
+  inline void clear_order_flag();
+  static const int kOrderFlagFieldNumber = 100;
+  inline ::pb::ems::OrderFlag order_flag() const;
+  inline void set_order_flag(::pb::ems::OrderFlag value);
+
   // @@protoc_insertion_point(class_scope:pb.ems.Order)
  private:
   inline void set_has_client_order_id();
@@ -805,6 +834,8 @@ class Order : public ::google::protobuf::Message {
   inline void clear_has_message();
   inline void set_has_submit_time();
   inline void clear_has_submit_time();
+  inline void set_has_order_flag();
+  inline void clear_has_order_flag();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -825,6 +856,7 @@ class Order : public ::google::protobuf::Message {
   ::google::protobuf::uint64 filled_quantity_;
   ::std::string* message_;
   ::pb::ems::Timestamp* submit_time_;
+  int order_flag_;
   friend void  protobuf_AddDesc_ems_2eproto();
   friend void protobuf_AssignDesc_ems_2eproto();
   friend void protobuf_ShutdownFile_ems_2eproto();
@@ -982,6 +1014,13 @@ class Fill : public ::google::protobuf::Message {
   inline ::pb::ems::Timestamp* release_fill_time();
   inline void set_allocated_fill_time(::pb::ems::Timestamp* fill_time);
 
+  // optional .pb.ems.OrderFlag order_flag = 100;
+  inline bool has_order_flag() const;
+  inline void clear_order_flag();
+  static const int kOrderFlagFieldNumber = 100;
+  inline ::pb::ems::OrderFlag order_flag() const;
+  inline void set_order_flag(::pb::ems::OrderFlag value);
+
   // @@protoc_insertion_point(class_scope:pb.ems.Fill)
  private:
   inline void set_has_fill_id();
@@ -1002,6 +1041,8 @@ class Fill : public ::google::protobuf::Message {
   inline void clear_has_buy_sell();
   inline void set_has_fill_time();
   inline void clear_has_fill_time();
+  inline void set_has_order_flag();
+  inline void clear_has_order_flag();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -1016,6 +1057,7 @@ class Fill : public ::google::protobuf::Message {
   ::std::string* contract_;
   ::pb::ems::Timestamp* fill_time_;
   int buy_sell_;
+  int order_flag_;
   friend void  protobuf_AddDesc_ems_2eproto();
   friend void protobuf_AssignDesc_ems_2eproto();
   friend void protobuf_ShutdownFile_ems_2eproto();
@@ -1109,6 +1151,48 @@ class Position : public ::google::protobuf::Message {
   inline ::google::protobuf::int64 position() const;
   inline void set_position(::google::protobuf::int64 value);
 
+  // optional int64 long_position = 11;
+  inline bool has_long_position() const;
+  inline void clear_long_position();
+  static const int kLongPositionFieldNumber = 11;
+  inline ::google::protobuf::int64 long_position() const;
+  inline void set_long_position(::google::protobuf::int64 value);
+
+  // optional int64 short_position = 12;
+  inline bool has_short_position() const;
+  inline void clear_short_position();
+  static const int kShortPositionFieldNumber = 12;
+  inline ::google::protobuf::int64 short_position() const;
+  inline void set_short_position(::google::protobuf::int64 value);
+
+  // optional int64 yesterday_long = 13;
+  inline bool has_yesterday_long() const;
+  inline void clear_yesterday_long();
+  static const int kYesterdayLongFieldNumber = 13;
+  inline ::google::protobuf::int64 yesterday_long() const;
+  inline void set_yesterday_long(::google::protobuf::int64 value);
+
+  // optional int64 yesterday_short = 14;
+  inline bool has_yesterday_short() const;
+  inline void clear_yesterday_short();
+  static const int kYesterdayShortFieldNumber = 14;
+  inline ::google::protobuf::int64 yesterday_short() const;
+  inline void set_yesterday_short(::google::protobuf::int64 value);
+
+  // optional int64 today_long = 15;
+  inline bool has_today_long() const;
+  inline void clear_today_long();
+  static const int kTodayLongFieldNumber = 15;
+  inline ::google::protobuf::int64 today_long() const;
+  inline void set_today_long(::google::protobuf::int64 value);
+
+  // optional int64 today_short = 16;
+  inline bool has_today_short() const;
+  inline void clear_today_short();
+  static const int kTodayShortFieldNumber = 16;
+  inline ::google::protobuf::int64 today_short() const;
+  inline void set_today_short(::google::protobuf::int64 value);
+
   // @@protoc_insertion_point(class_scope:pb.ems.Position)
  private:
   inline void set_has_contract();
@@ -1117,6 +1201,18 @@ class Position : public ::google::protobuf::Message {
   inline void clear_has_account();
   inline void set_has_position();
   inline void clear_has_position();
+  inline void set_has_long_position();
+  inline void clear_has_long_position();
+  inline void set_has_short_position();
+  inline void clear_has_short_position();
+  inline void set_has_yesterday_long();
+  inline void clear_has_yesterday_long();
+  inline void set_has_yesterday_short();
+  inline void clear_has_yesterday_short();
+  inline void set_has_today_long();
+  inline void clear_has_today_long();
+  inline void set_has_today_short();
+  inline void clear_has_today_short();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -1125,6 +1221,12 @@ class Position : public ::google::protobuf::Message {
   ::std::string* contract_;
   ::std::string* account_;
   ::google::protobuf::int64 position_;
+  ::google::protobuf::int64 long_position_;
+  ::google::protobuf::int64 short_position_;
+  ::google::protobuf::int64 yesterday_long_;
+  ::google::protobuf::int64 yesterday_short_;
+  ::google::protobuf::int64 today_long_;
+  ::google::protobuf::int64 today_short_;
   friend void  protobuf_AddDesc_ems_2eproto();
   friend void protobuf_AssignDesc_ems_2eproto();
   friend void protobuf_ShutdownFile_ems_2eproto();
@@ -2275,6 +2377,31 @@ inline void Order::set_allocated_submit_time(::pb::ems::Timestamp* submit_time) 
   // @@protoc_insertion_point(field_set_allocated:pb.ems.Order.submit_time)
 }
 
+// optional .pb.ems.OrderFlag order_flag = 100;
+inline bool Order::has_order_flag() const {
+  return (_has_bits_[0] & 0x00008000u) != 0;
+}
+inline void Order::set_has_order_flag() {
+  _has_bits_[0] |= 0x00008000u;
+}
+inline void Order::clear_has_order_flag() {
+  _has_bits_[0] &= ~0x00008000u;
+}
+inline void Order::clear_order_flag() {
+  order_flag_ = 0;
+  clear_has_order_flag();
+}
+inline ::pb::ems::OrderFlag Order::order_flag() const {
+  // @@protoc_insertion_point(field_get:pb.ems.Order.order_flag)
+  return static_cast< ::pb::ems::OrderFlag >(order_flag_);
+}
+inline void Order::set_order_flag(::pb::ems::OrderFlag value) {
+  assert(::pb::ems::OrderFlag_IsValid(value));
+  set_has_order_flag();
+  order_flag_ = value;
+  // @@protoc_insertion_point(field_set:pb.ems.Order.order_flag)
+}
+
 // -------------------------------------------------------------------
 
 // Fill
@@ -2825,6 +2952,31 @@ inline void Fill::set_allocated_fill_time(::pb::ems::Timestamp* fill_time) {
   // @@protoc_insertion_point(field_set_allocated:pb.ems.Fill.fill_time)
 }
 
+// optional .pb.ems.OrderFlag order_flag = 100;
+inline bool Fill::has_order_flag() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+inline void Fill::set_has_order_flag() {
+  _has_bits_[0] |= 0x00000200u;
+}
+inline void Fill::clear_has_order_flag() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+inline void Fill::clear_order_flag() {
+  order_flag_ = 0;
+  clear_has_order_flag();
+}
+inline ::pb::ems::OrderFlag Fill::order_flag() const {
+  // @@protoc_insertion_point(field_get:pb.ems.Fill.order_flag)
+  return static_cast< ::pb::ems::OrderFlag >(order_flag_);
+}
+inline void Fill::set_order_flag(::pb::ems::OrderFlag value) {
+  assert(::pb::ems::OrderFlag_IsValid(value));
+  set_has_order_flag();
+  order_flag_ = value;
+  // @@protoc_insertion_point(field_set:pb.ems.Fill.order_flag)
+}
+
 // -------------------------------------------------------------------
 
 // Position
@@ -3005,6 +3157,150 @@ inline void Position::set_position(::google::protobuf::int64 value) {
   // @@protoc_insertion_point(field_set:pb.ems.Position.position)
 }
 
+// optional int64 long_position = 11;
+inline bool Position::has_long_position() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void Position::set_has_long_position() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void Position::clear_has_long_position() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void Position::clear_long_position() {
+  long_position_ = GOOGLE_LONGLONG(0);
+  clear_has_long_position();
+}
+inline ::google::protobuf::int64 Position::long_position() const {
+  // @@protoc_insertion_point(field_get:pb.ems.Position.long_position)
+  return long_position_;
+}
+inline void Position::set_long_position(::google::protobuf::int64 value) {
+  set_has_long_position();
+  long_position_ = value;
+  // @@protoc_insertion_point(field_set:pb.ems.Position.long_position)
+}
+
+// optional int64 short_position = 12;
+inline bool Position::has_short_position() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void Position::set_has_short_position() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void Position::clear_has_short_position() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void Position::clear_short_position() {
+  short_position_ = GOOGLE_LONGLONG(0);
+  clear_has_short_position();
+}
+inline ::google::protobuf::int64 Position::short_position() const {
+  // @@protoc_insertion_point(field_get:pb.ems.Position.short_position)
+  return short_position_;
+}
+inline void Position::set_short_position(::google::protobuf::int64 value) {
+  set_has_short_position();
+  short_position_ = value;
+  // @@protoc_insertion_point(field_set:pb.ems.Position.short_position)
+}
+
+// optional int64 yesterday_long = 13;
+inline bool Position::has_yesterday_long() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void Position::set_has_yesterday_long() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void Position::clear_has_yesterday_long() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void Position::clear_yesterday_long() {
+  yesterday_long_ = GOOGLE_LONGLONG(0);
+  clear_has_yesterday_long();
+}
+inline ::google::protobuf::int64 Position::yesterday_long() const {
+  // @@protoc_insertion_point(field_get:pb.ems.Position.yesterday_long)
+  return yesterday_long_;
+}
+inline void Position::set_yesterday_long(::google::protobuf::int64 value) {
+  set_has_yesterday_long();
+  yesterday_long_ = value;
+  // @@protoc_insertion_point(field_set:pb.ems.Position.yesterday_long)
+}
+
+// optional int64 yesterday_short = 14;
+inline bool Position::has_yesterday_short() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void Position::set_has_yesterday_short() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void Position::clear_has_yesterday_short() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void Position::clear_yesterday_short() {
+  yesterday_short_ = GOOGLE_LONGLONG(0);
+  clear_has_yesterday_short();
+}
+inline ::google::protobuf::int64 Position::yesterday_short() const {
+  // @@protoc_insertion_point(field_get:pb.ems.Position.yesterday_short)
+  return yesterday_short_;
+}
+inline void Position::set_yesterday_short(::google::protobuf::int64 value) {
+  set_has_yesterday_short();
+  yesterday_short_ = value;
+  // @@protoc_insertion_point(field_set:pb.ems.Position.yesterday_short)
+}
+
+// optional int64 today_long = 15;
+inline bool Position::has_today_long() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void Position::set_has_today_long() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void Position::clear_has_today_long() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void Position::clear_today_long() {
+  today_long_ = GOOGLE_LONGLONG(0);
+  clear_has_today_long();
+}
+inline ::google::protobuf::int64 Position::today_long() const {
+  // @@protoc_insertion_point(field_get:pb.ems.Position.today_long)
+  return today_long_;
+}
+inline void Position::set_today_long(::google::protobuf::int64 value) {
+  set_has_today_long();
+  today_long_ = value;
+  // @@protoc_insertion_point(field_set:pb.ems.Position.today_long)
+}
+
+// optional int64 today_short = 16;
+inline bool Position::has_today_short() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void Position::set_has_today_short() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void Position::clear_has_today_short() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void Position::clear_today_short() {
+  today_short_ = GOOGLE_LONGLONG(0);
+  clear_has_today_short();
+}
+inline ::google::protobuf::int64 Position::today_short() const {
+  // @@protoc_insertion_point(field_get:pb.ems.Position.today_short)
+  return today_short_;
+}
+inline void Position::set_today_short(::google::protobuf::int64 value) {
+  set_has_today_short();
+  today_short_ = value;
+  // @@protoc_insertion_point(field_set:pb.ems.Position.today_short)
+}
+
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -3029,6 +3325,11 @@ template <> struct is_proto_enum< ::pb::ems::OrderStatus> : ::google::protobuf::
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::pb::ems::OrderStatus>() {
   return ::pb::ems::OrderStatus_descriptor();
+}
+template <> struct is_proto_enum< ::pb::ems::OrderFlag> : ::google::protobuf::internal::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::pb::ems::OrderFlag>() {
+  return ::pb::ems::OrderFlag_descriptor();
 }
 template <> struct is_proto_enum< ::pb::ems::TimeInForce> : ::google::protobuf::internal::true_type {};
 template <>
