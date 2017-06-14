@@ -706,14 +706,14 @@ namespace market
             if(rc == ESRCH)
             {
                 LOG_DEBUG("[1]指定的线程不存在或者是已经终止"); 
-            } 
+            }
             else if(rc == EINVAL)
-            {  
+            {
                 LOG_DEBUG("[2]调用传递一个无用的信号");
             }
-            else  
+            else
             {
-                LOG_DEBUG("[3]线程存在"); 
+                LOG_DEBUG("[3]线程存在");
             }
             
             worker_thread->join();

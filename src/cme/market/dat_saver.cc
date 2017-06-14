@@ -90,7 +90,15 @@ namespace market
         m_book_manager.Set_definition_data(m_pData->Get_definition_data());
         m_book_manager.Set_recovery_data(m_pData->Get_recovery_data());
 
-        m_recovery_first_seq = m_pData->Get_recovery_data()->front().last_msg_seq_num_processed();
+        std::vector<fh::cme::market::message::MdpMessage> *recovery_datas = m_pData->Get_recovery_data();
+        if( (recovery_datas!=nullptr) && (!recovery_datas->empty()) )
+        {
+            m_recovery_first_seq = recovery_datas->front().last_msg_seq_num_processed();
+        }
+        else
+        {
+            LOG_ERROR("XXXXXXXXXXXXXXXX recovery_datas is nullptr or empty !XXXXXXXXXXXXXXXX");
+        }
 
         // 发送接受到的恢复数据
         this->Send_definition_messages();

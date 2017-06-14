@@ -152,7 +152,7 @@ namespace udp
     )
     {
         //LOG_DEBUG("=================== [begin] UDPReceiver::Handle_receive_from ===================");
-        LOG_FATAL("=================== [begin] UDPReceiver::Handle_receive_from ===================");
+        LOG_DEBUG("=================== [begin] UDPReceiver::Handle_receive_from ===================");
         
         if (error_code && error_code != boost::asio::error::message_size)
         {
@@ -174,7 +174,7 @@ namespace udp
         {
             std::uint32_t packet_seq_num = *((std::uint32_t *)m_buffer1);
 
-            LOG_FATAL("---------------------------------- [master] -------------------------------------------------");
+            LOG_DEBUG("---------------------------------- [master] -------------------------------------------------");
             LOG_TRACE("[master][Handle_receive_from] udp received from [seq=",packet_seq_num, ", ", 
                 org_address.to_string(), ":", org_port_num, "](", bytes_recieved, ")=", 
                 fh::core::assist::utility::Hex_str(m_buffer1, bytes_recieved)); 
@@ -195,13 +195,13 @@ namespace udp
             #endif
             processor(m_buffer1, bytes_recieved);
 
-            LOG_FATAL("---------------------------------- [master] -------------------------------------------------");
+            LOG_DEBUG("---------------------------------- [master] -------------------------------------------------");
         }
         else
         {
             std::uint32_t packet_seq_num = *((std::uint32_t *)m_buffer2);
 
-            LOG_FATAL("^^^^^^^^^^^^^^^^^^^^^^^^^^ [slaver] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+            LOG_DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^ [slaver] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 
             LOG_TRACE("[slaver][Handle_receive_from] udp received from [seq=",packet_seq_num, ", ",
                 org_address.to_string(), ":", org_port_num, "](", bytes_recieved, ")=", 
@@ -223,13 +223,12 @@ namespace udp
             #endif
             processor(m_buffer2, bytes_recieved);
 
-            LOG_FATAL("^^^^^^^^^^^^^^^^^^^^^^^^^^ [slaver] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+            LOG_DEBUG("^^^^^^^^^^^^^^^^^^^^^^^^^^ [slaver] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
         }
                 
         this->Async_receive_from(processor, socket);
 
-        LOG_FATAL("=================== [end] UDPReceiver::Handle_receive_from ===================");
-
+        LOG_DEBUG("=================== [end] UDPReceiver::Handle_receive_from ===================");
     }
 
     UDPReceiver::~UDPReceiver()
