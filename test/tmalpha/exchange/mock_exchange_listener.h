@@ -62,6 +62,18 @@ namespace exchange
                 // noop
             }
 
+            // implement of ExchangeListenerI
+            void OnOrginalMessage(const std::string &message) override
+            {
+                // noop
+            }
+
+            // implement of ExchangeListenerI
+            void OnContractDefinition(const pb::dms::Contract &contract) override
+            {
+                // noop
+            }
+
         public:
             std::vector<::pb::ems::Order> &orders()
             {
