@@ -14,12 +14,12 @@ GENHTML := $(VENDOR_PATH)/lcov/genhtml
 
 INCLUDE_TEST_PATH = -I$(TEST_PATH)
 INCLUDE_PATH = -I$(SRC_PATH) -I$(VENDOR_PATH)/boost/include -I$(VENDOR_PATH)/gtest/include  -I$(VENDOR_PATH)/mongodb/include  \
-								-I$(VENDOR_PATH)/protobuf/include -I$(VENDOR_PATH)/quickfix/include -I$(VENDOR_PATH)/sbe/include -I$(VENDOR_PATH)/zeromq/include \
+								-I$(VENDOR_PATH)/protobuf/include -I$(VENDOR_PATH)/quickfix/include -I$(VENDOR_PATH)/sbe/include -I$(VENDOR_PATH)/zeromq/include -I$(VENDOR_PATH)/femas/include \
 								 -I$(VENDOR_PATH)/mongodb/include/bsoncxx/v_noabi -I$(VENDOR_PATH)/mongodb/include/mongocxx/v_noabi
-LIBS_PATH = -L$(VENDOR_PATH)/boost/libs -L$(VENDOR_PATH)/gtest/libs  -L$(VENDOR_PATH)/mongodb/libs  \
+LIBS_PATH = -L$(VENDOR_PATH)/boost/libs -L$(VENDOR_PATH)/gtest/libs  -L$(VENDOR_PATH)/mongodb/libs -L$(VENDOR_PATH)/femas/libs  \
 								-L$(VENDOR_PATH)/protobuf/libs -L$(VENDOR_PATH)/quickfix/libs -L$(VENDOR_PATH)/sbe/libs -L$(VENDOR_PATH)/zeromq/libs
-EXEC_LIBS_PATH = -Wl,-rpath,$(VENDOR_PATH)/boost/libs:$(VENDOR_PATH)/gtest/libs:$(VENDOR_PATH)/mongodb/libs:$(VENDOR_PATH)/protobuf/libs:$(VENDOR_PATH)/quickfix/libs:$(VENDOR_PATH)/sbe/libs:$(VENDOR_PATH)/zeromq/libs
-LIBS = -lpthread -lboost_system -lzmq -lstdc++ -lquickfix -lmongocxx -lbsoncxx -lmongoc -lbson -lprotobuf -lgcov
+EXEC_LIBS_PATH = -Wl,-rpath,$(VENDOR_PATH)/boost/libs:$(VENDOR_PATH)/gtest/libs:$(VENDOR_PATH)/mongodb/libs:$(VENDOR_PATH)/protobuf/libs:$(VENDOR_PATH)/quickfix/libs:$(VENDOR_PATH)/sbe/libs:$(VENDOR_PATH)/zeromq/libs:$(VENDOR_PATH)/femas/libs
+LIBS = -lpthread -lboost_system -lzmq -lstdc++ -lquickfix -lmongocxx -lbsoncxx -lmongoc -lbson -lprotobuf -lgcov -lUSTPmduserapiAF -lUSTPtraderapiAF
 TEST_LIBS = -lgmock
 RELEASE_FLAGS = -O3 -DNDEBUG -Ofast
 DBG_FLAGS = -g -rdynamic
@@ -30,7 +30,7 @@ TEST_COMPILE_COMMAND = $(COMPILER) $(INCLUDE_PATH) $(INCLUDE_TEST_PATH) $(LIBS_P
 LINT_COMMAND = $(TEST_PATH)/cpplint.py
 
 SETTINGS = $(BIN_PATH)/market_config.xml $(BIN_PATH)/market_settings.ini  $(BIN_PATH)/exchange_server.cfg \
-					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg $(BIN_PATH)/persist_settings.ini  \
+					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg $(BIN_PATH)/persist_settings.ini $(BIN_PATH)/femas_config.ini \
 					  $(BIN_PATH)/trade_matching_settings.ini
 
 UT_MARKET_SETTINGS =  $(BIN_PATH)/mut_cmemarket_revbuf.log $(BIN_PATH)/market_by_price_1.log $(BIN_PATH)/market_by_price_2.log \
@@ -45,13 +45,20 @@ UT_MARKET_SETTINGS =  $(BIN_PATH)/mut_cmemarket_revbuf.log $(BIN_PATH)/market_by
 SETTINGS += $(UT_MARKET_SETTINGS)
 
 ALL_OBJS =  $(filter-out $(wildcard $(BIN_PATH)/*_test.o), $(wildcard $(BIN_PATH)/*.o)) 
-TEST_OBJS = $(BIN_PATH)/utility_unittest.o $(BIN_PATH)/mut_common.o $(BIN_PATH)/mut_market_simulater.o $(BIN_PATH)/mut_exchange_simulater.o $(BIN_PATH)/mut_book_sender.o $(BIN_PATH)/mut_book_manager.o  \
-						   $(BIN_PATH)/mut_market_manager.o $(BIN_PATH)/autotest_book_sender.o $(BIN_PATH)/mut_dat_saver.o $(BIN_PATH)/mut_globex_communicator.o $(BIN_PATH)/mut_exchange_application.o \
-						   $(BIN_PATH)/mut_order_manager.o $(BIN_PATH)/mut_strategy_communicator.o
+TEST_OBJS = $(BIN_PATH)/utility_unittest.o 
+
+TEST_CME_OBJS = $(BIN_PATH)/mut_common.o $(BIN_PATH)/mut_market_simulater.o $(BIN_PATH)/mut_exchange_simulater.o $(BIN_PATH)/mut_book_sender.o $(BIN_PATH)/mut_book_manager.o  \
+				$(BIN_PATH)/mut_market_manager.o $(BIN_PATH)/autotest_book_sender.o $(BIN_PATH)/mut_dat_saver.o $(BIN_PATH)/mut_globex_communicator.o $(BIN_PATH)/mut_exchange_application.o \
+				$(BIN_PATH)/mut_order_manager.o $(BIN_PATH)/mut_strategy_communicator.o
+TEST_OBJS += $(TEST_CME_OBJS)
+
+TEST_FEMAS_OBJS = $(BIN_PATH)/mut_femas_book_manager.o $(BIN_PATH)/mut_femas_matket.o $(BIN_PATH)/mut_femas_market_manager.o $(BIN_PATH)/mut_femas_exchange.o 
+TEST_OBJS += $(TEST_FEMAS_OBJS)
+
 COMM_OBJS = $(BIN_PATH)/sbe_encoder.o $(BIN_PATH)/utility.o $(BIN_PATH)/message_utility.o $(BIN_PATH)/logger.o \
 						   $(BIN_PATH)/mdp_message.o $(BIN_PATH)/sbe_to_json.o $(BIN_PATH)/sbe_decoder.o $(BIN_PATH)/settings.o \
 						   $(BIN_PATH)/time_measurer.o $(BIN_PATH)/zmq_sender.o $(BIN_PATH)/zmq_receiver.o \
-						   $(BIN_PATH)/ems.pb.o $(BIN_PATH)/dms.pb.o
+						   $(BIN_PATH)/ems.pb.o $(BIN_PATH)/dms.pb.o $(BIN_PATH)/strategy_communicator.o $(BIN_PATH)/book_sender.o
 ALL_FILES = $(shell find $(SRC_PATH) -name '*.h' -or -name '*.cc')
 SRC_PATH_TEST = $(realpath $(ROOT)/src)						   
 ALL_CXXFILES = $(shell find $(SRC_PATH_TEST) -name '*.cc')	
@@ -70,13 +77,25 @@ ORIGINAL_SENDER_TARGET = $(BIN_PATH)/original_sender_test
 TRADE_MATCHING_ALPHA_TARGET = $(BIN_PATH)/trade_matching_alpha_test
 TRADE_MATCHING_EXCHANGE_ALPHA_TARGET = $(BIN_PATH)/trade_matching_exchange_alpha_test
 TEST_TARGET = $(BIN_PATH)/utest
+FEMAS_MARKET_TARGET = $(BIN_PATH)/femas_market_test
+FEMAS_EXCHANGE_TARGET = $(BIN_PATH)/femas_exchange_test
     
 default: all;
     
 include tmobjs.mk
 include objs.mk
+include femas.mk
     
-all: createdir usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender tmalpha tmalphaex
+all: createdir femas_exchange_test femas_market usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender
+ 
+femas_exchange_test: $(BIN_PATH)/femas_exchange_main_test.o $(BIN_PATH)/femas_exchange_application.o $(BIN_PATH)/communicator.o $(BIN_PATH)/FemasUstpFtdcTraderManger.o \
+			 $(COMM_OBJS) 
+	$(COMPILE_COMMAND) -o $(FEMAS_EXCHANGE_TARGET) $?
+
+femas_market: $(BIN_PATH)/femas_market_main_test.o $(BIN_PATH)/femas_market_manager.o $(BIN_PATH)/femas_market.o $(BIN_PATH)/femas_market_application.o \
+              $(BIN_PATH)/femas_book_manager.o $(BIN_PATH)/Femas_book_replayer.o $(BIN_PATH)/Femas_book_convert.o \
+			 $(COMM_OBJS) 
+	$(COMPILE_COMMAND) -o $(FEMAS_MARKET_TARGET) $?	 
  
 createdir:
 	mkdir -p ${BIN_PATH}

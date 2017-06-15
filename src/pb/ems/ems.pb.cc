@@ -45,6 +45,7 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
   Position_reflection_ = NULL;
 const ::google::protobuf::EnumDescriptor* BuySell_descriptor_ = NULL;
 const ::google::protobuf::EnumDescriptor* OrderStatus_descriptor_ = NULL;
+const ::google::protobuf::EnumDescriptor* OrderFlag_descriptor_ = NULL;
 const ::google::protobuf::EnumDescriptor* TimeInForce_descriptor_ = NULL;
 const ::google::protobuf::EnumDescriptor* OrderType_descriptor_ = NULL;
 
@@ -127,7 +128,7 @@ void protobuf_AssignDesc_ems_2eproto() {
       sizeof(Status));
   Status_Code_descriptor_ = Status_descriptor_->enum_type(0);
   Order_descriptor_ = file->message_type(4);
-  static const int Order_offsets_[15] = {
+  static const int Order_offsets_[16] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Order, client_order_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Order, account_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Order, contract_),
@@ -143,6 +144,7 @@ void protobuf_AssignDesc_ems_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Order, filled_quantity_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Order, message_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Order, submit_time_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Order, order_flag_),
   };
   Order_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -156,7 +158,7 @@ void protobuf_AssignDesc_ems_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Order));
   Fill_descriptor_ = file->message_type(5);
-  static const int Fill_offsets_[9] = {
+  static const int Fill_offsets_[10] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Fill, fill_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Fill, fill_price_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Fill, fill_quantity_),
@@ -166,6 +168,7 @@ void protobuf_AssignDesc_ems_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Fill, contract_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Fill, buy_sell_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Fill, fill_time_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Fill, order_flag_),
   };
   Fill_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -179,10 +182,16 @@ void protobuf_AssignDesc_ems_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Fill));
   Position_descriptor_ = file->message_type(6);
-  static const int Position_offsets_[3] = {
+  static const int Position_offsets_[9] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, contract_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, account_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, position_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, long_position_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, short_position_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, yesterday_long_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, yesterday_short_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, today_long_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Position, today_short_),
   };
   Position_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -197,8 +206,9 @@ void protobuf_AssignDesc_ems_2eproto() {
       sizeof(Position));
   BuySell_descriptor_ = file->enum_type(0);
   OrderStatus_descriptor_ = file->enum_type(1);
-  TimeInForce_descriptor_ = file->enum_type(2);
-  OrderType_descriptor_ = file->enum_type(3);
+  OrderFlag_descriptor_ = file->enum_type(2);
+  TimeInForce_descriptor_ = file->enum_type(3);
+  OrderType_descriptor_ = file->enum_type(4);
 }
 
 namespace {
@@ -260,7 +270,7 @@ void protobuf_AddDesc_ems_2eproto() {
     "\030\001 \001(\0132\014.pb.ems.Date\022\032\n\004time\030\002 \001(\0132\014.pb."
     "ems.Time\022\020\n\010timezone\030\003 \001(\021\"T\n\006Status\022!\n\004"
     "code\030\001 \001(\0162\023.pb.ems.Status.Code\022\013\n\003msg\030\002"
-    " \001(\t\"\032\n\004Code\022\006\n\002OK\020\000\022\n\n\006FAILED\020\001\"\223\003\n\005Ord"
+    " \001(\t\"\032\n\004Code\022\006\n\002OK\020\000\022\n\n\006FAILED\020\001\"\272\003\n\005Ord"
     "er\022\027\n\017client_order_id\030\001 \002(\t\022\017\n\007account\030\t"
     " \001(\t\022\020\n\010contract\030\n \001(\t\022!\n\010buy_sell\030\013 \001(\016"
     "2\017.pb.ems.BuySell\022\r\n\005price\030\014 \001(\t\022\020\n\010quan"
@@ -270,22 +280,30 @@ void protobuf_AddDesc_ems_2eproto() {
     "\030\037 \001(\0162\023.pb.ems.OrderStatus\022\025\n\rworking_p"
     "rice\030( \001(\t\022\030\n\020working_quantity\030) \001(\004\022\027\n\017"
     "filled_quantity\030* \001(\004\022\017\n\007message\0302 \001(\t\022&"
-    "\n\013submit_time\030< \001(\0132\021.pb.ems.Timestamp\"\342"
-    "\001\n\004Fill\022\017\n\007fill_id\030\001 \002(\t\022\022\n\nfill_price\030\002"
-    " \001(\t\022\025\n\rfill_quantity\030\003 \001(\004\022\017\n\007account\030\t"
-    " \001(\t\022\027\n\017client_order_id\030\n \001(\t\022\031\n\021exchang"
-    "e_order_id\030\013 \001(\t\022\020\n\010contract\030\014 \001(\t\022!\n\010bu"
-    "y_sell\030\r \001(\0162\017.pb.ems.BuySell\022$\n\tfill_ti"
-    "me\030< \001(\0132\021.pb.ems.Timestamp\"\?\n\010Position\022"
-    "\020\n\010contract\030\001 \001(\t\022\017\n\007account\030\002 \001(\t\022\020\n\010po"
-    "sition\030\n \001(\003*/\n\007BuySell\022\013\n\007BS_None\020\000\022\n\n\006"
-    "BS_Buy\020\001\022\013\n\007BS_Sell\020\002*l\n\013OrderStatus\022\013\n\007"
-    "OS_None\020\000\022\020\n\014OS_Cancelled\020\001\022\r\n\tOS_Filled"
-    "\020\002\022\017\n\013OS_Rejected\020\003\022\016\n\nOS_Working\020\004\022\016\n\nO"
-    "S_Pending\020\005*O\n\013TimeInForce\022\014\n\010TIF_None\020\000"
-    "\022\013\n\007TIF_FAK\020\001\022\013\n\007TIF_FOK\020\002\022\013\n\007TIF_GFD\020\003\022"
-    "\013\n\007TIF_GTC\020\004*5\n\tOrderType\022\013\n\007OT_None\020\000\022\014"
-    "\n\010OT_Limit\020\001\022\r\n\tOT_Market\020\002", 1307);
+    "\n\013submit_time\030< \001(\0132\021.pb.ems.Timestamp\022%"
+    "\n\norder_flag\030d \001(\0162\021.pb.ems.OrderFlag\"\211\002"
+    "\n\004Fill\022\017\n\007fill_id\030\001 \002(\t\022\022\n\nfill_price\030\002 "
+    "\001(\t\022\025\n\rfill_quantity\030\003 \001(\004\022\017\n\007account\030\t "
+    "\001(\t\022\027\n\017client_order_id\030\n \001(\t\022\031\n\021exchange"
+    "_order_id\030\013 \001(\t\022\020\n\010contract\030\014 \001(\t\022!\n\010buy"
+    "_sell\030\r \001(\0162\017.pb.ems.BuySell\022$\n\tfill_tim"
+    "e\030< \001(\0132\021.pb.ems.Timestamp\022%\n\norder_flag"
+    "\030d \001(\0162\021.pb.ems.OrderFlag\"\310\001\n\010Position\022\020"
+    "\n\010contract\030\001 \001(\t\022\017\n\007account\030\002 \001(\t\022\020\n\010pos"
+    "ition\030\n \001(\003\022\025\n\rlong_position\030\013 \001(\003\022\026\n\016sh"
+    "ort_position\030\014 \001(\003\022\026\n\016yesterday_long\030\r \001"
+    "(\003\022\027\n\017yesterday_short\030\016 \001(\003\022\022\n\ntoday_lon"
+    "g\030\017 \001(\003\022\023\n\013today_short\030\020 \001(\003*/\n\007BuySell\022"
+    "\013\n\007BS_None\020\000\022\n\n\006BS_Buy\020\001\022\013\n\007BS_Sell\020\002*l\n"
+    "\013OrderStatus\022\013\n\007OS_None\020\000\022\020\n\014OS_Cancelle"
+    "d\020\001\022\r\n\tOS_Filled\020\002\022\017\n\013OS_Rejected\020\003\022\016\n\nO"
+    "S_Working\020\004\022\016\n\nOS_Pending\020\005*Q\n\tOrderFlag"
+    "\022\013\n\007OF_None\020\000\022\013\n\007OF_Open\020\001\022\014\n\010OF_Close\020\002"
+    "\022\r\n\tOF_YClose\020\003\022\r\n\tOF_TClose\020\004*O\n\013TimeIn"
+    "Force\022\014\n\010TIF_None\020\000\022\013\n\007TIF_FAK\020\001\022\013\n\007TIF_"
+    "FOK\020\002\022\013\n\007TIF_GFD\020\003\022\013\n\007TIF_GTC\020\004*5\n\tOrder"
+    "Type\022\013\n\007OT_None\020\000\022\014\n\010OT_Limit\020\001\022\r\n\tOT_Ma"
+    "rket\020\002", 1606);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "ems.proto", &protobuf_RegisterTypes);
   Date::default_instance_ = new Date();
@@ -338,6 +356,23 @@ bool OrderStatus_IsValid(int value) {
     case 3:
     case 4:
     case 5:
+      return true;
+    default:
+      return false;
+  }
+}
+
+const ::google::protobuf::EnumDescriptor* OrderFlag_descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return OrderFlag_descriptor_;
+}
+bool OrderFlag_IsValid(int value) {
+  switch(value) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
       return true;
     default:
       return false;
@@ -1680,6 +1715,7 @@ const int Order::kWorkingQuantityFieldNumber;
 const int Order::kFilledQuantityFieldNumber;
 const int Order::kMessageFieldNumber;
 const int Order::kSubmitTimeFieldNumber;
+const int Order::kOrderFlagFieldNumber;
 #endif  // !_MSC_VER
 
 Order::Order()
@@ -1717,6 +1753,7 @@ void Order::SharedCtor() {
   filled_quantity_ = GOOGLE_ULONGLONG(0);
   message_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   submit_time_ = NULL;
+  order_flag_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -1808,7 +1845,7 @@ void Order::Clear() {
     }
     order_type_ = 0;
   }
-  if (_has_bits_[8 / 32] & 32512) {
+  if (_has_bits_[8 / 32] & 65280) {
     ZR_(working_quantity_, filled_quantity_);
     if (has_exchange_order_id()) {
       if (exchange_order_id_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
@@ -1829,6 +1866,7 @@ void Order::Clear() {
     if (has_submit_time()) {
       if (submit_time_ != NULL) submit_time_->::pb::ems::Timestamp::Clear();
     }
+    order_flag_ = 0;
   }
 
 #undef OFFSET_OF_FIELD_
@@ -2100,6 +2138,26 @@ bool Order::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
+        if (input->ExpectTag(800)) goto parse_order_flag;
+        break;
+      }
+
+      // optional .pb.ems.OrderFlag order_flag = 100;
+      case 100: {
+        if (tag == 800) {
+         parse_order_flag:
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (::pb::ems::OrderFlag_IsValid(value)) {
+            set_order_flag(static_cast< ::pb::ems::OrderFlag >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(100, value);
+          }
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -2244,6 +2302,12 @@ void Order::SerializeWithCachedSizes(
       60, this->submit_time(), output);
   }
 
+  // optional .pb.ems.OrderFlag order_flag = 100;
+  if (has_order_flag()) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      100, this->order_flag(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -2377,6 +2441,12 @@ void Order::SerializeWithCachedSizes(
         60, this->submit_time(), target);
   }
 
+  // optional .pb.ems.OrderFlag order_flag = 100;
+  if (has_order_flag()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      100, this->order_flag(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -2492,6 +2562,12 @@ int Order::ByteSize() const {
           this->submit_time());
     }
 
+    // optional .pb.ems.OrderFlag order_flag = 100;
+    if (has_order_flag()) {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::EnumSize(this->order_flag());
+    }
+
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -2566,6 +2642,9 @@ void Order::MergeFrom(const Order& from) {
     if (from.has_submit_time()) {
       mutable_submit_time()->::pb::ems::Timestamp::MergeFrom(from.submit_time());
     }
+    if (from.has_order_flag()) {
+      set_order_flag(from.order_flag());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -2605,6 +2684,7 @@ void Order::Swap(Order* other) {
     std::swap(filled_quantity_, other->filled_quantity_);
     std::swap(message_, other->message_);
     std::swap(submit_time_, other->submit_time_);
+    std::swap(order_flag_, other->order_flag_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -2632,6 +2712,7 @@ const int Fill::kExchangeOrderIdFieldNumber;
 const int Fill::kContractFieldNumber;
 const int Fill::kBuySellFieldNumber;
 const int Fill::kFillTimeFieldNumber;
+const int Fill::kOrderFlagFieldNumber;
 #endif  // !_MSC_VER
 
 Fill::Fill()
@@ -2663,6 +2744,7 @@ void Fill::SharedCtor() {
   contract_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   buy_sell_ = 0;
   fill_time_ = NULL;
+  order_flag_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2751,8 +2833,11 @@ void Fill::Clear() {
     }
     buy_sell_ = 0;
   }
-  if (has_fill_time()) {
-    if (fill_time_ != NULL) fill_time_->::pb::ems::Timestamp::Clear();
+  if (_has_bits_[8 / 32] & 768) {
+    if (has_fill_time()) {
+      if (fill_time_ != NULL) fill_time_->::pb::ems::Timestamp::Clear();
+    }
+    order_flag_ = 0;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -2913,6 +2998,26 @@ bool Fill::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
+        if (input->ExpectTag(800)) goto parse_order_flag;
+        break;
+      }
+
+      // optional .pb.ems.OrderFlag order_flag = 100;
+      case 100: {
+        if (tag == 800) {
+         parse_order_flag:
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (::pb::ems::OrderFlag_IsValid(value)) {
+            set_order_flag(static_cast< ::pb::ems::OrderFlag >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(100, value);
+          }
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -3019,6 +3124,12 @@ void Fill::SerializeWithCachedSizes(
       60, this->fill_time(), output);
   }
 
+  // optional .pb.ems.OrderFlag order_flag = 100;
+  if (has_order_flag()) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      100, this->order_flag(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -3113,6 +3224,12 @@ void Fill::SerializeWithCachedSizes(
         60, this->fill_time(), target);
   }
 
+  // optional .pb.ems.OrderFlag order_flag = 100;
+  if (has_order_flag()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      100, this->order_flag(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -3189,6 +3306,12 @@ int Fill::ByteSize() const {
           this->fill_time());
     }
 
+    // optional .pb.ems.OrderFlag order_flag = 100;
+    if (has_order_flag()) {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::EnumSize(this->order_flag());
+    }
+
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -3245,6 +3368,9 @@ void Fill::MergeFrom(const Fill& from) {
     if (from.has_fill_time()) {
       mutable_fill_time()->::pb::ems::Timestamp::MergeFrom(from.fill_time());
     }
+    if (from.has_order_flag()) {
+      set_order_flag(from.order_flag());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -3278,6 +3404,7 @@ void Fill::Swap(Fill* other) {
     std::swap(contract_, other->contract_);
     std::swap(buy_sell_, other->buy_sell_);
     std::swap(fill_time_, other->fill_time_);
+    std::swap(order_flag_, other->order_flag_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -3299,6 +3426,12 @@ void Fill::Swap(Fill* other) {
 const int Position::kContractFieldNumber;
 const int Position::kAccountFieldNumber;
 const int Position::kPositionFieldNumber;
+const int Position::kLongPositionFieldNumber;
+const int Position::kShortPositionFieldNumber;
+const int Position::kYesterdayLongFieldNumber;
+const int Position::kYesterdayShortFieldNumber;
+const int Position::kTodayLongFieldNumber;
+const int Position::kTodayShortFieldNumber;
 #endif  // !_MSC_VER
 
 Position::Position()
@@ -3323,6 +3456,12 @@ void Position::SharedCtor() {
   contract_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   account_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   position_ = GOOGLE_LONGLONG(0);
+  long_position_ = GOOGLE_LONGLONG(0);
+  short_position_ = GOOGLE_LONGLONG(0);
+  yesterday_long_ = GOOGLE_LONGLONG(0);
+  yesterday_short_ = GOOGLE_LONGLONG(0);
+  today_long_ = GOOGLE_LONGLONG(0);
+  today_short_ = GOOGLE_LONGLONG(0);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -3364,7 +3503,18 @@ Position* Position::New() const {
 }
 
 void Position::Clear() {
-  if (_has_bits_[0 / 32] & 7) {
+#define OFFSET_OF_FIELD_(f) (reinterpret_cast<char*>(      \
+  &reinterpret_cast<Position*>(16)->f) - \
+   reinterpret_cast<char*>(16))
+
+#define ZR_(first, last) do {                              \
+    size_t f = OFFSET_OF_FIELD_(first);                    \
+    size_t n = OFFSET_OF_FIELD_(last) - f + sizeof(last);  \
+    ::memset(&first, 0, n);                                \
+  } while (0)
+
+  if (_has_bits_[0 / 32] & 255) {
+    ZR_(position_, today_long_);
     if (has_contract()) {
       if (contract_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
         contract_->clear();
@@ -3375,8 +3525,12 @@ void Position::Clear() {
         account_->clear();
       }
     }
-    position_ = GOOGLE_LONGLONG(0);
   }
+  today_short_ = GOOGLE_LONGLONG(0);
+
+#undef OFFSET_OF_FIELD_
+#undef ZR_
+
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -3387,7 +3541,7 @@ bool Position::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:pb.ems.Position)
   for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(16383);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
@@ -3432,6 +3586,96 @@ bool Position::MergePartialFromCodedStream(
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
                  input, &position_)));
           set_has_position();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(88)) goto parse_long_position;
+        break;
+      }
+
+      // optional int64 long_position = 11;
+      case 11: {
+        if (tag == 88) {
+         parse_long_position:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &long_position_)));
+          set_has_long_position();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(96)) goto parse_short_position;
+        break;
+      }
+
+      // optional int64 short_position = 12;
+      case 12: {
+        if (tag == 96) {
+         parse_short_position:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &short_position_)));
+          set_has_short_position();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(104)) goto parse_yesterday_long;
+        break;
+      }
+
+      // optional int64 yesterday_long = 13;
+      case 13: {
+        if (tag == 104) {
+         parse_yesterday_long:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &yesterday_long_)));
+          set_has_yesterday_long();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(112)) goto parse_yesterday_short;
+        break;
+      }
+
+      // optional int64 yesterday_short = 14;
+      case 14: {
+        if (tag == 112) {
+         parse_yesterday_short:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &yesterday_short_)));
+          set_has_yesterday_short();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(120)) goto parse_today_long;
+        break;
+      }
+
+      // optional int64 today_long = 15;
+      case 15: {
+        if (tag == 120) {
+         parse_today_long:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &today_long_)));
+          set_has_today_long();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(128)) goto parse_today_short;
+        break;
+      }
+
+      // optional int64 today_short = 16;
+      case 16: {
+        if (tag == 128) {
+         parse_today_short:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &today_short_)));
+          set_has_today_short();
         } else {
           goto handle_unusual;
         }
@@ -3489,6 +3733,36 @@ void Position::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt64(10, this->position(), output);
   }
 
+  // optional int64 long_position = 11;
+  if (has_long_position()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(11, this->long_position(), output);
+  }
+
+  // optional int64 short_position = 12;
+  if (has_short_position()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(12, this->short_position(), output);
+  }
+
+  // optional int64 yesterday_long = 13;
+  if (has_yesterday_long()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(13, this->yesterday_long(), output);
+  }
+
+  // optional int64 yesterday_short = 14;
+  if (has_yesterday_short()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(14, this->yesterday_short(), output);
+  }
+
+  // optional int64 today_long = 15;
+  if (has_today_long()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(15, this->today_long(), output);
+  }
+
+  // optional int64 today_short = 16;
+  if (has_today_short()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(16, this->today_short(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -3526,6 +3800,36 @@ void Position::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(10, this->position(), target);
   }
 
+  // optional int64 long_position = 11;
+  if (has_long_position()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(11, this->long_position(), target);
+  }
+
+  // optional int64 short_position = 12;
+  if (has_short_position()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(12, this->short_position(), target);
+  }
+
+  // optional int64 yesterday_long = 13;
+  if (has_yesterday_long()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(13, this->yesterday_long(), target);
+  }
+
+  // optional int64 yesterday_short = 14;
+  if (has_yesterday_short()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(14, this->yesterday_short(), target);
+  }
+
+  // optional int64 today_long = 15;
+  if (has_today_long()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(15, this->today_long(), target);
+  }
+
+  // optional int64 today_short = 16;
+  if (has_today_short()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(16, this->today_short(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -3557,6 +3861,50 @@ int Position::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int64Size(
           this->position());
+    }
+
+    // optional int64 long_position = 11;
+    if (has_long_position()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int64Size(
+          this->long_position());
+    }
+
+    // optional int64 short_position = 12;
+    if (has_short_position()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int64Size(
+          this->short_position());
+    }
+
+    // optional int64 yesterday_long = 13;
+    if (has_yesterday_long()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int64Size(
+          this->yesterday_long());
+    }
+
+    // optional int64 yesterday_short = 14;
+    if (has_yesterday_short()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int64Size(
+          this->yesterday_short());
+    }
+
+    // optional int64 today_long = 15;
+    if (has_today_long()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int64Size(
+          this->today_long());
+    }
+
+  }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    // optional int64 today_short = 16;
+    if (has_today_short()) {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::Int64Size(
+          this->today_short());
     }
 
   }
@@ -3595,6 +3943,26 @@ void Position::MergeFrom(const Position& from) {
     if (from.has_position()) {
       set_position(from.position());
     }
+    if (from.has_long_position()) {
+      set_long_position(from.long_position());
+    }
+    if (from.has_short_position()) {
+      set_short_position(from.short_position());
+    }
+    if (from.has_yesterday_long()) {
+      set_yesterday_long(from.yesterday_long());
+    }
+    if (from.has_yesterday_short()) {
+      set_yesterday_short(from.yesterday_short());
+    }
+    if (from.has_today_long()) {
+      set_today_long(from.today_long());
+    }
+  }
+  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    if (from.has_today_short()) {
+      set_today_short(from.today_short());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -3621,6 +3989,12 @@ void Position::Swap(Position* other) {
     std::swap(contract_, other->contract_);
     std::swap(account_, other->account_);
     std::swap(position_, other->position_);
+    std::swap(long_position_, other->long_position_);
+    std::swap(short_position_, other->short_position_);
+    std::swap(yesterday_long_, other->yesterday_long_);
+    std::swap(yesterday_short_, other->yesterday_short_);
+    std::swap(today_long_, other->today_long_);
+    std::swap(today_short_, other->today_short_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
