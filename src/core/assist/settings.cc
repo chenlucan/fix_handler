@@ -1,4 +1,5 @@
 
+#include <stdexcept>
 #include <boost/property_tree/ini_parser.hpp>
 #include "core/assist/settings.h"
 
@@ -9,7 +10,7 @@ namespace core
 namespace assist
 {
 
-    Settings::Settings(const std::string &setting_file)
+    Settings::Settings(const std::string &setting_file) : m_sections()
     {
         this->Read_settings(setting_file);
     }
@@ -19,9 +20,30 @@ namespace assist
         // noop
     }
 
-    std::string Settings::Get(const std::string &key) const
+    const std::string &Settings::Get(const std::string &key) const
     {
-        return m_settings.at(key);
+        try
+        {
+            auto pos = key.find(".");
+            if(pos == std::string::npos) throw std::invalid_argument("setting key[" + key + "] is invalid");
+            return m_sections.at(key.substr(0, pos)).at(key.substr(pos+1));
+        }
+        catch(const std::out_of_range& oor)
+        {
+            throw std::invalid_argument("setting key[" + key + "] not found");
+        }
+    }
+
+    const std::unordered_map<std::string, std::string> &Settings::Get_section(const std::string &key) const
+    {
+        try
+        {
+            return m_sections.at(key);
+        }
+        catch(const std::out_of_range& oor)
+        {
+            throw std::invalid_argument("setting key[" + key + "] not found");
+        }
     }
 
     void Settings::Read_settings(const std::string &setting_file)
@@ -29,18 +51,16 @@ namespace assist
         boost::property_tree::ptree pt;
         boost::property_tree::ini_parser::read_ini(setting_file, pt);
 
-        // sections
         for(boost::property_tree::ptree::value_type &p1 : pt)
         {
-            auto section = p1.first;
-            // keys
+            // sections
+            std::unordered_map<std::string, std::string> seciton_value;
             for(boost::property_tree::ptree::value_type &p2 : p1.second)
             {
-                auto key = section + "." + p2.first;
-                auto value = p1.second.get<std::string>(p2.first);
-
-                m_settings.insert({key, value});
+                // keys
+                seciton_value.insert({p2.first, p1.second.get<std::string>(p2.first)});
             }
+            m_sections.insert({p1.first, seciton_value});
         }
     }
 

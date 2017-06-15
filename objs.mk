@@ -158,6 +158,9 @@ $(BIN_PATH)/original_sender_test.o: $(SRC_PATH)/main/persist/original_sender_tes
 $(BIN_PATH)/original_saver_test.o: $(SRC_PATH)/main/persist/original_saver_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
+$(BIN_PATH)/original_reader_test.o: $(SRC_PATH)/main/persist/original_reader_test.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/exchange_server_test.o: $(SRC_PATH)/main/exchange/server/exchange_server_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 

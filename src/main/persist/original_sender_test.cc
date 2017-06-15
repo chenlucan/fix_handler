@@ -7,7 +7,19 @@
 
 std::string make_json()
 {
-    return "{\"market\":\"CME\", \"insertTime\":\"" + std::to_string(fh::core::assist::utility::Current_time_ns()) +
+    static int id = 1;
+    id ++;
+
+    if(id%3==0)
+    {
+        return "{\"market\":\"TEST_contract\", \"InstrumentID\":\"ins-" + std::to_string( id%10) +
+                "\", \"VolumeMultiple\":\"" + std::to_string( id+10) +
+                "\", \"insertTime\":\"" + std::to_string(fh::core::assist::utility::Current_time_ns()) +
+                "\", \"sendingTimeStr\":\"" + fh::core::assist::utility::Current_time_str() + "\"}";
+    }
+
+    return "{\"market\":\"TEST\", \"InstrumentID\":\"ins-" + std::to_string( id%10 + 1) +
+            "\", \"insertTime\":\"" + std::to_string(fh::core::assist::utility::Current_time_ns()) +
             "\", \"sendingTimeStr\":\"" + fh::core::assist::utility::Current_time_str() + "\"}";
 }
 

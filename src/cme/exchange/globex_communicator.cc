@@ -280,6 +280,7 @@ namespace exchange
     {
         switch(tif)
         {
+            // 根据 tag 110（MinQty） 区分 FAK 和 FOK
             case '0':
                 return pb::ems::TimeInForce::TIF_GFD;
             case '3':

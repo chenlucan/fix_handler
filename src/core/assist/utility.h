@@ -23,6 +23,9 @@ namespace utility
     // get current time in "yyyy-MM-dd HH:mm:ss.ssssss" format
     std::string Current_time_str();
 
+    // get current time in special format
+    std::string Current_time_str(const char *format);
+
     // convert time to "yyyy-MM-dd HH:mm:ss.ssssss" format
     std::string To_time_str(std::uint64_t nanoseconds);
 
