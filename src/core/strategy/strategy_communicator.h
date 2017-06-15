@@ -73,7 +73,7 @@ namespace strategy
             static ::pb::ems::Order Create_order(const char *data, size_t size);
 
         private:
-	     fh::core::zmq::ZmqSender m_org_sender;		 
+            fh::core::zmq::ZmqSender m_org_sender;		 
             fh::core::zmq::ZmqSender m_sender;
             StrategyReceiver m_receiver;
             core::exchange::ExchangeI *m_exchange;

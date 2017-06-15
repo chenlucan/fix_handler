@@ -35,20 +35,20 @@ inline std::string T(char *v){return std::string(v);}
     class CUstpFtdcTraderManger : public CUstpFtdcTraderSpi
     {
         public:
-		   CUstpFtdcTraderManger(CUstpFtdcTraderApi *pUserApi) :
-                                                                  m_pUserApi (pUserApi) 
-		   {
-                      mIConnet = -1;
-			MaxOrderLocalID = 0;
-			m_strategy = NULL;
-			m_InitQueryNum = 0;
-			m_ordermap.clear();
-			m_startfinish = false;
-		   }
-	          ~CUstpFtdcTraderManger ()
-	          {
-                      delete m_pFileConfig;
-		   }
+            CUstpFtdcTraderManger(CUstpFtdcTraderApi *pUserApi) 
+            : m_pUserApi (pUserApi) 
+            {
+                mIConnet = -1;
+                MaxOrderLocalID = 0;
+                m_strategy = NULL;
+                m_InitQueryNum = 0;
+                m_ordermap.clear();
+                m_startfinish = false;
+            }
+            virtual ~CUstpFtdcTraderManger ()
+            {
+                delete m_pFileConfig;
+            }
 	 public:
 	 	   virtual void OnFrontConnected();
 		   virtual void OnFrontDisconnected(int nReason);

@@ -46,7 +46,7 @@ namespace strategy
             {
             }
             // implement of ExchangeListenerI
-            void OnExchangeReady(boost::container::flat_map<std::string, std::string>)
+            void OnContractDefinition(const pb::dms::Contract &contract)
             {
             }
             // implement of ExchangeListenerI
@@ -61,12 +61,14 @@ namespace strategy
             void OnContractTrading(const std::string &contract)
             {
             }
-
-        private:
-            void On_from_strategy(char *data, size_t size)
+            // implement of ExchangeListenerI
+            typedef boost::container::flat_map<std::string, std::string> ValueMap;
+            void OnExchangeReady(ValueMap)
             {
             }
-            void Order_request(const char *data, size_t size)
+
+        private:
+            void OnOrginalMessage(const std::string &message)
             {
             }
 

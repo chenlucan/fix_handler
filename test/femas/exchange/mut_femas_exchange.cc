@@ -37,7 +37,6 @@ TEST_F(CMutExchangeFemas, CMutExchangeFemas_Test001)
 TEST_F(CMutExchangeFemas, CMutExchangeFemas_Test002)
 {
     std::string app_setting_file="femas_config.ini";	
-    fh::core::assist::Settings *pFileConfig = new fh::core::assist::Settings(app_setting_file);
     fh::core::strategy::StrategyCommunicator* m_strategy = new fh::core::strategy::StrategyCommunicator("tcp://*:7202","tcp://localhost:7201");
     fh::femas::exchange::CFemasCommunicator* m_pCRemGlobexCommunicator = new CFemasCommunicator(m_strategy,app_setting_file);
     m_strategy->Set_exchange(m_pCRemGlobexCommunicator);
@@ -53,7 +52,6 @@ TEST_F(CMutExchangeFemas, CMutExchangeFemas_Test002)
 TEST_F(CMutExchangeFemas, CMutExchangeFemas_Test003)
 {
     std::string app_setting_file="femas_config.ini";	
-    fh::core::assist::Settings *pFileConfig = new fh::core::assist::Settings(app_setting_file);
     fh::core::strategy::StrategyCommunicator* m_strategy = new fh::core::strategy::StrategyCommunicator("tcp://*:7302","tcp://localhost:7301");
     fh::femas::exchange::CFemasCommunicator* m_pCRemGlobexCommunicator = new CFemasCommunicator(m_strategy,app_setting_file);
     m_strategy->Set_exchange(m_pCRemGlobexCommunicator);
@@ -69,7 +67,6 @@ TEST_F(CMutExchangeFemas, CMutExchangeFemas_Test003)
 TEST_F(CMutExchangeFemas, CMutExchangeFemas_Test004)
 {
     std::string app_setting_file="femas_config.ini";	
-    fh::core::assist::Settings *pFileConfig = new fh::core::assist::Settings(app_setting_file);
     fh::core::strategy::StrategyCommunicator* m_strategy = new fh::core::strategy::StrategyCommunicator("tcp://*:7402","tcp://localhost:7401");
     fh::femas::exchange::CFemasCommunicator* m_pCRemGlobexCommunicator = new CFemasCommunicator(m_strategy,app_setting_file);
     m_strategy->Set_exchange(m_pCRemGlobexCommunicator);

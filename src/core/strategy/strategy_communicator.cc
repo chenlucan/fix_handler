@@ -33,13 +33,13 @@ namespace strategy
     }
 
     StrategyCommunicator::StrategyCommunicator(const std::string &send_url,const std::string &org_url, const std::string &receive_url)
-    : m_sender(send_url), m_receiver(receive_url), m_org_sender(org_url), m_exchange(nullptr)
+    : m_org_sender(org_url), m_sender(send_url), m_receiver(receive_url), m_exchange(nullptr)
     {
         // noop
     }
 
     StrategyCommunicator::StrategyCommunicator(const std::string &send_url, const std::string &receive_url)
-    : m_sender(send_url), m_receiver(receive_url), m_org_sender(nullptr),m_exchange(nullptr)
+    : m_org_sender(""), m_sender(send_url), m_receiver(receive_url), m_exchange(nullptr)
     {
         // noop
     }
@@ -237,7 +237,7 @@ namespace strategy
     {
         //
         LOG_INFO("send Definition: ", fh::core::assist::utility::Format_pb_message(contract));
-	 m_sender.Send("C" + contract.SerializeAsString());	
+        m_sender.Send("C" + contract.SerializeAsString());
     }
 
     void StrategyCommunicator::OnOrginalMessage(const std::string &message)

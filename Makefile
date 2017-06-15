@@ -30,8 +30,7 @@ TEST_COMPILE_COMMAND = $(COMPILER) $(INCLUDE_PATH) $(INCLUDE_TEST_PATH) $(LIBS_P
 LINT_COMMAND = $(TEST_PATH)/cpplint.py
 
 SETTINGS = $(BIN_PATH)/market_config.xml $(BIN_PATH)/market_settings.ini  $(BIN_PATH)/exchange_server.cfg \
-					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg $(BIN_PATH)/persist_settings.ini $(BIN_PATH)/femas_config.ini \
-					  $(BIN_PATH)/trade_matching_settings.ini
+					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg $(BIN_PATH)/persist_settings.ini $(BIN_PATH)/femas_config.ini
 
 UT_MARKET_SETTINGS =  $(BIN_PATH)/mut_cmemarket_revbuf.log $(BIN_PATH)/market_by_price_1.log $(BIN_PATH)/market_by_price_2.log \
 					  $(BIN_PATH)/market_609_426_sd_1.log $(BIN_PATH)/market_609_426_sd_2.log $(BIN_PATH)/market_627_426_fs_1.log \
@@ -47,7 +46,7 @@ SETTINGS += $(UT_MARKET_SETTINGS)
 ALL_OBJS =  $(filter-out $(wildcard $(BIN_PATH)/*_test.o), $(wildcard $(BIN_PATH)/*.o)) 
 TEST_OBJS = $(BIN_PATH)/utility_unittest.o 
 
-TEST_CME_OBJS = $(BIN_PATH)/mut_common.o $(BIN_PATH)/mut_market_simulater.o $(BIN_PATH)/mut_exchange_simulater.o $(BIN_PATH)/mut_book_sender.o $(BIN_PATH)/mut_book_manager.o  \
+TEST_CME_OBJS = $(BIN_PATH)/mut_common.o $(BIN_PATH)/mut_book_sender.o $(BIN_PATH)/mut_book_manager.o  \
 				$(BIN_PATH)/mut_market_manager.o $(BIN_PATH)/autotest_book_sender.o $(BIN_PATH)/mut_dat_saver.o $(BIN_PATH)/mut_globex_communicator.o $(BIN_PATH)/mut_exchange_application.o \
 				$(BIN_PATH)/mut_order_manager.o $(BIN_PATH)/mut_strategy_communicator.o
 TEST_OBJS += $(TEST_CME_OBJS)
@@ -81,8 +80,7 @@ FEMAS_MARKET_TARGET = $(BIN_PATH)/femas_market_test
 FEMAS_EXCHANGE_TARGET = $(BIN_PATH)/femas_exchange_test
     
 default: all;
-    
-include tmobjs.mk
+
 include objs.mk
 include femas.mk
     
@@ -142,26 +140,11 @@ original: $(BIN_PATH)/original_saver_test.o $(BIN_PATH)/mongo.o $(BIN_PATH)/orig
 		
 orgsend: $(BIN_PATH)/original_sender_test.o $(COMM_OBJS)
 	$(COMPILE_COMMAND) -o $(ORIGINAL_SENDER_TARGET) $? 
-
-tmalpha: $(BIN_PATH)/trade_matching_alpha_test.o $(BIN_PATH)/tmalpha_market_application.o $(BIN_PATH)/market_simulater.o $(BIN_PATH)/book_replayer.o \
-                $(BIN_PATH)/book_sender.o $(BIN_PATH)/message_parser_d.o $(BIN_PATH)/message_parser_f.o $(BIN_PATH)/message_parser_r.o \
-                $(BIN_PATH)/recovery_manager.o \
-                $(BIN_PATH)/message_parser_x.o $(BIN_PATH)/message_parser_w.o $(BIN_PATH)/definition_manager.o $(BIN_PATH)/status_manager.o \
-	    		$(BIN_PATH)/book_manager.o $(BIN_PATH)/mongo.o $(BIN_PATH)/book_state_controller.o $(COMM_OBJS)
-	$(COMPILE_COMMAND) -o $(TRADE_MATCHING_ALPHA_TARGET) $? 
-
-tmalphaex: $(BIN_PATH)/trade_matching_exchange_alpha_test.o $(BIN_PATH)/tmalpha_exchange_application.o $(BIN_PATH)/exchange_simulater.o \
-					 $(BIN_PATH)/tmalpha_market_application.o $(BIN_PATH)/market_simulater.o $(BIN_PATH)/book_replayer.o $(BIN_PATH)/book_manager.o  \
-	                 $(BIN_PATH)/recovery_manager.o \
-                     $(BIN_PATH)/book_sender.o $(BIN_PATH)/message_parser_d.o $(BIN_PATH)/message_parser_f.o $(BIN_PATH)/message_parser_r.o \
-                     $(BIN_PATH)/message_parser_x.o $(BIN_PATH)/message_parser_w.o $(BIN_PATH)/definition_manager.o $(BIN_PATH)/status_manager.o \
-				     $(BIN_PATH)/mongo.o $(BIN_PATH)/book_state_controller.o $(BIN_PATH)/strategy_communicator.o $(COMM_OBJS)
-	$(COMPILE_COMMAND) -o $(TRADE_MATCHING_EXCHANGE_ALPHA_TARGET) $? 
-				     
+			     
 copyfile: $(SETTINGS)
 
-test: $(ALL_OBJS) $(TEST_OBJS)
-	$(TEST_COMPILE_COMMAND) $(TEST_LIBS) -o $(TEST_TARGET) $^
+test: $(ALL_OBJS) $(TEST_OBJS) $(COMM_OBJS)
+	$(TEST_COMPILE_COMMAND) $(TEST_LIBS) -o $(TEST_TARGET) $? 
 html:
 	cd $(BIN_PATH) && gcov $(ALL_CXXFILES) -o ./ && $(LCOV) -c -d ./ -o coverage.info \
 	&& $(GENHTML) -o ./result ./coverage.info
