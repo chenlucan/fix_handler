@@ -1,6 +1,6 @@
 
-#ifndef __FH_TMALPHA_EXCHANGE_EXCHANGE_SIMULATER_H__
-#define __FH_TMALPHA_EXCHANGE_EXCHANGE_SIMULATER_H__
+#ifndef __FH_TMALPHA_REPLAY_REPLAY_ORDER_MATCHER_H__
+#define __FH_TMALPHA_REPLAY_REPLAY_ORDER_MATCHER_H__
 
 #include <string>
 #include <atomic>
@@ -12,49 +12,27 @@
 #include "core/exchange/exchangei.h"
 #include "core/exchange/exchangelisteneri.h"
 #include "pb/ems/ems.pb.h"
-#include "tmalpha/market/market_simulater.h"
 
 
 namespace fh
 {
 namespace tmalpha
 {
-namespace exchange
+namespace replay
 {
-    class ExchangeSimulater : public core::exchange::ExchangeI
+    class ReplayOrderMatcher
     {
         public:
-            ExchangeSimulater(
-                    fh::tmalpha::market::MarketSimulater *market,
-                    fh::core::exchange::ExchangeListenerI *result_listener,
-                    int trade_rate = 100);
-            virtual ~ExchangeSimulater();
+            explicit ReplayOrderMatcher(int trade_rate);
+            virtual ~ReplayOrderMatcher();
 
         public:
-            // implement of ExchangeI
-            bool Start(const std::vector<::pb::ems::Order> &init_orders) override;
-            // implement of ExchangeI
-            void Stop() override;
-
-        public:
-            void Join();
+            void Add_exchange_listener(fh::core::exchange::ExchangeListenerI *result_listener);
             void On_state_changed(const pb::dms::L2 &l2, std::uint32_t bid_volumn = 0, std::uint32_t ask_volumn = 0);
-
-        public:
-            // implement of ExchangeI
-            void Initialize(std::vector<::pb::dms::Contract> contracts) override;
-            // implement of ExchangeI
-            void Add(const ::pb::ems::Order& order) override;
-            // implement of ExchangeI
-            void Change(const ::pb::ems::Order& order) override;
-            // implement of ExchangeI
-            void Delete(const ::pb::ems::Order& order) override;
-            // implement of ExchangeI
-            void Query(const ::pb::ems::Order& order) override;
-            // implement of ExchangeI
-            void Query_mass(const char *data, size_t size) override;
-            // implement of ExchangeI
-            void Delete_mass(const char *data, size_t size) override;
+            void Add(const ::pb::ems::Order& order) ;
+            void Change(const ::pb::ems::Order& order) ;
+            void Delete(const ::pb::ems::Order& order) ;
+            void Query(const ::pb::ems::Order& order) ;
 
         private:
             void Init(const fh::core::assist::Settings &app_settings, const fh::core::assist::Settings &persist_settings);
@@ -78,9 +56,7 @@ namespace exchange
             int Calculate_order_position(const ::pb::ems::Order& org_order) const;
 
         private:
-            fh::tmalpha::market::MarketSimulater *m_market;
             core::exchange::ExchangeListenerI *m_result_listener;
-            std::vector<::pb::ems::Order> m_init_orders;
             std::atomic<std::uint32_t> m_exchange_order_id;
             std::atomic<std::uint32_t> m_fill_id;
             // 当前未成交订单信息：订单，在同价位订单中的位置，同价位已成交手数
@@ -95,10 +71,10 @@ namespace exchange
             uint32_t m_trade_rate;
 
         private:
-            DISALLOW_COPY_AND_ASSIGN(ExchangeSimulater);
+            DISALLOW_COPY_AND_ASSIGN(ReplayOrderMatcher);
     };
-} // namespace exchange
+} // namespace replay
 } // namespace tmalpha
 } // namespace fh
 
-#endif     // __FH_TMALPHA_EXCHANGE_EXCHANGE_SIMULATER_H__
+#endif     // __FH_TMALPHA_REPLAY_REPLAY_ORDER_MATCHER_H__

@@ -232,7 +232,6 @@ int main(int argc, char* argv[])
             BookReceiver r(host);
             r.Start_receive();
         });
-        book_receiver.detach();
 
         std::thread result_receiver([argv]{
                LOG_INFO("start result receiver on port ", argv[2]);
@@ -240,10 +239,14 @@ int main(int argc, char* argv[])
             OrderResultReceiver r(host);
             r.Start_receive();
         });
-        result_receiver.detach();
+
+        auto send_interval_ms = boost::lexical_cast<std::uint16_t>(argv[4]);
+        if(send_interval_ms == 0)
+        {
+            book_receiver.join();
+        }
 
         LOG_INFO("start sender on port ", argv[1]);
-        auto send_interval_ms = boost::lexical_cast<std::uint16_t>(argv[4]);
         std::string host = std::string("tcp://*:") + argv[1];
         fh::core::zmq::ZmqSender sender(host);
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));

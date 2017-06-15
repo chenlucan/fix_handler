@@ -26,6 +26,21 @@ $(BIN_PATH)/trade_order_manager.o: $(SRC_PATH)/tmalpha/trade/trade_order_manager
 $(BIN_PATH)/trade_simulater.o: $(SRC_PATH)/tmalpha/trade/trade_simulater.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
+$(BIN_PATH)/replay_exchange.o: $(SRC_PATH)/tmalpha/replay/exchange/replay_exchange.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/replay_market.o: $(SRC_PATH)/tmalpha/replay/market/replay_market.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/replay_order_matcher.o: $(SRC_PATH)/tmalpha/replay/replay_order_matcher.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/replay_simulater.o: $(SRC_PATH)/tmalpha/replay/replay_simulater.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/tmalpha_replay_application.o: $(SRC_PATH)/tmalpha/replay/tmalpha_replay_application.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/tmalpha_trade_application.o: $(SRC_PATH)/tmalpha/trade/tmalpha_trade_application.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
@@ -38,6 +53,9 @@ $(BIN_PATH)/simulater_exchange.o: $(SRC_PATH)/tmalpha/trade/exchange/simulater_e
 $(BIN_PATH)/trade_matching_alpha_test.o: $(SRC_PATH)/main/tradematching/trade_matching_alpha_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
     
+$(BIN_PATH)/trade_matching_replay_alpha_test.o: $(SRC_PATH)/main/tradematching/trade_matching_replay_alpha_test.cc
+	$(COMPILE_COMMAND) -c -o $@ $<
+
 $(BIN_PATH)/trade_matching_exchange_alpha_test.o: $(SRC_PATH)/main/tradematching/trade_matching_exchange_alpha_test.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 
@@ -48,6 +66,9 @@ $(BIN_PATH)/mut_market_simulater.o: $(TEST_PATH)/tmalpha/market/mut_market_simul
 	$(TEST_COMPILE_COMMAND) -c -o $@ $<
     
 $(BIN_PATH)/mut_exchange_simulater.o: $(TEST_PATH)/tmalpha/exchange/mut_exchange_simulater.cc
+	$(TEST_COMPILE_COMMAND) -c -o $@ $<
+
+$(BIN_PATH)/mut_replay_simulater.o: $(TEST_PATH)/tmalpha/replay/mut_replay_simulater.cc
 	$(TEST_COMPILE_COMMAND) -c -o $@ $<
     
 $(BIN_PATH)/mut_trade_simulater.o: $(TEST_PATH)/tmalpha/trade/mut_trade_simulater.cc

@@ -2,105 +2,43 @@
 #include "core/assist/utility.h"
 #include "core/assist/logger.h"
 #include "core/strategy/invalid_order.h"
-#include "tmalpha/exchange/exchange_simulater.h"
-#include "tmalpha/market/market_data_provider.h"
-#include "tmalpha/market/cme_data_consumer.h"
-#include "tmalpha/exchange/market_replay_listener.h"
+#include "tmalpha/replay/replay_order_matcher.h"
 
 namespace fh
 {
 namespace tmalpha
 {
-namespace exchange
+namespace replay
 {
 
-    ExchangeSimulater::ExchangeSimulater(
-            fh::tmalpha::market::MarketSimulater *market,
-            fh::core::exchange::ExchangeListenerI *result_listener,
-            int trade_rate)
-    : fh::core::exchange::ExchangeI(result_listener),
-      m_market(market), m_result_listener(result_listener), m_init_orders(),
-      m_exchange_order_id(0), m_fill_id(0),
+    ReplayOrderMatcher::ReplayOrderMatcher(int trade_rate)
+    : m_result_listener(nullptr), m_exchange_order_id(0), m_fill_id(0),
       m_working_orders(), m_working_order_ids(), m_filled_orders(),  m_canceled_orders(),
       m_mutex(), m_current_states(), m_trade_rate(std::max(std::min(trade_rate, 100), 0))
-    {
-        if(m_market && m_market->Listener())
-        {
-            // L2 行情变化时，通过下面的 callback 将最新 L2 行情和最新的交易数量通知本模块
-            auto market_listener = static_cast<fh::tmalpha::exchange::MarketReplayListener *>(m_market->Listener());
-            market_listener->Add_l2_changed_callback(std::bind(
-                    &ExchangeSimulater::On_state_changed, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-        }
-    }
-
-    ExchangeSimulater::~ExchangeSimulater()
     {
         // noop
     }
 
-    // implement of ExchangeI
-    bool ExchangeSimulater::Start(const std::vector<::pb::ems::Order> &init_orders)
+    ReplayOrderMatcher::~ReplayOrderMatcher()
     {
-        m_init_orders = init_orders;
-        LOG_INFO("init orders count:", init_orders.size());
-
-        if(m_market == nullptr)
-        {
-            LOG_WARN("market is invalid");
-            return false;
-        }
-
-        if(m_market->Is_runing())
-        {
-            LOG_INFO("market is already runing");
-            return false;
-        }
-
-        LOG_INFO("start market");
-        return m_market->Start();
+        // noop
     }
 
-    void ExchangeSimulater::Join()
+    void ReplayOrderMatcher::Add_exchange_listener(fh::core::exchange::ExchangeListenerI *result_listener)
     {
-        m_market->Join();
-    }
-
-    // implement of ExchangeI
-    void ExchangeSimulater::Stop()
-    {
-        if(m_market == nullptr)
-        {
-            LOG_WARN("market is invalid");
-            return;
-        }
-
-        if(!m_market->Is_runing())
-        {
-            LOG_INFO("market is already stopped");
-            return;
-        }
-
-        LOG_INFO("stop market");
-        m_market->Stop();
+        m_result_listener =  result_listener;
     }
 
     // L2 情报发生变化时，内部需要记录，同时对尚未成交的订单重新匹配下
     // 接受到的参数为：L2行情数据，最新 bid 成交量，最新 ask 成交量
-    void ExchangeSimulater::On_state_changed(const pb::dms::L2 &l2, std::uint32_t bid_volumn, std::uint32_t ask_volumn)
+    void ReplayOrderMatcher::On_state_changed(const pb::dms::L2 &l2, std::uint32_t bid_volumn, std::uint32_t ask_volumn)
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_current_states[l2.contract()] = std::make_tuple(l2, bid_volumn, ask_volumn);
         this->Rematching(l2.contract());
     }
 
-    // implement of ExchangeI
-    void ExchangeSimulater::Initialize(std::vector<::pb::dms::Contract> contracts)
-    {
-        // noop
-    }
-
-    // implement of ExchangeI
-    void ExchangeSimulater::Add(const ::pb::ems::Order& order)
+    void ReplayOrderMatcher::Add(const ::pb::ems::Order& order)
     {
         LOG_INFO("new order:", fh::core::assist::utility::Format_pb_message(order));
 
@@ -118,8 +56,7 @@ namespace exchange
         }
     }
 
-    // implement of ExchangeI
-    void ExchangeSimulater::Change(const ::pb::ems::Order& order)
+    void ReplayOrderMatcher::Change(const ::pb::ems::Order& order)
     {
         LOG_INFO("update order:", fh::core::assist::utility::Format_pb_message(order));
 
@@ -152,8 +89,7 @@ namespace exchange
         m_working_orders[order.client_order_id()] = this->Order_working(order, std::get<0>(opos->second).exchange_order_id());
     }
 
-    // implement of ExchangeI
-    void ExchangeSimulater::Delete(const ::pb::ems::Order& order)
+    void ReplayOrderMatcher::Delete(const ::pb::ems::Order& order)
     {
         LOG_INFO("delete order:", fh::core::assist::utility::Format_pb_message(order));
 
@@ -191,8 +127,7 @@ namespace exchange
         m_working_orders.erase(opos);
     }
 
-    // implement of ExchangeI
-    void ExchangeSimulater::Query(const ::pb::ems::Order& order)
+    void ReplayOrderMatcher::Query(const ::pb::ems::Order& order)
     {
         LOG_INFO("query order:", fh::core::assist::utility::Format_pb_message(order));
 
@@ -225,20 +160,8 @@ namespace exchange
         this->Order_status(std::get<0>(opos->second), pb::ems::OrderStatus::OS_Working);
     }
 
-    // implement of ExchangeI
-    void ExchangeSimulater::Query_mass(const char *data, size_t size)
-    {
-        // noop
-    }
-
-    // implement of ExchangeI
-    void ExchangeSimulater::Delete_mass(const char *data, size_t size)
-    {
-        // noop
-    }
-
     // 新订单来的时候看看和当前行情能否成交
-    bool ExchangeSimulater::Has_matching(::pb::ems::Order& org_order) const
+    bool ReplayOrderMatcher::Has_matching(::pb::ems::Order& org_order) const
     {
         // 订单中的合约在行情状态数据中不存在的话，肯定不能匹配
         auto pos = m_current_states.find(org_order.contract());
@@ -246,12 +169,12 @@ namespace exchange
 
         // L2 行情数据
         const pb::dms::L2 &l2 = std::get<0>(pos->second);
-        return ExchangeSimulater::Is_price_matching(org_order, l2);
+        return ReplayOrderMatcher::Is_price_matching(org_order, l2);
     }
 
     // 行情变化后看看能够和当前待匹配订单能够成交
     // 不能成交的话，根据需要更新订单信息的同价位已成交数量
-    bool ExchangeSimulater::Has_rematching(std::tuple<pb::ems::Order, int, std::uint32_t>& order_info) const
+    bool ReplayOrderMatcher::Has_rematching(std::tuple<pb::ems::Order, int, std::uint32_t>& order_info) const
     {
         pb::ems::Order &org_order = std::get<0>(order_info);
 
@@ -264,7 +187,7 @@ namespace exchange
         std::uint32_t ask_volumn = std::get<2>(pos->second);    // 最近成交的 ask 数量
 
         // 如果可以马上匹配到对手方报价，成交
-        if(ExchangeSimulater::Is_price_matching(org_order, l2)) return true;
+        if(ReplayOrderMatcher::Is_price_matching(org_order, l2)) return true;
 
         if(org_order.buy_sell() == pb::ems::BuySell::BS_Buy)
         {
@@ -286,7 +209,7 @@ namespace exchange
     // prices: 同侧行情数据（新订单是买，那么这就是当前买单的行情数据）
     // current_turnover_size: 在最优价位上的最近已成交手数
     // compare: 决定一个价格是否优于另外一个价格
-    bool ExchangeSimulater::Is_position_reached(
+    bool ReplayOrderMatcher::Is_position_reached(
             std::tuple<pb::ems::Order, int, std::uint32_t>& order_info,
             const ::google::protobuf::RepeatedPtrField<::pb::dms::DataPoint>& prices,
             std::uint32_t current_turnover_size,
@@ -336,7 +259,7 @@ namespace exchange
     }
 
     // 订单价格和当前行情中的对手方价格能否成交
-    bool ExchangeSimulater::Is_price_matching(pb::ems::Order& org_order, const pb::dms::L2 &l2)
+    bool ReplayOrderMatcher::Is_price_matching(pb::ems::Order& org_order, const pb::dms::L2 &l2)
     {
         if(org_order.buy_sell() == pb::ems::BuySell::BS_Buy)
         {
@@ -373,7 +296,7 @@ namespace exchange
     }
 
     // 根据预设定比率，计算一个订单的在同等价位中的位置
-    int ExchangeSimulater::Calculate_order_position(const ::pb::ems::Order& org_order) const
+    int ReplayOrderMatcher::Calculate_order_position(const ::pb::ems::Order& org_order) const
     {
         // 订单中的合约在行情状态数据中不存在的话，不能计算
         auto pos = m_current_states.find(org_order.contract());
@@ -402,7 +325,7 @@ namespace exchange
         return -1;
     }
 
-    void ExchangeSimulater::Rematching(const std::string &contract)
+    void ReplayOrderMatcher::Rematching(const std::string &contract)
     {
         LOG_INFO("rematching order...");
 
@@ -427,7 +350,7 @@ namespace exchange
     }
 
     // 新订单成交时，将成交信息发送出去
-    pb::ems::Fill ExchangeSimulater::Order_filled(const ::pb::ems::Order& org_order, const std::string &next_exchange_order_id)
+    pb::ems::Fill ReplayOrderMatcher::Order_filled(const ::pb::ems::Order& org_order, const std::string &next_exchange_order_id)
     {
         pb::ems::Fill fill;
         fill.set_fill_id(this->Next_fill_id());
@@ -447,7 +370,7 @@ namespace exchange
     }
 
     // 新订单未成交时，将状态信息发送出去，并返回需要保存在内存中的订单详情（订单，同价位上的位置，同价位上已成交数量）
-    std::tuple<pb::ems::Order, int, int> ExchangeSimulater::Order_working(const ::pb::ems::Order& org_order, const std::string &next_exchange_order_id)
+    std::tuple<pb::ems::Order, int, int> ReplayOrderMatcher::Order_working(const ::pb::ems::Order& org_order, const std::string &next_exchange_order_id)
     {
         pb::ems::Order order(org_order);
         order.set_exchange_order_id(next_exchange_order_id);
@@ -469,7 +392,7 @@ namespace exchange
     }
 
     // 订单操作被拒绝时，将拒绝原因发送出去
-    void ExchangeSimulater::Order_reject(const ::pb::ems::Order& org_order, const std::string &reason)
+    void ReplayOrderMatcher::Order_reject(const ::pb::ems::Order& org_order, const std::string &reason)
     {
         pb::ems::Order order(org_order);
         order.set_status(pb::ems::OrderStatus::OS_Rejected);
@@ -481,7 +404,7 @@ namespace exchange
     }
 
     // 将一个对处理中订单状态查询的结果发送出去
-    void ExchangeSimulater::Order_status(const ::pb::ems::Order& org_order, pb::ems::OrderStatus status)
+    void ReplayOrderMatcher::Order_status(const ::pb::ems::Order& org_order, pb::ems::OrderStatus status)
     {
         pb::ems::Order order(org_order);
         order.set_status(status);
@@ -493,7 +416,7 @@ namespace exchange
     }
 
     // 将一个对已成交订单状态查询的结果发送出去
-    void ExchangeSimulater::Order_status(const ::pb::ems::Fill& org_fill)
+    void ReplayOrderMatcher::Order_status(const ::pb::ems::Fill& org_fill)
     {
         pb::ems::Order order;
         order.set_client_order_id(org_fill.client_order_id());
@@ -516,24 +439,24 @@ namespace exchange
         m_result_listener->OnOrder(order);
     }
 
-    std::string ExchangeSimulater::Next_exchange_order_id()
+    std::string ReplayOrderMatcher::Next_exchange_order_id()
     {
         return "Order-" + std::to_string(++m_exchange_order_id);
     }
 
-    std::string ExchangeSimulater::Next_fill_id()
+    std::string ReplayOrderMatcher::Next_fill_id()
     {
         return "Fill-" + std::to_string(++m_fill_id);
     }
 
     // 将当前时间按照 yyyyMMdd-HH:mi:ss.fff 格式设置到目标对象中
-    void ExchangeSimulater::Set_to_current_time(::pb::ems::Timestamp* target)
+    void ReplayOrderMatcher::Set_to_current_time(::pb::ems::Timestamp* target)
     {
         // yyyy-MM-dd HH:mm:ss.ssssss
         std::string now = fh::core::assist::utility::Current_time_str();
         fh::core::assist::utility::To_pb_time(target, now.substr(0, 4) + now.substr(5, 2) + now.substr(8, 2) + "-" + now.substr(11, 12));
     }
 
-} // namespace exchange
+} // namespace replay
 } // namespace tmalpha
 } // namespace fh

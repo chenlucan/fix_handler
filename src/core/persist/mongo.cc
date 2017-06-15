@@ -48,10 +48,30 @@ namespace persist
         }
     }
 
-    // 查询指定 market 的行情数据，将结果存入 result
+    // 将接受到的数据保存到指定的 collection
+    void Mongo::Insert(const std::string &collection_name, const std::string &json)
+    {
+        try
+        {
+            LOG_DEBUG("insert to: ", collection_name, ", value:", json);
+
+            auto doc = bsoncxx::from_json(json);
+            auto collection = m_db[collection_name];
+            auto result = collection.insert_one(doc.view());
+
+            if(result)  LOG_DEBUG("insert success.");
+            else  LOG_WARN("insert error.");
+        }
+        catch(std::exception &e)
+        {
+            LOG_ERROR("insert exception:", e.what());
+        }
+    }
+
+    // 查询指定 collection 的行情数据，将结果存入 result
     // 查询范围： sendingTimeStr 在 [start_date_include, end_date_exclude) 之间，并且 insertTime > prev_last_record_insert_time
     // 返回查询结果的数据件数
-    std::uint64_t Mongo::Query(std::vector<std::string> &result, const std::string &market,
+    std::uint64_t Mongo::Query(std::vector<std::string> &result, const std::string &collection_name,
                                                          const std::string &start_date_include, const std::string &end_date_exclude,
                                                          std::uint64_t prev_last_record_insert_time)
     {
@@ -80,14 +100,14 @@ namespace persist
         options.sort(sort.view());
         options.limit(m_page_size);
 
-        LOG_INFO("query ", market, " in range [", start_date_include, ", ", end_date_exclude, ") and start after ",
+        LOG_INFO("query ", collection_name, " in range [", start_date_include, ", ", end_date_exclude, ") and start after ",
                 prev_last_record_insert_time, " limit ", m_page_size);
 
-        auto collection = m_db[market];
+        auto collection = m_db[collection_name];
         auto cursor  = collection.find(condition.view(), options);
 
         // 如果该交易所没有另外保存了合约信息的话，直接将结果返回
-        std::string contract_collection = market + "_contract";
+        std::string contract_collection = collection_name + "_contract";
         if(!m_db.has_collection(contract_collection))
         {
             for(auto v : cursor) result.push_back(bsoncxx::to_json(v));
@@ -122,6 +142,53 @@ namespace persist
         return result.size();
     }
 
+    // 查询指定 collection 的行情数据，将结果存入 result
+    // 查询范围： sendingTimeStr 在 [start_date_include, end_date_exclude) 之间，并且 insertTime > prev_last_record_insert_time
+    //                     并且， market 属性值是指定 market
+    // 返回查询结果的数据件数
+    std::uint64_t Mongo::Query(std::vector<std::string> &result, const std::string &collection_name, const std::string &market,
+                                                         const std::string &start_date_include, const std::string &end_date_exclude,
+                                                         std::uint64_t prev_last_record_insert_time)
+    {
+        // condition is:
+        // (sendingTimeStr >= start_date_include AND sendingTimeStr < end_date_exclude) AND
+        // (insertTime > prev_last_record_insert_time) AND market = market
+        bsoncxx::builder::stream::document condition{};
+        condition << "$and" << bsoncxx::builder::stream::open_array
+                                                    << bsoncxx::builder::stream::open_document
+                                                        << "sendingTimeStr"
+                                                                << bsoncxx::builder::stream::open_document
+                                                                        << "$gte" << start_date_include
+                                                                        << "$lt" << end_date_exclude
+                                                                 << bsoncxx::builder::stream::close_document
+                                                     << bsoncxx::builder::stream::close_document
+                                                     << bsoncxx::builder::stream::open_document
+                                                         << "insertTime"
+                                                                 << bsoncxx::builder::stream::open_document
+                                                                         << "$gt" << std::to_string(prev_last_record_insert_time)
+                                                                 << bsoncxx::builder::stream::close_document
+                                                      << bsoncxx::builder::stream::close_document
+                                                      << bsoncxx::builder::stream::open_document
+                                                          << "market" << market
+                                                       << bsoncxx::builder::stream::close_document
+                                             << bsoncxx::builder::stream::close_array;
+
+        // order by insertTime asc limit $m_page_size
+        bsoncxx::builder::stream::document sort{};
+        sort << "insertTime" << 1 ;
+        mongocxx::options::find options;
+        options.sort(sort.view());
+        options.limit(m_page_size);
+
+        LOG_INFO("query ", collection_name, " for [" , market, "] in range [", start_date_include, ", ", end_date_exclude, ") and start after ",
+                prev_last_record_insert_time, " limit ", m_page_size);
+
+        auto collection = m_db[collection_name];
+        auto cursor  = collection.find(condition.view(), options);
+        for(auto v : cursor) result.push_back(bsoncxx::to_json(v));
+        return result.size();
+    }
+
     // 检索指定 InstrumentID 的一系列合约的参数信息
     std::map<std::string, std::string> Mongo::Query_contracts(const std::string &contract_collection, const std::set<std::string> &contract_ids)
     {
@@ -153,7 +220,7 @@ namespace persist
         return result;
     }
 
-    std::uint64_t Mongo::Count(const std::string &market, const std::string &start_date_include, const std::string &end_date_exclude)
+    std::uint64_t Mongo::Count(const std::string &collection_name, const std::string &start_date_include, const std::string &end_date_exclude)
     {
         // condition is: sendingTimeStr >= start_date_include AND sendingTimeStr < end_date_exclude
         bsoncxx::builder::stream::document condition{};
@@ -163,7 +230,29 @@ namespace persist
                                                 << "$lt" << end_date_exclude
                                          << bsoncxx::builder::stream::close_document;
 
-        auto collection = m_db[market];
+        auto collection = m_db[collection_name];
+        return collection.count(condition.view());
+    }
+
+    std::uint64_t Mongo::Count(const std::string &collection_name, const std::string &market,
+            const std::string &start_date_include, const std::string &end_date_exclude)
+    {
+        // condition is: sendingTimeStr >= start_date_include AND sendingTimeStr < end_date_exclude AND market = market
+        bsoncxx::builder::stream::document condition{};
+        condition << "$and" << bsoncxx::builder::stream::open_array
+                                                    << bsoncxx::builder::stream::open_document
+                                                        << "sendingTimeStr"
+                                                                << bsoncxx::builder::stream::open_document
+                                                                        << "$gte" << start_date_include
+                                                                        << "$lt" << end_date_exclude
+                                                                 << bsoncxx::builder::stream::close_document
+                                                     << bsoncxx::builder::stream::close_document
+                                                      << bsoncxx::builder::stream::open_document
+                                                          << "market" << market
+                                                       << bsoncxx::builder::stream::close_document
+                                             << bsoncxx::builder::stream::close_array;
+
+        auto collection = m_db[collection_name];
         return collection.count(condition.view());
     }
 
