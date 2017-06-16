@@ -18,8 +18,8 @@ namespace exchange
     {
         public:
             explicit ExchangeApplication(
-                const std::string &fix_setting_file = "exchange_client.cfg",
-                const std::string &app_setting_file = "exchange_settings.ini");
+                const std::string &fix_setting_file = CME_EXCHANGE_CLIENT_CFG,
+                const std::string &app_setting_file = CME_EXCHANGE_SETTINGS_INI);
             virtual ~ExchangeApplication();
 
         public:

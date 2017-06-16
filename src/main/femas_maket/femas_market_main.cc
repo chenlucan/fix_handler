@@ -190,7 +190,7 @@ bsoncxx::builder::basic::document tmjson;
 //========================================================================================================
 	 
      //read my cfg
-     std::string FileConfigstr= "femas_config.ini";
+     std::string FileConfigstr= FEMAS_CONFIG_INI;
   
      LOG_INFO("FileConfigstr : ",FileConfigstr.c_str());
 	     

@@ -77,7 +77,7 @@ namespace market
         
         std::string app_setting_file;
         fh::core::assist::common::getAbsolutePath(app_setting_file);        
-        app_setting_file +="market_settings.ini";
+        app_setting_file +=CME_MARKET_SETTINGS_INI;
         
         fh::cme::market::setting::MarketSettings app_settings(app_setting_file);
         fh::cme::market::CmeMarket * cmeMarket = new CmeMarket(mock_market_listener, target_channels, app_settings);
@@ -127,7 +127,7 @@ namespace market
         
         std::string app_setting_file;
         fh::core::assist::common::getAbsolutePath(app_setting_file);        
-        app_setting_file +="market_settings.ini";
+        app_setting_file +=CME_MARKET_SETTINGS_INI;
         
         fh::cme::market::setting::MarketSettings app_settings(app_setting_file);
         fh::cme::market::CmeMarket * cmeMarket = new CmeMarket(mock_market_listener, target_channels, app_settings);
@@ -181,7 +181,7 @@ namespace market
             
             std::string app_setting_file;
             fh::core::assist::common::getAbsolutePath(app_setting_file);        
-            app_setting_file +="market_settings_exception.ini";
+            app_setting_file +="cme_market_settings_exception.ini";
             //  [ERROR] [mut_market_manager.cc(197)    ] Exception: ./bin/market_settings_exception.ini: cannot open file
 
             
@@ -257,8 +257,8 @@ namespace market
             std::string channel_setting_file;
             fh::core::assist::common::getAbsolutePath(app_setting_file);
             channel_setting_file = app_setting_file;      
-            app_setting_file +="market_settings.ini";
-            channel_setting_file += "market_config.xml";
+            app_setting_file +=CME_MARKET_SETTINGS_INI;
+            channel_setting_file += CME_MARKET_CONFIG_XML;
             
             std::string channel_id;            
             std::vector<fh::cme::market::setting::Channel> target_channels = fh::core::assist::common::Get_target_channels(channel_id, channel_setting_file);        
@@ -319,8 +319,8 @@ namespace market
             std::string channel_setting_file;
             fh::core::assist::common::getAbsolutePath(app_setting_file);
             channel_setting_file = app_setting_file;      
-            app_setting_file +="market_settings.ini";
-            channel_setting_file += "market_config.xml";
+            app_setting_file +=CME_MARKET_SETTINGS_INI;
+            channel_setting_file += CME_MARKET_CONFIG_XML;
             
             std::string channel_id;            
             std::vector<fh::cme::market::setting::Channel> target_channels = fh::core::assist::common::Get_target_channels(channel_id, channel_setting_file);        

@@ -515,7 +515,7 @@ namespace exchange
     void MutOrderManager::TearDown()
     {
     }
-   
+    
     // logout
     TEST_F(MutOrderManager, OrderManager_Test001)
     {        
@@ -523,8 +523,8 @@ namespace exchange
         std::string app_setting_file;
         fh::core::assist::common::getAbsolutePath(fix_setting_file);   
         app_setting_file = fix_setting_file;     
-        fix_setting_file +="exchange_client.cfg";
-        app_setting_file +="exchange_settings.ini";
+        fix_setting_file +=CME_EXCHANGE_CLIENT_CFG;
+        app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
         
         try
         {
@@ -606,8 +606,8 @@ namespace exchange
         std::string app_setting_file;
         fh::core::assist::common::getAbsolutePath(fix_setting_file);   
         app_setting_file = fix_setting_file;     
-        fix_setting_file +="exchange_client.cfg";
-        app_setting_file +="exchange_settings.ini";
+        fix_setting_file +=CME_EXCHANGE_CLIENT_CFG;
+        app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
         
         try
         {
@@ -679,8 +679,8 @@ namespace exchange
         std::string app_setting_file;
         fh::core::assist::common::getAbsolutePath(fix_setting_file);   
         app_setting_file = fix_setting_file;     
-        fix_setting_file +="exchange_client.cfg";
-        app_setting_file +="exchange_settings.ini";
+        fix_setting_file +=CME_EXCHANGE_CLIENT_CFG;
+        app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
         
         try
         {
@@ -765,8 +765,8 @@ namespace exchange
         std::string app_setting_file;
         fh::core::assist::common::getAbsolutePath(fix_setting_file);   
         app_setting_file = fix_setting_file;     
-        fix_setting_file +="exchange_client.cfg";
-        app_setting_file +="exchange_settings.ini";
+        fix_setting_file +=CME_EXCHANGE_CLIENT_CFG;
+        app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
         
         try
         {
@@ -851,8 +851,8 @@ namespace exchange
         std::string app_setting_file;
         fh::core::assist::common::getAbsolutePath(fix_setting_file);   
         app_setting_file = fix_setting_file;     
-        fix_setting_file +="exchange_client.cfg";
-        app_setting_file +="exchange_settings.ini";
+        fix_setting_file +=CME_EXCHANGE_CLIENT_CFG;
+        app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
         
         try
         {
@@ -939,8 +939,8 @@ namespace exchange
         std::string app_setting_file;
         fh::core::assist::common::getAbsolutePath(fix_setting_file);   
         app_setting_file = fix_setting_file;     
-        fix_setting_file +="exchange_client.cfg";
-        app_setting_file +="exchange_settings.ini";
+        fix_setting_file +=CME_EXCHANGE_CLIENT_CFG;
+        app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
         
         try
         {
@@ -1027,8 +1027,8 @@ namespace exchange
         std::string app_setting_file;
         fh::core::assist::common::getAbsolutePath(fix_setting_file);   
         app_setting_file = fix_setting_file;     
-        fix_setting_file +="exchange_client.cfg";
-        app_setting_file +="exchange_settings.ini";
+        fix_setting_file +=CME_EXCHANGE_CLIENT_CFG;
+        app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
         
         try
         {
@@ -1115,8 +1115,8 @@ namespace exchange
         std::string app_setting_file;
         fh::core::assist::common::getAbsolutePath(fix_setting_file);   
         app_setting_file = fix_setting_file;     
-        fix_setting_file +="exchange_client.cfg";
-        app_setting_file +="exchange_settings.ini";
+        fix_setting_file +=CME_EXCHANGE_CLIENT_CFG;
+        app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
         
         try
         {
@@ -1204,8 +1204,8 @@ namespace exchange
         std::string app_setting_file;
         fh::core::assist::common::getAbsolutePath(fix_setting_file);   
         app_setting_file = fix_setting_file;     
-        fix_setting_file +="exchange_client.cfg";
-        app_setting_file +="exchange_settings.ini";
+        fix_setting_file +=CME_EXCHANGE_CLIENT_CFG;
+        app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
         
         try
         {

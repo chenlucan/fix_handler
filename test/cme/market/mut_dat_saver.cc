@@ -106,13 +106,7 @@ namespace market
                     [this, &definition_datas](const std::string &revPacket)
                     {
                         // decode                                                
-                        std::uint32_t seq = fh::cme::market::message::utility::Pick_messages_from_packet(revPacket.data(), revPacket.size(), definition_datas);
-
-                        printf("*********** [begin] define message **************\n");
-                                               
-                        LOG_INFO("seq=", seq, ", definition_datas count=", definition_datas.size());
-
-                        printf("*********** [end] define message **************\n");
+                        fh::cme::market::message::utility::Pick_messages_from_packet(revPacket.data(), revPacket.size(), definition_datas);
                     }
             ); 
 

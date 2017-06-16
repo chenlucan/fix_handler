@@ -18,8 +18,8 @@ namespace market
         public:
             explicit MarketApplication(
                     const std::string &channel_id,
-                    const std::string &channel_setting_file = "market_config.xml",
-                    const std::string &app_setting_file = "market_settings.ini");
+                    const std::string &channel_setting_file = CME_MARKET_CONFIG_XML,
+                    const std::string &app_setting_file = CME_MARKET_SETTINGS_INI);
             virtual ~MarketApplication();
 
         public:

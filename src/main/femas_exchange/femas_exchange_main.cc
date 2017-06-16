@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
      LOG_INFO("exchange main() start");
 
      //∂¡»°≈‰÷√Œƒº˛
-     std::string FileConfigstr= "femas_config.ini";
+     std::string FileConfigstr= FEMAS_CONFIG_INI;
   
      LOG_INFO("FileConfigstr : ",FileConfigstr.c_str());
      pFemasExchangeApp = new fh::femas::exchange::CFemasExchangeApp(FileConfigstr);

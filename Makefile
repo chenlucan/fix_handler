@@ -12,14 +12,40 @@ TMP_DIR = $(BIN_PATH)
 LCOV := $(VENDOR_PATH)/lcov/lcov
 GENHTML := $(VENDOR_PATH)/lcov/genhtml
 
+#define include path
 INCLUDE_TEST_PATH = -I$(TEST_PATH)
 INCLUDE_PATH = -I$(SRC_PATH) -I$(VENDOR_PATH)/boost/include -I$(VENDOR_PATH)/gtest/include  -I$(VENDOR_PATH)/mongodb/include  \
-								-I$(VENDOR_PATH)/protobuf/include -I$(VENDOR_PATH)/quickfix/include -I$(VENDOR_PATH)/sbe/include -I$(VENDOR_PATH)/zeromq/include -I$(VENDOR_PATH)/femas/include \
-								 -I$(VENDOR_PATH)/mongodb/include/bsoncxx/v_noabi -I$(VENDOR_PATH)/mongodb/include/mongocxx/v_noabi
-LIBS_PATH = -L$(VENDOR_PATH)/boost/libs -L$(VENDOR_PATH)/gtest/libs  -L$(VENDOR_PATH)/mongodb/libs -L$(VENDOR_PATH)/femas/libs  \
-								-L$(VENDOR_PATH)/protobuf/libs -L$(VENDOR_PATH)/quickfix/libs -L$(VENDOR_PATH)/sbe/libs -L$(VENDOR_PATH)/zeromq/libs
-EXEC_LIBS_PATH = -Wl,-rpath,$(VENDOR_PATH)/boost/libs:$(VENDOR_PATH)/gtest/libs:$(VENDOR_PATH)/mongodb/libs:$(VENDOR_PATH)/protobuf/libs:$(VENDOR_PATH)/quickfix/libs:$(VENDOR_PATH)/sbe/libs:$(VENDOR_PATH)/zeromq/libs:$(VENDOR_PATH)/femas/libs
-LIBS = -lpthread -lboost_system -lzmq -lstdc++ -lquickfix -lmongocxx -lbsoncxx -lmongoc -lbson -lprotobuf -lgcov -lUSTPmduserapiAF -lUSTPtraderapiAF
+								-I$(VENDOR_PATH)/protobuf/include -I$(VENDOR_PATH)/quickfix/include -I$(VENDOR_PATH)/sbe/include -I$(VENDOR_PATH)/zeromq/include
+FEMAS_INCLUDE_PATH = -I$(VENDOR_PATH)/femas/include
+INCLUDE_PATH +=  $(FEMAS_INCLUDE_PATH)
+
+MONGODB_INCLUDE_PATH += -I$(VENDOR_PATH)/mongodb/include/bsoncxx/v_noabi -I$(VENDOR_PATH)/mongodb/include/mongocxx/v_noabi
+INCLUDE_PATH +=  $(MONGODB_INCLUDE_PATH)
+
+#define libs path
+BOOST_LIBS_PATH = $(VENDOR_PATH)/boost/libs
+GTEST_LIBS_PATH = $(VENDOR_PATH)/gtest/libs
+MONGODB_LIBS_PATH = $(VENDOR_PATH)/mongodb/libs
+PROTOBUF_LIBS_PATH = $(VENDOR_PATH)/protobuf/libs
+QUICKFIX_LIBS_PATH = $(VENDOR_PATH)/quickfix/libs
+SBE_LIBS_PATH = $(VENDOR_PATH)/sbe/libs
+ZEROMQ_LIBS_PATH = $(VENDOR_PATH)/zeromq/libs
+FEMAS_LIBS_PATH = $(VENDOR_PATH)/femas/libs
+
+#LIBS_PATH = -L$(VENDOR_PATH)/boost/libs -L$(VENDOR_PATH)/gtest/libs  -L$(VENDOR_PATH)/mongodb/libs
+LIBS_PATH = -L$(BOOST_LIBS_PATH) -L$(GTEST_LIBS_PATH)  -L$(MONGODB_LIBS_PATH)
+LIBS_PATH += -L$(FEMAS_LIBS_PATH)
+LIBS_PATH += -L$(PROTOBUF_LIBS_PATH) -L$(QUICKFIX_LIBS_PATH) -L$(SBE_LIBS_PATH) -L$(ZEROMQ_LIBS_PATH)
+
+#define exec libs path
+#EXEC_LIBS_PATH = -Wl,-rpath,$(VENDOR_PATH)/boost/libs:$(VENDOR_PATH)/gtest/libs:$(VENDOR_PATH)/mongodb/libs:$(VENDOR_PATH)/protobuf/libs:$(VENDOR_PATH)/quickfix/libs:$(VENDOR_PATH)/sbe/libs:$(VENDOR_PATH)/zeromq/libs:$(VENDOR_PATH)/femas/libs
+EXEC_LIBS_PATH = -Wl,-rpath,$(BOOST_LIBS_PATH):$(GTEST_LIBS_PATH):$(MONGODB_LIBS_PATH):$(PROTOBUF_LIBS_PATH):$(QUICKFIX_LIBS_PATH):$(SBE_LIBS_PATH):$(ZEROMQ_LIBS_PATH):$(FEMAS_LIBS_PATH)
+
+LIBS = -lpthread -lboost_system -lzmq -lstdc++ -lquickfix -lmongocxx -lbsoncxx -lmongoc -lbson -lprotobuf -lgcov
+
+FEMAS_LIBS = -lUSTPmduserapiAF -lUSTPtraderapiAF
+LIBS += $(FEMAS_LIBS)
+
 TEST_LIBS = -lgmock
 RELEASE_FLAGS = -O3 -DNDEBUG -Ofast
 DBG_FLAGS = -g -rdynamic
@@ -29,10 +55,12 @@ COMPILE_COMMAND = $(COMPILER) $(INCLUDE_PATH) $(LIBS_PATH) $(EXEC_LIBS_PATH) $(L
 TEST_COMPILE_COMMAND = $(COMPILER) $(INCLUDE_PATH) $(INCLUDE_TEST_PATH) $(LIBS_PATH) $(EXEC_LIBS_PATH) $(LIBS) $(FLAGS)
 LINT_COMMAND = $(TEST_PATH)/cpplint.py
 
-SETTINGS = $(BIN_PATH)/market_config.xml $(BIN_PATH)/market_settings.ini  $(BIN_PATH)/exchange_server.cfg \
-					  $(BIN_PATH)/exchange_settings.ini  $(BIN_PATH)/exchange_client.cfg $(BIN_PATH)/persist_settings.ini $(BIN_PATH)/femas_config.ini \
+#define setting
+CME_SETTINGS = $(BIN_PATH)/cme_market_config.xml $(BIN_PATH)/cme_market_settings.ini  $(BIN_PATH)/cme_exchange_server.cfg \
+					  $(BIN_PATH)/cme_exchange_settings.ini  $(BIN_PATH)/cme_exchange_client.cfg $(BIN_PATH)/persist_settings.ini \
                       $(BIN_PATH)/trade_matching_settings.ini
-
+SETTINGS += $(CME_SETTINGS)
+                      
 UT_MARKET_SETTINGS =  $(BIN_PATH)/mut_cmemarket_revbuf.log $(BIN_PATH)/market_by_price_1.log $(BIN_PATH)/market_by_price_2.log \
 					  $(BIN_PATH)/market_609_426_sd_1.log $(BIN_PATH)/market_609_426_sd_2.log $(BIN_PATH)/market_627_426_fs_1.log \
 					  $(BIN_PATH)/market_627_426_fs_2.log $(BIN_PATH)/market_627_426_qm.log $(BIN_PATH)/market_627_427_sm_1.log \
@@ -44,7 +72,11 @@ UT_MARKET_SETTINGS =  $(BIN_PATH)/mut_cmemarket_revbuf.log $(BIN_PATH)/market_by
 					  $(BIN_PATH)/market_627_5_3_qty_pc_2nd_instr.log
 SETTINGS += $(UT_MARKET_SETTINGS)
 
+FEMAS_SETTINGS = $(BIN_PATH)/femas_config.ini 
+SETTINGS += $(FEMAS_SETTINGS)
+
 ALL_OBJS =  $(filter-out $(wildcard $(BIN_PATH)/*_test.o), $(wildcard $(BIN_PATH)/*.o)) 
+#define test_obj
 TEST_OBJS = $(BIN_PATH)/utility_unittest.o 
 
 TEST_CME_OBJS = $(BIN_PATH)/mut_common.o $(BIN_PATH)/mut_book_sender.o $(BIN_PATH)/mut_book_manager.o  \
@@ -89,7 +121,7 @@ FEMAS_EXCHANGE_TARGET = $(BIN_PATH)/femas_exchange_test
 default: all;
 
 include tmobjs.mk
-include objs.mk
+include cmeobjs.mk
 include femas.mk
     
 all: createdir femas_exchange_test femas_market usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender orgread tmalpha tmalphaex tmalphatrade tmalphareplay
