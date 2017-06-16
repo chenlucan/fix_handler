@@ -26,7 +26,7 @@ namespace replay
     class ReplaySimulater
     {
         public:
-            explicit ReplaySimulater(fh::tmalpha::market::DataProvider *provider, int trade_rate = 100);
+            explicit ReplaySimulater(fh::core::persist::DataProvider *provider, int trade_rate = 100);
             virtual ~ReplaySimulater();
 
         public:
@@ -59,7 +59,7 @@ namespace replay
         private:
             ReplayOrderMatcher *m_matcher;
             ReplayDataConsumer *m_consumer;
-            fh::tmalpha::market::DataProvider *m_provider;
+            fh::core::persist::DataProvider *m_provider;
             std::queue<std::string> m_messages;
             std::atomic_bool m_is_fetch_end;
             std::atomic_bool m_is_stopped;

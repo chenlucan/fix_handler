@@ -19,6 +19,7 @@
 #include <bsoncxx/builder/basic/document.hpp>
 #include "core/assist/utility.h"
 #include "core/global.h"
+#include "core/persist/converter.h"
 
 
 #define JSON_ELEMENT bsoncxx::document::element
@@ -95,14 +96,14 @@ inline std::string T(char *v){return std::string(v);}
 			
     };
 
-    class FemasBookConvert
+    class FemasBookConvert : public fh::core::persist::Converter
     {
         public:
             FemasBookConvert();
             virtual ~FemasBookConvert();
         public:	
 	     //void Add_listener(fh::core::market::MarketListenerI *listener);
-	     MessMap Apply_message(const std::string &message);
+	     MessMap Convert(const std::string &message) override;
 	     void FemasmarketData(const JSON_ELEMENT &message,int volumeMultiple=0);
 	     bool MakeL2Json(bsoncxx::builder::basic::document& json);
 	     bool MakeBidJson(bsoncxx::builder::basic::document& json);

@@ -26,7 +26,7 @@ namespace persist
 
     // 将接受到的数据保存到数据库
     // 保存的目标 collection 由数据中 market 属性决定；如果没有这个属性，那么插入到 default 这个 collection 里面
-    void Mongo::Insert(const std::string &json)
+    bool Mongo::Insert(const std::string &json)
     {
         try
         {
@@ -41,15 +41,18 @@ namespace persist
 
             if(result)  LOG_DEBUG("insert success.");
             else  LOG_WARN("insert error.");
+
+            return (bool)result;
         }
         catch(std::exception &e)
         {
             LOG_ERROR("insert exception:", e.what());
+            return false;
         }
     }
 
     // 将接受到的数据保存到指定的 collection
-    void Mongo::Insert(const std::string &collection_name, const std::string &json)
+    bool Mongo::Insert(const std::string &collection_name, const std::string &json)
     {
         try
         {
@@ -61,10 +64,13 @@ namespace persist
 
             if(result)  LOG_DEBUG("insert success.");
             else  LOG_WARN("insert error.");
+
+            return (bool)result;
         }
         catch(std::exception &e)
         {
             LOG_ERROR("insert exception:", e.what());
+            return false;
         }
     }
 

@@ -1,6 +1,6 @@
 
-#ifndef __FH_TMALPHA_MARKET_MARKET_DATA_PROVIDER_H__
-#define __FH_TMALPHA_MARKET_MARKET_DATA_PROVIDER_H__
+#ifndef __FH_CORE_PERSIST_MARKET_DATA_PROVIDER_H__
+#define __FH_CORE_PERSIST_MARKET_DATA_PROVIDER_H__
 
 #include <string>
 #include <vector>
@@ -12,17 +12,18 @@
 #include "core/assist/logger.h"
 #include "core/persist/mongo.h"
 #include "core/assist/settings.h"
-#include "tmalpha/market/data_provider.h"
+#include "core/persist/data_provider.h"
 
 #define  GET_STR_FROM_JSON(view, key) view[key].get_utf8().value.to_string()
 #define  GET_INT_FROM_JSON(view, key) std::stol(GET_STR_FROM_JSON(view, key))
 
 namespace fh
 {
-namespace tmalpha
+namespace core
 {
-namespace market
+namespace persist
 {
+    // 读取指定交易所的原始数据
     class MarketDataProvider : public DataProvider
     {
         public:
@@ -75,6 +76,12 @@ namespace market
                 return GET_INT_FROM_JSON(view, "sendingTime");
             }
 
+            // 将数据保存到指定的 collection
+            bool Insert(const std::string &collection_name, const std::string &json)
+            {
+                return m_db->Insert(collection_name, json);
+            }
+
         private:
             std::string m_market;
             std::pair<std::string, std::string> m_range;
@@ -83,8 +90,8 @@ namespace market
         private:
             DISALLOW_COPY_AND_ASSIGN(MarketDataProvider);
     };
-}   // namespace market
-}   // namespace tmalpha
+}   // namespace persist
+}   // namespace core
 }   // namespace fh
 
-#endif  // __FH_TMALPHA_MARKET_MARKET_DATA_PROVIDER_H__
+#endif  // __FH_CORE_PERSIST_MARKET_DATA_PROVIDER_H__

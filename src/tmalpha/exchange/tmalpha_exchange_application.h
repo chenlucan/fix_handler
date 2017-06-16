@@ -36,7 +36,7 @@ namespace exchange
         private:
             fh::tmalpha::market::MarketSimulater *m_market;
             fh::tmalpha::exchange::MarketReplayListener *m_market_listener;
-            fh::tmalpha::market::DataProvider *m_provider;
+            fh::core::persist::DataProvider *m_provider;
             fh::tmalpha::market::DataConsumer *m_consumer;
             fh::core::strategy::StrategyCommunicator *m_strategy;
             ExchangeSimulater *m_exchange_simulater;

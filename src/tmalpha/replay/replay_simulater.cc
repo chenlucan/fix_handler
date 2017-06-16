@@ -12,7 +12,7 @@ namespace tmalpha
 namespace replay
 {
 
-    ReplaySimulater::ReplaySimulater(fh::tmalpha::market::DataProvider *provider, int trade_rate)
+    ReplaySimulater::ReplaySimulater(fh::core::persist::DataProvider *provider, int trade_rate)
      : m_matcher(new ReplayOrderMatcher(trade_rate)), m_consumer(new ReplayDataConsumer()),
        m_provider(provider),
       m_messages(), m_is_fetch_end(false), m_is_stopped(true),

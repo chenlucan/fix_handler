@@ -117,14 +117,16 @@ TRADE_MATCHING_REPLAY_ALPHA_TARGET = $(BIN_PATH)/trade_matching_replay_alpha_tes
 TEST_TARGET = $(BIN_PATH)/utest
 FEMAS_MARKET_TARGET = $(BIN_PATH)/femas_market_test
 FEMAS_EXCHANGE_TARGET = $(BIN_PATH)/femas_exchange_test
+DATE_CONVERTER_TOOL_TARGET = $(BIN_PATH)/data_converter_test
     
 default: all;
 
 include tmobjs.mk
 include cmeobjs.mk
 include femas.mk
+include toolobjs.mk
     
-all: createdir femas_exchange_test femas_market usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender orgread tmalpha tmalphaex tmalphatrade tmalphareplay
+all: createdir femas_exchange_test femas_market usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender orgread tmalpha tmalphaex tmalphatrade tmalphareplay dataconverter
  
 femas_exchange_test: $(BIN_PATH)/femas_exchange_main_test.o $(BIN_PATH)/femas_exchange_application.o $(BIN_PATH)/communicator.o $(BIN_PATH)/FemasUstpFtdcTraderManger.o \
 			 $(COMM_OBJS) 
@@ -209,6 +211,11 @@ tmalphareplay: $(BIN_PATH)/trade_matching_replay_alpha_test.o	$(BIN_PATH)/replay
                              $(BIN_PATH)/replay_order_matcher.o $(BIN_PATH)/replay_simulater.o $(BIN_PATH)/tmalpha_replay_application.o \
                              $(BIN_PATH)/book_sender.o $(BIN_PATH)/strategy_communicator.o $(BIN_PATH)/mongo.o $(COMM_OBJS)
 	$(COMPILE_COMMAND) -o $(TRADE_MATCHING_REPLAY_ALPHA_TARGET) $? 
+
+dataconverter: $(BIN_PATH)/market_data_converter.o $(BIN_PATH)/data_converter_test.o \
+							$(BIN_PATH)/femas_book_manager.o $(BIN_PATH)/Femas_book_convert.o \
+              				$(BIN_PATH)/mongo.o $(COMM_OBJS)
+	$(COMPILE_COMMAND) -o $(DATE_CONVERTER_TOOL_TARGET) $? 
 						   			     
 copyfile: $(SETTINGS)
 

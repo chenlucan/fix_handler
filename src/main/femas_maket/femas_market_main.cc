@@ -168,7 +168,7 @@ bsoncxx::builder::basic::document tmjson;
     tmpjson.append(bsoncxx::builder::basic::kvp("message", tmjson));
 //	
      std::string message = bsoncxx::to_json(tmpjson.view());
-     MessMap tmpmap = pFemasBookConvert->Apply_message(message);
+     MessMap tmpmap = pFemasBookConvert->Convert(message);
      if(tmpmap.count("l2") != 0)
      {
          LOG_INFO("wwwwwwwwwwwwww = ",tmpmap["l2"]);

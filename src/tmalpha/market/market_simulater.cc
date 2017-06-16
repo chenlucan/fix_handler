@@ -12,7 +12,7 @@ namespace tmalpha
 namespace market
 {
 
-    MarketSimulater::MarketSimulater(fh::core::market::MarketListenerI *listener, DataProvider *provider, DataConsumer *consumer)
+    MarketSimulater::MarketSimulater(fh::core::market::MarketListenerI *listener, fh::core::persist::DataProvider *provider, DataConsumer *consumer)
     : fh::core::market::MarketI(listener),
       m_provider(provider), m_consumer(consumer), m_listener(listener), m_messages(),
       m_is_fetch_end(false), m_is_stopped(true), m_mutex(), m_condition(), m_speed(1),
