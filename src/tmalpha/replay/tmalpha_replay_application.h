@@ -20,8 +20,8 @@ namespace replay
     {
         public:
             explicit TmalphaReplayApplication(
-                    const std::string &app_setting_file = "trade_matching_settings.ini",
-                    const std::string &persist_setting_file = "persist_settings.ini");
+                    const std::string &app_setting_file = TRADE_MATCHING_SETTINGS_INI,
+                    const std::string &persist_setting_file = PERSIST_SETTINGS_INI);
             virtual ~TmalphaReplayApplication();
 
         public:

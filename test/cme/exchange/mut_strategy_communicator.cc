@@ -42,7 +42,7 @@ namespace strategy
         {
             std::string app_setting_file;
             fh::core::assist::common::getAbsolutePath(app_setting_file);    
-            app_setting_file +="exchange_settings.ini";
+            app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
             
             fh::cme::exchange::ExchangeSettings app_settings(app_setting_file);
             std::pair<std::string, std::string> url = app_settings.Get_strategy_url();
@@ -79,7 +79,7 @@ namespace strategy
         {
             std::string app_setting_file;
             fh::core::assist::common::getAbsolutePath(app_setting_file);    
-            app_setting_file +="exchange_settings.ini";
+            app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
             
             fh::cme::exchange::ExchangeSettings app_settings(app_setting_file);
             std::pair<std::string, std::string> url = app_settings.Get_strategy_url();
@@ -117,7 +117,7 @@ namespace strategy
         {
             std::string app_setting_file;
             fh::core::assist::common::getAbsolutePath(app_setting_file);    
-            app_setting_file +="exchange_settings.ini";
+            app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
             
             fh::cme::exchange::ExchangeSettings app_settings(app_setting_file);
             std::pair<std::string, std::string> url = app_settings.Get_strategy_url();
@@ -159,7 +159,7 @@ namespace strategy
         {
             std::string app_setting_file;
             fh::core::assist::common::getAbsolutePath(app_setting_file);    
-            app_setting_file +="exchange_settings.ini";
+            app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
             
             fh::cme::exchange::ExchangeSettings app_settings(app_setting_file);
             std::pair<std::string, std::string> url = app_settings.Get_strategy_url();
@@ -202,7 +202,7 @@ namespace strategy
         {
             std::string app_setting_file;
             fh::core::assist::common::getAbsolutePath(app_setting_file);    
-            app_setting_file +="exchange_settings.ini";
+            app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
             
             fh::cme::exchange::ExchangeSettings app_settings(app_setting_file);
             std::pair<std::string, std::string> url = app_settings.Get_strategy_url();
@@ -245,7 +245,7 @@ namespace strategy
         {
             std::string app_setting_file;
             fh::core::assist::common::getAbsolutePath(app_setting_file);    
-            app_setting_file +="exchange_settings.ini";
+            app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
             
             fh::cme::exchange::ExchangeSettings app_settings(app_setting_file);
             std::pair<std::string, std::string> url = app_settings.Get_strategy_url();
@@ -289,7 +289,7 @@ namespace strategy
         {
             std::string app_setting_file;
             fh::core::assist::common::getAbsolutePath(app_setting_file);    
-            app_setting_file +="exchange_settings.ini";
+            app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
             
             fh::cme::exchange::ExchangeSettings app_settings(app_setting_file);
             std::pair<std::string, std::string> url = app_settings.Get_strategy_url();
@@ -333,7 +333,7 @@ namespace strategy
         {
             std::string app_setting_file;
             fh::core::assist::common::getAbsolutePath(app_setting_file);    
-            app_setting_file +="exchange_settings.ini";
+            app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
             
             fh::cme::exchange::ExchangeSettings app_settings(app_setting_file);
             std::pair<std::string, std::string> url = app_settings.Get_strategy_url();
@@ -377,7 +377,7 @@ namespace strategy
         {
             std::string app_setting_file;
             fh::core::assist::common::getAbsolutePath(app_setting_file);    
-            app_setting_file +="exchange_settings.ini";
+            app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
             
             fh::cme::exchange::ExchangeSettings app_settings(app_setting_file);
             std::pair<std::string, std::string> url = app_settings.Get_strategy_url();
@@ -422,7 +422,7 @@ namespace strategy
         {
             std::string app_setting_file;
             fh::core::assist::common::getAbsolutePath(app_setting_file);    
-            app_setting_file +="exchange_settings.ini";
+            app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
             
             fh::cme::exchange::ExchangeSettings app_settings(app_setting_file);
             std::pair<std::string, std::string> url = app_settings.Get_strategy_url();
@@ -467,7 +467,7 @@ namespace strategy
         {
             std::string app_setting_file;
             fh::core::assist::common::getAbsolutePath(app_setting_file);    
-            app_setting_file +="exchange_settings.ini";
+            app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
             
             fh::cme::exchange::ExchangeSettings app_settings(app_setting_file);
             std::pair<std::string, std::string> url = app_settings.Get_strategy_url();
@@ -512,7 +512,7 @@ namespace strategy
         
         std::string app_setting_file;
         fh::core::assist::common::getAbsolutePath(app_setting_file);    
-        app_setting_file +="exchange_settings.ini";
+        app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
         
         fh::cme::exchange::ExchangeSettings app_settings(app_setting_file);
         std::pair<std::string, std::string> url = app_settings.Get_strategy_url();

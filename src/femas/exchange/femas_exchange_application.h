@@ -17,7 +17,7 @@ namespace exchange
     {
 
         public:
-                    explicit CFemasExchangeApp(const std::string &app_setting_file = "femas_config.ini");
+                    explicit CFemasExchangeApp(const std::string &app_setting_file = FEMAS_CONFIG_INI);
                     virtual ~CFemasExchangeApp();
 
 	 public:

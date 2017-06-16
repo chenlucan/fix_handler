@@ -44,8 +44,8 @@ namespace exchange
         std::string app_setting_file;
         fh::core::assist::common::getAbsolutePath(fix_setting_file);   
         app_setting_file = fix_setting_file;     
-        fix_setting_file +="exchange_client.cfg";
-        app_setting_file +="exchange_settings.ini";
+        fix_setting_file +=CME_EXCHANGE_CLIENT_CFG;
+        app_setting_file +=CME_EXCHANGE_SETTINGS_INI;
         
         fh::cme::exchange::ExchangeApplication exchangeApp(fix_setting_file, app_setting_file);
         exchangeApp.Start();
@@ -59,21 +59,17 @@ namespace exchange
     // synchronous timer
     TEST_F(MutExchangeApplication, ExchangeApplication_Test002)
     {
-        boost::asio::io_service ios;    // 所有的asio程序必须要有一个io_service对象  
+        boost::asio::io_service ios;  
   
-        // 定时器io_service作为构造函数参数，两秒钟之后定时器终止  
         boost::asio::deadline_timer t(ios, boost::posix_time::seconds(2));  
       
-        std::cout << t.expires_at() << std::endl; // 查看终止的绝对事件  
+        std::cout << t.expires_at() << std::endl;  
       
-        t.wait();                       // 调用wait同步等待  
+        t.wait();
         std::cout << "hello asio" << std::endl;
-        //可以把它与thread库的sleep()函数对比研究一下，两种虽然都是等待，但内部机制完全不同：thread库的sleep()使用了互斥量和条件变量，在线程中等待，而asio则是调用了操作系统的异步机制，如select，epool等完成。
-        //同步定时器的用法很简单，但它演示了asio程序的基本结构和流程：一个asio程序首先要定义一个io_service对象，它是前摄器模式中最重的proactor角色，然后我们声明一个IO操作(这里是定时器),并把它挂接在io_service
     }
     
     // asynchronous timer
-    // 代码大致与同步定时器相等，增加了回调函数，并使用io_service.run()和定时器的async_wait()方法
     void Print(const boost::system::error_code& error)  
     {  
         std::cout << "hello asio" << std::endl;  
@@ -81,18 +77,15 @@ namespace exchange
     
     TEST_F(MutExchangeApplication, ExchangeApplication_Test003)
     {
-        boost::asio::io_service ios;    // 所有的asio程序必须要有一个io_service对象  
+        boost::asio::io_service ios;  
   
-        // 定时器io_service作为构造函数参数，两秒钟之后定时器终止  
         boost::asio::deadline_timer t(ios, boost::posix_time::seconds(2));  
       
-        t.async_wait(Print);   // 调用wait异步等待，传入回调函数，立即返回  
+        t.async_wait(Print);  
       
         std::cout << "it show before t expired." << std::endl;
-        ios.run();   //很重要，异步IO必须   
-        std::cout<<"runned"<<std::endl;//将与hello asio一起输出，说明run()是阻塞函数
-        //调用io_service的run()成员函数，它启动前摄器的事件处理循环，阻塞等待所有的操作完成并分派事件。
-        //如果不调用run()那么虽然操作被异步执行了，但没有一个等待它完成的机制，回调函数将得不到执行机会。
+        ios.run();
+        std::cout<<"runned"<<std::endl;
     }
     
     void start_notify_handler();
@@ -145,29 +138,6 @@ namespace exchange
         acceptor.async_accept(sock,
             boost::bind(&accept_handler, boost::asio::placeholders::error));
     }
-    // 异步定时器使用bind，async_wait()接受的回调函数类型是固定的，必须使用bind库来绑定参数以适配它的接口
-    TEST_F(MutExchangeApplication, ExchangeApplication_Test004)
-    {
-        // int raw_fd = inotify_init(); // error handling ignored
-        // stream_desc.assign(raw_fd);
-        // inotify_add_watch(raw_fd, ".", IN_OPEN);
-        // start_notify_handler();
-        // start_accept_handler();
-        // io_svc.run();
-        
-        
-        // boost::asio::io_service io_service;
-        // boost::asio::ip::udp::socket udp_socket(io_service);
-        
-        // boost::asio::ip::udp::endpoint local_add(boost::asio::ip::address::from_string("192.168.0.141"), 2000);
-        // //给scoket对象绑定local_add对象
-        // udp_socket.open(local_add.protocol());
-        // udp_socket.bind(local_add);
-        
-        // udp_socket.cancel();        
-        // io_service.stop();
-    }
-      
 
 
     class handler
@@ -219,7 +189,7 @@ namespace exchange
       int m_count;
     };      
     
-    TEST_F(MutExchangeApplication, ExchangeApplication_Test005)
+    TEST_F(MutExchangeApplication, ExchangeApplication_Test004)
     {
         boost::asio::io_service io;
         handler h(io);

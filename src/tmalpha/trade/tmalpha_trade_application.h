@@ -19,7 +19,7 @@ namespace trade
     class TmalphaTradeApplication
     {
         public:
-            explicit TmalphaTradeApplication(const std::string &app_setting_file = "trade_matching_settings.ini");
+            explicit TmalphaTradeApplication(const std::string &app_setting_file = TRADE_MATCHING_SETTINGS_INI);
             virtual ~TmalphaTradeApplication();
 
         public:
