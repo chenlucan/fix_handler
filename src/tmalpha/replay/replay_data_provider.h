@@ -12,7 +12,7 @@
 #include "core/assist/logger.h"
 #include "core/persist/mongo.h"
 #include "core/assist/settings.h"
-#include "tmalpha/market/data_provider.h"
+#include "core/persist/data_provider.h"
 
 #define  GET_STR_FROM_JSON(view, key) view[key].get_utf8().value.to_string()
 #define  GET_INT_FROM_JSON(view, key) std::stol(GET_STR_FROM_JSON(view, key))
@@ -23,7 +23,7 @@ namespace tmalpha
 {
 namespace replay
 {
-    class ReplayDataProvider : public fh::tmalpha::market::DataProvider
+    class ReplayDataProvider : public fh::core::persist::DataProvider
     {
         public:
             ReplayDataProvider(const std::string &market, const fh::core::assist::Settings &db_settings)

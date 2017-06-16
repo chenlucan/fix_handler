@@ -1,7 +1,7 @@
 
 #include "core/assist/logger.h"
 #include "core/book/book_sender.h"
-#include "tmalpha/market/market_data_provider.h"
+#include "core/persist/market_data_provider.h"
 #include "tmalpha/market/cme_data_consumer.h"
 #include "tmalpha/market/market_simulater.h"
 #include "tmalpha/market/tmalpha_market_application.h"
@@ -81,7 +81,7 @@ namespace market
         float speed = std::stof(app_settings.Get("alpha.speed"));
 
         // 初期化数据提供者
-        m_provider = new fh::tmalpha::market::MarketDataProvider(market, persist_setting_file);
+        m_provider = new fh::core::persist::MarketDataProvider(market, persist_setting_file);
         m_provider->Range(start_include, end_exclude);
 
         // 初期化数据处理者

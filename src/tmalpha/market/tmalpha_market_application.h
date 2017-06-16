@@ -30,7 +30,7 @@ namespace market
             void Init(const fh::core::assist::Settings &app_settings, const fh::core::assist::Settings &persist_setting_file);
 
         private:
-            DataProvider *m_provider;
+            fh::core::persist::DataProvider *m_provider;
             DataConsumer *m_consumer;
             fh::core::market::MarketListenerI *m_listener;
             MarketSimulater *m_simulater;

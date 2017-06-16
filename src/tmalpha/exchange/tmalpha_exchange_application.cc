@@ -1,7 +1,7 @@
 
 #include <thread>
 #include "core/assist/logger.h"
-#include "tmalpha/market/market_data_provider.h"
+#include "core/persist/market_data_provider.h"
 #include "tmalpha/market/cme_data_consumer.h"
 #include "tmalpha/exchange/tmalpha_exchange_application.h"
 
@@ -42,7 +42,7 @@ namespace exchange
         int trade_rate = std::stoi(app_settings.Get("alpha.trade_rate"));   // 利用这个比率（[0,100]）和实际成交数量来决定一个订单是否成交
 
         // 初期化数据提供者
-        m_provider = new fh::tmalpha::market::MarketDataProvider(market, db_settings);
+        m_provider = new fh::core::persist::MarketDataProvider(market, db_settings);
         m_provider->Range(start_include, end_exclude);
 
         // 初期化数据处理者
