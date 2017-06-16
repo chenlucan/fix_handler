@@ -6,7 +6,7 @@
 #include <vector>
 #include "core/global.h"
 #include "core/assist/logger.h"
-#include "tmalpha/market/data_provider.h"
+#include "core/persist/data_provider.h"
 
 namespace fh
 {
@@ -14,7 +14,7 @@ namespace tmalpha
 {
 namespace replay
 {
-    class MockReplayDataProvider : public fh::tmalpha::market::DataProvider
+    class MockReplayDataProvider : public fh::core::persist::DataProvider
     {
         public:
             MockReplayDataProvider(const std::vector<std::string> &messages, std::uint32_t page_size)

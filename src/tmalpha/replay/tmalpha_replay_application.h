@@ -35,7 +35,7 @@ namespace replay
 
         private:
             fh::core::market::MarketListenerI *m_listener;
-            fh::tmalpha::market::DataProvider *m_provider;
+            fh::core::persist::DataProvider *m_provider;
             ReplaySimulater *m_simulater;
             fh::core::strategy::StrategyCommunicator *m_strategy;
             std::thread *m_strategy_thread;

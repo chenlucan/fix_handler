@@ -2,8 +2,8 @@
 #include "core/assist/utility.h"
 #include "core/assist/logger.h"
 #include "core/strategy/invalid_order.h"
+#include "core/persist/market_data_provider.h"
 #include "tmalpha/exchange/exchange_simulater.h"
-#include "tmalpha/market/market_data_provider.h"
 #include "tmalpha/market/cme_data_consumer.h"
 #include "tmalpha/exchange/market_replay_listener.h"
 

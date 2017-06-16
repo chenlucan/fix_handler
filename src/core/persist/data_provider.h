@@ -1,15 +1,15 @@
 
-#ifndef __FH_TMALPHA_MARKET_DATA_PROVIDER_H__
-#define __FH_TMALPHA_MARKET_DATA_PROVIDER_H__
+#ifndef __FH_CORE_PERSIST_DATA_PROVIDER_H__
+#define __FH_CORE_PERSIST_DATA_PROVIDER_H__
 
 #include <cstdint>
 #include <vector>
 
 namespace fh
 {
-namespace tmalpha
+namespace core
 {
-namespace market
+namespace persist
 {
     class DataProvider
     {
@@ -24,8 +24,8 @@ namespace market
             virtual std::uint64_t Message_identify(const std::string &message) = 0;
             virtual std::uint64_t Message_send_time(const std::string &message) = 0;
     };
-}   // namespace market
-}   // namespace tmalpha
+}   // namespace persist
+}   // namespace core
 }   // namespace fh
 
-#endif  // __FH_TMALPHA_MARKET_DATA_PROVIDER_H__
+#endif  // __FH_CORE_PERSIST_DATA_PROVIDER_H__

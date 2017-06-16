@@ -12,7 +12,7 @@
 #include "core/global.h"
 #include "core/market/marketi.h"
 #include "core/market/marketlisteneri.h"
-#include "tmalpha/market/data_provider.h"
+#include "core/persist/data_provider.h"
 #include "tmalpha/market/data_consumer.h"
 
 
@@ -25,7 +25,7 @@ namespace market
     class MarketSimulater : public fh::core::market::MarketI
     {
         public:
-            MarketSimulater(fh::core::market::MarketListenerI *listener, DataProvider *provider, DataConsumer *consumer);
+            MarketSimulater(fh::core::market::MarketListenerI *listener, fh::core::persist::DataProvider *provider, DataConsumer *consumer);
             virtual ~MarketSimulater();
 
         public:
@@ -55,7 +55,7 @@ namespace market
             void Sleep(std::uint64_t last_send_time, std::uint64_t current_send_time, std::uint64_t last_replay_time) const;
 
         private:
-            fh::tmalpha::market::DataProvider *m_provider;
+            fh::core::persist::DataProvider *m_provider;
             fh::tmalpha::market::DataConsumer *m_consumer;
             fh::core::market::MarketListenerI *m_listener;
             std::queue<std::string> m_messages;

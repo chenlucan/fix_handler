@@ -24,9 +24,9 @@ namespace persist
 
         public:
             // 将指定内容插入到数据库（目标 collection 由 json 中的 market 属性的值确定）
-            void Insert(const std::string &json);
+            bool Insert(const std::string &json);
             // 将指定内容插入到数据库
-            void Insert(const std::string &collection_name, const std::string &json);
+            bool Insert(const std::string &collection_name, const std::string &json);
             // 从指定 collection_name 对应的 collection 中检索指定日期时间范围内从指定位置开始的数据（检索的最大条数由配置文件决定）
             // start_date_include, end_date_exclude: "yyyy-MM-dd HH:mm:ss" 格式
             // prev_last_record_insert_time: 分页用。0 表示从上述范围内第一条数据开始检索；

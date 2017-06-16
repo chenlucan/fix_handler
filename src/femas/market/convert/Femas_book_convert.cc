@@ -130,7 +130,7 @@ FemasBookConvert::~FemasBookConvert()
 //    m_listener = listener;
 //}
 
-MessMap FemasBookConvert::Apply_message(const std::string &message)
+MessMap FemasBookConvert::Convert(const std::string &message)
 {
      LOG_INFO("FemasBookConvert::Apply_message");
      LOG_INFO("FemasBookConvert::Apply_message str = ",message);	 
