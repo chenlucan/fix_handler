@@ -22,6 +22,8 @@ const char TRADE_MATCHING_SETTINGS_INI[] = "trade_matching_settings.ini";
 
 // define femas config filename
 const char FEMAS_CONFIG_INI[] = "femas_config.ini";
+// define rem config filename
+const char REM_CONFIG_INI[] = "rem_config.ini";
 
 
 #endif // __FH_CORE_GLOBAL_H__
