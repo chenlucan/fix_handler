@@ -127,7 +127,7 @@ RemBookConvert::~RemBookConvert()
 
 
 
-MessMap RemBookConvert::Apply_message(const std::string &message)
+MessMap RemBookConvert::Convert(const std::string &message)
 {
      LOG_INFO("FemasBookConvert::Apply_message");
      LOG_INFO("FemasBookConvert::Apply_message str = ",message);	 
