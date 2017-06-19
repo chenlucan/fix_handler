@@ -237,11 +237,7 @@ namespace strategy
     {
         //
         LOG_INFO("send Definition: ", fh::core::assist::utility::Format_pb_message(contract));
-<<<<<<< HEAD
         m_sender.Send("C" + contract.SerializeAsString());
-=======
-	 m_sender.Send("C" + contract.SerializeAsString());	
->>>>>>> origin/shengli
     }
 
     void StrategyCommunicator::OnOrginalMessage(const std::string &message)
