@@ -136,7 +136,6 @@ include tmobjs.mk
 include cmeobjs.mk
 include femas.mk
 include toolobjs.mk
-include objs.mk
 include rem.mk
     
 all: createdir rem_efhmarket rem_exchange_test rem_market femas_exchange_test femas_market usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender orgread tmalpha tmalphaex tmalphatrade tmalphareplay dataconverter
