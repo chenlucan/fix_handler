@@ -68,7 +68,7 @@ bool CFemasCommunicator::Start(const std::vector<::pb::ems::Order> &init_orders)
     }
     LOG_INFO("CFemasGlobexCommunicator::mIConnet is ok ");
     m_pUstpFtdcTraderManger->m_InitQueryNum = init_orders.size();	
-    for(int i=0;i<init_orders.size();i++)
+    for(unsigned int i=0;i<init_orders.size();i++)
     {
         sleep(1); 
         Query(init_orders[i]);
@@ -338,7 +338,7 @@ void CFemasCommunicator::Delete_mass(const char *data, size_t size)
 bool CFemasCommunicator::SendReqQryTrade(const std::vector<::pb::ems::Order> &init_orders)
 {
     LOG_INFO("CFemasGlobexCommunicator::SendReqQryTrade ");
-    for(int i=0;i<init_orders.size();i++)
+    for(unsigned int i=0;i<init_orders.size();i++)
     {
         CUstpFtdcQryTradeField mQryTrade;
 	 memset(&mQryTrade,0,sizeof(CUstpFtdcQryTradeField));	
@@ -374,7 +374,7 @@ bool CFemasCommunicator::SendReqQryTrade(const std::vector<::pb::ems::Order> &in
 bool CFemasCommunicator::SendReqQryInvestorPosition(const std::vector<::pb::ems::Order> &init_orders)
 {
     LOG_INFO("CFemasGlobexCommunicator::SendReqQryInvestorPosition ");
-    for(int i=0;i<init_orders.size();i++)
+    for(unsigned int i=0;i<init_orders.size();i++)
     {
         CUstpFtdcQryInvestorPositionField mQryInvestorPosition;
         memset(&mQryInvestorPosition,0,sizeof(CUstpFtdcQryInvestorPositionField));

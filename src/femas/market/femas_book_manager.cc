@@ -189,7 +189,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	    bbo_info.set_contract(pMarketData->InstrumentID);		
            pb::dms::DataPoint *bid = bbo_info.mutable_bid();
 	    bid->set_price(pMarketData->BidPrice1);
-	    bid->set_price(pMarketData->BidVolume1);	
+	    bid->set_size(pMarketData->BidVolume1);	
            pb::dms::DataPoint *ask = bbo_info.mutable_offer();
            ask->set_price(pMarketData->AskPrice1);
            ask->set_size(pMarketData->AskVolume1);	   

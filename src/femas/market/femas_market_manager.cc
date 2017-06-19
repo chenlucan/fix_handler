@@ -397,7 +397,7 @@ void CFemasMarketManager::Subscribe()
       else
       {
           char **contracts = new char*[instruments.size()];
-          for(int i=0;i<instruments.size();i++)
+          for(unsigned int i=0;i<instruments.size();i++)
 	   {
                contracts[i] = new char[instruments[i].length()+1];
 	        memset(contracts[i],0,instruments[i].length()+1);
@@ -405,7 +405,7 @@ void CFemasMarketManager::Subscribe()
 		 LOG_INFO("num = ",i+1,",sub contracts = ",contracts[i]);	
 	   }	   	  
 	   m_pUserApi->SubMarketData (contracts,instruments.size());
-	   for(int i=0;i<instruments.size();i++)
+	   for(unsigned int i=0;i<instruments.size();i++)
 	   {
               delete [] contracts[i];   
 	   }

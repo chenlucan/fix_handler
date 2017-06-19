@@ -263,27 +263,24 @@ void FemasBookConvert::FemasmarketData(const JSON_ELEMENT &message,int volumeMul
     strcpy(tmpMarketData.InstrumentName,GET_STR_FROM_JSON(message, "InstrumentName").c_str());	
  
     int BidVolume_x = 0;
-    try
-    {
-        if(volumeMultiple <= 0)
-	 {
-            BidVolume_x = 0;    
-	 }
-	 else
-	 {
-            BidVolume_x = (tmpMarketData.Turnover-tmpMarketData.BidPrice1*tmpMarketData.Volume*volumeMultiple)/((tmpMarketData.AskPrice1-tmpMarketData.BidPrice1)*volumeMultiple);
-	 }	                   
-    }
-    catch(...)
-    {
-        BidVolume_x = 0;
-    }		
-	
-    int AskVolume_y = tmpMarketData.Volume-BidVolume_x;
+    int AskVolume_y = 0;	
     if(volumeMultiple <= 0)
     {
         AskVolume_y = 0;
+	 BidVolume_x = 0;
     }
+    else
+    {
+        try
+       {
+            AskVolume_y = (tmpMarketData.Turnover-tmpMarketData.BidPrice1*tmpMarketData.Volume*volumeMultiple)/((tmpMarketData.AskPrice1-tmpMarketData.BidPrice1)*volumeMultiple);                  
+       }
+       catch(...)
+       {
+           AskVolume_y = 0;
+       }
+	BidVolume_x = tmpMarketData.Volume-AskVolume_y;     
+    }		
 
     if(BidVolume_x < 0)
     {
