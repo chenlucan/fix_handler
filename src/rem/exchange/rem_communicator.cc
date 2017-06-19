@@ -72,7 +72,7 @@ bool CRemCommunicator::Start(const std::vector<::pb::ems::Order> &init_orders)
     }
     LOG_INFO("CRemGlobexCommunicator::mIConnet is ok ");
     m_pEESTraderApiManger->m_InitQueryNum = init_orders.size();
-    for(int i=0;i<init_orders.size();i++)
+    for(unsigned int i=0;i<init_orders.size();i++)
     {
         Query(init_orders[i]);
     }
@@ -94,7 +94,7 @@ bool CRemCommunicator::Start(const std::vector<::pb::ems::Order> &init_orders)
     } 
 //check suss order
     std::string oldaccount = "";
-    for(int i=0;i<init_orders.size();i++)
+    for(unsigned int i=0;i<init_orders.size();i++)
     {
         if(oldaccount == "" || oldaccount != init_orders[i].account())
 	 {
@@ -117,7 +117,7 @@ bool CRemCommunicator::Start(const std::vector<::pb::ems::Order> &init_orders)
 
 //check suss position
     oldaccount = "";
-    for(int i=0;i<init_orders.size();i++)
+    for(unsigned int i=0;i<init_orders.size();i++)
     {
         if(oldaccount == "" || oldaccount != init_orders[i].account())
 	 {

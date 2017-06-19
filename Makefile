@@ -69,11 +69,11 @@ rem_exchange_test: $(BIN_PATH)/rem_exchange_main_test.o $(BIN_PATH)/rem_exchange
 	$(COMPILE_COMMAND) -o $(REM_EXCHANGE_TARGET) $?
 
 rem_market: $(BIN_PATH)/rem_market_main_test.o $(BIN_PATH)/rem_market_manager.o $(BIN_PATH)/rem_market.o $(BIN_PATH)/rem_market_application.o \
-              $(BIN_PATH)/rem_book_manager.o \
+              $(BIN_PATH)/rem_book_manager.o $(BIN_PATH)/Rem_book_convert.o \
 			 $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(REM_MARKET_TARGET) $?	 
 	
-rem_efhmarket: $(BIN_PATH)/rem_efh_market_main_test.o $(BIN_PATH)/rem_efhmarket.o $(BIN_PATH)/rem_guava_quote.o $(BIN_PATH)/rem_socket_multicast.o $(BIN_PATH)/rem_efhmarket_manager.o \
+rem_efhmarket: $(BIN_PATH)/rem_efh_market_main_test.o $(BIN_PATH)/rem_efhmarket.o $(BIN_PATH)/rem_guava_quote.o $(BIN_PATH)/rem_socket_multicast.o $(BIN_PATH)/rem_efhmarket_manager.o $(BIN_PATH)/EFHRem_book_convert.o \
 			 $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(REM_EFH_MARKET_TARGET) $?	 	
 

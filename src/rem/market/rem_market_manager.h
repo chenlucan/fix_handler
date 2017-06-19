@@ -14,6 +14,11 @@
 #include <bsoncxx/builder/basic/document.hpp>
 #include "core/global.h"
 #include <atomic>
+#include <time.h>
+#include <ctime>
+#include <stdlib.h>
+
+typedef unsigned long long  ullong;
 
 namespace fh
 {
@@ -70,7 +75,10 @@ class CRemMarkrtManager : public EESQuoteEvent
 		void CreateRemBookManager(fh::core::market::MarketListenerI *sender);
 
 		void StructToJSON(EESMarketDepthQuoteData *pMarketData);
-		void RemDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID);
+		void RemDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID,std::string updatetime,ullong tmp_time);
+		std::string GetUpdateTimeStr(EESMarketDepthQuoteData *pMarketData);
+		ullong str2stmp(const char *strTime);
+		ullong GetUpdateTimeInt(EESMarketDepthQuoteData *pMarketData);
 
 		bool GetReatart()
 		{

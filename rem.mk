@@ -13,6 +13,9 @@ $(BIN_PATH)/rem_book_manager.o: $(SRC_PATH)/rem/market/rem_book_manager.cc
 $(BIN_PATH)/rem_market_main_test.o: $(SRC_PATH)/main/rem_maket/rem_market_main.cc
 	$(COMPILE_COMMAND) -c -o $@ $<	
 	
+$(BIN_PATH)/Rem_book_convert.o: $(SRC_PATH)/rem/market/convert/Rem_book_convert.cc
+	$(COMPILE_COMMAND) -c -o $@ $<		
+	
 $(BIN_PATH)/rem_communicator.o: $(SRC_PATH)/rem/exchange/rem_communicator.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 	
@@ -24,6 +27,9 @@ $(BIN_PATH)/rem_exchange_application.o: $(SRC_PATH)/rem/exchange/rem_exchange_ap
 
 $(BIN_PATH)/rem_exchange_main_test.o: $(SRC_PATH)/main/rem_exchange/rem_exchange_main.cc
 	$(COMPILE_COMMAND) -c -o $@ $<	
+	
+$(BIN_PATH)/EFHRem_book_convert.o: $(SRC_PATH)/rem/efhmarket/convert/EFHRem_book_convert.cc
+	$(COMPILE_COMMAND) -c -o $@ $<		
 	
 $(BIN_PATH)/rem_efh_market_main_test.o: $(SRC_PATH)/main/rem_maket/rem_efh_market_main.cc
 	$(COMPILE_COMMAND) -c -o $@ $<		

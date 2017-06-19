@@ -39,7 +39,7 @@ namespace strategy
     }
 
     StrategyCommunicator::StrategyCommunicator(const std::string &send_url, const std::string &receive_url)
-    : m_sender(send_url), m_receiver(receive_url), m_org_sender(nullptr),m_exchange(nullptr)
+    : m_sender(send_url), m_receiver(receive_url),m_exchange(nullptr)
     {
         // noop
     }

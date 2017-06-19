@@ -12,15 +12,16 @@ namespace efhmarket
 
 
 
-CRemEfhMarkrtManager::CRemEfhMarkrtManager()
+CRemEfhMarkrtManager::CRemEfhMarkrtManager(fh::core::market::MarketListenerI *book_sender)
 {
     memset(&m_mcinfo,0,sizeof(multicast_info));
+    m_book_sender = book_sender;	
 }
 
 CRemEfhMarkrtManager::~CRemEfhMarkrtManager()
 {
     delete m_pFileConfig;
-    delete m_book_sender;	
+    //delete m_book_sender;	
 }
 
 void CRemEfhMarkrtManager::on_receive_nomal(guava_udp_normal* data)
@@ -48,7 +49,7 @@ bool CRemEfhMarkrtManager::run()
     strcpy(m_mcinfo.m_remote_ip, remote_ip.c_str());
     m_mcinfo.m_remote_port = remote_port;
     strcpy(m_mcinfo.m_local_ip, local_ip.c_str());
-    m_mcinfo.m_local_port = remote_port;	
+    m_mcinfo.m_local_port = local_port;	
     bool ret = m_guava.init(m_mcinfo, this);	
     if(!ret)
     {
@@ -170,11 +171,11 @@ void CRemEfhMarkrtManager::StructToJSON(guava_udp_normal *pMarketData)
     tmjson.append(bsoncxx::builder::basic::kvp("ask_px", T(pMarketData->m_ask_px)));	
     tmjson.append(bsoncxx::builder::basic::kvp("ask_share", T(pMarketData->m_ask_share<0 ? 0.0 : pMarketData->m_ask_share)));
     	
-    RemDateToString(tmjson);	
+    RemDateToString(tmjson,pMarketData->m_symbol,GetUpdateTimeStr(pMarketData),GetUpdateTimeInt(pMarketData));	
     return;
 }
 
-void CRemEfhMarkrtManager::RemDateToString(bsoncxx::builder::basic::document& json)
+void CRemEfhMarkrtManager::RemDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID,std::string updatetime,ullong tmp_time)
 {
     bsoncxx::builder::basic::document tmjson;
     tmjson.append(bsoncxx::builder::basic::kvp("market", T("REMEFH")));		  
@@ -186,6 +187,81 @@ void CRemEfhMarkrtManager::RemDateToString(bsoncxx::builder::basic::document& js
 
     SendRemToDB(bsoncxx::to_json(tmjson.view()));
     return;
+}
+
+ullong CRemEfhMarkrtManager::str2stmp(const char *strTime)
+{
+     if (strTime != NULL)
+     {
+         struct tm sTime;
+ #ifdef __GNUC__
+         strptime(strTime, "%Y-%m-%d %H:%M:%S", &sTime);
+ #else
+         sscanf(strTime, "%d-%d-%d %d:%d:%d", &sTime.tm_year, &sTime.tm_mon, &sTime.tm_mday, &sTime.tm_hour, &sTime.tm_min, &sTime.tm_sec);
+         sTime.tm_year -= 1900;
+         sTime.tm_mon -= 1;
+ #endif
+         ullong ft = mktime(&sTime);
+         return ft;
+     }
+     else {
+         return time(0);
+     }
+}
+
+ullong CRemEfhMarkrtManager::GetUpdateTimeInt(guava_udp_normal *pMarketData)
+{
+    timespec time;
+    clock_gettime(CLOCK_REALTIME, &time);  //获取相对于1970到现在的秒数
+    struct tm nowTime;
+    localtime_r(&time.tv_sec, &nowTime);
+    char current[1024]={0};
+    sprintf(current, "%04d%02d%02d", nowTime.tm_year + 1900, nowTime.tm_mon+1, nowTime.tm_mday);
+
+    std::string timestr="";
+    char ctmp[20]={0};	
+    strncpy(ctmp,current,4);
+    ctmp[4] = '-';
+    strncpy(ctmp+5,current+4,2);	
+    ctmp[7] = '-';
+    strncpy(ctmp+8,current+6,2);
+    ctmp[10] = ' ';
+    timestr = ctmp;	
+    timestr+=pMarketData->m_update_time;
+    ullong tmp_time = 0;
+    tmp_time = str2stmp(timestr.c_str());	
+    tmp_time *= 1000;
+    tmp_time += pMarketData->m_millisecond;
+    tmp_time *= 1000;
+    tmp_time *= 1000;	
+    return tmp_time;	
+}
+
+std::string CRemEfhMarkrtManager::GetUpdateTimeStr(guava_udp_normal *pMarketData)
+{
+    timespec time;
+    clock_gettime(CLOCK_REALTIME, &time);  //获取相对于1970到现在的秒数
+    struct tm nowTime;
+    localtime_r(&time.tv_sec, &nowTime);
+    char current[1024]={0};
+    sprintf(current, "%04d%02d%02d", nowTime.tm_year + 1900, nowTime.tm_mon+1, nowTime.tm_mday);
+
+    std::string timestr="";
+    char ctmp[20]={0};	
+    strncpy(ctmp,current,4);
+    ctmp[4] = '-';
+    strncpy(ctmp+5,current+4,2);	
+    ctmp[7] = '-';
+    strncpy(ctmp+8,current+6,2);	
+    ctmp[10] = ' ';
+    timestr = ctmp;	
+    timestr+=pMarketData->m_update_time;
+    timestr+=".";	 
+    std::string tmp = std::to_string(pMarketData->m_millisecond);
+    tmp += "000";
+    timestr += tmp;	
+    	
+    return timestr;
 }
 
 }
