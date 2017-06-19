@@ -43,7 +43,7 @@ LIBS_PATH += -L$(PROTOBUF_LIBS_PATH) -L$(QUICKFIX_LIBS_PATH) -L$(SBE_LIBS_PATH) 
 
 #define exec libs path
 #EXEC_LIBS_PATH = -Wl,-rpath,$(VENDOR_PATH)/boost/libs:$(VENDOR_PATH)/gtest/libs:$(VENDOR_PATH)/mongodb/libs:$(VENDOR_PATH)/protobuf/libs:$(VENDOR_PATH)/quickfix/libs:$(VENDOR_PATH)/sbe/libs:$(VENDOR_PATH)/zeromq/libs:$(VENDOR_PATH)/femas/libs
-EXEC_LIBS_PATH = -Wl,-rpath,$(BOOST_LIBS_PATH):$(GTEST_LIBS_PATH):$(MONGODB_LIBS_PATH):$(PROTOBUF_LIBS_PATH):$(QUICKFIX_LIBS_PATH):$(SBE_LIBS_PATH):$(ZEROMQ_LIBS_PATH):$(FEMAS_LIBS_PATH)
+EXEC_LIBS_PATH = -Wl,-rpath,$(BOOST_LIBS_PATH):$(GTEST_LIBS_PATH):$(MONGODB_LIBS_PATH):$(PROTOBUF_LIBS_PATH):$(QUICKFIX_LIBS_PATH):$(SBE_LIBS_PATH):$(ZEROMQ_LIBS_PATH):$(FEMAS_LIBS_PATH):$(REM_LIBS_PATH)
 
 LIBS = -lpthread -lboost_system -lzmq -lstdc++ -lquickfix -lmongocxx -lbsoncxx -lmongoc -lbson -lprotobuf -lgcov
 
