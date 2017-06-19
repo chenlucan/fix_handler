@@ -16,6 +16,12 @@
 #include <bsoncxx/builder/basic/array.hpp>
 #include <bsoncxx/builder/basic/document.hpp>
 #include "core/global.h"
+#include<time.h>
+#include <ctime>
+#include <stdlib.h>
+
+
+typedef unsigned long long  ullong;
 
 using std::vector;
 
@@ -35,7 +41,7 @@ inline std::string T(char *v){return std::string(v);}
 class CRemEfhMarkrtManager : public guava_quote_event
 {
     public:
-		CRemEfhMarkrtManager();
+		CRemEfhMarkrtManager(fh::core::market::MarketListenerI *book_sender);
 		virtual ~CRemEfhMarkrtManager();
 
 		virtual void on_receive_nomal(guava_udp_normal* data);
@@ -47,7 +53,10 @@ class CRemEfhMarkrtManager : public guava_quote_event
 	       void SendRemToDB(const std::string &message);
 
 		void StructToJSON(guava_udp_normal *pMarketData);
-		void RemDateToString(bsoncxx::builder::basic::document& json);   
+		void RemDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID,std::string updatetime,ullong tmp_time);   
+		std::string GetUpdateTimeStr(guava_udp_normal *pMarketData);
+		ullong str2stmp(const char *strTime);
+		ullong GetUpdateTimeInt(guava_udp_normal *pMarketData);
 
      public:
 		fh::core::market::MarketListenerI *m_book_sender;

@@ -16,7 +16,7 @@ CRemEfhMarket::CRemEfhMarket(fh::core::market::MarketListenerI *listener)
 {
     LOG_INFO("CRemEfhMarket::CRemEfhMarket");
     pRemEfhMarkrtManager = NULL;
-    pRemEfhMarkrtManager = new CRemEfhMarkrtManager();	
+    pRemEfhMarkrtManager = new CRemEfhMarkrtManager(listener);	
     m_pFileConfig = NULL;
 	
 }
