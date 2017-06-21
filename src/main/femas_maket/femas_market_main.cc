@@ -20,6 +20,7 @@ inline std::string T(const char *v){return std::string(v);}
 inline std::string T(char *v){return std::string(v);}
 
 bool stop_all=false;
+fh::femas::market::CFemasMarketApp *pFemasMarletApp = NULL;
 
 void handler(int sig) 
 {
@@ -66,11 +67,19 @@ int set_SignalProc()
     return 0;
 }
 
+
 int main_loop()
 {
         while(!stop_all)
        {
            LOG_INFO("FemasMarket  runing  main_loop");
+
+		   
+	    if(NULL != pFemasMarletApp && 0 != pFemasMarletApp->m_pFemasMarket->m_FemasMarketManager->mIConnet)
+	    {
+               return 0;
+	    }	
+		
 	    sleep(10);	 
        }
 	return 0;
@@ -84,7 +93,7 @@ int main(int argc, char* argv[])
      LOG_INFO("main() start");
 
 //========================================================================================================
-     fh::femas::market::convert::FemasBookConvert* pFemasBookConvert = new fh::femas::market::convert::FemasBookConvert();
+/*     fh::femas::market::convert::FemasBookConvert* pFemasBookConvert = new fh::femas::market::convert::FemasBookConvert();
 //--
 bsoncxx::builder::basic::document tmjson;
     tmjson.append(bsoncxx::builder::basic::kvp("TradingDay", T("20170613")));
@@ -187,6 +196,7 @@ bsoncxx::builder::basic::document tmjson;
      }		 
      main_loop();
      return 0;
+*/	 
 //========================================================================================================
 	 
      //read my cfg
@@ -197,19 +207,19 @@ bsoncxx::builder::basic::document tmjson;
       fh::core::assist::Settings *pFileConfig = new fh::core::assist::Settings(FileConfigstr);
       std::string save_url_f = pFileConfig->Get("zeromq.org_url");
       std::string save_url_s = pFileConfig->Get("zeromq.book_url");
-      fh::femas::market::CFemasMarketApp *pFemasMarletApp = new fh::femas::market::CFemasMarketApp(save_url_f,save_url_s);
+
       	  
-      pFemasMarletApp->SetFileConfigData(FileConfigstr);
+      
       std::vector<std::string> Depthstruments;
       std::vector<std::string> Subminstruments;
       Depthstruments.clear();
-      Subminstruments.clear();	  
-      //Depthstruments.push_back(pFileConfig->Get("femas-DepthTopicID.TopicID"));
-      //Subminstruments.push_back("*");	  
-
+      Subminstruments.clear();	  	  
       Depthstruments.push_back("*");
-      pFemasMarletApp->Initialize(Depthstruments);
 
+restar:
+      pFemasMarletApp = new fh::femas::market::CFemasMarketApp(save_url_f,save_url_s);      	  
+      pFemasMarletApp->SetFileConfigData(FileConfigstr);	  
+      pFemasMarletApp->Initialize(Depthstruments);
       //pFemasMarletApp->Subscribe(Subminstruments);	   
 	  
       if(!pFemasMarletApp->Start())
@@ -217,15 +227,24 @@ bsoncxx::builder::basic::document tmjson;
           LOG_ERROR("FemasMarletApp start  Error!");
 	   pFemasMarletApp->Stop();	 
 	   delete pFemasMarletApp;
-	   return 0;	  
+	   //return 0;	
+	   if(stop_all)
+	   {
+              return 0;
+	   }	
+	   goto restar;
       }
 
       main_loop();
-	  
-      pFemasMarletApp->Stop();
-      delete pFileConfig;
-      delete pFemasMarletApp;
+	  	 
+      if(0 != pFemasMarletApp->m_pFemasMarket->m_FemasMarketManager->mIConnet && !stop_all)
+      {
+          pFemasMarletApp->Stop();      
+          delete pFemasMarletApp;
+          goto restar;
+      }
 
+      delete pFileConfig;
       LOG_INFO("femas-market pross stop!");
       return 0;
 }

@@ -350,6 +350,10 @@ std::string CFemasMarketManager::GetUpdateTimeStr(CUstpFtdcDepthMarketDataField 
     timestr+=pMarketData->UpdateTime;
     timestr+=".";	 
     std::string tmp = std::to_string(pMarketData->UpdateMillisec);
+    if(pMarketData->UpdateMillisec != 500)
+    {
+        tmp = "000";
+    }		
     tmp += "000";
     timestr += tmp;	
     	

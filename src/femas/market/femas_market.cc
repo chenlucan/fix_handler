@@ -184,8 +184,6 @@ void CFemasMarket::ReqDefinitions(std::vector<std::string> instruments)
       	 
  }
 
-
-
 }
 }
 }

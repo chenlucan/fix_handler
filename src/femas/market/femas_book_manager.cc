@@ -8,10 +8,12 @@ namespace market
 {
 
 
+
 CFemasBookManager::CFemasBookManager(fh::core::market::MarketListenerI *sender)
 {
         // noop
         m_book_sender = sender;
+	 m_trademap.clear();
 }      
 
 
@@ -196,7 +198,63 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
            m_book_sender->OnBBO(bbo_info);
 		
 	}
+
+	//·¢ËÍteadeÐÐÇé
+	int tmpvolume = MakePriceVolume(pMarketData);
+	LOG_INFO("CFemasBookManager::MakePriceVolume = ",tmpvolume); 
+	if(tmpvolume > 0)
+	{
+            pb::dms::Trade trade_info;
+	     trade_info.set_contract(pMarketData->InstrumentID);	
+	     pb::dms::DataPoint *trade_id = trade_info.mutable_last();	
+	     trade_id->set_price(pMarketData->LastPrice);
+	     trade_id->set_size(tmpvolume);	
+	     m_book_sender->OnTrade(trade_info);	 
+	}
 	
+}
+
+void CFemasBookManager::CheckTime(CUstpFtdcDepthMarketDataField *pMarketData)
+{
+    LOG_INFO("CFemasBookManager::CheckTime "); 
+    char ctmpf[3]={0};
+    char ctmps[3]={0};	
+    strncpy(ctmpf,pMarketData->UpdateTime,2);	
+    strncpy(ctmps,(m_trademap[pMarketData->InstrumentID]->mtime).c_str(),2);		
+    if(std::atoi(ctmpf) > 18 && std::atoi(ctmps) < 18)
+    {
+        LOG_INFO("CFemasBookManager::clear  Instrument map");
+        m_trademap[pMarketData->InstrumentID]->mvolume=pMarketData->Volume;
+	 m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;	
+    }
+}
+
+//void CFemasBookManager::ClearMap()
+//{
+//    m_trademap.clear();
+//}
+
+int CFemasBookManager::MakePriceVolume(CUstpFtdcDepthMarketDataField *pMarketData)
+{
+    LOG_INFO("CFemasBookManager::MakePriceVolume "); 
+    if(m_trademap.count(pMarketData->InstrumentID) == 0)
+    {
+        LOG_INFO("CFemasBookManager::insert map InstrumentID = ",pMarketData->InstrumentID); 
+        m_trademap[pMarketData->InstrumentID] = new mstrade();
+	 m_trademap[pMarketData->InstrumentID]->mvolume=pMarketData->Volume;
+	 m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;
+        return 0;
+    }
+    else
+    {
+        CheckTime(pMarketData);
+	 LOG_INFO("CFemasBookManager::pMarketData->Volume =  ",pMarketData->Volume); 	
+	 LOG_INFO("CFemasBookManager::m_trademap->Volume =  ",m_trademap[pMarketData->InstrumentID]->mvolume); 
+        int tmpVolume =  pMarketData->Volume - m_trademap[pMarketData->InstrumentID]->mvolume;
+	 m_trademap[pMarketData->InstrumentID]->mvolume=pMarketData->Volume;
+	 m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;	
+        return (tmpVolume > 0 ? tmpVolume : 0);     
+    }		
 }
 
 void CFemasBookManager::SendFemasToDB(const std::string &message)
