@@ -418,7 +418,7 @@ bool FemasBookConvert::MakeTradeJson(bsoncxx::builder::basic::document& json)
     tmarray_b.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_trade.last().price())))); 	
     tmarray_b.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_trade.last().size())))); 
 
-    json.append(bsoncxx::builder::basic::kvp("trade", tmarray_b));
+    json.append(bsoncxx::builder::basic::kvp("last", tmarray_b));
 
     return true;
 }

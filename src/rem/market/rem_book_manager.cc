@@ -153,9 +153,7 @@ void CRemBookManager::SendRemmarketData(EESMarketDepthQuoteData *pMarketData)
 	
 	m_book_sender->OnL2(l2_info);
 
-	//以上发送L2 行情
-
-	//发送最优价
+	//L2
 	if((pMarketData->BidPrice1 == DBL_MAX || pMarketData->BidVolume1 <= 0) && (pMarketData->AskVolume1 <= 0 || pMarketData->AskPrice1 == DBL_MAX))
 	{
            LOG_INFO("Bid and Offer NULL ");
@@ -194,7 +192,6 @@ void CRemBookManager::SendRemmarketData(EESMarketDepthQuoteData *pMarketData)
 		
 	}
 
-	//发送teade行情
 	int tmpvolume = MakePriceVolume(pMarketData);
 	LOG_INFO("CFemasBookManager::MakePriceVolume = ",tmpvolume); 
 	if(tmpvolume > 0)

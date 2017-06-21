@@ -60,7 +60,7 @@ namespace market
 
  void CFemasMarketManager::OnFrontDisconnected()
 {
-	// µ±·¢ÉúÕâ¸öÇé¿öºó£¬API»á×Ô¶¯ÖØĞÂÁ¬½Ó£¬¿Í»§¶Ë¿É²»×ö´¦Àí
+	// å½“å‘ç”Ÿè¿™ä¸ªæƒ…å†µåï¼ŒAPIä¼šè‡ªåŠ¨é‡æ–°è¿æ¥ï¼Œå®¢æˆ·ç«¯å¯ä¸åšå¤„ç†
 	LOG_INFO("OnFrontDisconnected.");
 	return;
 }
@@ -80,7 +80,7 @@ namespace market
 		
 	if (pRspInfo->ErrorID != 0) 
 	{
-		// ¶ËµÇÊ§°Ü£¬¿Í»§¶ËĞè½øĞĞ´íÎó´¦Àí
+		// ç«¯ç™»å¤±è´¥ï¼Œå®¢æˆ·ç«¯éœ€è¿›è¡Œé”™è¯¯å¤„ç†
 		LOG_ERROR("Failed to login, errorcode=",pRspInfo->ErrorID," errormsg=",pRspInfo->ErrorMsg," requestid=",nRequestID," chain=",bIsLast );
 		mIConnet = 1;
 		return;
@@ -103,14 +103,14 @@ void CFemasMarketManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pM
             LOG_ERROR("CFemasMarketManager::OnRtnDepthMarketData Error");
 	     return ;	
        }
-		// ¿Í»§¶Ë°´Ğè´¦Àí·µ»ØµÄÊı¾İ
+		// å®¢æˆ·ç«¯æŒ‰éœ€å¤„ç†è¿”å›çš„æ•°æ®
 	LOG_INFO("GetDepthMarketData::begin");	
 	LOG_INFO("name : ",pMarketData->InstrumentID);
 		
 	LOG_INFO("UpdateTime=",pMarketData->UpdateTime,"--",pMarketData->UpdateMillisec);
 
 
-//ÉêÂòÒ»
+//ç”³ä¹°ä¸€
        if (pMarketData->BidPrice1==DBL_MAX)
 		LOG_INFO("BidPrice1:NULL");
 	else
@@ -118,7 +118,7 @@ void CFemasMarketManager::OnRtnDepthMarketData(CUstpFtdcDepthMarketDataField *pM
 
 	LOG_INFO("BidVolume1: ",pMarketData->BidVolume1);
 
-//ÉêÂôÒ»	
+//ç”³å–ä¸€	
 	if (pMarketData->AskPrice1==DBL_MAX)
 		LOG_INFO("AskPrice1:NULL");
 	else
@@ -147,7 +147,7 @@ void CFemasMarketManager::OnRspError(CUstpFtdcRspInfoField *pRspInfo, int nReque
        }
 	LOG_INFO("ErrorCode=[",pRspInfo->ErrorID,"], ErrorMsg=[",pRspInfo->ErrorMsg,"]" );
 	LOG_INFO("RequestID=[",nRequestID,"], Chain=[",bIsLast,"]");
-		// ¿Í»§¶ËĞè½øĞĞ´íÎó´¦Àí
+		// å®¢æˆ·ç«¯éœ€è¿›è¡Œé”™è¯¯å¤„ç†
        return;		
 }
 
