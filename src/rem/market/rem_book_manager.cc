@@ -13,6 +13,7 @@ CRemBookManager::CRemBookManager(fh::core::market::MarketListenerI *sender)
 {
         // noop
         m_book_sender = sender;
+	 m_trademap.clear();	
 }      
 
 
@@ -192,7 +193,56 @@ void CRemBookManager::SendRemmarketData(EESMarketDepthQuoteData *pMarketData)
            m_book_sender->OnBBO(bbo_info);
 		
 	}
+
+	//·¢ËÍteadeÐÐÇé
+	int tmpvolume = MakePriceVolume(pMarketData);
+	LOG_INFO("CFemasBookManager::MakePriceVolume = ",tmpvolume); 
+	if(tmpvolume > 0)
+	{
+            pb::dms::Trade trade_info;
+	     trade_info.set_contract(pMarketData->InstrumentID);	
+	     pb::dms::DataPoint *trade_id = trade_info.mutable_last();	
+	     trade_id->set_price(pMarketData->LastPrice);
+	     trade_id->set_size(tmpvolume);	
+	     m_book_sender->OnTrade(trade_info);	 
+	}
 	
+}
+
+void CRemBookManager::CheckTime(EESMarketDepthQuoteData *pMarketData)
+{
+    LOG_INFO("CRemBookManager::CheckTime"); 
+    char ctmpf[3]={0};
+    char ctmps[3]={0};	
+    strncpy(ctmpf,pMarketData->UpdateTime,2);	
+    strncpy(ctmps,(m_trademap[pMarketData->InstrumentID]->mtime).c_str(),2);		
+    if(std::atoi(ctmpf) > 18 && std::atoi(ctmps) < 18)
+    {
+        LOG_INFO("CRemBookManager::clear  Instrument map");
+        m_trademap[pMarketData->InstrumentID]->mvolume=pMarketData->Volume;
+	 m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;	
+    }
+}
+
+int CRemBookManager::MakePriceVolume(EESMarketDepthQuoteData *pMarketData)
+{
+    LOG_INFO("CRemBookManager::MakePriceVolume"); 
+    if(m_trademap.count(pMarketData->InstrumentID) == 0)
+    {
+        
+        m_trademap[pMarketData->InstrumentID] = new mstrade();
+	 m_trademap[pMarketData->InstrumentID]->mvolume=pMarketData->Volume;
+	 m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;
+        return 0;
+    }
+    else
+    {
+        CheckTime(pMarketData);
+        int tmpVolume =  pMarketData->Volume - m_trademap[pMarketData->InstrumentID]->mvolume;
+	 m_trademap[pMarketData->InstrumentID]->mvolume=pMarketData->Volume;
+	 m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;	
+        return (tmpVolume > 0 ? tmpVolume : 0);     
+    }		
 }
 
 void CRemBookManager::SendRemToDB(const std::string &message)

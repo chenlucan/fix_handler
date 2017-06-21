@@ -82,7 +82,8 @@ inline std::string T(char *v){return std::string(v);}
             pb::dms::BBO m_bbo;
 	     pb::dms::Bid m_bid;
 	     pb::dms::Offer m_offer;
-	     pb::dms::L2 m_l2;	 
+	     pb::dms::L2 m_l2;	
+	     pb::dms::Trade m_trade;	 
 		 
             int bid_turnover;
 	     int offer_turnover;		
@@ -106,7 +107,8 @@ inline std::string T(char *v){return std::string(v);}
 	     bool MakeL2Json(bsoncxx::builder::basic::document& json);
 	     bool MakeBidJson(bsoncxx::builder::basic::document& json);
 	     bool MakeOfferJson(bsoncxx::builder::basic::document& json); 	 
-	     bool MakeBboJson(bsoncxx::builder::basic::document& json); 	 
+	     bool MakeBboJson(bsoncxx::builder::basic::document& json); 
+	     bool MakeTradeJson(bsoncxx::builder::basic::document& json); 	 
 	 private:
 	     RemConvertListenerI* m_listener;	 
 	     fh::rem::market::CRemBookManager *m_rem_book_manager;	

@@ -16,6 +16,7 @@ CRemEfhMarkrtManager::CRemEfhMarkrtManager(fh::core::market::MarketListenerI *bo
 {
     memset(&m_mcinfo,0,sizeof(multicast_info));
     m_book_sender = book_sender;	
+    m_trademap.clear();	
 }
 
 CRemEfhMarkrtManager::~CRemEfhMarkrtManager()
@@ -135,6 +136,59 @@ void CRemEfhMarkrtManager::SendRemmarketData(guava_udp_normal *pMarketData)
            m_book_sender->OnBBO(bbo_info);
 		
 	} 
+	//·¢ËÍteadeÐÐÇé
+	int tmpvolume = MakePriceVolume(pMarketData);
+	LOG_INFO("CFemasBookManager::MakePriceVolume = ",tmpvolume); 
+	if(tmpvolume > 0)
+	{
+            pb::dms::Trade trade_info;
+	     trade_info.set_contract(pMarketData->m_symbol);	
+	     pb::dms::DataPoint *trade_id = trade_info.mutable_last();	
+	     trade_id->set_price(pMarketData->m_last_px);
+	     trade_id->set_size(tmpvolume);	
+	     m_book_sender->OnTrade(trade_info);	 
+	}
+}
+
+void CRemEfhMarkrtManager::CheckTime(guava_udp_normal *pMarketData)
+{
+    LOG_INFO("CRemEfhMarkrtManager::CheckTime "); 
+    char ctmpf[3]={0};
+    char ctmps[3]={0};	
+    strncpy(ctmpf,pMarketData->m_update_time,2);	
+    strncpy(ctmps,(m_trademap[pMarketData->m_symbol]->mtime).c_str(),2);		
+    if(std::atoi(ctmpf) > 18 && std::atoi(ctmps) < 18)
+    {
+        LOG_INFO("CRemEfhMarkrtManager::clear  Instrument map");
+        m_trademap[pMarketData->m_symbol]->mvolume=pMarketData->m_last_share;
+	 m_trademap[pMarketData->m_symbol]->mtime=pMarketData->m_update_time;	
+    }
+}
+
+//void CFemasBookManager::ClearMap()
+//{
+//    m_trademap.clear();
+//}
+
+int CRemEfhMarkrtManager::MakePriceVolume(guava_udp_normal *pMarketData)
+{
+    LOG_INFO("CRemEfhMarkrtManager::SendFemasmarketData "); 
+    if(m_trademap.count(pMarketData->m_symbol) == 0)
+    {
+        
+        m_trademap[pMarketData->m_symbol] = new mstrade();
+	 m_trademap[pMarketData->m_symbol]->mvolume=pMarketData->m_last_share;
+	 m_trademap[pMarketData->m_symbol]->mtime=pMarketData->m_update_time;
+        return 0;
+    }
+    else
+    {
+        CheckTime(pMarketData);
+        int tmpVolume =  pMarketData->m_last_share - m_trademap[pMarketData->m_symbol]->mvolume;
+	 m_trademap[pMarketData->m_symbol]->mvolume=pMarketData->m_last_share;
+	 m_trademap[pMarketData->m_symbol]->mtime=pMarketData->m_update_time;	
+        return (tmpVolume > 0 ? tmpVolume : 0);     
+    }		
 }
 
 void CRemEfhMarkrtManager::SendRemToDB(const std::string &message)
