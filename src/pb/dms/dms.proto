@@ -14,11 +14,18 @@ message BBO {
   optional string    contract     = 1;
   optional DataPoint bid          = 2;
   optional DataPoint offer        = 3;
+  
+  optional DataPoint last         = 4;
+  optional uint64    total_volume = 5;
+  optional double    turnover     = 6;
+  optional double open            = 7;
+  optional double high            = 8;
+  optional double low             = 9;
 }
 
 message Bid {
-optional string    contract = 1;
-  optional DataPoint bid    = 2;
+  optional string    contract = 1;
+  optional DataPoint bid      = 2;
 }
 
 message Offer {
