@@ -97,6 +97,9 @@ namespace utility
     std::string Format_pb_message(const pb::dms::Offer &offer);
 
     // 把 protobuf 的消息整理成可读字符串
+    std::string Format_pb_message(const pb::dms::Turnover &turnover);
+
+    // 把 protobuf 的消息整理成可读字符串
     std::string Format_pb_message(const pb::dms::L2 &l2);
 
     // 把 protobuf 的消息整理成可读字符串

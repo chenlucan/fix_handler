@@ -89,6 +89,18 @@ class BookReceiver : public fh::core::zmq::ZmqReceiver
                     LOG_ERROR("received Contract: parse error: ", type);
                 }
             }
+            else if(type == 'U')
+            {
+                pb::dms::Turnover turnover;
+                if(turnover.ParseFromArray(data + 1, size - 1))
+                {
+                    LOG_INFO("received Turnover: ", fh::core::assist::utility::Format_pb_message(turnover));
+                }
+                else
+                {
+                    LOG_ERROR("received Turnover: parse error: ", type);
+                }
+            }
             else
             {
                 LOG_ERROR("received book result: invalid type: ", type);
