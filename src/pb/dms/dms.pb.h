@@ -42,6 +42,7 @@ class Bid;
 class Offer;
 class L2;
 class Contract;
+class Turnover;
 
 enum ContractType {
   CT_None = 0,
@@ -856,6 +857,110 @@ class Contract : public ::google::protobuf::Message {
 
   void InitAsDefaultInstance();
   static Contract* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class Turnover : public ::google::protobuf::Message {
+ public:
+  Turnover();
+  virtual ~Turnover();
+
+  Turnover(const Turnover& from);
+
+  inline Turnover& operator=(const Turnover& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Turnover& default_instance();
+
+  void Swap(Turnover* other);
+
+  // implements Message ----------------------------------------------
+
+  Turnover* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Turnover& from);
+  void MergeFrom(const Turnover& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional string contract = 1;
+  inline bool has_contract() const;
+  inline void clear_contract();
+  static const int kContractFieldNumber = 1;
+  inline const ::std::string& contract() const;
+  inline void set_contract(const ::std::string& value);
+  inline void set_contract(const char* value);
+  inline void set_contract(const char* value, size_t size);
+  inline ::std::string* mutable_contract();
+  inline ::std::string* release_contract();
+  inline void set_allocated_contract(::std::string* contract);
+
+  // optional uint64 total_volume = 2;
+  inline bool has_total_volume() const;
+  inline void clear_total_volume();
+  static const int kTotalVolumeFieldNumber = 2;
+  inline ::google::protobuf::uint64 total_volume() const;
+  inline void set_total_volume(::google::protobuf::uint64 value);
+
+  // optional double turnover = 3;
+  inline bool has_turnover() const;
+  inline void clear_turnover();
+  static const int kTurnoverFieldNumber = 3;
+  inline double turnover() const;
+  inline void set_turnover(double value);
+
+  // @@protoc_insertion_point(class_scope:pb.dms.Turnover)
+ private:
+  inline void set_has_contract();
+  inline void clear_has_contract();
+  inline void set_has_total_volume();
+  inline void clear_has_total_volume();
+  inline void set_has_turnover();
+  inline void clear_has_turnover();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::std::string* contract_;
+  ::google::protobuf::uint64 total_volume_;
+  double turnover_;
+  friend void  protobuf_AddDesc_dms_2eproto();
+  friend void protobuf_AssignDesc_dms_2eproto();
+  friend void protobuf_ShutdownFile_dms_2eproto();
+
+  void InitAsDefaultInstance();
+  static Turnover* default_instance_;
 };
 // ===================================================================
 
@@ -2212,6 +2317,134 @@ inline void Contract::set_allocated_legb(::std::string* legb) {
     legb_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_set_allocated:pb.dms.Contract.legB)
+}
+
+// -------------------------------------------------------------------
+
+// Turnover
+
+// optional string contract = 1;
+inline bool Turnover::has_contract() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Turnover::set_has_contract() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Turnover::clear_has_contract() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Turnover::clear_contract() {
+  if (contract_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    contract_->clear();
+  }
+  clear_has_contract();
+}
+inline const ::std::string& Turnover::contract() const {
+  // @@protoc_insertion_point(field_get:pb.dms.Turnover.contract)
+  return *contract_;
+}
+inline void Turnover::set_contract(const ::std::string& value) {
+  set_has_contract();
+  if (contract_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    contract_ = new ::std::string;
+  }
+  contract_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.dms.Turnover.contract)
+}
+inline void Turnover::set_contract(const char* value) {
+  set_has_contract();
+  if (contract_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    contract_ = new ::std::string;
+  }
+  contract_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.dms.Turnover.contract)
+}
+inline void Turnover::set_contract(const char* value, size_t size) {
+  set_has_contract();
+  if (contract_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    contract_ = new ::std::string;
+  }
+  contract_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.dms.Turnover.contract)
+}
+inline ::std::string* Turnover::mutable_contract() {
+  set_has_contract();
+  if (contract_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    contract_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.dms.Turnover.contract)
+  return contract_;
+}
+inline ::std::string* Turnover::release_contract() {
+  clear_has_contract();
+  if (contract_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = contract_;
+    contract_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void Turnover::set_allocated_contract(::std::string* contract) {
+  if (contract_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete contract_;
+  }
+  if (contract) {
+    set_has_contract();
+    contract_ = contract;
+  } else {
+    clear_has_contract();
+    contract_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.dms.Turnover.contract)
+}
+
+// optional uint64 total_volume = 2;
+inline bool Turnover::has_total_volume() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Turnover::set_has_total_volume() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Turnover::clear_has_total_volume() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Turnover::clear_total_volume() {
+  total_volume_ = GOOGLE_ULONGLONG(0);
+  clear_has_total_volume();
+}
+inline ::google::protobuf::uint64 Turnover::total_volume() const {
+  // @@protoc_insertion_point(field_get:pb.dms.Turnover.total_volume)
+  return total_volume_;
+}
+inline void Turnover::set_total_volume(::google::protobuf::uint64 value) {
+  set_has_total_volume();
+  total_volume_ = value;
+  // @@protoc_insertion_point(field_set:pb.dms.Turnover.total_volume)
+}
+
+// optional double turnover = 3;
+inline bool Turnover::has_turnover() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void Turnover::set_has_turnover() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void Turnover::clear_has_turnover() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void Turnover::clear_turnover() {
+  turnover_ = 0;
+  clear_has_turnover();
+}
+inline double Turnover::turnover() const {
+  // @@protoc_insertion_point(field_get:pb.dms.Turnover.turnover)
+  return turnover_;
+}
+inline void Turnover::set_turnover(double value) {
+  set_has_turnover();
+  turnover_ = value;
+  // @@protoc_insertion_point(field_set:pb.dms.Turnover.turnover)
 }
 
 
