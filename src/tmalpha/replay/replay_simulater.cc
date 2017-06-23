@@ -198,6 +198,7 @@ namespace replay
         LOG_DEBUG("consume: ", m_messages.front());
         m_consumer->Consume(m_messages.front());
         m_messages.pop();
+        LOG_DEBUG("consume ok. ");
     }
 
     void ReplaySimulater::Sleep(std::uint64_t last_send_time, std::uint64_t current_send_time, std::uint64_t last_replay_time) const
@@ -216,7 +217,15 @@ namespace replay
         std::uint64_t next_replay_time = last_replay_time + interval;
 
         // 等待到该时间点后返回（如果当前时间已经过了上面计算出的应该重放时间，无需等待）
-        std::this_thread::sleep_until(std::chrono::time_point<std::chrono::system_clock>(std::chrono::nanoseconds(next_replay_time)));
+        // 注意：由于 gcc 4.8.5 的 bug，这里不能使用 sleep_util，否则如果参数的时间是过去的时间，可能会导致无限等待
+        // 参考：https://gcc.gnu.org/bugzilla/show_bug.cgi?id=58038
+        std::uint64_t now = fh::core::assist::utility::Current_time_ns();
+        if(next_replay_time > now)
+        {
+            LOG_DEBUG("now=", now, "; sleep to ", next_replay_time);
+            std::this_thread::sleep_for(std::chrono::nanoseconds(next_replay_time - now));
+            LOG_DEBUG("weekup");
+        }
     }
 
 }   // namespace replay
