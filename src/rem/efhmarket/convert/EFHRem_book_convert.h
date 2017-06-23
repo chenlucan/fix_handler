@@ -17,6 +17,7 @@
 #include <bsoncxx/builder/basic/document.hpp>
 #include "core/assist/utility.h"
 #include "core/global.h"
+#include "core/persist/converter.h"
 #include "rem/efhmarket/rem_efhmarket_manager.h"
 
 
@@ -71,7 +72,10 @@ inline std::string T(char *v){return std::string(v);}
             // implement of MarketListenerI
             void OnContractTrading(const std::string &contract)    override;
             // implement of MarketListenerI
-            virtual void OnOrginalMessage(const std::string &message);
+            void OnOrginalMessage(const std::string &message) override;
+            // implement of MarketListenerI
+            void OnTurnover(const pb::dms::Turnover &turnover) override;
+
 	     void Reset();
 
         public:
@@ -93,15 +97,15 @@ inline std::string T(char *v){return std::string(v);}
 			
     };
 
-    class EfhRemBookConvert
+    class EfhRemBookConvert : public fh::core::persist::Converter
     {
         public:
             EfhRemBookConvert();
             virtual ~EfhRemBookConvert();
         public:	
 	     //void Add_listener(fh::core::market::MarketListenerI *listener);
-	     MessMap Apply_message(const std::string &message);
-	     void EfhRemmarketData(const JSON_ELEMENT &message,int volumeMultiple=0);
+	     MessMap Convert(const std::string &message) override;
+	     void EfhRemmarketData(const JSON_ELEMENT &message);
 	     bool MakeL2Json(bsoncxx::builder::basic::document& json);
 	     bool MakeBidJson(bsoncxx::builder::basic::document& json);
 	     bool MakeOfferJson(bsoncxx::builder::basic::document& json); 	 

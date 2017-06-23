@@ -100,6 +100,13 @@ void FemasConvertListenerI::OnOrginalMessage(const std::string &message)
     LOG_INFO("FemasConvertListenerI::OnOrginalMessage");
 }
 
+// implement of MarketListenerI
+void FemasConvertListenerI::OnTurnover(const pb::dms::Turnover &turnover)
+{
+    LOG_INFO("OnTurnover: ", fh::core::assist::utility::Format_pb_message(turnover));
+    // TODO save it
+}
+
 void FemasConvertListenerI::Reset()
 {
     LOG_INFO("FemasConvertListenerI::Reset");
@@ -143,11 +150,10 @@ MessMap FemasBookConvert::Convert(const std::string &message)
      auto json = doc.view();
      auto body = GET_SUB_FROM_JSON(json, "message");
      auto instrumentID = GET_STR_FROM_JSON(json, "InstrumentID");	
-     auto volumeMultiple = GET_INT_FROM_JSON(json, "VolumeMultiple");
      auto is = GET_STR_FROM_JSON(json, "insertTime");
      auto se = GET_STR_FROM_JSON(json, "sendingTime");	
      auto sestr = GET_STR_FROM_JSON(json, "sendingTimeStr");	 
-     FemasmarketData(body,volumeMultiple);
+     FemasmarketData(body);
      bsoncxx::builder::basic::document tmp_l2;
      if(MakeL2Json(tmp_l2))
      {
@@ -213,7 +219,7 @@ MessMap FemasBookConvert::Convert(const std::string &message)
      return m_messagemap;	 
 }
 
-void FemasBookConvert::FemasmarketData(const JSON_ELEMENT &message,int volumeMultiple)
+void FemasBookConvert::FemasmarketData(const JSON_ELEMENT &message)
 {
     LOG_INFO("FemasBookConvert::FemasmarketData");
     CUstpFtdcDepthMarketDataField tmpMarketData;
@@ -275,40 +281,7 @@ void FemasBookConvert::FemasmarketData(const JSON_ELEMENT &message,int volumeMul
     strcpy(tmpMarketData.InstrumentID_1,GET_STR_FROM_JSON(message, "InstrumentID_1").c_str());
     strcpy(tmpMarketData.InstrumentID_2,GET_STR_FROM_JSON(message, "InstrumentID_2").c_str());
     strcpy(tmpMarketData.InstrumentName,GET_STR_FROM_JSON(message, "InstrumentName").c_str());	
- 
-    int BidVolume_x = 0;
-    int AskVolume_y = 0;	
-    if(volumeMultiple <= 0)
-    {
-        AskVolume_y = 0;
-	 BidVolume_x = 0;
-    }
-    else
-    {
-        try
-       {
-            AskVolume_y = (tmpMarketData.Turnover-tmpMarketData.BidPrice1*tmpMarketData.Volume*volumeMultiple)/((tmpMarketData.AskPrice1-tmpMarketData.BidPrice1)*volumeMultiple);                  
-       }
-       catch(...)
-       {
-           AskVolume_y = 0;
-       }
-	BidVolume_x = tmpMarketData.Volume-AskVolume_y;     
-    }		
 
-    if(BidVolume_x < 0)
-    {
-        BidVolume_x = 0;
-	 AskVolume_y = 0;	
-    }	
-    if(AskVolume_y < 0)
-    {
-        BidVolume_x = 0;
-        AskVolume_y = 0;
-    }
-    m_listener->bid_turnover = BidVolume_x;
-    m_listener->offer_turnover = AskVolume_y;	
-	
     m_femas_book_manager->SendFemasmarketData(&tmpMarketData);
 	
     return;	
@@ -344,8 +317,6 @@ bool FemasBookConvert::MakeL2Json(bsoncxx::builder::basic::document& json)
     }
 	
     json.append(bsoncxx::builder::basic::kvp("offer", tmarray_a));	
-    json.append(bsoncxx::builder::basic::kvp("bid_turnover", T(std::to_string(m_listener->bid_turnover)))); 	
-    json.append(bsoncxx::builder::basic::kvp("offer_turnover", T(std::to_string(m_listener->offer_turnover)))); 	
 	
     return true;	
 }

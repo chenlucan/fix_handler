@@ -30,6 +30,7 @@ class MarketListenerI {
   virtual void OnContractTrading(const std::string &contract)      = 0;
 
   virtual void OnOrginalMessage(const std::string &message) = 0;
+  virtual void OnTurnover(const pb::dms::Turnover &turnover) = 0;
 };
 
 }  // namespace market

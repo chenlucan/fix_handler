@@ -19,7 +19,7 @@ namespace replay
     class MockReplayMarketListener : public fh::core::market::MarketListenerI
     {
         public:
-            MockReplayMarketListener() : m_contracts(), m_bbos(), m_bids(), m_offers(), m_l2s(), m_trades(), m_status() {}
+            MockReplayMarketListener() : m_contracts(), m_bbos(), m_bids(), m_offers(), m_l2s(), m_trades(), m_turnovers(), m_status() {}
             virtual ~MockReplayMarketListener() {}
 
         public:
@@ -110,6 +110,13 @@ namespace replay
                 LOG_INFO("OnOrginalMessage");
             }
 
+            // implement of MarketListenerI
+            void OnTurnover(const pb::dms::Turnover &turnover)
+            {
+                LOG_INFO("OnTurnover: ", fh::core::assist::utility::Format_pb_message(turnover));
+                m_turnovers.push_back(turnover);
+            }
+
         public:
             std::vector<pb::dms::Contract> &Contracts() { return m_contracts; }
             std::vector<pb::dms::BBO> &BBOs() { return m_bbos; }
@@ -117,6 +124,7 @@ namespace replay
             std::vector<pb::dms::Offer> &Offers() { return m_offers; }
             std::vector<pb::dms::L2> &L2s() { return m_l2s; }
             std::vector<pb::dms::Trade> &Trades() { return m_trades; }
+            std::vector<pb::dms::Turnover> &Turnovers() { return m_turnovers; }
             std::vector<std::pair<std::string, int>> &Status() { return m_status; }
 
         private:
@@ -126,6 +134,7 @@ namespace replay
             std::vector<pb::dms::Offer> m_offers;
             std::vector<pb::dms::L2> m_l2s;
             std::vector<pb::dms::Trade> m_trades;
+            std::vector<pb::dms::Turnover> m_turnovers;
             std::vector<std::pair<std::string, int>> m_status;
 
     };

@@ -101,6 +101,13 @@ void EfhRemConvertListenerI::OnOrginalMessage(const std::string &message)
     LOG_INFO("FemasConvertListenerI::OnOrginalMessage");
 }
 
+// implement of MarketListenerI
+void EfhRemConvertListenerI::OnTurnover(const pb::dms::Turnover &turnover)
+{
+    LOG_INFO("OnTurnover: ", fh::core::assist::utility::Format_pb_message(turnover));
+    // TODO save it
+}
+
 void EfhRemConvertListenerI::Reset()
 {
     LOG_INFO("FemasConvertListenerI::Reset");
@@ -127,7 +134,7 @@ EfhRemBookConvert::~EfhRemBookConvert()
     delete m_efhrem_book_manager;	
 }
 
-MessMap EfhRemBookConvert::Apply_message(const std::string &message)
+MessMap EfhRemBookConvert::Convert(const std::string &message)
 {
      LOG_INFO("FemasBookConvert::Apply_message");
      LOG_INFO("FemasBookConvert::Apply_message str = ",message);	 
@@ -138,11 +145,10 @@ MessMap EfhRemBookConvert::Apply_message(const std::string &message)
      auto json = doc.view();
      auto body = GET_SUB_FROM_JSON(json, "message");
      auto instrumentID = GET_STR_FROM_JSON(json, "InstrumentID");	
-     auto volumeMultiple = GET_INT_FROM_JSON(json, "VolumeMultiple");
      auto is = GET_STR_FROM_JSON(json, "insertTime");
      auto se = GET_STR_FROM_JSON(json, "sendingTime");	
      auto sestr = GET_STR_FROM_JSON(json, "sendingTimeStr");	 
-     EfhRemmarketData(body,volumeMultiple);
+     EfhRemmarketData(body);
      bsoncxx::builder::basic::document tmp_l2;
      if(MakeL2Json(tmp_l2))
      {
@@ -208,7 +214,7 @@ MessMap EfhRemBookConvert::Apply_message(const std::string &message)
      return m_messagemap;	 
 }
 
-void EfhRemBookConvert::EfhRemmarketData(const JSON_ELEMENT &message,int volumeMultiple)
+void EfhRemBookConvert::EfhRemmarketData(const JSON_ELEMENT &message)
 {
     LOG_INFO("FemasBookConvert::FemasmarketData");
     guava_udp_normal tmpMarketData;	
@@ -228,40 +234,7 @@ void EfhRemBookConvert::EfhRemmarketData(const JSON_ELEMENT &message,int volumeM
     tmpMarketData.m_bid_share=GET_INT_FROM_JSON(message, "bid_share");
     tmpMarketData.m_ask_px=GET_DOUBLE_FROM_JSON(message, "ask_px");
     tmpMarketData.m_ask_share=GET_DOUBLE_FROM_JSON(message, "ask_share");		
- 
-    int BidVolume_x = 0;
-    int AskVolume_y = 0;	
-    if(volumeMultiple <= 0)
-    {
-        AskVolume_y = 0;
-	 BidVolume_x = 0;
-    }
-    else
-    {
-        try
-       {
-           AskVolume_y = (tmpMarketData.m_total_value-tmpMarketData.m_bid_px*tmpMarketData.m_total_pos*volumeMultiple)/((tmpMarketData.m_ask_px-tmpMarketData.m_bid_px)*volumeMultiple);                   
-       }
-       catch(...)
-       {
-           AskVolume_y = 0;
-       }
-	BidVolume_x = tmpMarketData.m_total_pos-AskVolume_y;     
-    }		
 
-    if(BidVolume_x < 0)
-    {
-        BidVolume_x = 0;
-	 AskVolume_y = 0;	
-    }	
-    if(AskVolume_y < 0)
-    {
-        BidVolume_x = 0;
-        AskVolume_y = 0;
-    }
-    m_listener->bid_turnover = BidVolume_x;
-    m_listener->offer_turnover = AskVolume_y;	
-	
     m_efhrem_book_manager->SendRemmarketData(&tmpMarketData);
 
     return;	
@@ -297,8 +270,6 @@ bool EfhRemBookConvert::MakeL2Json(bsoncxx::builder::basic::document& json)
     }
 	
     json.append(bsoncxx::builder::basic::kvp("offer", tmarray_a));	
-    json.append(bsoncxx::builder::basic::kvp("bid_turnover", T(std::to_string(m_listener->bid_turnover)))); 	
-    json.append(bsoncxx::builder::basic::kvp("offer_turnover", T(std::to_string(m_listener->offer_turnover)))); 	
 	
     return true;	
 }

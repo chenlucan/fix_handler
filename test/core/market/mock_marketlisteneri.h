@@ -31,6 +31,8 @@ class MockMarketListenerI :public MarketListenerI{
   MOCK_METHOD1(OnContractTrading, void(const std::string &contract));
   
   MOCK_METHOD1(OnOrginalMessage, void(const std::string &message));
+
+  MOCK_METHOD1(OnTurnover, void(const pb::dms::Turnover &turnover));
 };
 
 }  // namespace market

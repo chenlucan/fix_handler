@@ -49,6 +49,8 @@ namespace persist
         private:
             // 获取 json 中某个 key 对应的 value 的字符串值，key 不存在的时候返回 default_value
             static std::string Get_value(const bsoncxx::document::view &doc, const std::string &key, const std::string &default_value = "");
+            // 获取 json 中某个 key 对应的 value 的字符串值，key 不存在的时候返回 default_value
+            static std::string Get_value(const bsoncxx::document::element &element, const std::string &key, const std::string &default_value = "");
             // 检索附加合约信息
             std::map<std::string, std::string> Query_contracts(const std::string &contract_collection, const std::set<std::string> &contract_ids);
 
