@@ -111,6 +111,15 @@ namespace book
         m_org_sender.Send(message);
     }
 
+    // implement of MarketListenerI
+    void BookSender::OnTurnover(const pb::dms::Turnover &turnover)
+    {
+        // 前面加个 U 标记是 Turnover 数据
+        LOG_INFO("send Turnover: ", fh::core::assist::utility::Format_pb_message(turnover));
+        m_book_sender.Send("U" + turnover.SerializeAsString());
+    }
+
+
 } // namespace book
 } // namespace core
 } // namespace fh

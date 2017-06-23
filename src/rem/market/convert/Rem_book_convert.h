@@ -73,7 +73,10 @@ inline std::string T(char *v){return std::string(v);}
             // implement of MarketListenerI
             void OnContractTrading(const std::string &contract)    override;
             // implement of MarketListenerI
-            virtual void OnOrginalMessage(const std::string &message);
+            void OnOrginalMessage(const std::string &message) override;
+            // implement of MarketListenerI
+            void OnTurnover(const pb::dms::Turnover &turnover) override;
+
 	     void Reset();
 
         public:
@@ -103,7 +106,7 @@ inline std::string T(char *v){return std::string(v);}
 	     //void Add_listener(fh::core::market::MarketListenerI *listener);
 	     MessMap Convert(const std::string &message) override;
 	     //MessMap Apply_message(const std::string &message);
-	     void RemmarketData(const JSON_ELEMENT &message,int volumeMultiple=0);
+	     void RemmarketData(const JSON_ELEMENT &message);
 	     bool MakeL2Json(bsoncxx::builder::basic::document& json);
 	     bool MakeBidJson(bsoncxx::builder::basic::document& json);
 	     bool MakeOfferJson(bsoncxx::builder::basic::document& json); 	 

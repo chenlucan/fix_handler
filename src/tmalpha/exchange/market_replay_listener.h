@@ -118,6 +118,12 @@ namespace exchange
                 m_last_turnover = {std::stoi(message.substr(0, pos)), std::stoi(message.substr(pos + 1))};
             }
 
+            // implement of MarketListenerI
+            void OnTurnover(const pb::dms::Turnover &turnover)
+            {
+                LOG_INFO("OnTurnover: ", fh::core::assist::utility::Format_pb_message(turnover));
+            }
+
         private:
             fh::core::book::BookSender m_book_sender;
             std::function<void(const pb::dms::L2 &, std::uint32_t, std::uint32_t)> m_on_l2_changed;

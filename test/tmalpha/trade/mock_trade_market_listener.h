@@ -19,7 +19,7 @@ namespace trade
     class MockTradeMarketListener : public fh::core::market::MarketListenerI
     {
         public:
-            MockTradeMarketListener() : m_contracts(), m_bbos(), m_bids(), m_offers(), m_l2s(), m_trades() {}
+            MockTradeMarketListener() : m_contracts(), m_bbos(), m_bids(), m_offers(), m_l2s(), m_trades(), m_turnovers(){}
             virtual ~MockTradeMarketListener() {}
 
         public:
@@ -107,6 +107,13 @@ namespace trade
                 // noop
             }
 
+            // implement of MarketListenerI
+            void OnTurnover(const pb::dms::Turnover &turnover)
+            {
+                LOG_INFO("OnTurnover: ", fh::core::assist::utility::Format_pb_message(turnover));
+                m_turnovers.push_back(turnover);
+            }
+
         public:
             std::vector<pb::dms::Contract> &Contracts() { return m_contracts; }
             std::vector<pb::dms::BBO> &BBOs() { return m_bbos; }
@@ -114,6 +121,7 @@ namespace trade
             std::vector<pb::dms::Offer> &Offers() { return m_offers; }
             std::vector<pb::dms::L2> &L2s() { return m_l2s; }
             std::vector<pb::dms::Trade> &Trades() { return m_trades; }
+            std::vector<pb::dms::Turnover> &Turnovers() { return m_turnovers; }
 
         private:
             std::vector<pb::dms::Contract> m_contracts;
@@ -122,6 +130,7 @@ namespace trade
             std::vector<pb::dms::Offer> m_offers;
             std::vector<pb::dms::L2> m_l2s;
             std::vector<pb::dms::Trade> m_trades;
+            std::vector<pb::dms::Turnover> m_turnovers;
 
     };
 }   // namespace trade
