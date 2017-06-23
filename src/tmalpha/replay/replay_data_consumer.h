@@ -56,6 +56,7 @@ namespace replay
                 auto json = doc.view();
                 std::string type = GET_STR_FROM_JSON(json, "type");    // Trade,BBO,Bid,Offer,L2,Contract
                 std::string is = GET_STR_FROM_JSON(json, "insertTime");
+                int volume_multiple = GET_INT_FROM_JSON(json, "VolumeMultiple");    // 合约数量乘数
                 auto body = GET_SUB_FROM_JSON(json, "message");
 
                 LOG_INFO("apply message: ", is, " type=", type);
@@ -64,8 +65,9 @@ namespace replay
                 else if(type == "bbo")   Parse_bbo(body);
                 else if(type == "bid")   Parse_bid(body);
                 else if(type == "offer")   Parse_offer(body);
-                else if(type == "l2")   Parse_l2(body);
+                else if(type == "l2")   Parse_l2(body, volume_multiple);
                 else if(type == "contract")   Parse_contract(body);
+                else if(type == "turnover")   Parse_turnover(body);
                 else LOG_WARN("ignore type:", type);
             }
 
@@ -140,7 +142,7 @@ namespace replay
                 m_listener->OnOffer(offer_info);
             }
 
-            void Parse_l2(const JSON_ELEMENT &body)
+            void Parse_l2(const JSON_ELEMENT &body, int volume_multiple)
             {
                 pb::dms::L2 l2_info;
                 l2_info.set_contract(GET_STR_FROM_JSON(body, "contract"));
@@ -159,10 +161,7 @@ namespace replay
                     offer_dp->set_size(GET_INT_FROM_JSON(offer, "size"));
                 }
 
-                std::uint32_t bid_turnover = GET_INT_FROM_JSON(body, "bid_turnover");
-                std::uint32_t offer_turnover =  GET_INT_FROM_JSON(body, "offer_turnover");
-
-                m_listener->OnL2(l2_info, bid_turnover, offer_turnover);
+                m_listener->OnL2(l2_info, volume_multiple);
             }
 
             void Parse_contract(const JSON_ELEMENT &body)
@@ -186,6 +185,16 @@ namespace replay
                 // contract.set_legb(); // 暂不使用
 
                 m_listener->OnContractDefinition(contract);
+            }
+
+            void Parse_turnover(const JSON_ELEMENT &body)
+            {
+                pb::dms::Turnover turnover;
+                turnover.set_contract(GET_STR_FROM_JSON(body, "contract"));
+                turnover.set_total_volume(GET_INT_FROM_JSON(body, "total_volume"));
+                turnover.set_turnover(GET_DOUBLE_FROM_JSON(body, "turnover"));
+
+                m_listener->OnTurnover(turnover);
             }
 
         private:
