@@ -156,7 +156,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	    ask->set_size(pMarketData->AskVolume5);	   
 	}
 	
-	m_book_sender->OnL2(l2_info);
+	//m_book_sender->OnL2(l2_info);
 
 	//以上发送L2 行情
 
@@ -211,6 +211,15 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	     trade_id->set_size(tmpvolume);	
 	     m_book_sender->OnTrade(trade_info);	 
 	}
+
+       pb::dms::Turnover Turnoverinfo;
+       Turnoverinfo.set_contract(pMarketData->InstrumentID);
+	Turnoverinfo.set_total_volume(pMarketData->Volume);
+	Turnoverinfo.set_turnover(pMarketData->Turnover);
+	m_book_sender->OnTurnover(Turnoverinfo);
+	   
+
+	m_book_sender->OnL2(l2_info);
 	
 }
 

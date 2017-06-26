@@ -85,7 +85,8 @@ inline std::string T(char *v){return std::string(v);}
 	     pb::dms::Bid m_bid;
 	     pb::dms::Offer m_offer;
 	     pb::dms::L2 m_l2;	
-	     pb::dms::Trade m_trade;		 
+	     pb::dms::Trade m_trade;	
+	     pb::dms::Turnover m_turnover;	 
 		 
             int bid_turnover;
 	     int offer_turnover;		
@@ -110,7 +111,8 @@ inline std::string T(char *v){return std::string(v);}
 	     bool MakeBidJson(bsoncxx::builder::basic::document& json);
 	     bool MakeOfferJson(bsoncxx::builder::basic::document& json); 	 
 	     bool MakeBboJson(bsoncxx::builder::basic::document& json); 
-	     bool MakeTradeJson(bsoncxx::builder::basic::document& json); 	 
+	     bool MakeTradeJson(bsoncxx::builder::basic::document& json); 
+	     bool MakeTurnoverJson(bsoncxx::builder::basic::document& json);	 
 	 private:
 	     EfhRemConvertListenerI* m_listener;	 
 	     //fh::core::market::MarketListenerI *m_listener;

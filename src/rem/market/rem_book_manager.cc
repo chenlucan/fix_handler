@@ -151,7 +151,7 @@ void CRemBookManager::SendRemmarketData(EESMarketDepthQuoteData *pMarketData)
 	    ask->set_size(pMarketData->AskVolume5);	   
 	}
 	
-	m_book_sender->OnL2(l2_info);
+	//m_book_sender->OnL2(l2_info);
 
 	//L2
 	if((pMarketData->BidPrice1 == DBL_MAX || pMarketData->BidVolume1 <= 0) && (pMarketData->AskVolume1 <= 0 || pMarketData->AskPrice1 == DBL_MAX))
@@ -203,6 +203,15 @@ void CRemBookManager::SendRemmarketData(EESMarketDepthQuoteData *pMarketData)
 	     trade_id->set_size(tmpvolume);	
 	     m_book_sender->OnTrade(trade_info);	 
 	}
+
+
+	pb::dms::Turnover Turnoverinfo;
+       Turnoverinfo.set_contract(pMarketData->InstrumentID);
+	Turnoverinfo.set_total_volume(pMarketData->Volume);
+	Turnoverinfo.set_turnover(pMarketData->Turnover);
+	m_book_sender->OnTurnover(Turnoverinfo);
+
+	m_book_sender->OnL2(l2_info);
 	
 }
 

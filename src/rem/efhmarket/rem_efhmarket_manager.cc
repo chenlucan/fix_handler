@@ -96,7 +96,7 @@ void CRemEfhMarkrtManager::SendRemmarketData(guava_udp_normal *pMarketData)
         ask->set_price(pMarketData->m_ask_px);
 	 ask->set_size(pMarketData->m_ask_share);	  
     }
-    m_book_sender->OnL2(l2_info);
+    //m_book_sender->OnL2(l2_info);
 	
     //发送最优价
 	if(pMarketData->m_bid_px == DBL_MAX && pMarketData->m_ask_px == DBL_MAX)
@@ -148,6 +148,14 @@ void CRemEfhMarkrtManager::SendRemmarketData(guava_udp_normal *pMarketData)
 	     trade_id->set_size(tmpvolume);	
 	     m_book_sender->OnTrade(trade_info);	 
 	}
+
+	pb::dms::Turnover Turnoverinfo;
+       Turnoverinfo.set_contract(pMarketData->m_symbol);
+	Turnoverinfo.set_total_volume(pMarketData->m_last_share);
+	Turnoverinfo.set_turnover(pMarketData->m_total_value);
+	m_book_sender->OnTurnover(Turnoverinfo);
+
+	m_book_sender->OnL2(l2_info);
 }
 
 void CRemEfhMarkrtManager::CheckTime(guava_udp_normal *pMarketData)

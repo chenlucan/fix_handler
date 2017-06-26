@@ -105,7 +105,8 @@ void EfhRemConvertListenerI::OnOrginalMessage(const std::string &message)
 void EfhRemConvertListenerI::OnTurnover(const pb::dms::Turnover &turnover)
 {
     LOG_INFO("OnTurnover: ", fh::core::assist::utility::Format_pb_message(turnover));
-    // TODO save it
+    m_turnover.Clear();
+    m_turnover = turnover;	
 }
 
 void EfhRemConvertListenerI::Reset()
@@ -115,7 +116,8 @@ void EfhRemConvertListenerI::Reset()
     m_bid.Clear();
     m_offer.Clear();
     m_l2.Clear();
-    m_trade.Clear();		
+    m_trade.Clear();	
+    m_turnover.Clear();	
 }
 
 //===================================================================================
@@ -208,7 +210,19 @@ MessMap EfhRemBookConvert::Convert(const std::string &message)
          tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
 	  tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_trade));	
 	  m_messagemap["trade"] =  bsoncxx::to_json(tmp_h.view());
-     }	 	 
+     }	 
+     bsoncxx::builder::basic::document tmp_turnover;		 
+     if(MakeTurnoverJson(tmp_turnover))
+     {
+         bsoncxx::builder::basic::document tmp_h;
+	  tmp_h.append(bsoncxx::builder::basic::kvp("market", T("REMEFH")));	
+	  tmp_h.append(bsoncxx::builder::basic::kvp("type", T("turnover")));	 
+         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
+         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
+         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
+	  tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_turnover));	
+	  m_messagemap["turnover"] =  bsoncxx::to_json(tmp_h.view());
+     }	 
    
 
      return m_messagemap;	 
@@ -344,6 +358,20 @@ bool EfhRemBookConvert::MakeTradeJson(bsoncxx::builder::basic::document& json)
 
     json.append(bsoncxx::builder::basic::kvp("last", tmarray_b));
 
+    return true;
+}
+
+bool EfhRemBookConvert::MakeTurnoverJson(bsoncxx::builder::basic::document& json)
+{
+    LOG_INFO("EfhRemBookConvert::MakeTurnoverJson");
+    if(!(m_listener->m_trade).has_contract())
+    {
+        return false;
+    } 	
+    json.append(bsoncxx::builder::basic::kvp("contract", T(m_listener->m_turnover.contract()))); 
+    json.append(bsoncxx::builder::basic::kvp("total_volume", T(m_listener->m_turnover.total_volume()))); 
+    json.append(bsoncxx::builder::basic::kvp("turnover", T(m_listener->m_turnover.turnover()))); 
+	
     return true;
 }
 
