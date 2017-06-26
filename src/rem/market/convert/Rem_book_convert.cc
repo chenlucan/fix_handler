@@ -153,18 +153,7 @@ MessMap RemBookConvert::Convert(const std::string &message)
      auto se = GET_STR_FROM_JSON(json, "sendingTime");	
      auto sestr = GET_STR_FROM_JSON(json, "sendingTimeStr");	 
      RemmarketData(body);
-     bsoncxx::builder::basic::document tmp_l2;
-     if(MakeL2Json(tmp_l2))
-     {
-         bsoncxx::builder::basic::document tmp_h;
-	  tmp_h.append(bsoncxx::builder::basic::kvp("market", T("REM")));	
-	  tmp_h.append(bsoncxx::builder::basic::kvp("type", T("l2")));	 
-         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
-         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
-         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
-	  tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_l2));	
-	  m_messagemap["l2"] =  bsoncxx::to_json(tmp_h.view());
-     }
+     
      bsoncxx::builder::basic::document tmp_bid;	 
      if(MakeBidJson(tmp_bid))
      {
@@ -224,6 +213,18 @@ MessMap RemBookConvert::Convert(const std::string &message)
          tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
 	  tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_turnover));	
 	  m_messagemap["turnover"] =  bsoncxx::to_json(tmp_h.view());
+     }	 
+     bsoncxx::builder::basic::document tmp_l2;
+     if(MakeL2Json(tmp_l2))
+     {
+         bsoncxx::builder::basic::document tmp_h;
+	  tmp_h.append(bsoncxx::builder::basic::kvp("market", T("REM")));	
+	  tmp_h.append(bsoncxx::builder::basic::kvp("type", T("l2")));	 
+         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
+         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
+         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
+	  tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_l2));	
+	  m_messagemap["l2"] =  bsoncxx::to_json(tmp_h.view());
      }	 
    
 
