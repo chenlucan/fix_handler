@@ -413,7 +413,7 @@ bool FemasBookConvert::MakeTradeJson(bsoncxx::builder::basic::document& json)
 bool FemasBookConvert::MakeTurnoverJson(bsoncxx::builder::basic::document& json)
 {
     LOG_INFO("FemasBookConvert::MakeTurnoverJson");
-    if(!(m_listener->m_trade).has_contract())
+    if(!(m_listener->m_turnover).has_contract())
     {
         return false;
     } 	

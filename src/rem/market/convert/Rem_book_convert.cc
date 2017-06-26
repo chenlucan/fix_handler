@@ -393,7 +393,7 @@ bool RemBookConvert::MakeTradeJson(bsoncxx::builder::basic::document& json)
 bool RemBookConvert::MakeTurnoverJson(bsoncxx::builder::basic::document& json)
 {
     LOG_INFO("RemBookConvert::MakeTurnoverJson");
-    if(!(m_listener->m_trade).has_contract())
+    if(!(m_listener->m_turnover).has_contract())
     {
         return false;
     } 	

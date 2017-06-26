@@ -364,7 +364,7 @@ bool EfhRemBookConvert::MakeTradeJson(bsoncxx::builder::basic::document& json)
 bool EfhRemBookConvert::MakeTurnoverJson(bsoncxx::builder::basic::document& json)
 {
     LOG_INFO("EfhRemBookConvert::MakeTurnoverJson");
-    if(!(m_listener->m_trade).has_contract())
+    if(!(m_listener->m_turnover).has_contract())
     {
         return false;
     } 	
