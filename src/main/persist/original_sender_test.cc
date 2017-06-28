@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 
         auto send_interval_ms = boost::lexical_cast<std::uint16_t>(argv[2]);
         std::string host = std::string("tcp://*:") + argv[1];
-        fh::core::zmq::ZmqSender sender(host);
+        fh::core::zmq::ZmqSender sender(host, fh::core::zmq::ZmqSender::Mode::PUSH);
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
         while(true)

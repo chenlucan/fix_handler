@@ -11,10 +11,27 @@ namespace core
 namespace zmq
 {
 
-    ZmqReceiver::ZmqReceiver(const std::string &url) : m_context(1), m_receiver(m_context, ZMQ_PULL)
+    ZmqReceiver::ZmqReceiver(const std::string &url, Mode mode)
+    : m_context(1), m_receiver(m_context, mode == Mode::PULL ? ZMQ_PULL : ZMQ_SUB)
     {
-        m_receiver.connect(url);
-        LOG_DEBUG("(zmq receiver started: ", url, ")");
+        // 接受消息时可能是 bind，也可能是 connect 方式
+        // 根据配置文件配置的 url 来判断，如果是 tcp://*:9999 的形式，就是 bind，否则是 connect
+        bool is_bind_address = url.find("//*:") != std::string::npos;
+        try
+        {
+            if(is_bind_address) m_receiver.bind(url);
+            else m_receiver.connect(url);
+
+            // 如果是订阅模式，一定要设置 filter：这里不过滤消息，所以设置为空
+            if(mode == Mode::SUBSCRIBE) m_receiver.setsockopt(ZMQ_SUBSCRIBE, "", 0);
+
+            LOG_DEBUG("(zmq receiver started: ", url, ")");
+        }
+        catch(std::exception& e)
+        {
+            LOG_ERROR(is_bind_address ? "bind " : "connect ", url, " error: ", e.what());
+            throw std::invalid_argument("zmqreceiver create error, exit");
+        }
     }
 
     ZmqReceiver::~ZmqReceiver()

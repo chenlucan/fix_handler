@@ -486,7 +486,7 @@ TEST(TradeSimulaterTest, Test012_PartiallyTrade)
     trade_simulater.Add(order);
 
     auto received_result = exchange_listener.orders();
-    EXPECT_EQ(received_result.size(), 14);
+    EXPECT_EQ(received_result.size(), 16);
 
     auto received_fill = exchange_listener.fills();
     EXPECT_EQ(received_fill.size(), 2);
@@ -1079,7 +1079,7 @@ TEST(TradeSimulaterTest, Test022_ChangeFilledOrder)
     }
 
     auto received_result = exchange_listener.orders();
-    EXPECT_EQ(received_result.size(), 5);
+    EXPECT_EQ(received_result.size(), 7);
     EXPECT_EQ(received_result.back().status(), pb::ems::OrderStatus::OS_Rejected);
     EXPECT_EQ(received_result.back().message(), (const char *)fh::tmalpha::trade::Message::WORKING_ORDER_NOT_FOUND);
 

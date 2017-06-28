@@ -78,6 +78,7 @@ namespace trade
             std::string Next_fill_id();
             std::string Check_order(const pb::ems::Order& order) const;
             void Match_order(pb::ems::Order &order);
+            static pb::ems::Order Make_filled_order(const pb::ems::Order& order, const pb::ems::Fill &fill, std::uint64_t working_quantity);
             static pb::ems::Order Make_reject_response(const pb::ems::Order& org_order, const std::string &reject_reason);
             static pb::ems::Order Make_cancel_response(const pb::ems::Order& org_order, const std::string &cancel_reason);
 

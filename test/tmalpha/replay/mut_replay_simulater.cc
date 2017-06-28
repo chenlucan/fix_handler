@@ -187,7 +187,7 @@ TEST(ReplaySimulaterTest, Test004_Fill)
     replay_simulater->Add(make_test_order("C1", "T1", 11.11000, false, true));
 
     // 此时该订单成交
-    EXPECT_EQ(result_listener->orders().size(), 0);
+    EXPECT_EQ(result_listener->orders().size(), 1);
     EXPECT_EQ(result_listener->fills().size(), 1);
 
     EXPECT_EQ(result_listener->fills().back().client_order_id(), "C1");
@@ -197,7 +197,7 @@ TEST(ReplaySimulaterTest, Test004_Fill)
     replay_simulater->Add(make_test_order("C2", "T2", 203.3, true, true));
 
     // 此时第二个订单也成交
-    EXPECT_EQ(result_listener->orders().size(), 0);
+    EXPECT_EQ(result_listener->orders().size(), 2);
     EXPECT_EQ(result_listener->fills().size(), 2);
 
     EXPECT_EQ(result_listener->fills().back().client_order_id(), "C2");
@@ -355,7 +355,7 @@ TEST(ReplaySimulaterTest, Test006_Rematch)
     replay_simulater->On_state_changed(t3);
 
     // 此时有两个订单产生匹配
-    EXPECT_EQ(result_listener->orders().size(), 3);
+    EXPECT_EQ(result_listener->orders().size(), 5);
     EXPECT_EQ(result_listener->fills().size(), 2);
 
     EXPECT_EQ(result_listener->fills().at(0).client_order_id(), "C1");
@@ -375,7 +375,7 @@ TEST(ReplaySimulaterTest, Test006_Rematch)
     replay_simulater->On_state_changed(t3);
 
     // 此时没有新的订单匹配发生
-    EXPECT_EQ(result_listener->orders().size(), 3);
+    EXPECT_EQ(result_listener->orders().size(), 5);
     EXPECT_EQ(result_listener->fills().size(), 2);
 
     delete replay_simulater;
@@ -424,7 +424,7 @@ TEST(ReplaySimulaterTest, Test007_ChangeOrder)
     replay_simulater->Change(make_test_order("C1", "T1-3", 33.3, false, true));
 
     // 订单已被匹配，无法修改
-    EXPECT_EQ(result_listener->orders().size(), 4);
+    EXPECT_EQ(result_listener->orders().size(), 5);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Rejected);
     EXPECT_EQ(result_listener->orders().back().message(), "order is filled");
 
@@ -460,32 +460,32 @@ TEST(ReplaySimulaterTest, Test008_DeleteOrder)
     replay_simulater->Delete(make_test_order("C1", "T1", 11.2, false, true));
 
     // 订单已成交，无法删除
-    EXPECT_EQ(result_listener->orders().size(), 2);
+    EXPECT_EQ(result_listener->orders().size(), 3);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Rejected);
     EXPECT_EQ(result_listener->orders().back().message(), "order is filled");
 
     replay_simulater->Add(make_test_order("C2", "T1", 11.2, false, true));
 
     EXPECT_EQ(result_listener->fills().size(), 1);
-    EXPECT_EQ(result_listener->orders().size(), 3);
+    EXPECT_EQ(result_listener->orders().size(), 4);
 
     replay_simulater->Delete(make_test_order("C2", "T1", 11.2, false, true));
 
     // 订单删除成功
-    EXPECT_EQ(result_listener->orders().size(), 4);
+    EXPECT_EQ(result_listener->orders().size(), 5);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Cancelled);
 
     replay_simulater->Delete(make_test_order("C2", "T1", 11.2, false, true));
 
     // 订单已经被删除，无法再次删除
-    EXPECT_EQ(result_listener->orders().size(), 5);
+    EXPECT_EQ(result_listener->orders().size(), 6);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Rejected);
     EXPECT_EQ(result_listener->orders().back().message(), "order is canceled");
 
     replay_simulater->Change(make_test_order("C2", "T1", 33.3, false, true));
 
     // 订单已经被删除，无法修改
-    EXPECT_EQ(result_listener->orders().size(), 6);
+    EXPECT_EQ(result_listener->orders().size(), 7);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Rejected);
     EXPECT_EQ(result_listener->orders().back().message(), "order is canceled");
 
@@ -532,7 +532,7 @@ TEST(ReplaySimulaterTest, Test009_QueryOrder)
     replay_simulater->Query(make_test_order("C1", "T1", 61.00, false, true));
 
     // 订单已成交
-    EXPECT_EQ(result_listener->orders().size(), 4);
+    EXPECT_EQ(result_listener->orders().size(), 5);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Filled);
     EXPECT_EQ(std::stod(result_listener->orders().back().price()), 61);
     EXPECT_EQ(result_listener->orders().back().filled_quantity(), 20);
@@ -540,19 +540,19 @@ TEST(ReplaySimulaterTest, Test009_QueryOrder)
     replay_simulater->Add(make_test_order("C2", "T1", 110.2, false, true));
 
     // 添加新处理中订单
-    EXPECT_EQ(result_listener->orders().size(), 5);
+    EXPECT_EQ(result_listener->orders().size(), 6);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Working);
 
     replay_simulater->Delete(make_test_order("C2", "T1", 110.2, false, true));
 
     // 订单删除成功
-    EXPECT_EQ(result_listener->orders().size(), 6);
+    EXPECT_EQ(result_listener->orders().size(), 7);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Cancelled);
 
     replay_simulater->Query(make_test_order("C2", "T1", 110.20, false, true));
 
     // 订单已删除
-    EXPECT_EQ(result_listener->orders().size(), 7);
+    EXPECT_EQ(result_listener->orders().size(), 8);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Cancelled);
 
     delete replay_simulater;

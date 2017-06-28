@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <vector>
 #include <algorithm>
+#include <map>
 #include <unordered_map>
 #include "core/assist/logger.h"
 #include "core/assist/utility.h"
@@ -107,14 +108,16 @@ namespace replay
             void OnTurnover(const pb::dms::Turnover &turnover)
             {
                 // 每次来新的 turnover 时，都要计算下和上次 turnover 的差值，就是本次行情间隔内的成交量和成交金额
-                m_current_turnover = {
-                        (std::uint64_t)std::max(0, (int)turnover.total_volume()  - (int)m_last_total_turnover.first),
-                        std::max(0.0, turnover.turnover() - m_last_total_turnover.second)
+                std::string contract = turnover.contract();
+                std::pair<std::uint64_t, double> &last = m_last_total_turnover[contract];
+                m_current_turnover[contract] = {
+                        (std::uint64_t)std::max(0, (int)turnover.total_volume()  - (int)last.first),
+                        std::max(0.0, turnover.turnover() - last.second)
                 };
                 // 同时将这次的总成交量，总成交金额保存下，供下次行情来的时候计算用
-                m_last_total_turnover = {turnover.total_volume() , turnover.turnover()};
+                last = {turnover.total_volume() , turnover.turnover()};
 
-                LOG_INFO("current turnover increase: volumn=", turnover.total_volume() , ", turnover=", turnover.turnover());
+                LOG_INFO("current turnover increase to: contract=", contract, ", volumn=", turnover.total_volume() , ", turnover=", turnover.turnover());
             }
 
         private:
@@ -122,10 +125,12 @@ namespace replay
             // 计算公式：
             //       当前买成交量(x) + 当前卖成交量(y) =  当前时刻成交量(volumn)
             //       当前买成交量(x) * 当前买最优价 * 合约数量乘数 + 当前卖成交量(y) * 当前卖最优价 * 合约数量乘数 = 当前时刻成交金额(turnover)
-            std::pair<std::uint32_t, std::uint32_t> Calculate_current_trade_volumn(const pb::dms::L2 &l2, int volume_multiple) const
+            std::pair<std::uint32_t, std::uint32_t> Calculate_current_trade_volumn(const pb::dms::L2 &l2, int volume_multiple)
             {
-                std::uint64_t volumn = m_current_turnover.first;    // 本次行情间隔内的总成交量
-                double turnover = m_current_turnover.second;     // 本次行情间隔内的总成交金额
+                std::string contract = l2.contract();
+                std::pair<std::uint64_t, double> &last = m_current_turnover[contract];
+                std::uint64_t volumn = last.first;    // 本次行情间隔内的总成交量
+                double turnover = last.second;     // 本次行情间隔内的总成交金额
                 double bid_best_price = l2.bid_size() == 0 ? 0 : l2.bid(0).price();     // 最优买价
                 double ask_best_price = l2.offer_size() == 0 ? 0 : l2.offer(0).price();     // 最优卖价
 
@@ -145,7 +150,7 @@ namespace replay
 
                 LOG_INFO("calculate bid volumn(x) and ask volumn(y): ");
                 LOG_INFO("        x + y =  ", volumn);
-                LOG_INFO("        x * ", bid_best_price, " *  ", volume_multiple , " + y * ", ask_best_price, " *  ", volume_multiple , " = ", turnover);
+                LOG_INFO("        x * ", bid_best_price, " * ", volume_multiple , " + y * ", ask_best_price, " * ", volume_multiple , " = ", turnover);
                 LOG_INFO("==>  x = ", bid_v, ", y = ", ask_v);
 
                 if(bid_v <= 0) return {0, volumn};
@@ -156,8 +161,8 @@ namespace replay
         private:
             fh::core::market::MarketListenerI *m_market_listener;
             std::function<void(const pb::dms::L2 &, std::uint32_t, std::uint32_t)> m_on_l2_changed;
-            std::pair<std::uint64_t, double> m_last_total_turnover;       // 上次行情数据的总成交量，总成交金额
-            std::pair<std::uint64_t, double> m_current_turnover;       // 当前时刻成交量，成交金额（本次的总成交 - 上次的总成交）
+            std::map<std::string, std::pair<std::uint64_t, double>> m_last_total_turnover;       // 上次行情数据的总成交量，总成交金额
+            std::map<std::string, std::pair<std::uint64_t, double>> m_current_turnover;       // 当前时刻成交量，成交金额（本次的总成交 - 上次的总成交）
 
         private:
             DISALLOW_COPY_AND_ASSIGN(ReplayListener);
