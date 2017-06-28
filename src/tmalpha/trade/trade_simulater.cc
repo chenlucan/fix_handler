@@ -262,8 +262,10 @@ namespace trade
             // 记录订单成交信息并发送出去
             std::string fill_id = this->Next_fill_id();
             pb::ems::Fill fill = m_order_manager.Fill_order(&order, fill_id, oppo.match_quantity, oppo.match_price);
+            m_exchange_listener->OnOrder(TradeSimulater::Make_filled_order(order, fill, remainder.first));
             m_exchange_listener->OnFill(fill);
             pb::ems::Fill wfill = m_order_manager.Fill_working_order(oppo.match_order, fill_id, oppo.match_quantity, oppo.match_price);
+            m_exchange_listener->OnOrder(TradeSimulater::Make_filled_order(matched, wfill, matched.quantity() - wfill.fill_quantity()));
             m_exchange_listener->OnFill(wfill);
 
             // 发送交易信息
@@ -295,6 +297,22 @@ namespace trade
                 m_market_manager.Change_market_on_order_created(working_order);
             }
         }
+    }
+
+    // 根据原始订单以及订单成交信息创建订单结果信息
+    pb::ems::Order TradeSimulater::Make_filled_order(const pb::ems::Order& order, const pb::ems::Fill &fill, std::uint64_t working_quantity)
+    {
+        pb::ems::Order filled_order(order);
+        filled_order.set_exchange_order_id(fill.exchange_order_id());
+        filled_order.set_status(pb::ems::OrderStatus::OS_Filled);
+        filled_order.set_working_price(order.price());
+        filled_order.set_working_quantity(working_quantity);
+        filled_order.set_filled_quantity(fill.fill_quantity());
+        filled_order.set_message("");
+        std::string now = fh::core::assist::utility::Current_time_str();    // yyyy-MM-dd HH:mm:ss.ssssss
+        fh::core::assist::utility::To_pb_time(filled_order.mutable_submit_time(), now.substr(0, 4) + now.substr(5, 2) + now.substr(8, 2) + "-" + now.substr(11, 12));
+
+        return filled_order;
     }
 
     // 一个订单处理请求被拒绝时，发送 reject 应答

@@ -352,6 +352,18 @@ namespace replay
     // 新订单成交时，将成交信息发送出去
     pb::ems::Fill ReplayOrderMatcher::Order_filled(const ::pb::ems::Order& org_order, const std::string &next_exchange_order_id)
     {
+        pb::ems::Order order(org_order);
+        order.set_exchange_order_id(next_exchange_order_id);
+        order.set_status(pb::ems::OrderStatus::OS_Filled);
+        order.set_working_price("0");
+        order.set_working_quantity(0);
+        order.set_filled_quantity(org_order.quantity());
+        order.set_message("");
+        this->Set_to_current_time(order.mutable_submit_time());
+
+        LOG_INFO("order result:", fh::core::assist::utility::Format_pb_message(order));
+        m_result_listener->OnOrder(order);
+
         pb::ems::Fill fill;
         fill.set_fill_id(this->Next_fill_id());
         fill.set_fill_price(org_order.price());
