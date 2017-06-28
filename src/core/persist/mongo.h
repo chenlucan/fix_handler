@@ -37,13 +37,14 @@ namespace persist
             // market: 只检索 market 属性值是指定 market 的数据
             // start_date_include, end_date_exclude: "yyyy-MM-dd HH:mm:ss" 格式
             // prev_last_record_insert_time: 分页用。0 表示从上述范围内第一条数据开始检索
-            std::uint64_t Query(std::vector<std::string> &result, const std::string &collection_name, const std::string &market,
+            std::uint64_t Query(std::vector<std::string> &result, const std::string &collection_name,
+                                  const std::string &market, const std::vector<std::string> contracts,
                                   const std::string &start_date_include, const std::string &end_date_exclude,
                                   std::uint64_t prev_last_record_insert_time = 0);
             // 检索指定日期时间范围内指定集合的行情数据件数
             std::uint64_t Count(const std::string &collection_name, const std::string &start_date_include, const std::string &end_date_exclude);
             // 检索指定日期时间范围内指定集合的行情数据件数（只检索 market 属性值是指定 market 的数据）
-            std::uint64_t Count(const std::string &collection_name, const std::string &market,
+            std::uint64_t Count(const std::string &collection_name, const std::string &market, const std::vector<std::string> contracts,
                     const std::string &start_date_include, const std::string &end_date_exclude);
 
         private:

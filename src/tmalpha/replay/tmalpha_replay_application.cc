@@ -65,6 +65,7 @@ namespace replay
             const fh::core::assist::Settings &persist_setting_file)
     {
         std::string market = app_settings.Get("alpha.market");  // 回放这个交易所的数据
+        std::string contracts = app_settings.Get("alpha.contracts");  // 回放这些合约的数据
         std::string start_include = app_settings.Get("alpha.start_include");
         std::string end_exclude = app_settings.Get("alpha.end_exclude");
         float speed = std::stof(app_settings.Get("alpha.speed"));
@@ -75,7 +76,7 @@ namespace replay
         std::string receive_url = app_settings.Get("alpha-order.receive_url");
 
         // 初期化模拟回放交易所
-        m_provider = new ReplayDataProvider(market, persist_setting_file);
+        m_provider = new ReplayDataProvider(market, contracts, persist_setting_file);
         m_provider->Range(start_include, end_exclude);
         m_simulater = new fh::tmalpha::replay::ReplaySimulater(m_provider, trade_rate);
         m_simulater->Speed(speed);
