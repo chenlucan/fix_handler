@@ -10,7 +10,8 @@
 class BookReceiver : public fh::core::zmq::ZmqReceiver
 {
     public:
-        explicit BookReceiver(const std::string &url) : fh::core::zmq::ZmqReceiver(url) {}
+        explicit BookReceiver(const std::string &url)
+        : fh::core::zmq::ZmqReceiver(url, fh::core::zmq::ZmqReceiver::Mode::SUBSCRIBE) {}
         virtual ~BookReceiver() {}
 
     public:
@@ -114,7 +115,8 @@ class BookReceiver : public fh::core::zmq::ZmqReceiver
 class OrderResultReceiver : public fh::core::zmq::ZmqReceiver
 {
     public:
-        explicit OrderResultReceiver(const std::string &url) : fh::core::zmq::ZmqReceiver(url) {}
+        explicit OrderResultReceiver(const std::string &url)
+        : fh::core::zmq::ZmqReceiver(url, fh::core::zmq::ZmqReceiver::Mode::SUBSCRIBE) {}
         virtual ~OrderResultReceiver() {}
 
     public:
@@ -259,8 +261,8 @@ int main(int argc, char* argv[])
         }
 
         LOG_INFO("start sender on port ", argv[1]);
-        std::string host = std::string("tcp://*:") + argv[1];
-        fh::core::zmq::ZmqSender sender(host);
+        std::string host = std::string("tcp://localhost:") + argv[1];
+        fh::core::zmq::ZmqSender sender(host, fh::core::zmq::ZmqSender::Mode::PUSH);
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
         while(true)

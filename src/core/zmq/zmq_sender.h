@@ -15,7 +15,14 @@ namespace zmq
     class ZmqSender
     {
         public:
-            explicit ZmqSender(const std::string &url);
+            enum class Mode
+            {
+                PUSH,                   // 采用 PUSH 模式发送数据，对应接受端是 PULL 模式
+                PUBLISH         // 采用 PUBLISH 模式发送数据，对应接受端是 SUBSCRIBE 模式
+            };
+
+        public:
+            explicit ZmqSender(const std::string &url, Mode mode = Mode::PUBLISH);
             virtual ~ZmqSender();
 
         public:
