@@ -18,29 +18,28 @@ inline std::string T(const std::string &v){return fh::core::assist::utility::Tri
 inline std::string T(const char *v){return std::string(v);}
 inline std::string T(char *v){return std::string(v);}	
 	
-// ---- ctp_api»Øµ÷º¯Êı ---- //
-// Á¬½Ó³É¹¦Ó¦´ğ
+// ---- ctp_apiå›è°ƒå‡½æ•° ---- //
+// è¿æ¥æˆåŠŸåº”ç­”
 void CustomMdSpi::OnFrontConnected()
 {
-	std::cout << "=====Create a network connection successfully=====" << std::endl;
+	LOG_INFO("=====Create a network connection successfully=====");
 	conn = true;
 }
 
-// ¶Ï¿ªÁ¬½ÓÍ¨Öª
+// æ–­å¼€è¿æ¥é€šçŸ¥
 void CustomMdSpi::OnFrontDisconnected(int nReason)
 {
 	std::cerr << "=====The network connection is disconnected=====" << std::endl;
 	std::cerr << "error code:" << nReason << std::endl;
 }
 
-// ĞÄÌø³¬Ê±¾¯¸æ
+// å¿ƒè·³è¶…æ—¶è­¦å‘Š
 void CustomMdSpi::OnHeartBeatWarning(int nTimeLapse)
 {
-	std::cerr << "=====Network the heartbeat timeout=====" << std::endl;
-	std::cerr << "Distance from last connection time: " << nTimeLapse << std::endl;
+	LOG_INFO("Distance from last connection time: ");
 }
 
-// µÇÂ¼Ó¦´ğ
+// ç™»å½•åº”ç­”
 void CustomMdSpi::OnRspUserLogin(
 	CThostFtdcRspUserLoginField *pRspUserLogin, 
 	CThostFtdcRspInfoField *pRspInfo, 
@@ -50,26 +49,18 @@ void CustomMdSpi::OnRspUserLogin(
 	bool bResult = pRspInfo && (pRspInfo->ErrorID != 0);
 	if (!bResult)
 	{
-		std::cout << "=====Account login successful=====" << std::endl;
-		std::cout << "Trading Day: " << pRspUserLogin->TradingDay << std::endl;
-		std::cout << "Login Time: " << pRspUserLogin->LoginTime << std::endl;
-		std::cout << "Broker ID: " << pRspUserLogin->BrokerID << std::endl;
-		std::cout << "User ID: " << pRspUserLogin->UserID << std::endl;
-		// ¿ªÊ¼¶©ÔÄĞĞÇé
-		/*
-		int rt = m_pMdUserApi->SubscribeMarketData(g_pInstrumentID, instrumentNum);
-		if (!rt)
-			std::cout << ">>>>>>·¢ËÍ¶©ÔÄĞĞÇéÇëÇó³É¹¦" << std::endl;
-		else
-			std::cerr << "--->>>·¢ËÍ¶©ÔÄĞĞÇéÇëÇóÊ§°Ü" << std::endl;
-		*/
+		LOG_INFO("=====Account login successful=====",
+		"\nTrading Day: ", pRspUserLogin->TradingDay,
+		"\nLogin Time: ", pRspUserLogin->LoginTime,
+		"\nBroker ID: ", pRspUserLogin->BrokerID,
+		"\nUser ID: ", pRspUserLogin->UserID);
 		mdable = true;
 	}
 	else
-		std::cerr << "Returns an error--->>> ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << pRspInfo->ErrorMsg << std::endl;
+		LOG_INFO("Returns an error--->>> ErrorID=", pRspInfo->ErrorID, " ErrorMsg=", pRspInfo->ErrorMsg);
 }
 
-// µÇ³öÓ¦´ğ
+// ç™»å‡ºåº”ç­”
 void CustomMdSpi::OnRspUserLogout(
 	CThostFtdcUserLogoutField *pUserLogout,
 	CThostFtdcRspInfoField *pRspInfo, 
@@ -84,18 +75,18 @@ void CustomMdSpi::OnRspUserLogout(
 		std::cout << "User ID: " << pUserLogout->UserID << std::endl;
 	}
 	else
-		std::cerr << "Returns an error--->>> ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << pRspInfo->ErrorMsg << std::endl;
+		LOG_INFO("Returns an error--->>> ErrorID=", pRspInfo->ErrorID, ", ErrorMsg=", pRspInfo->ErrorMsg);
 }
 
-// ´íÎóÍ¨Öª
+// é”™è¯¯é€šçŸ¥
 void CustomMdSpi::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 	bool bResult = pRspInfo && (pRspInfo->ErrorID != 0);
 	if (bResult)
-		std::cerr << "Returns an error--->>> ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << pRspInfo->ErrorMsg << std::endl;
+		LOG_INFO("Returns an error--->>> ErrorID=", pRspInfo->ErrorID, " ErrorMsg=", pRspInfo->ErrorMsg);
 }
 
-// ¶©ÔÄĞĞÇéÓ¦´ğ
+// è®¢é˜…è¡Œæƒ…åº”ç­”
 void CustomMdSpi::OnRspSubMarketData(
 	CThostFtdcSpecificInstrumentField *pSpecificInstrument, 
 	CThostFtdcRspInfoField *pRspInfo, 
@@ -107,29 +98,29 @@ void CustomMdSpi::OnRspSubMarketData(
 	{
 		std::cout << "=====Subscribe to the market success=====" << std::endl;
 		std::cout << "Instrument ID " << pSpecificInstrument->InstrumentID << std::endl;
-		// Èç¹ûĞèÒª´æÈëÎÄ¼ş»òÕßÊı¾İ¿â£¬ÔÚÕâÀï´´½¨±íÍ·,²»Í¬µÄºÏÔ¼µ¥¶À´æ´¢
+		// å¦‚æœéœ€è¦å­˜å…¥æ–‡ä»¶æˆ–è€…æ•°æ®åº“ï¼Œåœ¨è¿™é‡Œåˆ›å»ºè¡¨å¤´,ä¸åŒçš„åˆçº¦å•ç‹¬å­˜å‚¨
 		char filePath[100] = {'\0'};
 		sprintf(filePath, "%s_market_data.csv", pSpecificInstrument->InstrumentID);
 		std::ofstream outFile;
-		outFile.open(filePath, std::ios::out); // ĞÂ¿ªÎÄ¼ş
-		outFile << "ºÏÔ¼´úÂë" << ","
-			<< "¸üĞÂÊ±¼ä" << ","
-			<< "×îĞÂ¼Û" << ","
-			<< "³É½»Á¿" << ","
-			<< "Âò¼ÛÒ»" << ","
-			<< "ÂòÁ¿Ò»" << ","
-			<< "Âô¼ÛÒ»" << ","
-			<< "ÂôÁ¿Ò»" << ","
-			<< "³Ö²ÖÁ¿" << ","
-			<< "»»ÊÖÂÊ"
+		outFile.open(filePath, std::ios::out); // æ–°å¼€æ–‡ä»¶
+		outFile << "åˆçº¦ä»£ç " << ","
+			<< "æ›´æ–°æ—¶é—´" << ","
+			<< "æœ€æ–°ä»·" << ","
+			<< "æˆäº¤é‡" << ","
+			<< "ä¹°ä»·ä¸€" << ","
+			<< "ä¹°é‡ä¸€" << ","
+			<< "å–ä»·ä¸€" << ","
+			<< "å–é‡ä¸€" << ","
+			<< "æŒä»“é‡" << ","
+			<< "æ¢æ‰‹ç‡"
 			<< std::endl;
 		outFile.close();
 	}
 	else
-		std::cerr << "Returns an error--->>> ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << pRspInfo->ErrorMsg << std::endl;
+		LOG_INFO("Returns an error--->>> ErrorID=", pRspInfo->ErrorID, " ErrorMsg=", pRspInfo->ErrorMsg);
 }
 
-// È¡Ïû¶©ÔÄĞĞÇéÓ¦´ğ
+// å–æ¶ˆè®¢é˜…è¡Œæƒ…åº”ç­”
 void CustomMdSpi::OnRspUnSubMarketData(
 	CThostFtdcSpecificInstrumentField *pSpecificInstrument, 
 	CThostFtdcRspInfoField *pRspInfo,
@@ -139,14 +130,13 @@ void CustomMdSpi::OnRspUnSubMarketData(
 	bool bResult = pRspInfo && (pRspInfo->ErrorID != 0);
 	if (!bResult)
 	{
-		std::cout << "=====Unsubscribe market success=====" << std::endl;
-		std::cout << "Instrument ID :" << pSpecificInstrument->InstrumentID << std::endl;
+		LOG_INFO("=====Unsubscribe market success=====\nInstrument ID :", pSpecificInstrument->InstrumentID);
 	}
 	else
-		std::cerr << "Returns an error--->>> ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << pRspInfo->ErrorMsg << std::endl;
+		LOG_INFO("Returns an error--->>> ErrorID=", pRspInfo->ErrorID, " ErrorMsg=", pRspInfo->ErrorMsg);
 }
 
-// ¶©ÔÄÑ¯¼ÛÓ¦´ğ
+// è®¢é˜…è¯¢ä»·åº”ç­”
 void CustomMdSpi::OnRspSubForQuoteRsp(
 	CThostFtdcSpecificInstrumentField *pSpecificInstrument,
 	CThostFtdcRspInfoField *pRspInfo,
@@ -156,42 +146,40 @@ void CustomMdSpi::OnRspSubForQuoteRsp(
 	bool bResult = pRspInfo && (pRspInfo->ErrorID != 0);
 	if (!bResult)
 	{
-		std::cout << "=====Subscribe to the inquiry success=====" << std::endl;
-		std::cout << "Instrument ID :" << pSpecificInstrument->InstrumentID << std::endl;
+		LOG_INFO("=====Subscribe to the inquiry success=====\nInstrument ID :", pSpecificInstrument->InstrumentID);
 	}
 	else
-		std::cerr << "Returns an error--->>> ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << pRspInfo->ErrorMsg << std::endl;
+		LOG_INFO("Returns an error--->>> ErrorID=", pRspInfo->ErrorID, " ErrorMsg=", pRspInfo->ErrorMsg);
 }
 
-// È¡Ïû¶©ÔÄÑ¯¼ÛÓ¦´ğ
+// å–æ¶ˆè®¢é˜…è¯¢ä»·åº”ç­”
 void CustomMdSpi::OnRspUnSubForQuoteRsp(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 	bool bResult = pRspInfo && (pRspInfo->ErrorID != 0);
 	if (!bResult)
 	{
-		std::cout << "=====Unsubscribe inquiry successfully=====" << std::endl;
-		std::cout << "Instrument ID :" << pSpecificInstrument->InstrumentID << std::endl;
+		LOG_INFO("=====Unsubscribe inquiry successfully=====\nInstrument ID :",  pSpecificInstrument->InstrumentID);
 	}
 	else
-		std::cerr << "Returns an error--->>> ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << pRspInfo->ErrorMsg << std::endl;
+		LOG_INFO("Returns an error--->>> ErrorID=", pRspInfo->ErrorID, " ErrorMsg=", pRspInfo->ErrorMsg);
 }
 
-// ĞĞÇéÏêÇéÍ¨Öª
+// è¡Œæƒ…è¯¦æƒ…é€šçŸ¥
 void CustomMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData)
 {
-	// ´òÓ¡ĞĞÇé£¬×Ö¶Î½Ï¶à£¬½ØÈ¡²¿·Ö
-	std::cout << "=====Get deep market=====" << std::endl;
-	std::cout << "Trading day: " << pDepthMarketData->TradingDay << std::endl;
-	std::cout << "Exchange ID: " << pDepthMarketData->ExchangeID << std::endl;
-	std::cout << "Instrument ID: " << pDepthMarketData->InstrumentID << std::endl;
-	std::cout << "Exchange Inst ID: " << pDepthMarketData->ExchangeInstID << std::endl;
-	std::cout << "Last Price: " << pDepthMarketData->LastPrice << std::endl;
-	std::cout << "Volume: " << pDepthMarketData->Volume << std::endl;
-	// Èç¹ûÖ»»ñÈ¡Ä³Ò»¸öºÏÔ¼ĞĞÇé£¬¿ÉÒÔÖğtickµØ´æÈëÎÄ¼ş»òÊı¾İ¿â
+	// æ‰“å°è¡Œæƒ…ï¼Œå­—æ®µè¾ƒå¤šï¼Œæˆªå–éƒ¨åˆ†
+	LOG_INFO("=====Get deep market=====\n",
+	"Trading day: ", pDepthMarketData->TradingDay,
+	"\nExchange ID: ", pDepthMarketData->ExchangeID,
+	"\nInstrument ID: ", pDepthMarketData->InstrumentID,
+	"\nExchange Inst ID: ", pDepthMarketData->ExchangeInstID,
+	"\nLast Price: ", pDepthMarketData->LastPrice,
+	"\nVolume: ", pDepthMarketData->Volume);
+	// å¦‚æœåªè·å–æŸä¸€ä¸ªåˆçº¦è¡Œæƒ…ï¼Œå¯ä»¥é€tickåœ°å­˜å…¥æ–‡ä»¶æˆ–æ•°æ®åº“
 	char filePath[100] = {'\0'};
 	sprintf(filePath, "%s_market_data.csv", pDepthMarketData->InstrumentID);
 	std::ofstream outFile;
-	outFile.open(filePath, std::ios::app); // ÎÄ¼ş×·¼ÓĞ´Èë 
+	outFile.open(filePath, std::ios::app); // æ–‡ä»¶è¿½åŠ å†™å…¥ 
 	outFile << pDepthMarketData->InstrumentID << "," 
 		<< pDepthMarketData->UpdateTime << "." << pDepthMarketData->UpdateMillisec << "," 
 		<< pDepthMarketData->LastPrice << "," 
@@ -207,26 +195,25 @@ void CustomMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMar
 	SendDepthMarketData(pDepthMarketData);
 	StructToJSON(pDepthMarketData);
 	   
-	// È¡Ïû¶©ÔÄĞĞÇé
+	// å–æ¶ˆè®¢é˜…è¡Œæƒ…
 	//int rt = m_pMdUserApi->UnSubscribeMarketData(g_pInstrumentID, instrumentNum);
 	//if (!rt)
-	//	std::cout << ">>>>>>·¢ËÍÈ¡Ïû¶©ÔÄĞĞÇéÇëÇó³É¹¦" << std::endl;
+	//	std::cout << ">>>>>>å‘é€å–æ¶ˆè®¢é˜…è¡Œæƒ…è¯·æ±‚æˆåŠŸ" << std::endl;
 	//else
-	//	std::cerr << "--->>>·¢ËÍÈ¡Ïû¶©ÔÄĞĞÇéÇëÇóÊ§°Ü" << std::endl;
+	//	std::cerr << "--->>>å‘é€å–æ¶ˆè®¢é˜…è¡Œæƒ…è¯·æ±‚å¤±è´¥" << std::endl;
 }
 
-// Ñ¯¼ÛÏêÇéÍ¨Öª
+// è¯¢ä»·è¯¦æƒ…é€šçŸ¥
 void CustomMdSpi::OnRtnForQuoteRsp(CThostFtdcForQuoteRspField *pForQuoteRsp)
 {
-	// ²¿·ÖÑ¯¼Û½á¹û
-	std::cout << "=====Get inquiry results=====" << std::endl;
-	std::cout << "Trading Day: " << pForQuoteRsp->TradingDay << std::endl;
-	std::cout << "Exchange ID: " << pForQuoteRsp->ExchangeID << std::endl;
-	std::cout << "Instrument ID£º " << pForQuoteRsp->InstrumentID << std::endl;
-	std::cout << "For Quote SysID: " << pForQuoteRsp->ForQuoteSysID << std::endl;
+	// éƒ¨åˆ†è¯¢ä»·ç»“æœ
+	LOG_INFO("=====Get inquiry results=====\nTrading Day: ", pForQuoteRsp->TradingDay,
+	"\nExchange ID: ", pForQuoteRsp->ExchangeID,
+	"\nInstrument IDï¼š ", pForQuoteRsp->InstrumentID,
+	"\nFor Quote SysID: ", pForQuoteRsp->ForQuoteSysID);
 }
 
-// ---- ×Ô¶¨Òåº¯Êı ---- //
+// ---- è‡ªå®šä¹‰å‡½æ•° ---- //
 void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketData)
 {
 	LOG_INFO("CCtpBookManager::SendCtpmarketData ");     
@@ -360,9 +347,9 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 
 	m_book_sender->OnL2(l2_info);
 
-	//ÒÔÉÏ·¢ËÍL2 ĞĞÇé
+	//ä»¥ä¸Šå‘é€L2 è¡Œæƒ…
 
-	//·¢ËÍ×îÓÅ¼Û
+	//å‘é€æœ€ä¼˜ä»·
 	if((pMarketData->BidPrice1 == DBL_MAX || pMarketData->BidVolume1 <= 0) && (pMarketData->AskVolume1 <= 0 || pMarketData->AskPrice1 == DBL_MAX))
 	{
 		LOG_INFO("Bid and Offer NULL ");
@@ -401,7 +388,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 
 	}
 
-	// ·¢ËÍ trade Êı¾İ
+	// å‘é€ trade æ•°æ®
 	pb::dms::Trade trade;
 	pb::dms::DataPoint *last = trade.mutable_last();
 	last->set_price(pMarketData->LastPrice);

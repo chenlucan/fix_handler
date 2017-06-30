@@ -141,7 +141,7 @@ void CFemasMarket::Subscribe(std::vector<std::string> instruments)
       {
           m_FemasMarketManager->mISubSuss = instruments.size();
           char **contracts = new char*[instruments.size()];
-          for(int i=0;i<instruments.size();i++)
+          for(unsigned int i=0;i<instruments.size();i++)
 	   {
                contracts[i] = new char[instruments[i].length()+1];
 	        memset(contracts[i],0,instruments[i].length()+1);
@@ -149,7 +149,7 @@ void CFemasMarket::Subscribe(std::vector<std::string> instruments)
 		 LOG_INFO("num = ",i+1,",sub contracts = ",contracts[i]);	
 	   }	   	  
 	   m_pUstpFtdcMduserApi->SubMarketData (contracts,instruments.size());
-	   for(int i=0;i<instruments.size();i++)
+	   for(unsigned int i=0;i<instruments.size();i++)
 	   {
               delete [] contracts[i];   
 	   }
@@ -183,8 +183,6 @@ void CFemasMarket::ReqDefinitions(std::vector<std::string> instruments)
      m_FemasMarketManager->SetFileData(FileConfig);	 
       	 
  }
-
-
 
 }
 }

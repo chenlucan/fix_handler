@@ -245,8 +245,8 @@ void CRemMarkrtManager::RemDateToString(bsoncxx::builder::basic::document& json,
     bsoncxx::builder::basic::document tmjson;
     tmjson.append(bsoncxx::builder::basic::kvp("market", T("REM")));		  
     tmjson.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
-    tmjson.append(bsoncxx::builder::basic::kvp("sendingTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));	
-    tmjson.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(fh::core::assist::utility::Current_time_str())));	
+    tmjson.append(bsoncxx::builder::basic::kvp("sendingTime", T(std::to_string(tmp_time))));	
+    tmjson.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(updatetime)));	
     tmjson.append(bsoncxx::builder::basic::kvp("receivedTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));	
     tmjson.append(bsoncxx::builder::basic::kvp("InstrumentID", T(InstrumentID)));		
     tmjson.append(bsoncxx::builder::basic::kvp("message", json));	
@@ -310,6 +310,10 @@ std::string CRemMarkrtManager::GetUpdateTimeStr(EESMarketDepthQuoteData *pMarket
     timestr+=pMarketData->UpdateTime;
     timestr+=".";	 
     std::string tmp = std::to_string(pMarketData->UpdateMillisec);
+    if(pMarketData->UpdateMillisec != 500)
+    {
+        tmp = "000";
+    }		
     tmp += "000";
     timestr += tmp;	
     	

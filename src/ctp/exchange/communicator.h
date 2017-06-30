@@ -1,4 +1,4 @@
-﻿#ifndef __FH_CTP_EXCHANGE_COMMUNICATOR_H__
+#ifndef __FH_CTP_EXCHANGE_COMMUNICATOR_H__
 #define __FH_CTP_EXCHANGE_COMMUNICATOR_H__
 
 #include <string>
@@ -23,52 +23,51 @@ namespace ctp
 {
 namespace exchange
 {    
-    class CCtpCommunicator : public core::exchange::ExchangeI
-    {
-          public:
-				CCtpCommunicator(core::exchange::ExchangeListenerI *strategy,const std::string &config_file);
-				virtual ~CCtpCommunicator();
-          public:
-                 // implement of ExchangeI
-                bool Start(const std::vector<::pb::ems::Order> &init_orders) override;
-                // implement of ExchangeI
-                void Stop() override;
+	class CCtpCommunicator : public core::exchange::ExchangeI
+	{
+		public:
+			CCtpCommunicator(core::exchange::ExchangeListenerI *strategy,const std::string &config_file);
+			virtual ~CCtpCommunicator();
+		public:
+			// implement of ExchangeI
+			bool Start(const std::vector<::pb::ems::Order> &init_orders) override;
+			// implement of ExchangeI
+			void Stop() override;
 
-         public:
-                // implement of ExchangeI
-                void Initialize(std::vector<::pb::dms::Contract> contracts) override;
-                // implement of ExchangeI
-                void Add(const ::pb::ems::Order& order) override;
-                 // implement of ExchangeI
-                void Change(const ::pb::ems::Order& order) override;
-                // implement of ExchangeI
-                void Delete(const ::pb::ems::Order& order) override;
-                // implement of ExchangeI
-                void Query(const ::pb::ems::Order& order) override;
-                // implement of ExchangeI
-                void Query_mass(const char *data, size_t size) override;
-                // implement of ExchangeI
-                void Delete_mass(const char *data, size_t size) override;
+			public:
+			// implement of ExchangeI
+			void Initialize(std::vector<::pb::dms::Contract> contracts) override;
+			// implement of ExchangeI
+			void Add(const ::pb::ems::Order& order) override;
+			// implement of ExchangeI
+			void Change(const ::pb::ems::Order& order) override;
+			// implement of ExchangeI
+			void Delete(const ::pb::ems::Order& order) override;
+			// implement of ExchangeI
+			void Query(const ::pb::ems::Order& order) override;
+			// implement of ExchangeI
+			void Query_mass(const char *data, size_t size) override;
+			// implement of ExchangeI
+			void Delete_mass(const char *data, size_t size) override;
 
-		        void SendReqQryTrade(const std::vector<::pb::ems::Order> &init_orders);
-		        void SendReqQryInvestorPosition(const std::vector<::pb::ems::Order> &init_orders);
-	  public:	
-                fh::core::assist::Settings *m_pFileConfig;	
+			void SendReqQryTrade(const std::vector<::pb::ems::Order> &init_orders);
+			void SendReqQryInvestorPosition(const std::vector<::pb::ems::Order> &init_orders);
+			public:	
+			fh::core::assist::Settings *m_pFileConfig;	
 
-	  private:
-	       std::shared_ptr<fh::ctp::exchange::CCtpTraderSpi> m_trader;
-           core::exchange::ExchangeListenerI *m_strategy;
-		   std::vector<::pb::ems::Order> m_init_orders;	
+		private:
+			std::shared_ptr<fh::ctp::exchange::CCtpTraderSpi> m_trader;
+			core::exchange::ExchangeListenerI *m_strategy;
+			std::vector<::pb::ems::Order> m_init_orders;	
 
-      public:		   
-           int m_itimeout;
-		   
-	  private:
-	  	
-                 DISALLOW_COPY_AND_ASSIGN(CCtpCommunicator);			 
+		public:		   
+			int m_itimeout;
 
-			
-    };
+		private:
+			DISALLOW_COPY_AND_ASSIGN(CCtpCommunicator);			 
+
+
+	};
 
 
 

@@ -131,8 +131,8 @@ void CCtpCommunicator::Add(const ::pb::ems::Order& order)
 
 void CCtpCommunicator::Change(const ::pb::ems::Order& order)
 {
-        LOG_INFO("CCtpCommunicator::Change ");		
-        return;
+	LOG_INFO("CCtpCommunicator::Change ");		
+	return;
 }
 
 void CCtpCommunicator::Delete(const ::pb::ems::Order& order)

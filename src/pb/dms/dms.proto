@@ -17,8 +17,8 @@ message BBO {
 }
 
 message Bid {
-optional string    contract = 1;
-  optional DataPoint bid    = 2;
+  optional string    contract = 1;
+  optional DataPoint bid      = 2;
 }
 
 message Offer {
@@ -48,4 +48,11 @@ message Contract {
   optional ContractType contract_type    = 7;
   optional string  legA                  = 8;
   optional string  legB                  = 9;
+}
+
+message Turnover {
+  optional string    contract = 1;
+  
+  optional uint64    total_volume = 2;
+  optional double    turnover     = 3;
 }

@@ -40,7 +40,7 @@ class CFemasMarket : public fh::core::market::MarketI
             // implement of MarketI
             void ReqDefinitions(std::vector<std::string> instruments) override; 
 
-	     void SetFileConfigData(std::string &FileConfig);		
+	     void SetFileConfigData(std::string &FileConfig);	
         public:
 	     fh::core::assist::Settings *m_pFileConfig;	
 	     CUstpFtdcMduserApi *m_pUstpFtdcMduserApi;	 

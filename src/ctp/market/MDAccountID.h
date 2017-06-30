@@ -9,7 +9,7 @@ namespace ctp
 {
 namespace market
 {
-//记录账户的基本信息：用户ID，交易账号，账号密码，经纪商代码，前置机地址
+//璁板綍璐︽埛鐨勫熀鏈俊鎭細鐢ㄦ埛ID锛屼氦鏄撹处鍙凤紝璐﹀彿瀵嗙爜锛岀粡绾晢浠ｇ爜锛屽墠缃満鍦板潃
 class MDAccountID{
 public:
 	void setInvestorID(const std::string &investorID);

@@ -23,6 +23,19 @@
 
 #define JSON_ELEMENT bsoncxx::document::element
 
+typedef struct strade
+{
+    int mvolume;
+    std::string mtime;
+    strade()
+    {
+        mvolume = 0;
+	 mtime = "";	
+    }
+} mstrade;
+
+typedef std::map <std::string,mstrade*> TradeMap;
+
 typedef std::map <std::string,std::string> MessMap;
 
 
@@ -79,6 +92,8 @@ class CtpBookConvert : public fh::core::persist::Converter
 				void OnContractTrading(const std::string &contract)    override;
 				// implement of MarketListenerI
 				virtual void OnOrginalMessage(const std::string &message);
+				// implement of MarketListenerI
+                void OnTurnover(const pb::dms::Turnover &turnover) override;
 				void Reset();
 
 			public:
@@ -86,7 +101,8 @@ class CtpBookConvert : public fh::core::persist::Converter
 				pb::dms::Bid m_bid;
 				pb::dms::Offer m_offer;
 				pb::dms::L2 m_l2;	 
-
+				pb::dms::Trade m_trade;	 
+				pb::dms::Turnover m_turnover;	
 				int bid_turnover;
 				int offer_turnover;		
  
@@ -104,12 +120,17 @@ class CtpBookConvert : public fh::core::persist::Converter
 		bool MakeL2Json(bsoncxx::builder::basic::document& json);
 		bool MakeBidJson(bsoncxx::builder::basic::document& json);
 		bool MakeOfferJson(bsoncxx::builder::basic::document& json); 	 
-		bool MakeBboJson(bsoncxx::builder::basic::document& json); 	
+		bool MakeBboJson(bsoncxx::builder::basic::document& json);
+        bool MakeTradeJson(bsoncxx::builder::basic::document& json);	
+        bool MakeTurnoverJson(bsoncxx::builder::basic::document& json); 		
         void SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketData);
+		int  MakePriceVolume(CThostFtdcDepthMarketDataField *pMarketData);
+		void CheckTime(CThostFtdcDepthMarketDataField *pMarketData);
 		
 	private:
 		CtpConvertListenerI* m_listener;	 	
-		MessMap m_messagemap;	 
+		MessMap m_messagemap;	
+        TradeMap m_trademap;			
 	private:
 		DISALLOW_COPY_AND_ASSIGN(CtpBookConvert);
 };

@@ -21,7 +21,7 @@ namespace ctp
 {
 namespace market
 {
-// ---- ÅÉÉúµÄĞĞÇéÀà ---- //
+// ---- æ´¾ç”Ÿçš„è¡Œæƒ…ç±» ---- //
 class CustomMdSpi: public CThostFtdcMdSpi
 {
 public:
@@ -31,52 +31,52 @@ public:
 	}	
 	
 	virtual ~CustomMdSpi(){}
-	// ---- ¼Ì³Ğ×ÔCTP¸¸ÀàµÄ»Øµ÷½Ó¿Ú²¢ÊµÏÖ ---- //
+	// ---- ç»§æ‰¿è‡ªCTPçˆ¶ç±»çš„å›è°ƒæ¥å£å¹¶å®ç° ---- //
 public:
-	///µ±¿Í»§¶ËÓë½»Ò×ºóÌ¨½¨Á¢ÆğÍ¨ĞÅÁ¬½ÓÊ±£¨»¹Î´µÇÂ¼Ç°£©£¬¸Ã·½·¨±»µ÷ÓÃ¡£
+	///å½“å®¢æˆ·ç«¯ä¸äº¤æ˜“åå°å»ºç«‹èµ·é€šä¿¡è¿æ¥æ—¶ï¼ˆè¿˜æœªç™»å½•å‰ï¼‰ï¼Œè¯¥æ–¹æ³•è¢«è°ƒç”¨ã€‚
 	void OnFrontConnected();
 
-	///µ±¿Í»§¶ËÓë½»Ò×ºóÌ¨Í¨ĞÅÁ¬½Ó¶Ï¿ªÊ±£¬¸Ã·½·¨±»µ÷ÓÃ¡£µ±·¢ÉúÕâ¸öÇé¿öºó£¬API»á×Ô¶¯ÖØĞÂÁ¬½Ó£¬¿Í»§¶Ë¿É²»×ö´¦Àí¡£
-	///@param nReason ´íÎóÔ­Òò
-	///        0x1001 ÍøÂç¶ÁÊ§°Ü
-	///        0x1002 ÍøÂçĞ´Ê§°Ü
-	///        0x2001 ½ÓÊÕĞÄÌø³¬Ê±
-	///        0x2002 ·¢ËÍĞÄÌøÊ§°Ü
-	///        0x2003 ÊÕµ½´íÎó±¨ÎÄ
+	///å½“å®¢æˆ·ç«¯ä¸äº¤æ˜“åå°é€šä¿¡è¿æ¥æ–­å¼€æ—¶ï¼Œè¯¥æ–¹æ³•è¢«è°ƒç”¨ã€‚å½“å‘ç”Ÿè¿™ä¸ªæƒ…å†µåï¼ŒAPIä¼šè‡ªåŠ¨é‡æ–°è¿æ¥ï¼Œå®¢æˆ·ç«¯å¯ä¸åšå¤„ç†ã€‚
+	///@param nReason é”™è¯¯åŸå› 
+	///        0x1001 ç½‘ç»œè¯»å¤±è´¥
+	///        0x1002 ç½‘ç»œå†™å¤±è´¥
+	///        0x2001 æ¥æ”¶å¿ƒè·³è¶…æ—¶
+	///        0x2002 å‘é€å¿ƒè·³å¤±è´¥
+	///        0x2003 æ”¶åˆ°é”™è¯¯æŠ¥æ–‡
 	void OnFrontDisconnected(int nReason);
 
-	///ĞÄÌø³¬Ê±¾¯¸æ¡£µ±³¤Ê±¼äÎ´ÊÕµ½±¨ÎÄÊ±£¬¸Ã·½·¨±»µ÷ÓÃ¡£
-	///@param nTimeLapse ¾àÀëÉÏ´Î½ÓÊÕ±¨ÎÄµÄÊ±¼ä
+	///å¿ƒè·³è¶…æ—¶è­¦å‘Šã€‚å½“é•¿æ—¶é—´æœªæ”¶åˆ°æŠ¥æ–‡æ—¶ï¼Œè¯¥æ–¹æ³•è¢«è°ƒç”¨ã€‚
+	///@param nTimeLapse è·ç¦»ä¸Šæ¬¡æ¥æ”¶æŠ¥æ–‡çš„æ—¶é—´
 	void OnHeartBeatWarning(int nTimeLapse);
 
-	///µÇÂ¼ÇëÇóÏìÓ¦
+	///ç™»å½•è¯·æ±‚å“åº”
 	void OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
-	///µÇ³öÇëÇóÏìÓ¦
+	///ç™»å‡ºè¯·æ±‚å“åº”
 	void OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
-	///´íÎóÓ¦´ğ
+	///é”™è¯¯åº”ç­”
 	void OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
-	///¶©ÔÄĞĞÇéÓ¦´ğ
+	///è®¢é˜…è¡Œæƒ…åº”ç­”
 	void OnRspSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
-	///È¡Ïû¶©ÔÄĞĞÇéÓ¦´ğ
+	///å–æ¶ˆè®¢é˜…è¡Œæƒ…åº”ç­”
 	void OnRspUnSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
-	///¶©ÔÄÑ¯¼ÛÓ¦´ğ
+	///è®¢é˜…è¯¢ä»·åº”ç­”
 	void OnRspSubForQuoteRsp(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
-	///È¡Ïû¶©ÔÄÑ¯¼ÛÓ¦´ğ
+	///å–æ¶ˆè®¢é˜…è¯¢ä»·åº”ç­”
 	void OnRspUnSubForQuoteRsp(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
-	///Éî¶ÈĞĞÇéÍ¨Öª
+	///æ·±åº¦è¡Œæƒ…é€šçŸ¥
 	void OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData);
 
-	///Ñ¯¼ÛÍ¨Öª
+	///è¯¢ä»·é€šçŸ¥
 	void OnRtnForQuoteRsp(CThostFtdcForQuoteRspField *pForQuoteRsp);
 
-// ---- ×Ô¶¨Òåº¯Êı ---- //
+// ---- è‡ªå®šä¹‰å‡½æ•° ---- //
 private:	
 	void SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketData);
 	void StructToJSON(CThostFtdcDepthMarketDataField *pMarketData);
@@ -88,11 +88,11 @@ public:
 private:
     TThostFtdcVolumeType m_last_volume;
 	std::shared_ptr<fh::core::market::MarketListenerI> m_book_sender;
-	//ÕË»§ĞÅÏ¢
+	//è´¦æˆ·ä¿¡æ¯
 	std::shared_ptr<fh::ctp::market::MDAccountID> id;
-	//ÊÇ·ñÁ¬½Ó³É¹¦ ¿ÉÒÔµÇÂ¼
+	//æ˜¯å¦è¿æ¥æˆåŠŸ å¯ä»¥ç™»å½•
 	bool conn;	
-	//ÊÇ·ñ¿ÉÒÔ½øĞĞ¶©ÔÄĞĞÇé
+	//æ˜¯å¦å¯ä»¥è¿›è¡Œè®¢é˜…è¡Œæƒ…
 	bool mdable;	
 };
 

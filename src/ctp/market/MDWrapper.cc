@@ -1,5 +1,4 @@
 #include "MDWrapper.h"
-#include "iostream"
 namespace fh
 {
 namespace ctp
@@ -9,37 +8,36 @@ namespace market
 // --
 MDWrapper::MDWrapper(std::shared_ptr<fh::core::market::MarketListenerI> sender, std::shared_ptr<fh::ctp::market::MDAccountID> id){
 	this->id = id;
-	//³õÊ¼»¯apiºÍspi²¢³¢ÊÔÁ¬½Ó
+	//åˆå§‹åŒ–apiå’Œspiå¹¶å°è¯•è¿žæŽ¥
 	api = CThostFtdcMdApi::CreateFtdcMdApi();
 	spi = new CustomMdSpi(sender, id);
-	//×¢²áÊÂ¼þ
+	//æ³¨å†Œäº‹ä»¶
 	api->RegisterSpi(spi);
-	//×¢²áÇ°ÖÃ»ú
+	//æ³¨å†Œå‰ç½®æœº
 	char *frontAddress = new char[100];
 	strcpy(frontAddress, id->getMarketFrontAddress().c_str());
-	std::cout << frontAddress << std::endl;
 	api->RegisterFront(frontAddress);	
-	//³õÊ¼»¯
+	//åˆå§‹åŒ–
 	api->Init();
 }
 
 MDWrapper::~MDWrapper(){
-	//ÊÍ·Åapi¿Õ¼ä
+	//é‡Šæ”¾apiç©ºé—´
 	api->RegisterSpi(nullptr);
 	api->Release();
 	api = nullptr;
-	//ÊÍ·Åspi¿Õ¼ä
+	//é‡Šæ”¾spiç©ºé—´
 	delete spi;
 	spi = nullptr;
 }
 
-//µÇÂ½
+//ç™»é™†
 /*
-0£¬´ú±í³É¹¦¡£
--1£¬±íÊ¾ÍøÂçÁ¬½ÓÊ§°Ü£»
--2£¬±íÊ¾Î´´¦ÀíÇëÇó³¬¹ýÐí¿ÉÊý£»
--3£¬±íÊ¾Ã¿Ãë·¢ËÍÇëÇóÊý³¬¹ýÐí¿ÉÊý¡£
--4, Á¬½ÓÎ´³É¹¦
+0ï¼Œä»£è¡¨æˆåŠŸã€‚
+-1ï¼Œè¡¨ç¤ºç½‘ç»œè¿žæŽ¥å¤±è´¥ï¼›
+-2ï¼Œè¡¨ç¤ºæœªå¤„ç†è¯·æ±‚è¶…è¿‡è®¸å¯æ•°ï¼›
+-3ï¼Œè¡¨ç¤ºæ¯ç§’å‘é€è¯·æ±‚æ•°è¶…è¿‡è®¸å¯æ•°ã€‚
+-4, è¿žæŽ¥æœªæˆåŠŸ
 */
 int MDWrapper::login(CThostFtdcReqUserLoginField *pReqAuthenticateField, int nRequestID){
      time_t tmtimeout = time(NULL);
@@ -47,23 +45,21 @@ int MDWrapper::login(CThostFtdcReqUserLoginField *pReqAuthenticateField, int nRe
      {
 		if(time(NULL)-tmtimeout > std::atoi(id->getTimeout().c_str()))
 		{
-			std::cout << "CCtpMarket::mIConnet tiomeout " << std::endl;
 			return -4;		  
 		}
          sleep(0.1);    
      }	 
-     std::cout <<"CCtpMarket::mIConnet is ok " << std::endl;	
 	
 	 return api->ReqUserLogin(pReqAuthenticateField, nRequestID);
 }
 
-//µÇ³ö
+//ç™»å‡º
 int MDWrapper::logout(CThostFtdcUserLogoutField *pUserLogout, int nRequestID)
 {
 	return api->ReqUserLogout(pUserLogout, nRequestID);	 
 }
 
-//¶©ÔÄÐÐÇé
+//è®¢é˜…è¡Œæƒ…
 int MDWrapper::ReqSubscribeMarketData(char *ppInstrumentID[], int nCount){
 	return api->SubscribeMarketData(ppInstrumentID, nCount);
 }

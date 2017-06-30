@@ -9,17 +9,17 @@ namespace ctp
 {
 namespace exchange
 {
-//·â×°apiÃüÁîµÄ½Ó¿Ú
-class ApiCommand
-{
-	public:
-		virtual ~ApiCommand();
-		virtual int execute() = 0;
-	protected:
-		ApiCommand(int &requestID, CThostFtdcTraderApi *api);
-		int &requestID;
-		CThostFtdcTraderApi *api;
-};
+	//å°è£…apiå‘½ä»¤çš„æ¥å£
+	class ApiCommand
+	{
+		public:
+			virtual ~ApiCommand();
+			virtual int execute() = 0;
+		protected:
+			ApiCommand(int &requestID, CThostFtdcTraderApi *api);
+			int &requestID;
+			CThostFtdcTraderApi *api;
+	};
 
 }
 }

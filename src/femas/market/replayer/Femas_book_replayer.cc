@@ -118,48 +118,25 @@ void FemasBookReplayer::FemasmarketData(const JSON_ELEMENT &message,int volumeMu
     strcpy(tmpMarketData.InstrumentID_2,GET_STR_FROM_JSON(message, "InstrumentID_2").c_str());
     strcpy(tmpMarketData.InstrumentName,GET_STR_FROM_JSON(message, "InstrumentName").c_str());	
  
-    /*int BidPrice_x = 0;
-    try
-    {
-        BidPrice_x = (tmpMarketData.Turnover-tmpMarketData.BidPrice1*tmpMarketData.Volume*volumeMultiple)/((tmpMarketData.AskPrice1-tmpMarketData.BidPrice1)*volumeMultiple);           
-    }
-    catch(...)
-    {
-        BidPrice_x = 0;
-    }		
-	
-    int AskVolume_y = tmpMarketData.Volume-BidPrice_x;	
-
-    if(BidPrice_x < 0)
-    {
-        BidPrice_x = 0;
-    }	
-    if(AskVolume_y < 0)
-    {
-        AskVolume_y = 0;
-    }*/
     int BidVolume_x = 0;
-    try
-    {
-        if(volumeMultiple <= 0)
-	 {
-            BidVolume_x = 0;    
-	 }
-	 else
-	 {
-            BidVolume_x = (tmpMarketData.Turnover-tmpMarketData.BidPrice1*tmpMarketData.Volume*volumeMultiple)/((tmpMarketData.AskPrice1-tmpMarketData.BidPrice1)*volumeMultiple);
-	 }	                   
-    }
-    catch(...)
-    {
-        BidVolume_x = 0;
-    }		
-	
-    int AskVolume_y = tmpMarketData.Volume-BidVolume_x;
+    int AskVolume_y = 0;	
     if(volumeMultiple <= 0)
     {
         AskVolume_y = 0;
+	 BidVolume_x = 0;
     }
+    else
+    {
+        try
+       {
+            AskVolume_y = (tmpMarketData.Turnover-tmpMarketData.BidPrice1*tmpMarketData.Volume*volumeMultiple)/((tmpMarketData.AskPrice1-tmpMarketData.BidPrice1)*volumeMultiple);                  
+       }
+       catch(...)
+       {
+           AskVolume_y = 0;
+       }
+	BidVolume_x = tmpMarketData.Volume-AskVolume_y;     
+    }		
 
     if(BidVolume_x < 0)
     {

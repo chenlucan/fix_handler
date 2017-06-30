@@ -1,4 +1,3 @@
-
 #include "ctp_market_application.h"
 #include "core/assist/logger.h"
 
@@ -48,10 +47,6 @@ void CCtpMarketApp::Initialize(std::vector<std::string> insts)
 	}
 	out.close();
 	m_insts.pop_back();
-//	for(auto& it : m_insts) 
-//	{
-//		std::cout << it << std::endl;
-//	}
 
     m_pCtpManager->Initialize(m_insts);
 }

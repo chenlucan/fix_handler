@@ -38,28 +38,34 @@ namespace book
     // implement of MarketListenerI
     void AutoTestBookSender::OnContractDefinition(const pb::dms::Contract &contract)
     {
-        // Ç°Ãæ¼Ó¸ö C ±ê¼ÇÊÇ definition Êı¾İ
+        // å‰é¢åŠ ä¸ª C æ ‡è®°æ˜¯ definition æ•°æ®
         LOG_INFO("send Definition: ", fh::core::assist::utility::Format_pb_message(contract));
     }
 
     // implement of MarketListenerI
     void AutoTestBookSender::OnBBO(const pb::dms::BBO &bbo)
     {
-        // Ç°Ãæ¼Ó¸ö B ±ê¼ÇÊÇ BBO Êı¾İ
+        // å‰é¢åŠ ä¸ª B æ ‡è®°æ˜¯ BBO æ•°æ®
         LOG_INFO("send BBO: ", fh::core::assist::utility::Format_pb_message(bbo));
     }
 
     // implement of MarketListenerI
     void AutoTestBookSender::OnBid(const pb::dms::Bid &bid)
     {
-        // Ç°Ãæ¼Ó¸ö D ±ê¼ÇÊÇ bid Êı¾İ
+        // å‰é¢åŠ ä¸ª D æ ‡è®°æ˜¯ bid æ•°æ®
         LOG_INFO("send Bid: ", fh::core::assist::utility::Format_pb_message(bid));
+    }
+
+    // implement of MarketListenerI
+    void AutoTestBookSender::OnTurnover(const pb::dms::Turnover &turnover)
+    {
+        LOG_INFO("OnTurnover: ", fh::core::assist::utility::Format_pb_message(turnover));
     }
 
     // implement of MarketListenerI
     void AutoTestBookSender::OnOffer(const pb::dms::Offer &offer)
     {
-        // Ç°Ãæ¼Ó¸ö O ±ê¼ÇÊÇ offer Êı¾İ
+        // å‰é¢åŠ ä¸ª O æ ‡è®°æ˜¯ offer æ•°æ®
         LOG_INFO("send Offer: ", fh::core::assist::utility::Format_pb_message(offer));  
         std::string strOrignalOffer = fh::core::assist::utility::Format_pb_message(offer);
         switch(m_current_caseid)
@@ -111,7 +117,7 @@ namespace book
     // implement of MarketListenerI
     void AutoTestBookSender::OnL2(const pb::dms::L2 &l2)
     {
-        // Ç°Ãæ¼Ó¸ö L ±ê¼ÇÊÇ L2 Êı¾İ
+        // å‰é¢åŠ ä¸ª L æ ‡è®°æ˜¯ L2 æ•°æ®
         LOG_INFO("send L2: ", fh::core::assist::utility::Format_pb_message(l2));  
         m_sendL2 = fh::core::assist::utility::Format_pb_message(l2);
         if( (m_current_caseid!=fh::core::assist::common::CaseIdValue::MakePrice_1) 
@@ -155,7 +161,7 @@ namespace book
     // implement of MarketListenerI
     void AutoTestBookSender::OnTrade(const pb::dms::Trade &trade)
     {
-        // Ç°Ãæ¼Ó¸ö T ±ê¼ÇÊÇ trade Êı¾İ
+        // å‰é¢åŠ ä¸ª T æ ‡è®°æ˜¯ trade æ•°æ®
         LOG_INFO("send Trade: ", fh::core::assist::utility::Format_pb_message(trade));
         std::string strOrignalTrade = fh::core::assist::utility::Format_pb_message(trade);
         switch(m_current_caseid)
@@ -286,11 +292,11 @@ namespace book
                 {
                     boost::property_tree::read_json(ss, ptParse);
                     
-                    boost::property_tree::ptree event_array = ptParse.get_child("message.noEvents");  // get_childµÃµ½Êı×é¶ÔÏó   
+                    boost::property_tree::ptree event_array = ptParse.get_child("message.noEvents");  // get_childå¾—åˆ°æ•°ç»„å¯¹è±¡
 
-                    if(event_array.size()!=0) // ÓĞmessage.noEventsĞÅÏ¢
+                    if(event_array.size()!=0) // æœ‰message.noEventsä¿¡æ¯
                     {
-                        //»ñÈ¡¡°securityID¡±µÄvalue
+                        //è·å–â€œsecurityIDâ€çš„value
                         std::string securityIDValue = ptParse.get<std::string>("message.securityID");            
                         LOG_DEBUG("===== securityIDValue: ", securityIDValue.c_str(), " =====");
                                     
@@ -300,7 +306,7 @@ namespace book
                         std::string marketSegmentIDValue = ptParse.get<std::string>("message.marketSegmentID");
                         defComp += ", marketSegmentID="+marketSegmentIDValue;
                         defComp += ", noEvents=[";
-                        // ±éÀúÊı×é
+                        // éå†æ•°ç»„
                         BOOST_FOREACH(boost::property_tree::ptree::value_type &v, event_array)  
                         {  
                             boost::property_tree::ptree& childparse = v.second;
@@ -368,14 +374,14 @@ namespace book
                 {
                     boost::property_tree::read_json(ss, ptParse);  
                    
-                    boost::property_tree::ptree norelatedsym_array = ptParse.get_child("message.noRelatedSym");  // get_childµÃµ½Êı×é¶ÔÏó   
+                    boost::property_tree::ptree norelatedsym_array = ptParse.get_child("message.noRelatedSym");  // get_childå¾—åˆ°æ•°ç»„å¯¹è±¡
 
-                    if(norelatedsym_array.size()!=0) // ÓĞmessage.noRelatedSym
+                    if(norelatedsym_array.size()!=0) // æœ‰message.noRelatedSym
                     {            
                         fh::core::assist::common::DefineMsg_Compare t_defComp; 
                     
                         std::string securityIDValue;                              
-                        // ±éÀúÊı×é
+                        // éå†æ•°ç»„
                         BOOST_FOREACH(boost::property_tree::ptree::value_type &v, norelatedsym_array)  
                         {  
                             boost::property_tree::ptree& childparse = v.second;
@@ -419,14 +425,14 @@ namespace book
                 {
                     boost::property_tree::read_json(ss, ptParse);  
                    
-                    boost::property_tree::ptree nomdentries_array = ptParse.get_child("message.noMDEntries");  // get_childµÃµ½Êı×é¶ÔÏó   
+                    boost::property_tree::ptree nomdentries_array = ptParse.get_child("message.noMDEntries");  // get_childå¾—åˆ°æ•°ç»„å¯¹è±¡
 
-                    if(nomdentries_array.size()!=0) // ÓĞmessage.noMDEntries
+                    if(nomdentries_array.size()!=0) // æœ‰message.noMDEntries
                     {            
                         fh::core::assist::common::DefineMsg_Compare t_defComp; 
                     
                         std::string securityIDValue;                              
-                        // ±éÀúÊı×é
+                        // éå†æ•°ç»„
                         BOOST_FOREACH(boost::property_tree::ptree::value_type &v, nomdentries_array)  
                         {  
                             boost::property_tree::ptree& childparse = v.second;
@@ -513,14 +519,14 @@ namespace book
                 {
                     boost::property_tree::read_json(ss, ptParse);  
                    
-                    boost::property_tree::ptree nomdentries_array = ptParse.get_child("message.noMDEntries");  // get_childµÃµ½Êı×é¶ÔÏó   
+                    boost::property_tree::ptree nomdentries_array = ptParse.get_child("message.noMDEntries");  // get_childå¾—åˆ°æ•°ç»„å¯¹è±¡
 
-                    if(nomdentries_array.size()!=0) // ÓĞmessage.noMDEntries
+                    if(nomdentries_array.size()!=0) // æœ‰message.noMDEntries
                     {            
                         fh::core::assist::common::DefineMsg_Compare t_defComp; 
                     
                         std::string securityIDValue;                              
-                        // ±éÀúÊı×é
+                        // éå†æ•°ç»„
                         BOOST_FOREACH(boost::property_tree::ptree::value_type &v, nomdentries_array)  
                         {  
                             boost::property_tree::ptree& childparse = v.second;
@@ -639,14 +645,14 @@ namespace book
                 {
                     boost::property_tree::read_json(ss, ptParse);  
                     
-                    boost::property_tree::ptree items = ptParse.get_child("message");  // get_childµÃµ½×Ó¶ÔÏó
+                    boost::property_tree::ptree items = ptParse.get_child("message");  // get_childå¾—åˆ°å­å¯¹è±¡
                     
                     bool is_security_trading_status = false;
                     std::string typeValue;
                     fh::core::assist::common::DefineMsg_Compare t_defComp; 
                     for (boost::property_tree::ptree::iterator it=items.begin();it!=items.end();++it)  
                     {  
-                        //±éÀú¶Á³öÊı¾İ  
+                        //éå†è¯»å‡ºæ•°æ®
                         std::string key=it->first;//key
                         std::string value =it->second.data();
                         
@@ -730,11 +736,11 @@ namespace book
                 {
                     boost::property_tree::read_json(ss, ptParse);
                     
-                    boost::property_tree::ptree event_array = ptParse.get_child("message.noEvents");  // get_childµÃµ½Êı×é¶ÔÏó   
+                    boost::property_tree::ptree event_array = ptParse.get_child("message.noEvents");  // get_childå¾—åˆ°æ•°ç»„å¯¹è±¡
 
-                    if(event_array.size()!=0) // ÓĞmessage.noEventsĞÅÏ¢
+                    if(event_array.size()!=0) // æœ‰message.noEventsä¿¡æ¯
                     {
-                        //»ñÈ¡¡°securityID¡±µÄvalue
+                        //è·å–â€œsecurityIDâ€çš„value
                         std::string securityIDValue = ptParse.get<std::string>("message.securityID");            
                         LOG_DEBUG("===== securityIDValue: ", securityIDValue.c_str(), " =====");
                                     
@@ -744,7 +750,7 @@ namespace book
                         std::string marketSegmentIDValue = ptParse.get<std::string>("message.marketSegmentID");
                         defComp += ", marketSegmentID="+marketSegmentIDValue;
                         defComp += ", noEvents=[";
-                        // ±éÀúÊı×é
+                        // éå†æ•°ç»„
                         BOOST_FOREACH(boost::property_tree::ptree::value_type &v, event_array)  
                         {  
                             boost::property_tree::ptree& childparse = v.second;

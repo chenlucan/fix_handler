@@ -9,13 +9,13 @@ namespace ctp
 {
 namespace exchange
 {
-class ComfirmSettlementCommand :public fh::ctp::exchange::ApiCommand{
-public:
-	ComfirmSettlementCommand(CThostFtdcTraderApi *api, CThostFtdcSettlementInfoConfirmField *comfirmField, int &requestID);
-	int execute() override;
-private:
-	CThostFtdcSettlementInfoConfirmField *comfirmField;
-};
+	class ComfirmSettlementCommand :public fh::ctp::exchange::ApiCommand{
+	public:
+		ComfirmSettlementCommand(CThostFtdcTraderApi *api, CThostFtdcSettlementInfoConfirmField *comfirmField, int &requestID);
+		int execute() override;
+	private:
+		CThostFtdcSettlementInfoConfirmField *comfirmField;
+	};
 }
 }
 }

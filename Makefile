@@ -47,7 +47,7 @@ LIBS_PATH += -L$(PROTOBUF_LIBS_PATH) -L$(QUICKFIX_LIBS_PATH) -L$(SBE_LIBS_PATH) 
 
 #define exec libs path
 #EXEC_LIBS_PATH = -Wl,-rpath,$(VENDOR_PATH)/boost/libs:$(VENDOR_PATH)/gtest/libs:$(VENDOR_PATH)/mongodb/libs:$(VENDOR_PATH)/protobuf/libs:$(VENDOR_PATH)/quickfix/libs:$(VENDOR_PATH)/sbe/libs:$(VENDOR_PATH)/zeromq/libs:$(VENDOR_PATH)/femas/libs
-#EXEC_LIBS_PATH = -Wl,-rpath,$(BOOST_LIBS_PATH):$(GTEST_LIBS_PATH):$(MONGODB_LIBS_PATH):$(PROTOBUF_LIBS_PATH):$(QUICKFIX_LIBS_PATH):$(SBE_LIBS_PATH):$(ZEROMQ_LIBS_PATH):$(FEMAS_LIBS_PATH):$(REM_LIBS_PATH):$(CTP_LIBS_PATH)
+#EXEC_LIBS_PATH = -Wl,-rpath,$(BOOST_LIBS_PATH):$(GTEST_LIBS_PATH):$(MONGODB_LIBS_PATH):$(PROTOBUF_LIBS_PATH):$(QUICKFIX_LIBS_PATH):$(SBE_LIBS_PATH):$(ZEROMQ_LIBS_PATH):$(FEMAS_LIBS_PATH):$(REM_LIBS_PATH)
 EXEC_LIBS_PATH = -Wl,-rpath,$(BOOST_LIBS_PATH):$(GTEST_LIBS_PATH):$(MONGODB_LIBS_PATH):$(PROTOBUF_LIBS_PATH):$(QUICKFIX_LIBS_PATH):$(SBE_LIBS_PATH):$(ZEROMQ_LIBS_PATH):$(CTP_LIBS_PATH)
 
 LIBS = -lpthread -lboost_system -lzmq -lstdc++ -lquickfix -lmongocxx -lbsoncxx -lmongoc -lbson -lprotobuf -lgcov
@@ -87,10 +87,8 @@ SETTINGS += $(UT_MARKET_SETTINGS)
 
 FEMAS_SETTINGS = $(BIN_PATH)/femas_config.ini 
 REM_SETTINGS = $(BIN_PATH)/rem_config.ini 
-CTP_SETTINGS = $(BIN_PATH)/ctp_config.ini 
 SETTINGS += $(FEMAS_SETTINGS)
 SETTINGS += $(REM_SETTINGS)
-SETTINGS += $(CTP_SETTINGS)
 
 ALL_OBJS =  $(filter-out $(wildcard $(BIN_PATH)/*_test.o), $(wildcard $(BIN_PATH)/*.o)) 
 #define test_obj
@@ -103,10 +101,8 @@ TEST_OBJS += $(TEST_CME_OBJS)
 
 #TEST_FEMAS_OBJS = $(BIN_PATH)/mut_femas_book_manager.o $(BIN_PATH)/mut_femas_matket.o $(BIN_PATH)/mut_femas_market_manager.o $(BIN_PATH)/mut_femas_exchange.o 
 #TEST_OBJS += $(TEST_FEMAS_OBJS)
-
 TEST_CTP_OBJS = $(BIN_PATH)/mut_custom_manager.o $(BIN_PATH)/mut_ctp_exchange.o $(BIN_PATH)/mut_custom_md_spi.o 
 TEST_OBJS += $(TEST_CTP_OBJS)
-
 TEST_SIMULATOR_OBJS = $(BIN_PATH)/mut_market_simulater.o $(BIN_PATH)/mut_exchange_simulater.o $(BIN_PATH)/mut_trade_simulater.o $(BIN_PATH)/mut_replay_simulater.o
 TEST_OBJS += $(TEST_SIMULATOR_OBJS)
 
@@ -153,8 +149,8 @@ include toolobjs.mk
 #include rem.mk
 include ctp.mk
     
-#all: createdir rem_efhmarket rem_exchange_test rem_market femas_exchange_test femas_market ctp_market ctp_exchange_test usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender orgread tmalpha tmalphaex tmalphatrade tmalphareplay dataconverter
-all: createdir ctp_market ctp_exchange_test usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender orgread tmalpha tmalphaex tmalphatrade tmalphareplay ctpdataconverter
+#all: createdir rem_efhmarket rem_exchange_test rem_market femas_exchange_test femas_market usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender orgread tmalpha tmalphaex tmalphatrade tmalphareplay dataconverter
+all: createdir ctp_market ctp_exchange_test usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender orgread tmalpha tmalphaex tmalphatrade tmalphareplay ctpdataconverter 
 #femas_exchange_test: $(BIN_PATH)/femas_exchange_main_test.o $(BIN_PATH)/femas_exchange_application.o $(BIN_PATH)/communicator.o $(BIN_PATH)/FemasUstpFtdcTraderManger.o \
 #			 $(COMM_OBJS) 
 #	$(COMPILE_COMMAND) -o $(FEMAS_EXCHANGE_TARGET) $?
@@ -184,7 +180,7 @@ ctp_exchange_test: $(BIN_PATH)/ctp_exchange_main_test.o $(BIN_PATH)/ctp_exchange
 ctp_market: $(BIN_PATH)/ctp_market_main_test.o $(BIN_PATH)/MDWrapper.o $(BIN_PATH)/MDAccountID.o $(BIN_PATH)/custom_md_spi.o $(BIN_PATH)/custom_manager.o $(BIN_PATH)/ctp_market_application.o \
 			 $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(CTP_MARKET_TARGET) $?	 
-  
+   
 createdir:
 	mkdir -p ${BIN_PATH}
 	mkdir -p ${BIN_PATH}/result
@@ -265,11 +261,13 @@ tmalphareplay: $(BIN_PATH)/trade_matching_replay_alpha_test.o	$(BIN_PATH)/replay
 #              				$(BIN_PATH)/mongo.o $(COMM_OBJS)
 #	$(COMPILE_COMMAND) -o $(DATE_CONVERTER_TOOL_TARGET) $? 
 
+
 ctpdataconverter: $(BIN_PATH)/market_data_converter.o $(BIN_PATH)/data_converter_test.o \
 							$(BIN_PATH)/book_convert.o \
               				$(BIN_PATH)/mongo.o $(COMM_OBJS)
 	$(COMPILE_COMMAND) -o $(DATE_CONVERTER_TOOL_TARGET) $? 	
 	
+						   			     
 copyfile: $(SETTINGS)
 
 test: $(ALL_OBJS) $(TEST_OBJS) $(COMM_OBJS)

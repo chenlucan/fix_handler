@@ -58,61 +58,61 @@ namespace exchange
 				m_InitQueryNum = 0;
                 this->id = id;
 				std::cout << "Initializing account " << id->getInvestorID() << "information;" << std::endl;
-				// ´´½¨ÎÄ¼şÀ´´æ´¢ËùÓĞºÏÔ¼´úÂë,±àÒëĞĞÇéÄ£¿é»ñÈ¡
+				// åˆ›å»ºæ–‡ä»¶æ¥å­˜å‚¨æ‰€æœ‰åˆçº¦ä»£ç ,ç¼–è¯‘è¡Œæƒ…æ¨¡å—è·å–
 				char filePath[100] = "InstrumentID.csv";
 				std::ofstream outFile;
-				outFile.open(filePath, std::ios::out); // ĞÂ¿ªÎÄ¼ş
-				outFile << "ºÏÔ¼´úÂë"<< std::endl;
+				outFile.open(filePath, std::ios::out); // æ–°å¼€æ–‡ä»¶
+				outFile << "åˆçº¦ä»£ç "<< std::endl;
 				outFile.close();
 				readyToTrade();
 		    }
 
-		// ---- ctp_api²¿·Ö»Øµ÷½Ó¿Ú ---- //	
+		// ---- ctp_apiéƒ¨åˆ†å›è°ƒæ¥å£ ---- //	
 	    public:
-			// µ±¿Í»§¶ËÓë½»Ò×ºóÌ¨½¨Á¢ÆğÍ¨ĞÅÁ¬½ÓÊ±£¨»¹Î´µÇÂ¼Ç°£©£¬¸Ã·½·¨±»µ÷ÓÃ¡£
+			// å½“å®¢æˆ·ç«¯ä¸äº¤æ˜“åå°å»ºç«‹èµ·é€šä¿¡è¿æ¥æ—¶ï¼ˆè¿˜æœªç™»å½•å‰ï¼‰ï¼Œè¯¥æ–¹æ³•è¢«è°ƒç”¨ã€‚
             virtual void OnFrontConnected();
 
-			// µÇÂ¼ÇëÇóÏìÓ¦
+			// ç™»å½•è¯·æ±‚å“åº”
 			virtual void OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,	CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
-			// Í¶×ÊÕß½áËã½á¹ûÈ·ÈÏÏìÓ¦
+			// æŠ•èµ„è€…ç»“ç®—ç»“æœç¡®è®¤å“åº”
 			virtual void OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
-			// ÇëÇó²éÑ¯Í¶×ÊÕß³Ö²ÖÏìÓ¦
+			// è¯·æ±‚æŸ¥è¯¢æŠ•èµ„è€…æŒä»“å“åº”
 			virtual void OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInvestorPosition, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
-			// ±¨µ¥Â¼ÈëÇëÇóÏìÓ¦
+			// æŠ¥å•å½•å…¥è¯·æ±‚å“åº”
 			virtual void OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
-			// ±¨µ¥²Ù×÷ÇëÇóÏìÓ¦
+			// æŠ¥å•æ“ä½œè¯·æ±‚å“åº”
 			virtual void OnRspOrderAction(CThostFtdcInputOrderActionField *pInputOrderAction, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
-			// ÇëÇó²éÑ¯ºÏÔ¼ÏìÓ¦
+			// è¯·æ±‚æŸ¥è¯¢åˆçº¦å“åº”
 	        virtual void OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 			
-			// ´íÎóÓ¦´ğ
+			// é”™è¯¯åº”ç­”
 			virtual void OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 			
-			// µ±¿Í»§¶ËÓë½»Ò×ºóÌ¨Í¨ĞÅÁ¬½Ó¶Ï¿ªÊ±£¬¸Ã·½·¨±»µ÷ÓÃ¡£µ±·¢ÉúÕâ¸öÇé¿öºó£¬API»á×Ô¶¯ÖØĞÂÁ¬½Ó£¬¿Í»§¶Ë¿É²»×ö´¦Àí¡£
+			// å½“å®¢æˆ·ç«¯ä¸äº¤æ˜“åå°é€šä¿¡è¿æ¥æ–­å¼€æ—¶ï¼Œè¯¥æ–¹æ³•è¢«è°ƒç”¨ã€‚å½“å‘ç”Ÿè¿™ä¸ªæƒ…å†µåï¼ŒAPIä¼šè‡ªåŠ¨é‡æ–°è¿æ¥ï¼Œå®¢æˆ·ç«¯å¯ä¸åšå¤„ç†ã€‚
 			virtual void OnFrontDisconnected(int nReason);
 
-			// ±¨µ¥Í¨Öª
+			// æŠ¥å•é€šçŸ¥
 			virtual void OnRtnOrder(CThostFtdcOrderField *pOrder);
 
-			// ³É½»Í¨Öª
+			// æˆäº¤é€šçŸ¥
 			virtual void OnRtnTrade(CThostFtdcTradeField *pTrade);
-			// ÇëÇó²éÑ¯³É½»ÏìÓ¦
+			// è¯·æ±‚æŸ¥è¯¢æˆäº¤å“åº”
 	        virtual void OnRspQryTrade(CThostFtdcTradeField *pTrade, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
-	        // ±¨µ¥Â¼Èë´íÎó»Ø±¨
+	        // æŠ¥å•å½•å…¥é”™è¯¯å›æŠ¥
 			virtual void OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo);			
 			
-			// ±¨µ¥²Ù×÷´íÎó»Ø±¨
+			// æŠ¥å•æ“ä½œé”™è¯¯å›æŠ¥
 	        virtual void OnErrRtnOrderAction(CThostFtdcOrderActionField *pOrderAction, CThostFtdcRspInfoField *pRspInfo);
-			// ÇëÇó²éÑ¯±¨µ¥ÏìÓ¦
+			// è¯·æ±‚æŸ¥è¯¢æŠ¥å•å“åº”
 			virtual void OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 		
-        // ---- ×Ô¶¨Òåº¯Êı ---- //
+        // ---- è‡ªå®šä¹‰å‡½æ•° ---- //
 		public:
 		    char* itoa(int val, char *buf, unsigned radix);
 		    void login();
@@ -130,37 +130,37 @@ namespace exchange
 		    void OnQryInvestorPosition(CThostFtdcInvestorPositionField *pRspInvestorPosition, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 			void SetOrderStatus(CThostFtdcOrderField *pOrder, ::pb::ems::Order &tmporder);
 			void OnQryTrade(CThostFtdcTradeField *pTrade, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);	    
-		    void reqQryOrder(const ::pb::ems::Order& order); //ÇëÇó²éÑ¯±¨µ¥			
-			void reqOrderInsert(const ::pb::ems::Order& order); //±¨µ¥Â¼ÈëÇëÇó			
+		    void reqQryOrder(const ::pb::ems::Order& order); //è¯·æ±‚æŸ¥è¯¢æŠ¥å•			
+			void reqOrderInsert(const ::pb::ems::Order& order); //æŠ¥å•å½•å…¥è¯·æ±‚			
 			void reqQryTrade(const std::vector<::pb::ems::Order> &orders);
-			void reqUserLogin(); //ÓÃ»§µÇÂ¼ÇëÇó
-			void reqUserLogout(); //ÓÃ»§ÍË³öÇëÇó
-			void reqOrderAction(const ::pb::ems::Order& order, TThostFtdcActionFlagType ActionFlag); //±¨µ¥²Ù×÷ÇëÇó		
+			void reqUserLogin(); //ç”¨æˆ·ç™»å½•è¯·æ±‚
+			void reqUserLogout(); //ç”¨æˆ·é€€å‡ºè¯·æ±‚
+			void reqOrderAction(const ::pb::ems::Order& order, TThostFtdcActionFlagType ActionFlag); //æŠ¥å•æ“ä½œè¯·æ±‚		
  		    void OnQryInstrument(CThostFtdcInstrumentField *pRspInstrument);
 			void CtpDateToString(bsoncxx::builder::basic::document& json,char* InstrumentID,int VolumeMultiple);
         private:
-		    //±¨µ¥ÒıÓÃ×ÔÔö
+		    //æŠ¥å•å¼•ç”¨è‡ªå¢
 	        void increaseRef(){ maxOrderRef++;}
 		 
         public:
             std::atomic_int m_InitQueryNum;
 			
         private:
-		   //½»Ò×api
+		   //äº¤æ˜“api
 	       CThostFtdcTraderApi *api;
 		   core::exchange::ExchangeListenerI *m_strategy;
-		   //ÇëÇó±àºÅ
+		   //è¯·æ±‚ç¼–å·
 		   int requestID;
-		   //ÊÇ·ñ¿ÉÒÔ½øĞĞ½»Ò×
+		   //æ˜¯å¦å¯ä»¥è¿›è¡Œäº¤æ˜“
 	       bool tradable;	
 		   std::vector<::pb::dms::Contract> m_contracts;		   	  
-		   //ÕË»§ĞÅÏ¢
+		   //è´¦æˆ·ä¿¡æ¯
 	       std::shared_ptr<AccountID> id;
-		   //±¾µØµÄ×î´ó±¨µ¥ÒıÓÃ
+		   //æœ¬åœ°çš„æœ€å¤§æŠ¥å•å¼•ç”¨
 	       int maxOrderRef;
 	       std::map<int, std::string> client_orders_index;
 		public:
-		   //apiÇëÇó¶ÓÁĞ
+		   //apiè¯·æ±‚é˜Ÿåˆ—
 		   fh::ctp::exchange::CommandQueue commandQueue;
 
         private:

@@ -22,7 +22,7 @@ CustomManager::CustomManager(std::shared_ptr<fh::core::market::MarketListenerI> 
 
 CustomManager::~CustomManager()
 {
-	printf("CustomManager::~CustomManager()\n");
+	LOG_INFO("CustomManager::~CustomManager()\n");
 }
 
 // implement of MarketI
@@ -40,7 +40,6 @@ bool CustomManager::Start()
 	LOG_INFO("ctp-user.Passwor = ",loginReq.Password);
 	int requestID = 0; // 请求编号
 	int rt = m_ctpmaket->login(&loginReq, requestID);
-	std::cout << rt << std::endl;
 	if(rt != 0)
 	{
 		std::cout << "log fail!"<< std::endl;
@@ -62,12 +61,12 @@ bool CustomManager::Start()
 	m_insts.clear();	 
 	if (subscribeOK)
 	{
-		std::cout << ">>>>>>发送订阅行情请求成功" << std::endl;
+		LOG_INFO(">>>>>>发送订阅行情请求成功");
 		return true;
 	}
 	else
 	{
-		std::cerr << "--->>>发送订阅行情请求失败" << std::endl;
+		LOG_INFO("--->>>发送订阅行情请求失败");
 		return false;
 	}		 
 }
@@ -107,7 +106,6 @@ void CustomManager::Subscribe(std::vector<std::string> instruments)
 			contracts[i] = new char[instruments[i].length()+1];
 			memset(contracts[i],0,instruments[i].length()+1);
 			strcpy(contracts[i],instruments[i].c_str());	
-		//	LOG_INFO("num = ",i+1,",sub contracts = ",contracts[i]);	
 		}	   	  
 		int rt = m_ctpmaket->ReqSubscribeMarketData(contracts,instruments.size());
 		for(unsigned int i=0;i<instruments.size();i++)

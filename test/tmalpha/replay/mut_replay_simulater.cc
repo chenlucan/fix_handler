@@ -187,7 +187,7 @@ TEST(ReplaySimulaterTest, Test004_Fill)
     replay_simulater->Add(make_test_order("C1", "T1", 11.11000, false, true));
 
     // 此时该订单成交
-    EXPECT_EQ(result_listener->orders().size(), 0);
+    EXPECT_EQ(result_listener->orders().size(), 1);
     EXPECT_EQ(result_listener->fills().size(), 1);
 
     EXPECT_EQ(result_listener->fills().back().client_order_id(), "C1");
@@ -197,7 +197,7 @@ TEST(ReplaySimulaterTest, Test004_Fill)
     replay_simulater->Add(make_test_order("C2", "T2", 203.3, true, true));
 
     // 此时第二个订单也成交
-    EXPECT_EQ(result_listener->orders().size(), 0);
+    EXPECT_EQ(result_listener->orders().size(), 2);
     EXPECT_EQ(result_listener->fills().size(), 2);
 
     EXPECT_EQ(result_listener->fills().back().client_order_id(), "C2");
@@ -355,7 +355,7 @@ TEST(ReplaySimulaterTest, Test006_Rematch)
     replay_simulater->On_state_changed(t3);
 
     // 此时有两个订单产生匹配
-    EXPECT_EQ(result_listener->orders().size(), 3);
+    EXPECT_EQ(result_listener->orders().size(), 5);
     EXPECT_EQ(result_listener->fills().size(), 2);
 
     EXPECT_EQ(result_listener->fills().at(0).client_order_id(), "C1");
@@ -375,7 +375,7 @@ TEST(ReplaySimulaterTest, Test006_Rematch)
     replay_simulater->On_state_changed(t3);
 
     // 此时没有新的订单匹配发生
-    EXPECT_EQ(result_listener->orders().size(), 3);
+    EXPECT_EQ(result_listener->orders().size(), 5);
     EXPECT_EQ(result_listener->fills().size(), 2);
 
     delete replay_simulater;
@@ -424,7 +424,7 @@ TEST(ReplaySimulaterTest, Test007_ChangeOrder)
     replay_simulater->Change(make_test_order("C1", "T1-3", 33.3, false, true));
 
     // 订单已被匹配，无法修改
-    EXPECT_EQ(result_listener->orders().size(), 4);
+    EXPECT_EQ(result_listener->orders().size(), 5);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Rejected);
     EXPECT_EQ(result_listener->orders().back().message(), "order is filled");
 
@@ -460,32 +460,32 @@ TEST(ReplaySimulaterTest, Test008_DeleteOrder)
     replay_simulater->Delete(make_test_order("C1", "T1", 11.2, false, true));
 
     // 订单已成交，无法删除
-    EXPECT_EQ(result_listener->orders().size(), 2);
+    EXPECT_EQ(result_listener->orders().size(), 3);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Rejected);
     EXPECT_EQ(result_listener->orders().back().message(), "order is filled");
 
     replay_simulater->Add(make_test_order("C2", "T1", 11.2, false, true));
 
     EXPECT_EQ(result_listener->fills().size(), 1);
-    EXPECT_EQ(result_listener->orders().size(), 3);
+    EXPECT_EQ(result_listener->orders().size(), 4);
 
     replay_simulater->Delete(make_test_order("C2", "T1", 11.2, false, true));
 
     // 订单删除成功
-    EXPECT_EQ(result_listener->orders().size(), 4);
+    EXPECT_EQ(result_listener->orders().size(), 5);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Cancelled);
 
     replay_simulater->Delete(make_test_order("C2", "T1", 11.2, false, true));
 
     // 订单已经被删除，无法再次删除
-    EXPECT_EQ(result_listener->orders().size(), 5);
+    EXPECT_EQ(result_listener->orders().size(), 6);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Rejected);
     EXPECT_EQ(result_listener->orders().back().message(), "order is canceled");
 
     replay_simulater->Change(make_test_order("C2", "T1", 33.3, false, true));
 
     // 订单已经被删除，无法修改
-    EXPECT_EQ(result_listener->orders().size(), 6);
+    EXPECT_EQ(result_listener->orders().size(), 7);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Rejected);
     EXPECT_EQ(result_listener->orders().back().message(), "order is canceled");
 
@@ -532,7 +532,7 @@ TEST(ReplaySimulaterTest, Test009_QueryOrder)
     replay_simulater->Query(make_test_order("C1", "T1", 61.00, false, true));
 
     // 订单已成交
-    EXPECT_EQ(result_listener->orders().size(), 4);
+    EXPECT_EQ(result_listener->orders().size(), 5);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Filled);
     EXPECT_EQ(std::stod(result_listener->orders().back().price()), 61);
     EXPECT_EQ(result_listener->orders().back().filled_quantity(), 20);
@@ -540,19 +540,19 @@ TEST(ReplaySimulaterTest, Test009_QueryOrder)
     replay_simulater->Add(make_test_order("C2", "T1", 110.2, false, true));
 
     // 添加新处理中订单
-    EXPECT_EQ(result_listener->orders().size(), 5);
+    EXPECT_EQ(result_listener->orders().size(), 6);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Working);
 
     replay_simulater->Delete(make_test_order("C2", "T1", 110.2, false, true));
 
     // 订单删除成功
-    EXPECT_EQ(result_listener->orders().size(), 6);
+    EXPECT_EQ(result_listener->orders().size(), 7);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Cancelled);
 
     replay_simulater->Query(make_test_order("C2", "T1", 110.20, false, true));
 
     // 订单已删除
-    EXPECT_EQ(result_listener->orders().size(), 7);
+    EXPECT_EQ(result_listener->orders().size(), 8);
     EXPECT_EQ(result_listener->orders().back().status(), pb::ems::OrderStatus::OS_Cancelled);
 
     delete replay_simulater;
@@ -997,21 +997,21 @@ TEST(ReplaySimulaterTest, Test021_AccumulateToMatchPosition)
 }
 
 std::vector<std::string> messages {
-    "{ \"insertTime\" : \"1493010903830000000\", \"sendingTime\" : \"1493010000000000000\", \"market\" : \"FEMAS\", \"type\" : \"trade\", \"message\" : { \"contract\" : \"con-2\", \"last\" : { \"price\" : \"110.02\", \"size\" : \"3\" }}}",
-    "{ \"insertTime\" : \"1493010903831000000\", \"sendingTime\" : \"1493010005000000000\", \"market\" : \"FEMAS\", \"type\" : \"contract\", \"message\" : { \"name\" : \"con-1\", \"tick_size\" : \"2\", \"tick_value\" : \"1.36\", \"yesterday_close_price\" : \"123.45\", \"upper_limit\" : \"999.88\", \"lower_limit\" : \"0.05\"}}",
-    "{ \"insertTime\" : \"1493010903832000000\", \"sendingTime\" : \"1493010010000000000\", \"market\" : \"FEMAS\", \"type\" : \"bbo\", \"message\" : { \"contract\" : \"con-1\", \"bid\" : { \"price\" : \"100.00\", \"size\" : \"10\" }, \"offer\" : { \"price\" : \"20000.00\", \"size\" : \"2000\" }}}",
-    "{ \"insertTime\" : \"1493010903833000000\", \"sendingTime\" : \"1493010012000000000\", \"market\" : \"FEMAS\", \"type\" : \"offer\", \"message\" : { \"contract\" : \"con-1\", \"offer\" : { \"price\" : \"1.0\", \"size\" : \"999\" }}}",
-    "{ \"insertTime\" : \"1493010903834000000\", \"sendingTime\" : \"1493010022000000000\", \"market\" : \"FEMAS\", \"type\" : \"l2\", \"message\" : { \"contract\" : \"con-1\", \"bid_turnover\" : \"7\", \"offer_turnover\" : \"9\", \"bid\" : [{ \"price\" : \"100.00\", \"size\" : \"10\" }, { \"price\" : \"200.00\", \"size\" : \"20\" }], \"offer\" : [{ \"price\" : \"1\", \"size\" : \"2\" }]}}",
-    "{ \"insertTime\" : \"1493010903835000000\", \"sendingTime\" : \"1493010023000000000\", \"market\" : \"FEMAS\", \"type\" : \"trade\", \"message\" : { \"contract\" : \"con-1\", \"last\" : { \"price\" : \"100.00\", \"size\" : \"10\" }}}",
-    "{ \"insertTime\" : \"1493010903836000000\", \"sendingTime\" : \"1493010033000000000\", \"market\" : \"FEMAS\", \"type\" : \"bbo\", \"message\" : { \"contract\" : \"con-1\", \"bid\" : { \"price\" : \"20.20\", \"size\" : \"2\" }, \"offer\" : { \"price\" : \"200.6\", \"size\" : \"88\" }}}",
-    "{ \"insertTime\" : \"1493010903837000000\", \"sendingTime\" : \"1493010035000000000\", \"market\" : \"FEMAS\", \"type\" : \"bid\", \"message\" : { \"contract\" : \"con-1\", \"bid\" : { \"price\" : \"0.20\", \"size\" : \"12\" }}}",
-    "{ \"insertTime\" : \"1493010903838000000\", \"sendingTime\" : \"1493010040000000000\", \"market\" : \"FEMAS\", \"type\" : \"trade\", \"message\" : { \"contract\" : \"con-3\", \"last\" : { \"price\" : \"120\", \"size\" : \"61\" }}}",
-    "{ \"insertTime\" : \"1493010903839000000\", \"sendingTime\" : \"1493010042000000000\", \"market\" : \"FEMAS\", \"type\" : \"bid\", \"message\" : { \"contract\" : \"con-1\", \"bid\" : { \"price\" : \"10.2\", \"size\" : \"2\" }}}",
-    "{ \"insertTime\" : \"1493010903840000000\", \"sendingTime\" : \"1493010045000000000\", \"market\" : \"FEMAS\", \"type\" : \"offer\", \"message\" : { \"contract\" : \"con-1\", \"offer\" : { \"price\" : \"200\", \"size\" : \"88\" }}}",
-    "{ \"insertTime\" : \"1493010903841000000\", \"sendingTime\" : \"1493010055000000000\", \"market\" : \"FEMAS\", \"type\" : \"l2\", \"message\" : { \"contract\" : \"con-1\", \"bid_turnover\" : \"7\", \"offer_turnover\" : \"9\", \"bid\" : [], \"offer\" : []}}",
-    "{ \"insertTime\" : \"1493010903842000000\", \"sendingTime\" : \"1493010060000000000\", \"market\" : \"FEMAS\", \"type\" : \"l2\", \"message\" : { \"contract\" : \"con-1\", \"bid_turnover\" : \"7\", \"offer_turnover\" : \"9\", \"bid\" : [{ \"price\" : \"100.00\", \"size\" : \"10\" }, { \"price\" : \"200.00\", \"size\" : \"20\" }, { \"price\" : \"300.00\", \"size\" : \"30\" }], \"offer\" : [{ \"price\" : \"1\", \"size\" : \"2\" }, { \"price\" : \"9.0\", \"size\" : \"100\" }]}}",
-    "{ \"insertTime\" : \"1493010903843000000\", \"sendingTime\" : \"1493010063000000000\", \"market\" : \"FEMAS\", \"type\" : \"contract\", \"message\" : { \"name\" : \"con-2\", \"tick_size\" : \"124\", \"tick_value\" : \"777.0\", \"yesterday_close_price\" : \"678\", \"upper_limit\" : \"100000\", \"lower_limit\" : \"1\"}}",
-    "{ \"insertTime\" : \"1493010903844000000\", \"sendingTime\" : \"1493010070000000000\", \"market\" : \"FEMAS\", \"type\" : \"l2\", \"message\" : { \"contract\" : \"con-2\", \"bid_turnover\" : \"7\", \"offer_turnover\" : \"9\", \"bid\" : [], \"offer\" : [{ \"price\" : \"11.1\", \"size\" : \"3\" }]}}",
+    "{ \"insertTime\" : \"1493010903830000000\", \"sendingTime\" : \"1493010000000000000\", \"market\" : \"FEMAS\", \"type\" : \"trade\", \"VolumeMultiple\" : \"2\", \"message\" : { \"contract\" : \"con-2\", \"last\" : { \"price\" : \"110.02\", \"size\" : \"3\" }}}",
+    "{ \"insertTime\" : \"1493010903831000000\", \"sendingTime\" : \"1493010005000000000\", \"market\" : \"FEMAS\", \"type\" : \"contract\", \"VolumeMultiple\" : \"2\", \"message\" : { \"name\" : \"con-1\", \"tick_size\" : \"2\", \"tick_value\" : \"1.36\", \"yesterday_close_price\" : \"123.45\", \"upper_limit\" : \"999.88\", \"lower_limit\" : \"0.05\"}}",
+    "{ \"insertTime\" : \"1493010903832000000\", \"sendingTime\" : \"1493010010000000000\", \"market\" : \"FEMAS\", \"type\" : \"bbo\", \"VolumeMultiple\" : \"2\", \"message\" : { \"contract\" : \"con-1\", \"bid\" : { \"price\" : \"100.00\", \"size\" : \"10\" }, \"offer\" : { \"price\" : \"20000.00\", \"size\" : \"2000\" }}}",
+    "{ \"insertTime\" : \"1493010903833000000\", \"sendingTime\" : \"1493010012000000000\", \"market\" : \"FEMAS\", \"type\" : \"offer\", \"VolumeMultiple\" : \"2\", \"message\" : { \"contract\" : \"con-1\", \"offer\" : { \"price\" : \"1.0\", \"size\" : \"999\" }}}",
+    "{ \"insertTime\" : \"1493010903834000000\", \"sendingTime\" : \"1493010022000000000\", \"market\" : \"FEMAS\", \"type\" : \"l2\", \"VolumeMultiple\" : \"2\", \"message\" : { \"contract\" : \"con-1\", \"bid\" : [{ \"price\" : \"100.00\", \"size\" : \"10\" }, { \"price\" : \"200.00\", \"size\" : \"20\" }], \"offer\" : [{ \"price\" : \"1\", \"size\" : \"2\" }]}}",
+    "{ \"insertTime\" : \"1493010903835000000\", \"sendingTime\" : \"1493010023000000000\", \"market\" : \"FEMAS\", \"type\" : \"trade\", \"VolumeMultiple\" : \"2\", \"message\" : { \"contract\" : \"con-1\", \"last\" : { \"price\" : \"100.00\", \"size\" : \"10\" }}}",
+    "{ \"insertTime\" : \"1493010903836000000\", \"sendingTime\" : \"1493010033000000000\", \"market\" : \"FEMAS\", \"type\" : \"bbo\", \"VolumeMultiple\" : \"2\", \"message\" : { \"contract\" : \"con-1\", \"bid\" : { \"price\" : \"20.20\", \"size\" : \"2\" }, \"offer\" : { \"price\" : \"200.6\", \"size\" : \"88\" }}}",
+    "{ \"insertTime\" : \"1493010903837000000\", \"sendingTime\" : \"1493010035000000000\", \"market\" : \"FEMAS\", \"type\" : \"bid\", \"VolumeMultiple\" : \"2\", \"message\" : { \"contract\" : \"con-1\", \"bid\" : { \"price\" : \"0.20\", \"size\" : \"12\" }}}",
+    "{ \"insertTime\" : \"1493010903838000000\", \"sendingTime\" : \"1493010040000000000\", \"market\" : \"FEMAS\", \"type\" : \"trade\", \"VolumeMultiple\" : \"2\", \"message\" : { \"contract\" : \"con-3\", \"last\" : { \"price\" : \"120\", \"size\" : \"61\" }}}",
+    "{ \"insertTime\" : \"1493010903839000000\", \"sendingTime\" : \"1493010042000000000\", \"market\" : \"FEMAS\", \"type\" : \"bid\", \"VolumeMultiple\" : \"2\", \"message\" : { \"contract\" : \"con-1\", \"bid\" : { \"price\" : \"10.2\", \"size\" : \"2\" }}}",
+    "{ \"insertTime\" : \"1493010903840000000\", \"sendingTime\" : \"1493010045000000000\", \"market\" : \"FEMAS\", \"type\" : \"offer\", \"VolumeMultiple\" : \"2\", \"message\" : { \"contract\" : \"con-1\", \"offer\" : { \"price\" : \"200\", \"size\" : \"88\" }}}",
+    "{ \"insertTime\" : \"1493010903841000000\", \"sendingTime\" : \"1493010055000000000\", \"market\" : \"FEMAS\", \"type\" : \"l2\", \"VolumeMultiple\" : \"2\", \"message\" : { \"contract\" : \"con-1\", \"bid\" : [], \"offer\" : []}}",
+    "{ \"insertTime\" : \"1493010903842000000\", \"sendingTime\" : \"1493010060000000000\", \"market\" : \"FEMAS\", \"type\" : \"l2\", \"VolumeMultiple\" : \"2\", \"message\" : { \"contract\" : \"con-1\", \"bid\" : [{ \"price\" : \"100.00\", \"size\" : \"10\" }, { \"price\" : \"200.00\", \"size\" : \"20\" }, { \"price\" : \"300.00\", \"size\" : \"30\" }], \"offer\" : [{ \"price\" : \"1\", \"size\" : \"2\" }, { \"price\" : \"9.0\", \"size\" : \"100\" }]}}",
+    "{ \"insertTime\" : \"1493010903843000000\", \"sendingTime\" : \"1493010063000000000\", \"market\" : \"FEMAS\", \"type\" : \"contract\", \"VolumeMultiple\" : \"2\", \"message\" : { \"name\" : \"con-2\", \"tick_size\" : \"124\", \"tick_value\" : \"777.0\", \"yesterday_close_price\" : \"678\", \"upper_limit\" : \"100000\", \"lower_limit\" : \"1\"}}",
+    "{ \"insertTime\" : \"1493010903844000000\", \"sendingTime\" : \"1493010070000000000\", \"market\" : \"FEMAS\", \"type\" : \"l2\", \"VolumeMultiple\" : \"2\", \"message\" : { \"contract\" : \"con-2\", \"bid\" : [], \"offer\" : [{ \"price\" : \"11.1\", \"size\" : \"3\" }]}}",
 };
 
 TEST(ReplaySimulaterTest, Test022_ReadOnce)

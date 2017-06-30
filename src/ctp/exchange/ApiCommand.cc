@@ -5,14 +5,14 @@ namespace ctp
 {
 namespace exchange
 {
-ApiCommand::ApiCommand(int &requestID, CThostFtdcTraderApi *api):requestID(requestID){
-	this->api = api;
-	requestID++;
-}
+	ApiCommand::ApiCommand(int &requestID, CThostFtdcTraderApi *api):requestID(requestID){
+		this->api = api;
+		requestID++;
+	}
 
-ApiCommand::~ApiCommand(){
-	api = nullptr;
-}
+	ApiCommand::~ApiCommand(){
+		api = nullptr;
+	}
 
 }
 }

@@ -29,9 +29,9 @@ namespace replayer
             virtual ~FemasBookReplayer();
 
 	 public:
-	 	//ÖØ·ÅÕûÀíºÃµÄÊı¾İ  
+	 	//é‡æ”¾æ•´ç†å¥½çš„æ•°æ®  
 	 	void Add_listener(fh::core::market::MarketListenerI *listener);
-		//ÖØ·ÅÒ»ÌõÏûÏ¢
+		//é‡æ”¾ä¸€æ¡æ¶ˆæ¯
 		void Apply_message(const std::string &message);
 
         private:

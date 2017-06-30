@@ -68,6 +68,15 @@ void CtpBookConvert::CtpConvertListenerI::OnL2(const pb::dms::L2 &l2)
     m_l2.Clear();
     m_l2 = l2; 
 }
+
+// implement of MarketListenerI
+void CtpBookConvert::CtpConvertListenerI::OnTurnover(const pb::dms::Turnover &turnover)
+{
+    LOG_INFO("OnTurnover: ", fh::core::assist::utility::Format_pb_message(turnover));
+    m_turnover.Clear();
+    m_turnover = turnover;	
+}
+
 // implement of MarketListenerI
 void CtpBookConvert::CtpConvertListenerI::OnL3()
 {
@@ -113,7 +122,8 @@ CtpBookConvert::CtpBookConvert()
 {
     LOG_INFO("CtpBookConvert::CtpBookConvert");
     m_listener = new  CtpBookConvert::CtpConvertListenerI();	
-    m_messagemap.clear();	
+    m_messagemap.clear();
+    m_trademap.clear();	
 }
 
 CtpBookConvert::~CtpBookConvert()
@@ -381,180 +391,278 @@ bool CtpBookConvert::MakeBboJson(bsoncxx::builder::basic::document& json)
     return true;
 }
 
+bool CtpBookConvert::MakeTradeJson(bsoncxx::builder::basic::document& json)
+{
+    LOG_INFO("CtpBookConvert::MakeTradeJson");
+    if(!(m_listener->m_trade).has_contract())
+    {
+        return false;
+    } 	
+    json.append(bsoncxx::builder::basic::kvp("contract", T(m_listener->m_trade.contract()))); 
+
+    bsoncxx::builder::basic::document tmarray_b;
+    tmarray_b.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_trade.last().price())))); 	
+    tmarray_b.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_trade.last().size())))); 
+
+    json.append(bsoncxx::builder::basic::kvp("last", tmarray_b));
+
+    return true;
+}
+
+bool CtpBookConvert::MakeTurnoverJson(bsoncxx::builder::basic::document& json)
+{
+    LOG_INFO("CtpBookConvert::MakeTurnoverJson");
+    if(!(m_listener->m_turnover).has_contract())
+    {
+        return false;
+    } 	
+    json.append(bsoncxx::builder::basic::kvp("contract", T(m_listener->m_turnover.contract()))); 
+    json.append(bsoncxx::builder::basic::kvp("total_volume", T(m_listener->m_turnover.total_volume()))); 
+    json.append(bsoncxx::builder::basic::kvp("turnover", T(m_listener->m_turnover.turnover()))); 
+	
+    return true;
+}
+
 void CtpBookConvert::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketData)
 {
 	LOG_INFO("CCtpBookManager::SendCtpMarketData ");     
+    
 	if(NULL == pMarketData)
 	{
-		LOG_INFO("Error pMarketData is NULL ");
+       	        LOG_INFO("Error pMarketData is NULL ");
 		return;
 	}
 	pb::dms::L2 l2_info;
 
-	l2_info.set_contract(pMarketData->InstrumentID);
+       l2_info.set_contract(pMarketData->InstrumentID);
 
-
+	   
 	pb::dms::DataPoint *bid;// = l2_info.add_bid();
 	pb::dms::DataPoint *ask;// = l2_info.add_offer();
-
+	
 	if (pMarketData->BidPrice1==DBL_MAX || pMarketData->BidVolume1 <= 0)
 	{
-		//bid->set_price(0.0);
+           //bid->set_price(0.0);
 	}
 	else
 	{
-		bid = l2_info.add_bid();
-		bid->set_price(pMarketData->BidPrice1);
-		bid->set_size(pMarketData->BidVolume1);	   
+	    bid = l2_info.add_bid();
+           bid->set_price(pMarketData->BidPrice1);
+	    bid->set_size(pMarketData->BidVolume1);	   
 	}	
-
+		
 	if (pMarketData->AskPrice1==DBL_MAX || pMarketData->AskVolume1 <= 0)
 	{
-		//ask->set_price(0.0);
+           //ask->set_price(0.0);
 	}
 	else
 	{
-		ask = l2_info.add_offer();
-		ask->set_price(pMarketData->AskPrice1);
-		ask->set_size(pMarketData->AskVolume1);	   
+	    ask = l2_info.add_offer();
+           ask->set_price(pMarketData->AskPrice1);
+	    ask->set_size(pMarketData->AskVolume1);	   
 	}
-
+	
 
 	if (pMarketData->BidPrice2==DBL_MAX || pMarketData->BidVolume2 <= 0)
 	{
-		//bid->set_price(0.0);
+           //bid->set_price(0.0);
 	}
 	else
 	{
-		bid = l2_info.add_bid();
-		bid->set_price(pMarketData->BidPrice2);
-		bid->set_size(pMarketData->BidVolume2);	   
+	    bid = l2_info.add_bid();
+           bid->set_price(pMarketData->BidPrice2);
+	    bid->set_size(pMarketData->BidVolume2);	   
 	}	
-
+	
 
 	if (pMarketData->AskPrice2==DBL_MAX || pMarketData->AskVolume2 <= 0)
 	{
-		//ask->set_price(0.0);
+           //ask->set_price(0.0);
 	}
 	else
 	{
-		ask = l2_info.add_offer();
-		ask->set_price(pMarketData->AskPrice2);
-		ask->set_size(pMarketData->AskVolume2);	   
+	    ask = l2_info.add_offer();
+           ask->set_price(pMarketData->AskPrice2);
+	    ask->set_size(pMarketData->AskVolume2);	   
 	}
-
+	
 	if (pMarketData->BidPrice3==DBL_MAX || pMarketData->BidVolume3 <= 0)
 	{
-		//bid->set_price(0.0);
+           //bid->set_price(0.0);
 	}
 	else
 	{
-		bid = l2_info.add_bid();
-		bid->set_price(pMarketData->BidPrice3);
-		bid->set_size(pMarketData->BidVolume3);	   
+	    bid = l2_info.add_bid();
+           bid->set_price(pMarketData->BidPrice3);
+	    bid->set_size(pMarketData->BidVolume3);	   
 	}	
-
+	
 
 	if (pMarketData->AskPrice3==DBL_MAX || pMarketData->AskVolume3 <= 0)
 	{
-		//ask->set_price(0.0);
+           //ask->set_price(0.0);
 	}
 	else
 	{
-		ask = l2_info.add_offer();
-		ask->set_price(pMarketData->AskPrice3);
-		ask->set_size(pMarketData->AskVolume3);	   
+	    ask = l2_info.add_offer();
+           ask->set_price(pMarketData->AskPrice3);
+	    ask->set_size(pMarketData->AskVolume3);	   
 	}
-
+	
 	if (pMarketData->BidPrice4==DBL_MAX || pMarketData->BidVolume4 <= 0)
 	{
-		//bid->set_price(0.0);
+           //bid->set_price(0.0);
 	}
 	else
 	{
-		bid = l2_info.add_bid();
-		bid->set_price(pMarketData->BidPrice4);
-		bid->set_size(pMarketData->BidVolume4);	   
+	    bid = l2_info.add_bid();
+           bid->set_price(pMarketData->BidPrice4);
+	    bid->set_size(pMarketData->BidVolume4);	   
 	}	
-
+	
 
 	if (pMarketData->AskPrice4==DBL_MAX || pMarketData->AskVolume4 <= 0)
 	{
-		//ask->set_price(0.0);
+           //ask->set_price(0.0);
 	}
 	else
 	{
-		ask = l2_info.add_offer();
-		ask->set_price(pMarketData->AskPrice4);
-		ask->set_size(pMarketData->AskVolume4);	   
+	    ask = l2_info.add_offer();
+           ask->set_price(pMarketData->AskPrice4);
+	    ask->set_size(pMarketData->AskVolume4);	   
 	}
-
+	
 	if (pMarketData->BidPrice5==DBL_MAX || pMarketData->BidVolume5 <= 0)
 	{
-		//bid->set_price(0.0);
+           //bid->set_price(0.0);
 	}
 	else
 	{
-		bid = l2_info.add_bid();
-		bid->set_price(pMarketData->BidPrice5);
-		bid->set_size(pMarketData->BidVolume5);	   
+	    bid = l2_info.add_bid();
+           bid->set_price(pMarketData->BidPrice5);
+	    bid->set_size(pMarketData->BidVolume5);	   
 	}	
-
+	
 
 	if (pMarketData->AskPrice5==DBL_MAX || pMarketData->AskVolume5 <= 0)
 	{
-		//ask->set_price(0.0);
+           //ask->set_price(0.0);
 	}
 	else
 	{
-		ask = l2_info.add_offer();
-		ask->set_price(pMarketData->AskPrice5);
-		ask->set_size(pMarketData->AskVolume5);	   
+	    ask = l2_info.add_offer();
+           ask->set_price(pMarketData->AskPrice5);
+	    ask->set_size(pMarketData->AskVolume5);	   
 	}
-
-	m_listener->OnL2(l2_info);
+	
+	//m_listener->OnL2(l2_info);
 
 	//以上发送L2 行情
 
 	//发送最优价
 	if((pMarketData->BidPrice1 == DBL_MAX || pMarketData->BidVolume1 <= 0) && (pMarketData->AskVolume1 <= 0 || pMarketData->AskPrice1 == DBL_MAX))
 	{
-		LOG_INFO("Bid and Offer NULL ");
+           LOG_INFO("Bid and Offer NULL ");
 	}
 	else
 	if(pMarketData->BidPrice1 == DBL_MAX || pMarketData->BidVolume1 <= 0)	
 	{
-	pb::dms::Offer offer_info;
-	offer_info.set_contract(pMarketData->InstrumentID);	   
-	pb::dms::DataPoint *offer = offer_info.mutable_offer();
-	offer->set_price(pMarketData->AskPrice1);
-	offer->set_size(pMarketData->AskVolume1);	
-	m_listener->OnOffer(offer_info);
+           pb::dms::Offer offer_info;
+	    offer_info.set_contract(pMarketData->InstrumentID);	   
+	    pb::dms::DataPoint *offer = offer_info.mutable_offer();
+	    offer->set_price(pMarketData->AskPrice1);
+	    offer->set_size(pMarketData->AskVolume1);	
+	    m_listener->OnOffer(offer_info);
 	}
 	else
 	if(pMarketData->AskPrice1 == DBL_MAX || pMarketData->AskVolume1 <= 0)	
 	{
-	pb::dms::Bid bid_info;
-	bid_info.set_contract(pMarketData->InstrumentID);	   
-	pb::dms::DataPoint *bid = bid_info.mutable_bid();
-	bid->set_price(pMarketData->BidPrice1);
-	bid->set_size(pMarketData->BidVolume1);	
-	m_listener->OnBid(bid_info);
+           pb::dms::Bid bid_info;
+	    bid_info.set_contract(pMarketData->InstrumentID);	   
+	    pb::dms::DataPoint *bid = bid_info.mutable_bid();
+	    bid->set_price(pMarketData->BidPrice1);
+	    bid->set_size(pMarketData->BidVolume1);	
+	    m_listener->OnBid(bid_info);
 	}	
 	else
 	{
-	pb::dms::BBO bbo_info;
-	bbo_info.set_contract(pMarketData->InstrumentID);		
-	pb::dms::DataPoint *bid = bbo_info.mutable_bid();
-	bid->set_price(pMarketData->BidPrice1);
-	bid->set_price(pMarketData->BidVolume1);	
-	pb::dms::DataPoint *ask = bbo_info.mutable_offer();
-	ask->set_price(pMarketData->AskPrice1);
-	ask->set_size(pMarketData->AskVolume1);	   
-	m_listener->OnBBO(bbo_info);
-
+           pb::dms::BBO bbo_info;
+	    bbo_info.set_contract(pMarketData->InstrumentID);		
+           pb::dms::DataPoint *bid = bbo_info.mutable_bid();
+	    bid->set_price(pMarketData->BidPrice1);
+	    bid->set_size(pMarketData->BidVolume1);	
+           pb::dms::DataPoint *ask = bbo_info.mutable_offer();
+           ask->set_price(pMarketData->AskPrice1);
+           ask->set_size(pMarketData->AskVolume1);	   
+           m_listener->OnBBO(bbo_info);
+		
 	}
+
+	//发送teade行情
+	int tmpvolume = MakePriceVolume(pMarketData);
+	LOG_INFO("CFemasBookManager::MakePriceVolume = ",tmpvolume); 
+	if(tmpvolume > 0)
+	{
+            pb::dms::Trade trade_info;
+	     trade_info.set_contract(pMarketData->InstrumentID);	
+	     pb::dms::DataPoint *trade_id = trade_info.mutable_last();	
+	     trade_id->set_price(pMarketData->LastPrice);
+	     trade_id->set_size(tmpvolume);	
+	     m_listener->OnTrade(trade_info);	 
+	}
+
+       pb::dms::Turnover Turnoverinfo;
+       Turnoverinfo.set_contract(pMarketData->InstrumentID);
+	Turnoverinfo.set_total_volume(pMarketData->Volume);
+	Turnoverinfo.set_turnover(pMarketData->Turnover);
+	m_listener->OnTurnover(Turnoverinfo);
+	   
+
+	m_listener->OnL2(l2_info);
 	
+}
+
+void CtpBookConvert::CheckTime(CThostFtdcDepthMarketDataField *pMarketData)
+{
+    LOG_INFO("CtpBookConvert::CheckTime "); 
+    char ctmpf[3]={0};
+    char ctmps[3]={0};	
+    strncpy(ctmpf,pMarketData->UpdateTime,2);	
+    strncpy(ctmps,(m_trademap[pMarketData->InstrumentID]->mtime).c_str(),2);		
+    if(std::atoi(ctmpf) > 18 && std::atoi(ctmps) < 18)
+    {
+        LOG_INFO("CtpBookConvert::clear  Instrument map");
+        m_trademap[pMarketData->InstrumentID]->mvolume=pMarketData->Volume;
+	 m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;	
+    }
+}
+
+//void CtpBookConvert::ClearMap()
+//{
+//    m_trademap.clear();
+//}
+
+int CtpBookConvert::MakePriceVolume(CThostFtdcDepthMarketDataField *pMarketData)
+{
+    LOG_INFO("CtpBookConvert::MakePriceVolume "); 
+    if(m_trademap.count(pMarketData->InstrumentID) == 0)
+    {
+        LOG_INFO("CtpBookConvert::insert map InstrumentID = ",pMarketData->InstrumentID); 
+        m_trademap[pMarketData->InstrumentID] = new mstrade();
+	 m_trademap[pMarketData->InstrumentID]->mvolume=pMarketData->Volume;
+	 m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;
+        return 0;
+    }
+    else
+    {
+        CheckTime(pMarketData);
+	 LOG_INFO("pMarketData->Volume =  ",pMarketData->Volume); 	
+	 LOG_INFO("m_trademap->Volume =  ",m_trademap[pMarketData->InstrumentID]->mvolume); 
+     int tmpVolume =  pMarketData->Volume - m_trademap[pMarketData->InstrumentID]->mvolume;
+	 m_trademap[pMarketData->InstrumentID]->mvolume=pMarketData->Volume;
+	 m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;	
+        return (tmpVolume > 0 ? tmpVolume : 0);     
+    }		
 }
 
 } // namespace convert

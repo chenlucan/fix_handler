@@ -7,6 +7,23 @@
 #include "core/market/marketlisteneri.h"
 #include "EESQuoteApi.h"
 
+#include <stdio.h> 
+#include <unistd.h>     
+#include <signal.h>               
+#include <sys/time.h> 
+
+typedef struct strade
+{
+    int mvolume;
+    std::string mtime;
+    strade()
+    {
+        mvolume = 0;
+	 mtime = "";	
+    }
+} mstrade;
+
+typedef std::map <std::string,mstrade*> TradeMap;
 
 namespace fh
 {
@@ -23,11 +40,14 @@ namespace market
             virtual ~CRemBookManager();
 
             void SendRemmarketData(EESMarketDepthQuoteData *pMarketData);
-	     void SendRemToDB(const std::string &message);		
+	     void SendRemToDB(const std::string &message);
+	     int MakePriceVolume(EESMarketDepthQuoteData *pMarketData);	 
+	     void CheckTime(EESMarketDepthQuoteData *pMarketData);	 
 
 	  private:
 
             fh::core::market::MarketListenerI *m_book_sender;
+	     TradeMap m_trademap;	 		
 		
          private:
             DISALLOW_COPY_AND_ASSIGN(CRemBookManager);

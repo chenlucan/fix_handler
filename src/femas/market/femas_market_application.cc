@@ -85,8 +85,6 @@ void CFemasMarketApp::Stop()
     m_pFemasMarket->Stop();	
 }
 
-
-
 }
 }
 }

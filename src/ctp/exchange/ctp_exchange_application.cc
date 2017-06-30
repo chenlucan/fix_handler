@@ -1,4 +1,4 @@
-﻿#include "ctp_exchange_application.h"
+#include "ctp_exchange_application.h"
 #include "core/assist/logger.h"
 #include <thread>
 
@@ -89,6 +89,7 @@ void CCtpExchangeApp::Change(const ::pb::ems::Order& order)
 
 void CCtpExchangeApp::Delete(const ::pb::ems::Order& order)
 {
+	    m_pCtpGlobexCommunicator->Delete(order);
         LOG_INFO("CCtpExchangeApp::Delete");
         return;
 }

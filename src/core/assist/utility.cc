@@ -297,6 +297,18 @@ namespace utility
     }
 
     // 把 protobuf 的消息整理成可读字符串
+    std::string Format_pb_message(const pb::dms::Turnover &turnover)
+    {
+        std::ostringstream oss;
+
+        oss << "contract=" << turnover.contract() << ", ";
+        oss << "total_volume=" << turnover.total_volume() << ", ";
+        oss << "turnover=" << turnover.turnover();
+
+        return oss.str();
+    }
+
+    // 把 protobuf 的消息整理成可读字符串
     std::string Format_pb_message(const pb::dms::L2 &l2)
     {
         std::ostringstream oss;

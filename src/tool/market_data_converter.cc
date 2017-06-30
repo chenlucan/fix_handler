@@ -1,6 +1,7 @@
 
 #include "core/assist/settings.h"
 //#include "femas/market/convert/Femas_book_convert.h"
+#include "tool/market_data_converter.h"
 #include "ctp/market/book_convert.h"
 #include "tool/market_data_converter.h"
 
@@ -65,10 +66,10 @@ namespace tool
         m_target_collection = settings.Get("persist.market_data_collection");
         m_data_provider = new fh::core::persist::MarketDataProvider(m_source_collection, settings);
 
-       // if(m_source_collection == "FEMAS") m_converter = new fh::femas::market::convert::FemasBookConvert();
-	   if(m_source_collection == "CTP") m_converter = new fh::ctp::market::convert::CtpBookConvert();
+       if(m_source_collection == "CTP") m_converter = new fh::ctp::market::convert::CtpBookConvert();
         else  throw std::invalid_argument("market not exist: " + m_source_collection);
     }
+
 
     // 转换一条原始行情，然后将得到的转换后数据插入到数据库，返回成功件数和失败件数
     std::pair<std::uint64_t, std::uint64_t> MarketDataConverter::Convert_one(const std::string &original_message)

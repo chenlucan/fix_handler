@@ -76,7 +76,8 @@ void RemConvertListenerI::OnL3()
 // implement of MarketListenerI
 void RemConvertListenerI::OnTrade(const pb::dms::Trade &trade)
 {
-
+    m_trade.Clear();
+    m_trade = trade;	
 }
 // implement of MarketListenerI
 void RemConvertListenerI::OnContractAuctioning(const std::string &contract)
@@ -99,6 +100,14 @@ void RemConvertListenerI::OnOrginalMessage(const std::string &message)
     LOG_INFO("FemasConvertListenerI::OnOrginalMessage");
 }
 
+// implement of MarketListenerI
+void RemConvertListenerI::OnTurnover(const pb::dms::Turnover &turnover)
+{
+    LOG_INFO("OnTurnover: ", fh::core::assist::utility::Format_pb_message(turnover));
+    m_turnover.Clear();
+    m_turnover = turnover;	
+}
+
 void RemConvertListenerI::Reset()
 {
     LOG_INFO("FemasConvertListenerI::Reset");
@@ -106,6 +115,8 @@ void RemConvertListenerI::Reset()
     m_bid.Clear();
     m_offer.Clear();
     m_l2.Clear();
+    m_trade.Clear();	
+    m_turnover.Clear();	
 }
 
 //===================================================================================
@@ -127,7 +138,7 @@ RemBookConvert::~RemBookConvert()
 
 
 
-MessMap RemBookConvert::Apply_message(const std::string &message)
+MessMap RemBookConvert::Convert(const std::string &message)
 {
      LOG_INFO("FemasBookConvert::Apply_message");
      LOG_INFO("FemasBookConvert::Apply_message str = ",message);	 
@@ -138,30 +149,18 @@ MessMap RemBookConvert::Apply_message(const std::string &message)
      auto json = doc.view();
      auto body = GET_SUB_FROM_JSON(json, "message");
      auto instrumentID = GET_STR_FROM_JSON(json, "InstrumentID");	
-     auto volumeMultiple = GET_INT_FROM_JSON(json, "VolumeMultiple");
      auto is = GET_STR_FROM_JSON(json, "insertTime");
      auto se = GET_STR_FROM_JSON(json, "sendingTime");	
      auto sestr = GET_STR_FROM_JSON(json, "sendingTimeStr");	 
-     RemmarketData(body,volumeMultiple);
-     bsoncxx::builder::basic::document tmp_l2;
-     if(MakeL2Json(tmp_l2))
-     {
-         bsoncxx::builder::basic::document tmp_h;
-	  tmp_h.append(bsoncxx::builder::basic::kvp("market", T("REM")));	
-	  tmp_h.append(bsoncxx::builder::basic::kvp("type", T("l2")));	 
-         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(is)));		
-         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
-         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
-	  tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_l2));	
-	  m_messagemap["l2"] =  bsoncxx::to_json(tmp_h.view());
-     }
+     RemmarketData(body);
+     
      bsoncxx::builder::basic::document tmp_bid;	 
      if(MakeBidJson(tmp_bid))
      {
          bsoncxx::builder::basic::document tmp_h;
 	  tmp_h.append(bsoncxx::builder::basic::kvp("market", T("REM")));	
 	  tmp_h.append(bsoncxx::builder::basic::kvp("type", T("bid")));	 
-         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(is)));		
+         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
          tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
          tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
 	  tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_bid));	
@@ -173,7 +172,7 @@ MessMap RemBookConvert::Apply_message(const std::string &message)
          bsoncxx::builder::basic::document tmp_h;
 	  tmp_h.append(bsoncxx::builder::basic::kvp("market", T("REM")));	
 	  tmp_h.append(bsoncxx::builder::basic::kvp("type", T("offer")));	 
-         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(is)));		
+         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
          tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
          tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
 	  tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_offer));
@@ -185,18 +184,54 @@ MessMap RemBookConvert::Apply_message(const std::string &message)
          bsoncxx::builder::basic::document tmp_h;
 	  tmp_h.append(bsoncxx::builder::basic::kvp("market", T("REM")));	
 	  tmp_h.append(bsoncxx::builder::basic::kvp("type", T("bbo")));	 
-         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(is)));		
+         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
          tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
          tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
 	  tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_bbo));	
 	  m_messagemap["bbo"] =  bsoncxx::to_json(tmp_h.view());
-     }	 	 
+     }	 
+     bsoncxx::builder::basic::document tmp_trade;		 
+     if(MakeTradeJson(tmp_trade))
+     {
+         bsoncxx::builder::basic::document tmp_h;
+	  tmp_h.append(bsoncxx::builder::basic::kvp("market", T("REM")));	
+	  tmp_h.append(bsoncxx::builder::basic::kvp("type", T("trade")));	 
+         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
+         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
+         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
+	  tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_trade));	
+	  m_messagemap["trade"] =  bsoncxx::to_json(tmp_h.view());
+     }	 
+     bsoncxx::builder::basic::document tmp_turnover;		 
+     if(MakeTurnoverJson(tmp_turnover))
+     {
+         bsoncxx::builder::basic::document tmp_h;
+	  tmp_h.append(bsoncxx::builder::basic::kvp("market", T("REM")));	
+	  tmp_h.append(bsoncxx::builder::basic::kvp("type", T("turnover")));	 
+         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
+         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
+         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
+	  tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_turnover));	
+	  m_messagemap["turnover"] =  bsoncxx::to_json(tmp_h.view());
+     }	 
+     bsoncxx::builder::basic::document tmp_l2;
+     if(MakeL2Json(tmp_l2))
+     {
+         bsoncxx::builder::basic::document tmp_h;
+	  tmp_h.append(bsoncxx::builder::basic::kvp("market", T("REM")));	
+	  tmp_h.append(bsoncxx::builder::basic::kvp("type", T("l2")));	 
+         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
+         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
+         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
+	  tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_l2));	
+	  m_messagemap["l2"] =  bsoncxx::to_json(tmp_h.view());
+     }	 
    
 
      return m_messagemap;	 
 }
 
-void RemBookConvert::RemmarketData(const JSON_ELEMENT &message,int volumeMultiple)
+void RemBookConvert::RemmarketData(const JSON_ELEMENT &message)
 {
     LOG_INFO("FemasBookConvert::FemasmarketData");
     EESMarketDepthQuoteData tmpMarketData;	
@@ -243,41 +278,7 @@ void RemBookConvert::RemmarketData(const JSON_ELEMENT &message,int volumeMultipl
     tmpMarketData.BidVolume5=GET_INT_FROM_JSON(message, "BidVolume5");
     tmpMarketData.AskPrice5=GET_DOUBLE_FROM_JSON(message, "AskPrice5");
     tmpMarketData.AskVolume5=GET_INT_FROM_JSON(message, "AskVolume5");	
-    	
  
-    int BidVolume_x = 0;
-    int AskVolume_y = 0;	
-    if(volumeMultiple <= 0)
-    {
-        AskVolume_y = 0;
-	 BidVolume_x = 0;
-    }
-    else
-    {
-        try
-       {
-            AskVolume_y = (tmpMarketData.Turnover-tmpMarketData.BidPrice1*tmpMarketData.Volume*volumeMultiple)/((tmpMarketData.AskPrice1-tmpMarketData.BidPrice1)*volumeMultiple);                  
-       }
-       catch(...)
-       {
-           AskVolume_y = 0;
-       }
-	BidVolume_x = tmpMarketData.Volume-AskVolume_y;     
-    }		
-
-    if(BidVolume_x < 0)
-    {
-        BidVolume_x = 0;
-	 AskVolume_y = 0;	
-    }	
-    if(AskVolume_y < 0)
-    {
-        BidVolume_x = 0;
-        AskVolume_y = 0;
-    }
-    m_listener->bid_turnover = BidVolume_x;
-    m_listener->offer_turnover = AskVolume_y;	
-	
     m_rem_book_manager->SendRemmarketData(&tmpMarketData);
 	
     return;	
@@ -313,70 +314,94 @@ bool RemBookConvert::MakeL2Json(bsoncxx::builder::basic::document& json)
     }
 	
     json.append(bsoncxx::builder::basic::kvp("offer", tmarray_a));	
-    json.append(bsoncxx::builder::basic::kvp("bid_turnover", T(std::to_string(m_listener->bid_turnover)))); 	
-    json.append(bsoncxx::builder::basic::kvp("offer_turnover", T(std::to_string(m_listener->offer_turnover)))); 	
 	
     return true;	
 }
 bool RemBookConvert::MakeBidJson(bsoncxx::builder::basic::document& json)
 {
-    LOG_INFO("FemasBookConvert::MakeBidJson");
+    LOG_INFO("RemBookConvert::MakeBidJson");
     if(!(m_listener->m_bid).has_contract())
     {
         return false;
     }		
     json.append(bsoncxx::builder::basic::kvp("contract", T(m_listener->m_bid.contract()))); 
 
-    bsoncxx::builder::basic::array tmarray_b;
-    bsoncxx::builder::basic::document tmjsona1;
-    tmjsona1.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_bid.bid().price())))); 	
-    tmjsona1.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_bid.bid().size())))); 
-    tmarray_b.append(tmjsona1);
+    bsoncxx::builder::basic::document tmarray_b;
+    tmarray_b.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_bid.bid().price())))); 	
+    tmarray_b.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_bid.bid().size())))); 
     json.append(bsoncxx::builder::basic::kvp("bid", tmarray_b));
 	
     return true;	
 }
 bool RemBookConvert::MakeOfferJson(bsoncxx::builder::basic::document& json) 
 {
-    LOG_INFO("FemasBookConvert::MakeOfferJson");
+    LOG_INFO("RemBookConvert::MakeOfferJson");
     if(!(m_listener->m_offer).has_contract())
     {
         return false;
     }			
     json.append(bsoncxx::builder::basic::kvp("contract", T(m_listener->m_offer.contract()))); 
 
-    bsoncxx::builder::basic::array tmarray_a;
-    bsoncxx::builder::basic::document tmjsona2;
-    tmjsona2.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_offer.offer().price())))); 	
-    tmjsona2.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_offer.offer().size())))); 
-    tmarray_a.append(tmjsona2);
+    bsoncxx::builder::basic::document tmarray_a;
+    tmarray_a.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_offer.offer().price())))); 	
+    tmarray_a.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_offer.offer().size())))); 
     json.append(bsoncxx::builder::basic::kvp("offer", tmarray_a));   
 
     return true;	
 }
 bool RemBookConvert::MakeBboJson(bsoncxx::builder::basic::document& json) 
 {
-    LOG_INFO("FemasBookConvert::MakeBboJson");
+    LOG_INFO("RemBookConvert::MakeBboJson");
     if(!(m_listener->m_bbo).has_contract())
     {
         return false;
     } 	
     json.append(bsoncxx::builder::basic::kvp("contract", T(m_listener->m_bbo.contract()))); 
 
-    bsoncxx::builder::basic::array tmarray_b;
-    bsoncxx::builder::basic::document tmjsona1;
-    tmjsona1.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_bbo.bid().price())))); 	
-    tmjsona1.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_bbo.bid().size())))); 
-    tmarray_b.append(tmjsona1);
+    bsoncxx::builder::basic::document tmarray_b;
+    tmarray_b.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_bbo.bid().price())))); 	
+    tmarray_b.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_bbo.bid().size())))); 
+
     json.append(bsoncxx::builder::basic::kvp("bid", tmarray_b));
 
-    bsoncxx::builder::basic::array tmarray_a;
-    bsoncxx::builder::basic::document tmjsona2;
-    tmjsona2.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_bbo.offer().price())))); 	
-    tmjsona2.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_bbo.offer().size())))); 
-    tmarray_a.append(tmjsona2);
+    bsoncxx::builder::basic::document tmarray_a;
+    tmarray_a.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_bbo.offer().price())))); 	
+    tmarray_a.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_bbo.offer().size())))); 
+
     json.append(bsoncxx::builder::basic::kvp("offer", tmarray_a));
 
+    return true;
+}
+
+bool RemBookConvert::MakeTradeJson(bsoncxx::builder::basic::document& json)
+{
+    LOG_INFO("RemBookConvert::MakeTradeJson");
+    if(!(m_listener->m_trade).has_contract())
+    {
+        return false;
+    } 	
+    json.append(bsoncxx::builder::basic::kvp("contract", T(m_listener->m_trade.contract()))); 
+
+    bsoncxx::builder::basic::document tmarray_b;
+    tmarray_b.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_trade.last().price())))); 	
+    tmarray_b.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_trade.last().size())))); 
+
+    json.append(bsoncxx::builder::basic::kvp("last", tmarray_b));
+
+    return true;
+}
+
+bool RemBookConvert::MakeTurnoverJson(bsoncxx::builder::basic::document& json)
+{
+    LOG_INFO("RemBookConvert::MakeTurnoverJson");
+    if(!(m_listener->m_turnover).has_contract())
+    {
+        return false;
+    } 	
+    json.append(bsoncxx::builder::basic::kvp("contract", T(m_listener->m_turnover.contract()))); 
+    json.append(bsoncxx::builder::basic::kvp("total_volume", T(m_listener->m_turnover.total_volume()))); 
+    json.append(bsoncxx::builder::basic::kvp("turnover", T(m_listener->m_turnover.turnover()))); 
+	
     return true;
 }
 

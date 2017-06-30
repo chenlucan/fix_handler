@@ -12,7 +12,6 @@ InsertOrderCommand::InsertOrderCommand(CThostFtdcTraderApi *api, CThostFtdcInput
 }
 
 int InsertOrderCommand::execute(){
-	std::cout << "InsertOrderCommand::execute ---> ReqOrderInsert\n" << std::endl;
 	return api->ReqOrderInsert(orderField, requestID);
 }
 

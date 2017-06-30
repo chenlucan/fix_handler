@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
      set_SignalProc();
      LOG_INFO("exchange main() start");
 
-     //¶ÁÈ¡ÅäÖÃÎÄ¼ş
+     //è¯»å–é…ç½®æ–‡ä»¶
      std::string FileConfigstr= "ctp_config.ini";
   
      LOG_INFO("FileConfigstr : ",FileConfigstr.c_str());

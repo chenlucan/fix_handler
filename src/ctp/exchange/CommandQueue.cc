@@ -17,7 +17,7 @@ void CommandQueue::addCommand(std::shared_ptr<ApiCommand> newCommand){
 	commandQueue.push(newCommand);
 }
 
-//Ò»ÃëÖ®ÄÚ²»ÄÜÁ¬Ğø·¢ËÍÖ¸Áî
+//ä¸€ç§’ä¹‹å†…ä¸èƒ½è¿ç»­å‘é€æŒ‡ä»¤
 void CommandQueue::run(){
 	std::thread t([this]{
 	while (working){
@@ -29,11 +29,11 @@ void CommandQueue::run(){
 				auto command = commandQueue.front();
 				result = command->execute();
 				if (result == 0){
-					//resultÎª0ÒâÎ¶×Å·¢ËÍÖ¸Áî³É¹¦
+					//resultä¸º0æ„å‘³ç€å‘é€æŒ‡ä»¤æˆåŠŸ
 					commandQueue.pop();
 				}
 			}
-			//Èç¹û·¢ËÍÁËÖ¸ÁîĞİÏ¢Ò»Ãë£¬°ÑÕâ¶Î´úÂë·Å³öÀ´ÊÇÎªÁËÊÍ·ÅËø£¬Ê¹µÃ³ÁË¯µÄÒ»ÃëÆÚ¼äÆäËü´úÂë¿ÉÒÔ·ÃÎÊÁÙ½ç×ÊÔ´
+			//å¦‚æœå‘é€äº†æŒ‡ä»¤ä¼‘æ¯ä¸€ç§’ï¼ŒæŠŠè¿™æ®µä»£ç æ”¾å‡ºæ¥æ˜¯ä¸ºäº†é‡Šæ”¾é”ï¼Œä½¿å¾—æ²‰ç¡çš„ä¸€ç§’æœŸé—´å…¶å®ƒä»£ç å¯ä»¥è®¿é—®ä¸´ç•Œèµ„æº
 			if (result == 0){
 				std::this_thread::sleep_for(std::chrono::seconds(1));
 			}

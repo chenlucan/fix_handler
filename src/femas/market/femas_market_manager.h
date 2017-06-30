@@ -67,7 +67,7 @@ class CFemasMarketManager : public CUstpFtdcMduserSpi
 		virtual void OnRspUnSubMarketData(CUstpFtdcSpecificInstrumentField *pSpecificInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 		virtual void OnHeartBeatWarning(int nTimeLapse);
 
-		//Ôö¼Ó³õÊ¼»¯½Ó¿Ú
+		//å¢åŠ åˆå§‹åŒ–æ¥å£
 		void SetFileData(std::string &FileConfig);
 
 		void CreateFemasBookManager(fh::core::market::MarketListenerI *sender);

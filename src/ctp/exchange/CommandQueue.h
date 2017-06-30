@@ -14,7 +14,7 @@ namespace ctp
 {
 namespace exchange
 {
-//Ö¸Áî¶ÓÁĞ
+//æŒ‡ä»¤é˜Ÿåˆ—
 class CommandQueue
 {
 	public:
@@ -27,7 +27,7 @@ class CommandQueue
 	private:
 		std::queue<std::shared_ptr<fh::ctp::exchange::ApiCommand>> commandQueue;
 		std::mutex queueMutex;
-		bool working;				//¹¤×÷×´Ì¬
+		bool working;				//å·¥ä½œçŠ¶æ€
 	public:
 		void run();
 };

@@ -56,8 +56,9 @@ namespace book
             // implement of MarketListenerI
             void OnContractTrading(const std::string &contract)    override;
             // implement of MarketListenerI
-            virtual void OnOrginalMessage(const std::string &message);
-            
+            void OnOrginalMessage(const std::string &message) override;
+            // implement of MarketListenerI
+            void OnTurnover(const pb::dms::Turnover &turnover) override;
 
         private:
             int m_current_caseid;

@@ -19,7 +19,18 @@
 #include<time.h>
 #include <ctime>
 #include <stdlib.h>
+typedef struct strade
+{
+    int mvolume;
+    std::string mtime;
+    strade()
+    {
+        mvolume = 0;
+	 mtime = "";	
+    }
+} mstrade;
 
+typedef std::map <std::string,mstrade*> TradeMap;
 
 typedef unsigned long long  ullong;
 
@@ -58,11 +69,16 @@ class CRemEfhMarkrtManager : public guava_quote_event
 		ullong str2stmp(const char *strTime);
 		ullong GetUpdateTimeInt(guava_udp_normal *pMarketData);
 
+		int MakePriceVolume(guava_udp_normal *pMarketData);	
+	       //void ClearMap();	
+	       void CheckTime(guava_udp_normal *pMarketData);	
+
      public:
 		fh::core::market::MarketListenerI *m_book_sender;
 		fh::core::assist::Settings *m_pFileConfig;
 		multicast_info m_mcinfo;
 		guava_quote m_guava;
+		TradeMap m_trademap;	 
 
 };
 
