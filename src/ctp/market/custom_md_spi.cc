@@ -70,9 +70,8 @@ void CustomMdSpi::OnRspUserLogout(
 	bool bResult = pRspInfo && (pRspInfo->ErrorID != 0);
 	if (!bResult)
 	{
-		std::cout << "=====Account to log out successfully=====" << std::endl;
-		std::cout << "Broker ID: " << pUserLogout->BrokerID << std::endl;
-		std::cout << "User ID: " << pUserLogout->UserID << std::endl;
+		LOG_INFO("=====Account to log out successfully=====\nBroker ID:"
+		,pUserLogout->BrokerID, "\nUser ID: ", pUserLogout->UserID);
 	}
 	else
 		LOG_INFO("Returns an error--->>> ErrorID=", pRspInfo->ErrorID, ", ErrorMsg=", pRspInfo->ErrorMsg);
@@ -96,8 +95,7 @@ void CustomMdSpi::OnRspSubMarketData(
 	bool bResult = pRspInfo && (pRspInfo->ErrorID != 0);
 	if (!bResult)
 	{
-		std::cout << "=====Subscribe to the market success=====" << std::endl;
-		std::cout << "Instrument ID " << pSpecificInstrument->InstrumentID << std::endl;
+		LOG_INFO("=====Subscribe to the market success=====\nInstrument ID", pSpecificInstrument->InstrumentID);
 		// 如果需要存入文件或者数据库，在这里创建表头,不同的合约单独存储
 		char filePath[100] = {'\0'};
 		sprintf(filePath, "%s_market_data.csv", pSpecificInstrument->InstrumentID);

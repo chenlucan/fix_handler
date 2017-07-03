@@ -42,7 +42,7 @@ bool CustomManager::Start()
 	int rt = m_ctpmaket->login(&loginReq, requestID);
 	if(rt != 0)
 	{
-		std::cout << "log fail!"<< std::endl;
+		LOG_INFO("log fail!");
 	}	
 	
 	time_t tmtimeout = time(NULL);

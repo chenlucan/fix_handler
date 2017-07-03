@@ -57,7 +57,6 @@ namespace exchange
 		    {
 				m_InitQueryNum = 0;
                 this->id = id;
-				std::cout << "Initializing account " << id->getInvestorID() << "information;" << std::endl;
 				// 创建文件来存储所有合约代码,编译行情模块获取
 				char filePath[100] = "InstrumentID.csv";
 				std::ofstream outFile;
