@@ -57,7 +57,7 @@ void CRemMarkrtManager::OnQuoteUpdated(EesEqsIntrumentType chInstrumentType, EES
     LOG_INFO("EESMarketDepthQuoteData:");
     LOG_INFO("name : ",pDepthQuoteData->InstrumentID);	
     LOG_INFO("TradingDay : ",pDepthQuoteData->TradingDay);	
-//ÉêÂòÒ»
+//ç”³ä¹°ä¸€
        if (pDepthQuoteData->BidPrice1==DBL_MAX)
 		LOG_INFO("BidPrice1:NULL");
 	else
@@ -65,7 +65,7 @@ void CRemMarkrtManager::OnQuoteUpdated(EesEqsIntrumentType chInstrumentType, EES
 
 	LOG_INFO("BidVolume1: ",pDepthQuoteData->BidVolume1);
 
-//ÉêÂôÒ»	
+//ç”³å–ä¸€	
 	if (pDepthQuoteData->AskPrice1==DBL_MAX)
 		LOG_INFO("AskPrice1:NULL");
 	else
@@ -149,7 +149,7 @@ void CRemMarkrtManager::OnSymbolListResponse(EesEqsIntrumentType chInstrumentTyp
  
 }
 
-//Ôö¼Ó³õÊ¼»¯½Ó¿Ú
+//å¢åŠ åˆå§‹åŒ–æ¥å£
 void CRemMarkrtManager::SetFileData(std::string &FileConfig)
 {
     LOG_INFO("CRemMarkrtManager::SetData ",FileConfig.c_str());

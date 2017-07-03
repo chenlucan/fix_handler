@@ -61,11 +61,11 @@ inline std::string T(char *v){return std::string(v);}
 		   virtual void OnRspOrderAction(CUstpFtdcOrderActionField *pOrderAction, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast); 
 		   virtual void OnErrRtnOrderAction(CUstpFtdcOrderActionField *pOrderAction, CUstpFtdcRspInfoField *pRspInfo);
 		   virtual void OnRspQryOrder(CUstpFtdcOrderField *pOrder, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-                  ///³É½»µ¥²éÑ¯Ó¦´ğ
+                  ///æˆäº¤å•æŸ¥è¯¢åº”ç­”
 	           virtual void OnRspQryTrade(CUstpFtdcTradeField *pTrade, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-		    ///Í¶×ÊÕß³Ö²Ö²éÑ¯Ó¦´ğ
+		    ///æŠ•èµ„è€…æŒä»“æŸ¥è¯¢åº”ç­”
 	           virtual void OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pRspInvestorPosition, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-		    ///ºÏÔ¼²éÑ¯Ó¦´ğ
+		    ///åˆçº¦æŸ¥è¯¢åº”ç­”
 	           virtual void OnRspQryInstrument(CUstpFtdcRspInstrumentField *pRspInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast); 	
 		   
 		   void OnQryOrder(CUstpFtdcOrderField *pOrder);

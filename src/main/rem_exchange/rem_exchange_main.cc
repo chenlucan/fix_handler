@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
      set_SignalProc();
      LOG_INFO("exchange main() start");
 
-     //¶ÁÈ¡ÅäÖÃÎÄ¼ş
+     //è¯»å–é…ç½®æ–‡ä»¶
      std::string FileConfigstr= "rem_config.ini";
   
      LOG_INFO("FileConfigstr : ",FileConfigstr.c_str());

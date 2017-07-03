@@ -7,10 +7,10 @@
  @date   2015/4/29   17:17
  @author zhou.hu
  
- @brief     ±¾ÀàÖ÷ÒªÊµÏÖ×é²¥Êı¾İµÄ½ÓÊÕ¡£
+ @brief     æœ¬ç±»ä¸»è¦å®ç°ç»„æ’­æ•°æ®çš„æ¥æ”¶ã€‚
 
-×¢Òâ: ±¾Ê¾Àı½öÊÇÌá¹©Ò»ÖÖ½ÓÊÕÎÒ¹«Ë¾EFH×é²¥ĞĞÇéµÄÒ»ÖÖÍ¨ÓÃ·½·¨£¬Èç¹û¿Í»§ÓĞÆäËü
-¸ü¸ßĞ§µÄ½ÓÊÕEFH×é²¥ĞĞÇéµÄ·½Ê½ÍÆ¼ö»¹ÊÇ²ÉÓÃ×Ô¼º¸ü¸ßĞ§µÄ½ÓÊÕÎÒ¹«Ë¾EFHµÄÊı¾İ¡£
+æ³¨æ„: æœ¬ç¤ºä¾‹ä»…æ˜¯æä¾›ä¸€ç§æ¥æ”¶æˆ‘å…¬å¸EFHç»„æ’­è¡Œæƒ…çš„ä¸€ç§é€šç”¨æ–¹æ³•ï¼Œå¦‚æœå®¢æˆ·æœ‰å…¶å®ƒ
+æ›´é«˜æ•ˆçš„æ¥æ”¶EFHç»„æ’­è¡Œæƒ…çš„æ–¹å¼æ¨èè¿˜æ˜¯é‡‡ç”¨è‡ªå·±æ›´é«˜æ•ˆçš„æ¥æ”¶æˆ‘å…¬å¸EFHçš„æ•°æ®ã€‚
 
  @note 
 ******************************************************************************/
@@ -41,37 +41,37 @@ using std::map;
 #define SL_SOCK_RECV						2
 #define SL_SOCK_ERROR						3
 
-///socketÎÄ¼şÃèÊö·ûÈ±Ê¡Öµ
+///socketæ–‡ä»¶æè¿°ç¬¦ç¼ºçœå€¼
 #define MY_SOCKET_DEFAULT					-1
-///socket´íÎóĞÅÏ¢
+///socketé”™è¯¯ä¿¡æ¯
 #define MY_SOCKET_ERROR						-1	
-///×î´óµÄ½ÓÊÕ»º³åÇø×î
+///æœ€å¤§çš„æ¥æ”¶ç¼“å†²åŒºæœ€
 #define	RCV_BUF_SIZE						65535
-///·şÎñÆ÷¶Ë×î´óµÄÖ§³ÖµÄ¿Í»§¶ËµÄÁ¬½ÓÊı
+///æœåŠ¡å™¨ç«¯æœ€å¤§çš„æ”¯æŒçš„å®¢æˆ·ç«¯çš„è¿æ¥æ•°
 #define MAX_SOCKET_CONNECT					1024
 
 
 
 ///-----------------------------------------------------------------------------
-///»Øµ÷²ÎÊıÊÂ¼ş
+///å›è°ƒå‚æ•°äº‹ä»¶
 ///-----------------------------------------------------------------------------
 enum SOCKET_EVENT
 {
-	EVENT_CONNECT,				//Á¬½Ó³É¹¦ÊÂ¼ş
-	EVENT_REMOTE_DISCONNECT,	//Áª½Ó¶Ë¶Ï¿ªÊÂ¼ş
-	EVENT_LOCALE_DISCONNECT,	//Ö÷¶¯¶Ï¿ªÊÂ¼ş
-	EVENT_NETWORK_ERROR,		//ÍøÂç´íÎó
-	EVENT_RECEIVE,				//Êı¾İ½ÓÊÕÊÂ¼ş
-	EVENT_SEND,					//Êı¾İ·¢ËÍ½áÊøÊÂ¼ş
-	EVENT_RECEIVE_BUFF_FULL,	//½ÓÊÕ»º³åÇøÂú
-	EVENT_UNKNOW,				//Î´¶¨Òå×´Ì¬
+	EVENT_CONNECT,				//è¿æ¥æˆåŠŸäº‹ä»¶
+	EVENT_REMOTE_DISCONNECT,	//è”æ¥ç«¯æ–­å¼€äº‹ä»¶
+	EVENT_LOCALE_DISCONNECT,	//ä¸»åŠ¨æ–­å¼€äº‹ä»¶
+	EVENT_NETWORK_ERROR,		//ç½‘ç»œé”™è¯¯
+	EVENT_RECEIVE,				//æ•°æ®æ¥æ”¶äº‹ä»¶
+	EVENT_SEND,					//æ•°æ®å‘é€ç»“æŸäº‹ä»¶
+	EVENT_RECEIVE_BUFF_FULL,	//æ¥æ”¶ç¼“å†²åŒºæ»¡
+	EVENT_UNKNOW,				//æœªå®šä¹‰çŠ¶æ€
 };
 
 class socket_event
 {
 public:
 	virtual ~socket_event() {}
-	/// \brief ½ÓÊÕµ½×é²¥Êı¾İµÄ»ØÔ˜ÊÂ¼ş
+	/// \brief æ¥æ”¶åˆ°ç»„æ’­æ•°æ®çš„å›è©·äº‹ä»¶
 	virtual void on_receive_message(int id, const char* buff, unsigned int len) = 0;
 };
 
@@ -81,41 +81,41 @@ class socket_multicast
 public:
 	socket_multicast();
 	virtual ~socket_multicast(void);
-	/// \brief ×é²¥ÊµÀı³õÊ¼»¯
+	/// \brief ç»„æ’­å®ä¾‹åˆå§‹åŒ–
 	bool sock_init(const string& remote_ip, unsigned short remote_port,const string& local_ip, unsigned short local_port, int id, socket_event* ptr_event);
-	/// \brief ×é²¥ÊµÀı¹Ø±Õ
+	/// \brief ç»„æ’­å®ä¾‹å…³é—­
 	bool sock_close();
 
 protected:
 	//----------------------------------------------------------------------------
-	//±£»¤Àà³ÉÔ±º¯Êı
+	//ä¿æŠ¤ç±»æˆå‘˜å‡½æ•°
 	//----------------------------------------------------------------------------
-	/// \brief ×é²¥ÊıÊÕ·¢ĞÅºÅµÄÏß³Ìº¯Êı(linux °æ)
+	/// \brief ç»„æ’­æ•°æ”¶å‘ä¿¡å·çš„çº¿ç¨‹å‡½æ•°(linux ç‰ˆ)
 	static void* socket_server_event_thread(void* ptr_param);			
 
-	/// \brief ×é²¥ÊıÊÕ·¢ĞÅºÅµÄ´¦Àíº¯Êı
+	/// \brief ç»„æ’­æ•°æ”¶å‘ä¿¡å·çš„å¤„ç†å‡½æ•°
 	void* on_socket_server_event_thread();
 
-	/// \brief Æô¶¯×é²¥ĞÅºÅ´¦ÀíÏß³Ì
+	/// \brief å¯åŠ¨ç»„æ’­ä¿¡å·å¤„ç†çº¿ç¨‹
 	bool start_server_event_thread();										
-	/// \brief Í£Ö¹×é²¥ĞÅºÅ´¦ÀíÏß³Ì
+	/// \brief åœæ­¢ç»„æ’­ä¿¡å·å¤„ç†çº¿ç¨‹
 	bool stop_server_event_thread();	
 	
-	/// \brief Ïò¿Í»§±¨¸æµÄ»Øµ÷ÊÂ¼ş
+	/// \brief å‘å®¢æˆ·æŠ¥å‘Šçš„å›è°ƒäº‹ä»¶
 	bool report_user(SOCKET_EVENT eventType, int id, const char *buff, unsigned int size);
-	/// \brief ÈÕÖ¾¼ÇÂ¼½Ó¿Ú
+	/// \brief æ—¥å¿—è®°å½•æ¥å£
 	void log_msg(const string& msg);
 
 protected:
-	socket_event*			m_event;				///< »Øµ÷½Ó¿Ú
-	bool					m_thrade_quit_flag;		///< ĞÅºÅ¼ì²âÏß³ÌÍË³ö±êÖ¾		
+	socket_event*			m_event;				///< å›è°ƒæ¥å£
+	bool					m_thrade_quit_flag;		///< ä¿¡å·æ£€æµ‹çº¿ç¨‹é€€å‡ºæ ‡å¿—		
 
-	string					m_remote_ip;			///< ×é²¥IP
-	unsigned short			m_remote_port;			///< ×é²¥¶Ë¿Ú
-	string					m_local_ip;				///< ±¾µØIP
-	unsigned short			m_local_port;			///< ±¾µØ¶Ë¿Ú
-	int						m_id;					///< Á¬½Ó±àºÅ
-	MY_SOCKET				m_sock;					///< Ì×½Ó¿Ú
+	string					m_remote_ip;			///< ç»„æ’­IP
+	unsigned short			m_remote_port;			///< ç»„æ’­ç«¯å£
+	string					m_local_ip;				///< æœ¬åœ°IP
+	unsigned short			m_local_port;			///< æœ¬åœ°ç«¯å£
+	int						m_id;					///< è¿æ¥ç¼–å·
+	MY_SOCKET				m_sock;					///< å¥—æ¥å£
 };
 
 

@@ -98,7 +98,7 @@ void CRemEfhMarkrtManager::SendRemmarketData(guava_udp_normal *pMarketData)
     }
     //m_book_sender->OnL2(l2_info);
 	
-    //·¢ËÍ×îÓÅ¼Û
+    //å‘é€æœ€ä¼˜ä»·
 	if(pMarketData->m_bid_px == DBL_MAX && pMarketData->m_ask_px == DBL_MAX)
 	{
            LOG_INFO("Bid and Offer NULL ");
@@ -136,7 +136,7 @@ void CRemEfhMarkrtManager::SendRemmarketData(guava_udp_normal *pMarketData)
            m_book_sender->OnBBO(bbo_info);
 		
 	} 
-	//·¢ËÍteadeĞĞÇé
+	//å‘é€teadeè¡Œæƒ…
 	int tmpvolume = MakePriceVolume(pMarketData);
 	LOG_INFO("CFemasBookManager::MakePriceVolume = ",tmpvolume); 
 	if(tmpvolume > 0)
@@ -274,7 +274,7 @@ ullong CRemEfhMarkrtManager::str2stmp(const char *strTime)
 ullong CRemEfhMarkrtManager::GetUpdateTimeInt(guava_udp_normal *pMarketData)
 {
     timespec time;
-    clock_gettime(CLOCK_REALTIME, &time);  //»ñÈ¡Ïà¶ÔÓÚ1970µ½ÏÖÔÚµÄÃëÊı
+    clock_gettime(CLOCK_REALTIME, &time);  //è·å–ç›¸å¯¹äº1970åˆ°ç°åœ¨çš„ç§’æ•°
     struct tm nowTime;
     localtime_r(&time.tv_sec, &nowTime);
     char current[1024]={0};
@@ -302,7 +302,7 @@ ullong CRemEfhMarkrtManager::GetUpdateTimeInt(guava_udp_normal *pMarketData)
 std::string CRemEfhMarkrtManager::GetUpdateTimeStr(guava_udp_normal *pMarketData)
 {
     timespec time;
-    clock_gettime(CLOCK_REALTIME, &time);  //»ñÈ¡Ïà¶ÔÓÚ1970µ½ÏÖÔÚµÄÃëÊı
+    clock_gettime(CLOCK_REALTIME, &time);  //è·å–ç›¸å¯¹äº1970åˆ°ç°åœ¨çš„ç§’æ•°
     struct tm nowTime;
     localtime_r(&time.tv_sec, &nowTime);
     char current[1024]={0};

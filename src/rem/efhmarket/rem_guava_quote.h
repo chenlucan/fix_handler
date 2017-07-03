@@ -7,10 +7,10 @@
  @date   2014/8/27   12:44
  @author zhou.hu
  
- @brief   ���ļ���EFH�����鲥�ӿڵ�ʾ������
+ @brief   本文件是EFH行情组播接口的示例程序
 
- ע��: ��ʾ�������ṩһ�ֽ����ҹ�˾EFH�鲥�����һ��ͨ�÷���������ͻ�������
- ����Ч�Ľ���EFH�鲥����ķ�ʽ�Ƽ����ǲ����Լ�����Ч�Ľ����ҹ�˾EFH�����ݡ�
+ 注意: 本示例仅是提供一种接收我公司EFH组播行情的一种通用方法，如果客户有其它
+ 更高效的接收EFH组播行情的方式推荐还是采用自己更高效的接收我公司EFH的数据。
 
  @note 
 ******************************************************************************/
@@ -29,34 +29,34 @@ using std::vector;
 
 struct guava_udp_normal
 {
-	unsigned int	m_sequence;				///<�Ự���
-	char			m_exchange_id;			///<�г�  0 ��ʾ�н�  1��ʾ����
-	char			m_channel_id;			///<ͨ�����
-	char			m_quote_flag;			///<�����־  0 ��time sale,��lev1, 
-											///           1 ��time sale,��lev1, 
-											///           2 ��time sale,��lev1, 
-											///           3 ��time sale,��lev1
-	char			m_symbol[8];			///<��Լ
-	char			m_update_time[9];		///<������ʱ��(��)
-	int				m_millisecond;			///<������ʱ��(����)
+	unsigned int	m_sequence;				///<会话编号
+	char			m_exchange_id;			///<市场  0 表示中金  1表示上期
+	char			m_channel_id;			///<通道编号
+	char			m_quote_flag;			///<行情标志  0 无time sale,无lev1, 
+											///           1 有time sale,无lev1, 
+											///           2 无time sale,有lev1, 
+											///           3 有time sale,有lev1
+	char			m_symbol[8];			///<合约
+	char			m_update_time[9];		///<最后更新时间(秒)
+	int				m_millisecond;			///<最后更新时间(毫秒)
 
-	double			m_last_px;				///<���¼�
-	int				m_last_share;			///<���³ɽ���
-	double			m_total_value;			///<�ɽ����
-	double			m_total_pos;			///<�ֲ���
-	double			m_bid_px;				///<�������
-	int				m_bid_share;			///<��������
-	double			m_ask_px;				///<��������
-	int				m_ask_share;			///<��������
+	double			m_last_px;				///<最新价
+	int				m_last_share;			///<最新成交量
+	double			m_total_value;			///<成交金额
+	double			m_total_pos;			///<持仓量
+	double			m_bid_px;				///<最新买价
+	int				m_bid_share;			///<最新买量
+	double			m_ask_px;				///<最新卖价
+	int				m_ask_share;			///<最新卖量
 };
 
 
 struct multicast_info
 {
-	char	m_remote_ip[MAX_IP_LEN];		///< �鲥����Զ�˵�ַ
-	int		m_remote_port;					///< �鲥����Զ�˶˿�
-	char	m_local_ip[MAX_IP_LEN];			///< �鲥������ַ
-	int		m_local_port;					///< �鲥�����˿�
+	char	m_remote_ip[MAX_IP_LEN];		///< 组播行情远端地址
+	int		m_remote_port;					///< 组播行情远端端口
+	char	m_local_ip[MAX_IP_LEN];			///< 组播本机地址
+	int		m_local_port;					///< 组播本机端口
 };
 
 
@@ -68,7 +68,7 @@ class guava_quote_event
 {
 public:
 	virtual ~guava_quote_event() {}
-	/// \brief ���յ��鲥���ݵĻص��¼�
+	/// \brief 接收到组播数据的回调事件
 	virtual void on_receive_nomal(guava_udp_normal* data) = 0;
 };
 
@@ -78,24 +78,24 @@ public:
 	guava_quote(void);
 	~guava_quote(void);
 
-	/// \brief ��ʼ��
+	/// \brief 初始化
 	bool init(multicast_info cffex, guava_quote_event* event);
 
-	/// \brief �ر�
+	/// \brief 关闭
 	void close();
 
 private:
-	/// \brief �鲥���ݽ��ջص��ӿ�
+	/// \brief 组播数据接收回调接口
 	virtual void on_receive_message(int id, const char* buff, unsigned int len);
 
 
 private:
-	socket_multicast		m_udp;				///< UDP������սӿ�
+	socket_multicast		m_udp;				///< UDP行情接收接口
 
-	multicast_info			m_cffex_info;		///< �н�ӿ���Ϣ
-	int						m_cffex_id;			///< �н�������ͨ��
+	multicast_info			m_cffex_info;		///< 中金接口信息
+	int						m_cffex_id;			///< 中金所行情通道
 
-	guava_quote_event*		m_ptr_event;		///< ����ص��¼��ӿ�
+	guava_quote_event*		m_ptr_event;		///< 行情回调事件接口
 };
 
 

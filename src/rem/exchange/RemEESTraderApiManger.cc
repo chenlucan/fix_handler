@@ -17,7 +17,7 @@ const char* con_prodInfo="REM";
 const char* con_macAddr="00:0C:29:E3:32:E4";
 
 
-/// \brief ·şÎñÆ÷Á¬½ÓÊÂ¼ş
+/// \brief æœåŠ¡å™¨è¿æ¥äº‹ä»¶
 void CEESTraderApiManger::OnConnection(ERR_NO errNo, const char* pErrStr )
 {
     LOG_INFO("CEESTraderApiManger::OnConnection");
@@ -40,12 +40,12 @@ void CEESTraderApiManger::OnConnection(ERR_NO errNo, const char* pErrStr )
     return;	
 }
 
-/// \brief	·şÎñÆ÷Ö÷¶¯¶Ï¿ª£¬»áÊÕµ½Õâ¸öÏûÏ¢
+/// \brief	æœåŠ¡å™¨ä¸»åŠ¨æ–­å¼€ï¼Œä¼šæ”¶åˆ°è¿™ä¸ªæ¶ˆæ¯
 void CEESTraderApiManger::OnDisConnection(ERR_NO errNo, const char* pErrStr )
 {
     LOG_INFO("CEESTraderApiManger::OnDisConnection");
 }
-/// \brief	µÇÂ¼ÏûÏ¢µÄ»Øµ÷
+/// \brief	ç™»å½•æ¶ˆæ¯çš„å›è°ƒ
 void CEESTraderApiManger::OnUserLogon(EES_LogonResponse* pLogon)
 {
     LOG_INFO("CEESTraderApiManger::OnUserLogon");
@@ -108,7 +108,7 @@ void CEESTraderApiManger::OnQueryAccountTradeFee(const char* pAccount, EES_Accou
 {
     LOG_INFO("CEESTraderApiManger::OnQueryAccountTradeFee");
 }
-/// \brief	ÏÂµ¥±»REM½ÓÊÜµÄÊÂ¼ş
+/// \brief	ä¸‹å•è¢«REMæ¥å—çš„äº‹ä»¶
 void CEESTraderApiManger::OnOrderAccept(EES_OrderAcceptField* pAccept )
 {
     LOG_INFO("CEESTraderApiManger::OnOrderAccept");
@@ -119,7 +119,7 @@ void CEESTraderApiManger::OnOrderAccept(EES_OrderAcceptField* pAccept )
     }	
     SendOrderAccept(pAccept);	
 }
-/// \brief	ÏÂµ¥±»ÊĞ³¡½ÓÊÜµÄÊÂ¼ş
+/// \brief	ä¸‹å•è¢«å¸‚åœºæ¥å—çš„äº‹ä»¶
 void CEESTraderApiManger::OnOrderMarketAccept(EES_OrderMarketAcceptField* pAccept)
 {
     LOG_INFO("CEESTraderApiManger::OnOrderMarketAccept");
@@ -130,7 +130,7 @@ void CEESTraderApiManger::OnOrderMarketAccept(EES_OrderMarketAcceptField* pAccep
     }		
     SendOrderMarketAccept(pAccept);	
 }
-///	\brief	ÏÂµ¥±»REM¾Ü¾øµÄÊÂ¼ş
+///	\brief	ä¸‹å•è¢«REMæ‹’ç»çš„äº‹ä»¶
 void CEESTraderApiManger::OnOrderReject(EES_OrderRejectField* pReject )
 {
     LOG_INFO("CEESTraderApiManger::OnOrderReject");
@@ -143,7 +143,7 @@ void CEESTraderApiManger::OnOrderReject(EES_OrderRejectField* pReject )
     SendOrderReject(pReject);	
 		
 }
-///	\brief	ÏÂµ¥±»ÊĞ³¡¾Ü¾øµÄÊÂ¼ş
+///	\brief	ä¸‹å•è¢«å¸‚åœºæ‹’ç»çš„äº‹ä»¶
 void CEESTraderApiManger::OnOrderMarketReject(EES_OrderMarketRejectField* pReject)
 {
     LOG_INFO("CEESTraderApiManger::OnOrderMarketReject");
@@ -155,7 +155,7 @@ void CEESTraderApiManger::OnOrderMarketReject(EES_OrderMarketRejectField* pRejec
     LOG_INFO("m_ReasonText:",pReject->m_ReasonText);	
     SendOrderMarketReject(pReject);	
 }
-///	\brief	¶©µ¥³É½»µÄÏûÏ¢ÊÂ¼ş
+///	\brief	è®¢å•æˆäº¤çš„æ¶ˆæ¯äº‹ä»¶
 void CEESTraderApiManger::OnOrderExecution(EES_OrderExecutionField* pExec )
 {
     LOG_INFO("CEESTraderApiManger::OnOrderExecution");
@@ -166,7 +166,7 @@ void CEESTraderApiManger::OnOrderExecution(EES_OrderExecutionField* pExec )
     }		
     SendOrderExecution(pExec);	
 }
-///	\brief	¶©µ¥³É¹¦³·ÏúÊÂ¼ş
+///	\brief	è®¢å•æˆåŠŸæ’¤é”€äº‹ä»¶
 void CEESTraderApiManger::OnOrderCxled(EES_OrderCxled* pCxled )
 {
     LOG_INFO("CEESTraderApiManger::OnOrderCxled");
@@ -177,7 +177,7 @@ void CEESTraderApiManger::OnOrderCxled(EES_OrderCxled* pCxled )
     }	
     SendOrderCxled(pCxled);	
 }
-///	\brief	³·µ¥±»¾Ü¾øµÄÏûÏ¢ÊÂ¼ş
+///	\brief	æ’¤å•è¢«æ‹’ç»çš„æ¶ˆæ¯äº‹ä»¶
 void CEESTraderApiManger::OnCxlOrderReject(EES_CxlOrderRej* pReject )
 {
     LOG_INFO("CEESTraderApiManger::OnCxlOrderReject");

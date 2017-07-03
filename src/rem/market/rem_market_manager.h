@@ -69,7 +69,7 @@ class CRemMarkrtManager : public EESQuoteEvent
 		virtual void OnSymbolUnregisterResponse(EesEqsIntrumentType chInstrumentType, const char* pSymbol, bool bSuccess);
 		virtual void OnSymbolListResponse(EesEqsIntrumentType chInstrumentType, const char* pSymbol, bool bLast);
 
-		//Ôö¼Ó³õÊ¼»¯½Ó¿Ú
+		//å¢åŠ åˆå§‹åŒ–æ¥å£
 		void SetFileData(std::string &FileConfig);
 
 		void CreateRemBookManager(fh::core::market::MarketListenerI *sender);

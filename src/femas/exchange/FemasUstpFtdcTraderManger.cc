@@ -12,7 +12,7 @@ namespace femas
 namespace exchange
 {
 
-// µ±¿Í»§¶ËÓë·ÉÂíÆ½Ì¨½¨Á¢ÆğÍ¨ĞÅÁ¬½Ó£¬¿Í»§¶ËĞèÒª½øĞĞµÇÂ¼
+// å½“å®¢æˆ·ç«¯ä¸é£é©¬å¹³å°å»ºç«‹èµ·é€šä¿¡è¿æ¥ï¼Œå®¢æˆ·ç«¯éœ€è¦è¿›è¡Œç™»å½•
 void CUstpFtdcTraderManger::OnFrontConnected()
 {
     LOG_INFO("CUstpFtdcTraderManger::OnFrontConnected\n");
@@ -32,7 +32,7 @@ void CUstpFtdcTraderManger::OnFrontConnected()
 }
 void CUstpFtdcTraderManger::OnFrontDisconnected(int nReason)
 {
-    // µ±·¢ÉúÕâ¸öÇé¿öºó£¬API»á×Ô¶¯ÖØĞÂÁ¬½Ó£¬¿Í»§¶Ë¿É²»×ö´¦Àí
+    // å½“å‘ç”Ÿè¿™ä¸ªæƒ…å†µåï¼ŒAPIä¼šè‡ªåŠ¨é‡æ–°è¿æ¥ï¼Œå®¢æˆ·ç«¯å¯ä¸åšå¤„ç†
     LOG_INFO("CUstpFtdcTraderManger::OnFrontDisconnected");
 }
 void CUstpFtdcTraderManger::OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserLogin, CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast)
@@ -48,7 +48,7 @@ void CUstpFtdcTraderManger::OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserL
     LOG_INFO("RequestID=[",nRequestID,"], Chain=[",bIsLast,"]");
     if (pRspInfo->ErrorID != 0) 
     {
-		// ¶ËµÇÊ§°Ü£¬¿Í»§¶ËĞè½øĞĞ´íÎó´¦Àí
+		// ç«¯ç™»å¤±è´¥ï¼Œå®¢æˆ·ç«¯éœ€è¿›è¡Œé”™è¯¯å¤„ç†
          LOG_ERROR("Failed to login, errorcode=",pRspInfo->ErrorID," errormsg=",pRspInfo->ErrorMsg,"	requestid=",nRequestID," chain=", bIsLast);
 	  //exit(-1);
 	  mIConnet = 1;
@@ -63,7 +63,7 @@ void CUstpFtdcTraderManger::OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserL
 }	
 void CUstpFtdcTraderManger::OnRspOrderInsert(CUstpFtdcInputOrderField  *pInputOrder, CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast)
 {
-    // Êä³ö±¨µ¥Â¼Èë½á¹û
+    // è¾“å‡ºæŠ¥å•å½•å…¥ç»“æœ
     LOG_INFO("CUstpFtdcTraderManger::OnRspOrderInsert");
     if(NULL == pInputOrder || NULL == pRspInfo)
     {
@@ -77,7 +77,7 @@ void CUstpFtdcTraderManger::OnRspOrderInsert(CUstpFtdcInputOrderField  *pInputOr
     return;	
 }
 
-///±¨µ¥»Ø±¨
+///æŠ¥å•å›æŠ¥
 void CUstpFtdcTraderManger::OnRtnOrder(CUstpFtdcOrderField  *pOrder)
 {
     LOG_INFO("CUstpFtdcTraderManger::OnRtnOrder");
@@ -90,7 +90,7 @@ void CUstpFtdcTraderManger::OnRtnOrder(CUstpFtdcOrderField  *pOrder)
     OnOrder(pOrder);	
 }
 
-// Õë¶ÔÓÃ»§ÇëÇóµÄ³ö´íÍ¨Öª
+// é’ˆå¯¹ç”¨æˆ·è¯·æ±‚çš„å‡ºé”™é€šçŸ¥
 void CUstpFtdcTraderManger::OnRspError(CUstpFtdcRspInfoField  *pRspInfo, int nRequestID, bool bIsLast)
 {
     LOG_INFO("CUstpFtdcTraderManger::OnRspError");
@@ -101,7 +101,7 @@ void CUstpFtdcTraderManger::OnRspError(CUstpFtdcRspInfoField  *pRspInfo, int nRe
     }	
     LOG_INFO("ErrorCode=[",pRspInfo->ErrorID,"], ErrorMsg=[",pRspInfo->ErrorMsg,"]" );
     LOG_INFO("RequestID=[%d], Chain=[%d]\n", nRequestID, bIsLast);
-    // ¿Í»§¶ËĞè½øĞĞ´íÎó´¦Àí
+    // å®¢æˆ·ç«¯éœ€è¿›è¡Œé”™è¯¯å¤„ç†
 
 }
 void CUstpFtdcTraderManger::OnRtnTrade(CUstpFtdcTradeField *pTrade)
@@ -116,7 +116,7 @@ void CUstpFtdcTraderManger::OnRtnTrade(CUstpFtdcTradeField *pTrade)
 }
 
 void CUstpFtdcTraderManger::OnErrRtnOrderInsert(CUstpFtdcInputOrderField *pInputOrder, CUstpFtdcRspInfoField *pRspInfo)
-{//ÊÇ·ñÊ¹ÓÃ ´ı¶¨
+{//æ˜¯å¦ä½¿ç”¨ å¾…å®š
     LOG_ERROR("CUstpFtdcTraderManger::OnErrRtnOrderInsert");
     if(NULL == pInputOrder || NULL == pRspInfo)
     {
@@ -172,7 +172,7 @@ void CUstpFtdcTraderManger::OnRspQryOrder(CUstpFtdcOrderField *pOrder, CUstpFtdc
 	
 }
 
-///³É½»µ¥²éÑ¯Ó¦´ğ
+///æˆäº¤å•æŸ¥è¯¢åº”ç­”
 void CUstpFtdcTraderManger::OnRspQryTrade(CUstpFtdcTradeField *pTrade, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
     LOG_INFO("CUstpFtdcTraderManger::OnRspQryTrade");
@@ -183,7 +183,7 @@ void CUstpFtdcTraderManger::OnRspQryTrade(CUstpFtdcTradeField *pTrade, CUstpFtdc
     }		
     OnQryTrade(pTrade,pRspInfo,nRequestID,bIsLast);	
 }
-///Í¶×ÊÕß³Ö²Ö²éÑ¯Ó¦´ğ
+///æŠ•èµ„è€…æŒä»“æŸ¥è¯¢åº”ç­”
 void CUstpFtdcTraderManger::OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pRspInvestorPosition, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
     LOG_INFO("CUstpFtdcTraderManger::OnRspQryInvestorPosition");
@@ -194,7 +194,7 @@ void CUstpFtdcTraderManger::OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositio
     }	
     OnQryInvestorPosition(pRspInvestorPosition,pRspInfo,nRequestID,bIsLast);	
 }
-///ºÏÔ¼²éÑ¯Ó¦´ğ
+///åˆçº¦æŸ¥è¯¢åº”ç­”
 void CUstpFtdcTraderManger::OnRspQryInstrument(CUstpFtdcRspInstrumentField *pRspInstrument, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
     LOG_INFO("CUstpFtdcTraderManger::OnRspQryInstrument");
