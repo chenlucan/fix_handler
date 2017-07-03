@@ -25,9 +25,10 @@ namespace market
 class CustomMdSpi: public CThostFtdcMdSpi
 {
 public:
-	CustomMdSpi(std::shared_ptr<fh::core::market::MarketListenerI> sender, std::shared_ptr<fh::ctp::market::MDAccountID> id):m_book_sender(sender),m_last_volume(0),conn(false),mdable(false)
+	CustomMdSpi(std::shared_ptr<fh::core::market::MarketListenerI> sender, std::shared_ptr<fh::ctp::market::MDAccountID> id):m_last_volume(0),conn(false),mdable(false)
     {
 		this->id = id;
+		m_book_sender = sender;
 	}	
 	
 	virtual ~CustomMdSpi(){}
