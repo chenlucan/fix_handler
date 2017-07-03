@@ -852,33 +852,33 @@ void CCtpTraderSpi::SetOrderStatus(CThostFtdcOrderField *pOrder, ::pb::ems::Orde
 		tmporder.set_status(pb::ems::OrderStatus::OS_Filled);
 	}
 	else
-	if(pOrder->OrderStatus == '1')
+	if(pOrder->OrderStatus == THOST_FTDC_OST_PartTradedQueueing)
 	{
 		tmporder.set_status(pb::ems::OrderStatus::OS_Working);
 	}
 	else
-	if(pOrder->OrderStatus == '2')
+	if(pOrder->OrderStatus == THOST_FTDC_OST_PartTradedNotQueueing)
 	{
 	 //something fill is fill ?
 		tmporder.set_status(pb::ems::OrderStatus::OS_Filled);
 	}
 	else
-	if(pOrder->OrderStatus == '3')
+	if(pOrder->OrderStatus == THOST_FTDC_OST_NoTradeQueueing)
 	{
 	   tmporder.set_status(pb::ems::OrderStatus::OS_Working);
 	}
 	else
-	if(pOrder->OrderStatus == '4')
+	if(pOrder->OrderStatus == THOST_FTDC_OST_NoTradeNotQueueing)
 	{
 		tmporder.set_status(pb::ems::OrderStatus::OS_Rejected); 
 	}
 	else
-	if(pOrder->OrderStatus == '5')//OS_Cancelled
+	if(pOrder->OrderStatus == THOST_FTDC_OST_Canceled)//撤单
 	{
 		tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled);
 	}
 	else
-	if(pOrder->OrderStatus == '6')
+	if(pOrder->OrderStatus == THOST_FTDC_OST_Unknown)
 	{
 		tmporder.set_status(pb::ems::OrderStatus::OS_Pending);
 	}
