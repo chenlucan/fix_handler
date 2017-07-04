@@ -23,6 +23,15 @@
 
 #define JSON_ELEMENT bsoncxx::document::element
 
+namespace fh
+{
+namespace ctp
+{
+namespace market
+{
+namespace convert
+{
+	
 typedef struct strade
 {
     int mvolume;
@@ -36,17 +45,7 @@ typedef struct strade
 
 typedef std::map <std::string,mstrade*> TradeMap;
 
-typedef std::map <std::string,std::string> MessMap;
-
-
-namespace fh
-{
-namespace ctp
-{
-namespace market
-{
-namespace convert
-{
+typedef std::map <std::string,std::string> MessMap;	
     
 template <typename IntType>
 inline std::string T(IntType v){return std::to_string(v);}

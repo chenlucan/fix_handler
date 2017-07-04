@@ -1,8 +1,8 @@
 
 #include "core/assist/settings.h"
-//#include "femas/market/convert/Femas_book_convert.h"
-#include "tool/market_data_converter.h"
+#include "femas/market/convert/Femas_book_convert.h"
 #include "ctp/market/book_convert.h"
+#include "tool/market_data_converter.h"
 #include "tool/market_data_converter.h"
 
 namespace fh
@@ -65,8 +65,9 @@ namespace tool
         fh::core::assist::Settings settings(db_setting_file);
         m_target_collection = settings.Get("persist.market_data_collection");
         m_data_provider = new fh::core::persist::MarketDataProvider(m_source_collection, settings);
-
-       if(m_source_collection == "CTP") m_converter = new fh::ctp::market::convert::CtpBookConvert();
+        if(m_source_collection == "FEMAS") m_converter = new fh::femas::market::convert::FemasBookConvert();
+		else
+        if(m_source_collection == "CTP") m_converter = new fh::ctp::market::convert::CtpBookConvert();
         else  throw std::invalid_argument("market not exist: " + m_source_collection);
     }
 

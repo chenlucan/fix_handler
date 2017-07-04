@@ -18,8 +18,10 @@ INCLUDE_PATH = -I$(SRC_PATH) -I$(VENDOR_PATH)/boost/include -I$(VENDOR_PATH)/gte
 								-I$(VENDOR_PATH)/protobuf/include -I$(VENDOR_PATH)/quickfix/include -I$(VENDOR_PATH)/sbe/include -I$(VENDOR_PATH)/zeromq/include
 FEMAS_INCLUDE_PATH = -I$(VENDOR_PATH)/femas/include
 REM_INCLUDE_PATH = -I$(VENDOR_PATH)/shengli/include
+CTP_INCLUDE_PATH = -I$(VENDOR_PATH)/ctp/include
 INCLUDE_PATH +=  $(FEMAS_INCLUDE_PATH)
 INCLUDE_PATH +=  $(REM_INCLUDE_PATH)
+INCLUDE_PATH +=  $(CTP_INCLUDE_PATH)
 
 MONGODB_INCLUDE_PATH += -I$(VENDOR_PATH)/mongodb/include/bsoncxx/v_noabi -I$(VENDOR_PATH)/mongodb/include/mongocxx/v_noabi
 INCLUDE_PATH +=  $(MONGODB_INCLUDE_PATH)
@@ -34,23 +36,27 @@ SBE_LIBS_PATH = $(VENDOR_PATH)/sbe/libs
 ZEROMQ_LIBS_PATH = $(VENDOR_PATH)/zeromq/libs
 FEMAS_LIBS_PATH = $(VENDOR_PATH)/femas/libs
 REM_LIBS_PATH = $(VENDOR_PATH)/shengli/libs
+CTP_LIBS_PATH = $(VENDOR_PATH)/ctp/libs
 
 #LIBS_PATH = -L$(VENDOR_PATH)/boost/libs -L$(VENDOR_PATH)/gtest/libs  -L$(VENDOR_PATH)/mongodb/libs
 LIBS_PATH = -L$(BOOST_LIBS_PATH) -L$(GTEST_LIBS_PATH)  -L$(MONGODB_LIBS_PATH)
 LIBS_PATH += -L$(FEMAS_LIBS_PATH)
 LIBS_PATH += -L$(REM_LIBS_PATH)
+LIBS_PATH += -L$(CTP_LIBS_PATH)
 LIBS_PATH += -L$(PROTOBUF_LIBS_PATH) -L$(QUICKFIX_LIBS_PATH) -L$(SBE_LIBS_PATH) -L$(ZEROMQ_LIBS_PATH)
 
 #define exec libs path
 #EXEC_LIBS_PATH = -Wl,-rpath,$(VENDOR_PATH)/boost/libs:$(VENDOR_PATH)/gtest/libs:$(VENDOR_PATH)/mongodb/libs:$(VENDOR_PATH)/protobuf/libs:$(VENDOR_PATH)/quickfix/libs:$(VENDOR_PATH)/sbe/libs:$(VENDOR_PATH)/zeromq/libs:$(VENDOR_PATH)/femas/libs
-EXEC_LIBS_PATH = -Wl,-rpath,$(BOOST_LIBS_PATH):$(GTEST_LIBS_PATH):$(MONGODB_LIBS_PATH):$(PROTOBUF_LIBS_PATH):$(QUICKFIX_LIBS_PATH):$(SBE_LIBS_PATH):$(ZEROMQ_LIBS_PATH):$(FEMAS_LIBS_PATH):$(REM_LIBS_PATH)
+EXEC_LIBS_PATH = -Wl,-rpath,$(BOOST_LIBS_PATH):$(GTEST_LIBS_PATH):$(MONGODB_LIBS_PATH):$(PROTOBUF_LIBS_PATH):$(QUICKFIX_LIBS_PATH):$(SBE_LIBS_PATH):$(ZEROMQ_LIBS_PATH):$(FEMAS_LIBS_PATH):$(REM_LIBS_PATH):$(CTP_LIBS_PATH)
 
 LIBS = -lpthread -lboost_system -lzmq -lstdc++ -lquickfix -lmongocxx -lbsoncxx -lmongoc -lbson -lprotobuf -lgcov
-
+LIBS_CTP = -lpthread -lboost_system -lzmq -lstdc++ -lquickfix -lmongocxx -lbsoncxx -lmongoc -lbson -lprotobuf -lgcov
 FEMAS_LIBS = -lUSTPmduserapiAF -lUSTPtraderapiAF
 REM_LIBS = -lEESQuoteApi -lEESTraderApi
+CTP_LIBS = -lthostmduserapi -lthosttraderapi
 LIBS += $(FEMAS_LIBS)
 LIBS += $(REM_LIBS)
+LIBS_CTP += $(CTP_LIBS)
 
 TEST_LIBS = -lgmock
 RELEASE_FLAGS = -O3 -DNDEBUG -Ofast
@@ -58,6 +64,7 @@ DBG_FLAGS = -g -rdynamic
 COV_FLAG := -fprofile-arcs -ftest-coverage
 FLAGS = -std=c++11 -Wall -Wno-pragmas $(DBG_FLAGS) $(COV_FLAG)
 COMPILE_COMMAND = $(COMPILER) $(INCLUDE_PATH) $(LIBS_PATH) $(EXEC_LIBS_PATH) $(LIBS) $(FLAGS)
+COMPILE_COMMAND_CTP = $(COMPILER) $(INCLUDE_PATH) $(LIBS_PATH) $(EXEC_LIBS_PATH) $(LIBS_CTP) $(FLAGS)
 TEST_COMPILE_COMMAND = $(COMPILER) $(INCLUDE_PATH) $(INCLUDE_TEST_PATH) $(LIBS_PATH) $(EXEC_LIBS_PATH) $(LIBS) $(FLAGS)
 LINT_COMMAND = $(TEST_PATH)/cpplint.py
 
@@ -80,8 +87,10 @@ SETTINGS += $(UT_MARKET_SETTINGS)
 
 FEMAS_SETTINGS = $(BIN_PATH)/femas_config.ini 
 REM_SETTINGS = $(BIN_PATH)/rem_config.ini 
+CTP_SETTINGS = $(BIN_PATH)/ctp_config.ini
 SETTINGS += $(FEMAS_SETTINGS)
 SETTINGS += $(REM_SETTINGS)
+SETTINGS += $(CTP_SETTINGS)
 
 ALL_OBJS =  $(filter-out $(wildcard $(BIN_PATH)/*_test.o), $(wildcard $(BIN_PATH)/*.o)) 
 #define test_obj
@@ -94,6 +103,9 @@ TEST_OBJS += $(TEST_CME_OBJS)
 
 TEST_FEMAS_OBJS = $(BIN_PATH)/mut_femas_book_manager.o $(BIN_PATH)/mut_femas_matket.o $(BIN_PATH)/mut_femas_market_manager.o $(BIN_PATH)/mut_femas_exchange.o 
 TEST_OBJS += $(TEST_FEMAS_OBJS)
+
+TEST_CTP_OBJS = $(BIN_PATH)/mut_custom_manager.o $(BIN_PATH)/mut_ctp_exchange.o $(BIN_PATH)/mut_custom_md_spi.o 
+TEST_OBJS += $(TEST_CTP_OBJS)
 
 TEST_SIMULATOR_OBJS = $(BIN_PATH)/mut_market_simulater.o $(BIN_PATH)/mut_exchange_simulater.o $(BIN_PATH)/mut_trade_simulater.o $(BIN_PATH)/mut_replay_simulater.o
 TEST_OBJS += $(TEST_SIMULATOR_OBJS)
@@ -129,7 +141,9 @@ DATE_CONVERTER_TOOL_TARGET = $(BIN_PATH)/data_converter_test
 REM_MARKET_TARGET = $(BIN_PATH)/rem_market_test
 REM_EXCHANGE_TARGET = $(BIN_PATH)/rem_exchange_test
 REM_EFH_MARKET_TARGET = $(BIN_PATH)/rem_efhmarket_test
-    
+CTP_MARKET_TARGET = $(BIN_PATH)/ctp_market_test
+CTP_EXCHANGE_TARGET = $(BIN_PATH)/ctp_exchange_test   
+
 default: all;
 
 include tmobjs.mk
@@ -137,9 +151,10 @@ include cmeobjs.mk
 include femas.mk
 include toolobjs.mk
 include rem.mk
-    
-all: createdir rem_efhmarket rem_exchange_test rem_market femas_exchange_test femas_market usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender orgread tmalpha tmalphaex tmalphatrade tmalphareplay dataconverter
- 
+include ctp.mk 
+  
+all: createdir rem_efhmarket rem_exchange_test rem_market femas_exchange_test femas_market usender tsender market sbe ptest eserver strategy eclient copyfile original orgsend ufsender orgread tmalpha tmalphaex tmalphatrade tmalphareplay dataconverter ctp_market ctp_exchange_test
+
 femas_exchange_test: $(BIN_PATH)/femas_exchange_main_test.o $(BIN_PATH)/femas_exchange_application.o $(BIN_PATH)/communicator.o $(BIN_PATH)/FemasUstpFtdcTraderManger.o \
 			 $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(FEMAS_EXCHANGE_TARGET) $?
@@ -161,7 +176,15 @@ rem_market: $(BIN_PATH)/rem_market_main_test.o $(BIN_PATH)/rem_market_manager.o 
 rem_efhmarket: $(BIN_PATH)/rem_efh_market_main_test.o $(BIN_PATH)/rem_efhmarket.o $(BIN_PATH)/rem_guava_quote.o $(BIN_PATH)/rem_socket_multicast.o $(BIN_PATH)/rem_efhmarket_manager.o $(BIN_PATH)/EFHRem_book_convert.o \
 			 $(COMM_OBJS) 
 	$(COMPILE_COMMAND) -o $(REM_EFH_MARKET_TARGET) $?		
- 
+  
+ctp_exchange_test: $(BIN_PATH)/ctp_exchange_main_test.o $(BIN_PATH)/ctp_exchange_application.o $(BIN_PATH)/ctpcommunicator.o $(BIN_PATH)/ctp_trader_spi.o $(BIN_PATH)/ApiCommand.o $(BIN_PATH)/ComfirmSettlementCommand.o $(BIN_PATH)/CommandQueue.o $(BIN_PATH)/InsertOrderCommand.o  $(BIN_PATH)/LoginCommand.o  $(BIN_PATH)/WithdrawOrderCommand.o $(BIN_PATH)/AccountID.o $(BIN_PATH)/LoginOutCommand.o $(BIN_PATH)/QueryOrderCommand.o  $(BIN_PATH)/QueryPositionCommand.o $(BIN_PATH)/ReqQryInstrumentCommand.o  $(BIN_PATH)/ReqQryTradeCommand.o\
+			 $(COMM_OBJS) 
+	$(COMPILE_COMMAND_CTP) -o $(CTP_EXCHANGE_TARGET) $?
+
+ctp_market: $(BIN_PATH)/ctp_market_main_test.o $(BIN_PATH)/MDWrapper.o $(BIN_PATH)/MDAccountID.o $(BIN_PATH)/custom_md_spi.o $(BIN_PATH)/custom_manager.o $(BIN_PATH)/ctp_market_application.o \
+			 $(COMM_OBJS) 
+	$(COMPILE_COMMAND_CTP) -o $(CTP_MARKET_TARGET) $?	 
+   
 createdir:
 	mkdir -p ${BIN_PATH}
 	mkdir -p ${BIN_PATH}/result
@@ -238,10 +261,10 @@ tmalphareplay: $(BIN_PATH)/trade_matching_replay_alpha_test.o	$(BIN_PATH)/replay
 	$(COMPILE_COMMAND) -o $(TRADE_MATCHING_REPLAY_ALPHA_TARGET) $? 
 
 dataconverter: $(BIN_PATH)/market_data_converter.o $(BIN_PATH)/data_converter_test.o \
-							$(BIN_PATH)/femas_book_manager.o $(BIN_PATH)/Femas_book_convert.o \
+							$(BIN_PATH)/femas_book_manager.o $(BIN_PATH)/Femas_book_convert.o $(BIN_PATH)/book_convert.o\
               				$(BIN_PATH)/mongo.o $(COMM_OBJS)
 	$(COMPILE_COMMAND) -o $(DATE_CONVERTER_TOOL_TARGET) $? 
-						   			     
+	
 copyfile: $(SETTINGS)
 
 test: $(ALL_OBJS) $(TEST_OBJS) $(COMM_OBJS)
