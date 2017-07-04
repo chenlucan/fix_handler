@@ -911,7 +911,7 @@ char* CCtpTraderSpi::itoa(int val, char *buf, unsigned radix)
             *p++ = (char)(digval + '0');      
     }while(val > 0);
    
-    *p-- = '\0 ';         
+    *p-- = 0;         
     do{
         temp = *p;
         *p = *firstdig;
