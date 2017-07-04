@@ -3,7 +3,7 @@
 
 #include <string>
 #include "core/global.h"
-#include "ctp/exchange/communicator.h"
+#include "ctp/exchange/ctpcommunicator.h"
 #include "core/strategy/strategy_communicator.h"
 
 namespace fh

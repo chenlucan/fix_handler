@@ -52,7 +52,7 @@ $(BIN_PATH)/QueryPositionCommand.o: $(SRC_PATH)/ctp/exchange/QueryPositionComman
 $(BIN_PATH)/WithdrawOrderCommand.o: $(SRC_PATH)/ctp/exchange/WithdrawOrderCommand.cc
 	$(COMPILE_COMMAND) -c -o $@ $<		
 		
-$(BIN_PATH)/communicator.o: $(SRC_PATH)/ctp/exchange/communicator.cc
+$(BIN_PATH)/ctpcommunicator.o: $(SRC_PATH)/ctp/exchange/ctpcommunicator.cc
 	$(COMPILE_COMMAND) -c -o $@ $<
 	
 $(BIN_PATH)/ctp_trader_spi.o: $(SRC_PATH)/ctp/exchange/ctp_trader_spi.cc
