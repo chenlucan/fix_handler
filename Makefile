@@ -104,8 +104,8 @@ TEST_OBJS += $(TEST_CME_OBJS)
 TEST_FEMAS_OBJS = $(BIN_PATH)/mut_femas_book_manager.o $(BIN_PATH)/mut_femas_matket.o $(BIN_PATH)/mut_femas_market_manager.o $(BIN_PATH)/mut_femas_exchange.o 
 TEST_OBJS += $(TEST_FEMAS_OBJS)
 
-TEST_CTP_OBJS = $(BIN_PATH)/mut_custom_manager.o $(BIN_PATH)/mut_ctp_exchange.o $(BIN_PATH)/mut_custom_md_spi.o 
-TEST_OBJS += $(TEST_CTP_OBJS)
+#TEST_CTP_OBJS = $(BIN_PATH)/mut_custom_manager.o $(BIN_PATH)/mut_ctp_exchange.o $(BIN_PATH)/mut_custom_md_spi.o 
+#TEST_OBJS += $(TEST_CTP_OBJS)
 
 TEST_SIMULATOR_OBJS = $(BIN_PATH)/mut_market_simulater.o $(BIN_PATH)/mut_exchange_simulater.o $(BIN_PATH)/mut_trade_simulater.o $(BIN_PATH)/mut_replay_simulater.o
 TEST_OBJS += $(TEST_SIMULATOR_OBJS)
