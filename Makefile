@@ -58,7 +58,7 @@ LIBS += $(FEMAS_LIBS)
 LIBS += $(REM_LIBS)
 LIBS_CTP += $(CTP_LIBS)
 
-TEST_LIBS = -lgmock
+TEST_LIBS = -lgmock $(CTP_LIBS)
 RELEASE_FLAGS = -O3 -DNDEBUG -Ofast
 DBG_FLAGS = -g -rdynamic
 COV_FLAG := -fprofile-arcs -ftest-coverage
