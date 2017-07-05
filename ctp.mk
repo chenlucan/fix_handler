@@ -67,11 +67,3 @@ $(BIN_PATH)/ctp_exchange_main_test.o: $(SRC_PATH)/main/ctp_exchange/ctp_exchange
 $(BIN_PATH)/book_convert.o: $(SRC_PATH)/ctp/market/book_convert.cc
 	$(COMPILE_COMMAND) -c -o $@ $<	
 	
-$(BIN_PATH)/mut_custom_manager.o: $(TEST_PATH)/ctp/market/mut_custom_manager.cc
-	$(COMPILE_COMMAND) -c -o $@ $<	
-	
-$(BIN_PATH)/mut_custom_md_spi.o: $(TEST_PATH)/ctp/market/mut_custom_md_spi.cc
-	$(COMPILE_COMMAND) -c -o $@ $<			
-	
-$(BIN_PATH)/mut_ctp_exchange.o: $(TEST_PATH)/ctp/exchange/mut_ctp_exchange.cc
-	$(COMPILE_COMMAND) -c -o $@ $<	
