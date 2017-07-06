@@ -450,17 +450,83 @@ void CustomMdSpi::StructToJSON(CThostFtdcDepthMarketDataField *pMarketData)
     json.append(bsoncxx::builder::basic::kvp("UpdateMillisec", T(pMarketData->UpdateMillisec)));
     json.append(bsoncxx::builder::basic::kvp("ActionDay", T(pMarketData->ActionDay)));
 	
-	bsoncxx::builder::basic::document tmjson;
-	tmjson.append(bsoncxx::builder::basic::kvp("market", T("ctp")));		  
-	tmjson.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
-	tmjson.append(bsoncxx::builder::basic::kvp("sendingTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));	
-	tmjson.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(fh::core::assist::utility::Current_time_str())));	
-	tmjson.append(bsoncxx::builder::basic::kvp("receivedTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));	
-	tmjson.append(bsoncxx::builder::basic::kvp("message", json));	
+    bsoncxx::builder::basic::document tmjson;
+    tmjson.append(bsoncxx::builder::basic::kvp("market", T("CTP")));		  
+    tmjson.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
+    tmjson.append(bsoncxx::builder::basic::kvp("sendingTime", T(std::to_string(GetUpdateTimeInt(pMarketData)))));	
+    tmjson.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(GetUpdateTimeStr(pMarketData))));	
+    tmjson.append(bsoncxx::builder::basic::kvp("receivedTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));	
+    tmjson.append(bsoncxx::builder::basic::kvp("InstrumentID", T(pMarketData->InstrumentID)));
+    tmjson.append(bsoncxx::builder::basic::kvp("message", json));	
     
     m_book_sender->OnOrginalMessage(bsoncxx::to_json(tmjson.view()));	
 }
+	
+std::string CustomMdSpi::GetUpdateTimeStr(CThostFtdcDepthMarketDataField *pMarketData)
+{
+    std::string timestr="";
+    char ctmp[20]={0};	
+    strncpy(ctmp,pMarketData->ActionDay,4);
+    ctmp[4] = '-';
+    strncpy(ctmp+5,pMarketData->ActionDay+4,2);	
+    ctmp[7] = '-';
+    strncpy(ctmp+8,pMarketData->ActionDay+6,2);	
+    ctmp[10] = ' ';
+    timestr = ctmp;	
+    timestr+=pMarketData->UpdateTime;
+    timestr+=".";	 
+    std::string tmp = std::to_string(pMarketData->UpdateMillisec);
+    if(pMarketData->UpdateMillisec != 500)
+    {
+        tmp = "000";
+    }		
+    tmp += "000";
+    timestr += tmp;	
+    	
+    return timestr;
+}
 
+ullong CustomMdSpi::str2stmp(const char *strTime)
+{
+     if (strTime != NULL)
+     {
+         struct tm sTime;
+ #ifdef __GNUC__
+         strptime(strTime, "%Y-%m-%d %H:%M:%S", &sTime);
+ #else
+         sscanf(strTime, "%d-%d-%d %d:%d:%d", &sTime.tm_year, &sTime.tm_mon, &sTime.tm_mday, &sTime.tm_hour, &sTime.tm_min, &sTime.tm_sec);
+         sTime.tm_year -= 1900;
+         sTime.tm_mon -= 1;
+ #endif
+         ullong ft = mktime(&sTime);
+         return ft;
+     }
+     else {
+         return time(0);
+     }
+}
+
+ullong CustomMdSpi::GetUpdateTimeInt(CThostFtdcDepthMarketDataField *pMarketData)
+{
+    std::string timestr="";
+    char ctmp[20]={0};	
+    strncpy(ctmp,pMarketData->ActionDay,4);
+    ctmp[4] = '-';
+    strncpy(ctmp+5,pMarketData->ActionDay+4,2);	
+    ctmp[7] = '-';
+    strncpy(ctmp+8,pMarketData->ActionDay+6,2);
+    ctmp[10] = ' ';
+    timestr = ctmp;	
+    timestr+=pMarketData->UpdateTime;
+    ullong tmp_time = 0;
+    tmp_time = str2stmp(timestr.c_str());	
+    tmp_time *= 1000;
+    tmp_time += pMarketData->UpdateMillisec;
+    tmp_time *= 1000;
+    tmp_time *= 1000;	
+    return tmp_time;	
+}	
+	
 }
 }
 }
