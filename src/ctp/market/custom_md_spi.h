@@ -15,6 +15,8 @@
 #include <atomic>
 #include "MDAccountID.h"
 
+typedef unsigned long long  ullong;
+
 namespace fh
 {
 namespace ctp
@@ -81,6 +83,9 @@ public:
 private:	
 	void SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketData);
 	void StructToJSON(CThostFtdcDepthMarketDataField *pMarketData);
+	std::string GetUpdateTimeStr(CThostFtdcDepthMarketDataField *pMarketData);
+	ullong GetUpdateTimeInt(CThostFtdcDepthMarketDataField *pMarketData);
+        ullong str2stmp(const char *strTime);	
 	
 public:	
 	bool isMdable(){ return mdable; };
