@@ -11,7 +11,7 @@ namespace persist
 
     OriginalReceiver::OriginalReceiver(
             const std::string &url, std::function<void(char *, const size_t)> processor)
-    : fh::core::zmq::ZmqReceiver(url), m_processor(processor)
+    : fh::core::zmq::ZmqReceiver(url, fh::core::zmq::ZmqReceiver::Mode::SUBSCRIBE), m_processor(processor)
     {
         // noop
     }
