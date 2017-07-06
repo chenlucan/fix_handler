@@ -10,7 +10,7 @@ MDWrapper::MDWrapper(std::shared_ptr<fh::core::market::MarketListenerI> sender, 
 	this->id = id;
 	//初始化api和spi并尝试连接
 	api = CThostFtdcMdApi::CreateFtdcMdApi();
-	spi = new CustomMdSpi(sender, id);
+	spi = new CustomMdSpi(sender, id, api);
 	//注册事件
 	api->RegisterSpi(spi);
 	//注册前置机

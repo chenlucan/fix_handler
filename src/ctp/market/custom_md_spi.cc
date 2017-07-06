@@ -23,6 +23,24 @@ inline std::string T(char *v){return std::string(v);}
 void CustomMdSpi::OnFrontConnected()
 {
 	LOG_INFO("=====Create a network connection successfully=====");
+    if(conn)
+    {
+        CThostFtdcReqUserLoginField loginReq;
+        memset(&loginReq, 0, sizeof(loginReq));
+        strcpy(loginReq.BrokerID, id->getBrokerID().c_str());
+        strcpy(loginReq.UserID, id->getUserID().c_str());
+        strcpy(loginReq.Password, id->getPassword().c_str());
+        LOG_INFO("ctp-user.BrokerID = ",loginReq.BrokerID);
+        LOG_INFO("ctp-user.UserID = ",loginReq.UserID);
+        LOG_INFO("ctp-user.Passwor = ",loginReq.Password);
+        int nRequestID = 0; // 请求编号
+		int rt = m_api->ReqUserLogin(&loginReq, nRequestID);
+        if(rt != 0)
+        {
+            LOG_INFO("log fail!");
+        }	
+
+	}	
 	conn = true;
 }
 
