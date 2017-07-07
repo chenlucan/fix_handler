@@ -29,7 +29,7 @@ void CustomMdSpi::Initialize(std::vector<std::string> insts)
 // 连接成功应答
 void CustomMdSpi::OnFrontConnected()
 {
-	LOG_INFO("=====Create a network connection successfully=====");
+    LOG_INFO("=====Create a network connection successfully=====");
     if(conn)
     {
         CThostFtdcReqUserLoginField loginReq;
@@ -41,7 +41,7 @@ void CustomMdSpi::OnFrontConnected()
         LOG_INFO("ctp-user.UserID = ",loginReq.UserID);
         LOG_INFO("ctp-user.Passwor = ",loginReq.Password);
         int nRequestID = 0; // 请求编号
-		int rt = m_api->ReqUserLogin(&loginReq, nRequestID);
+        int rt = m_api->ReqUserLogin(&loginReq, nRequestID);
         if(rt != 0)
         {
             LOG_INFO("log fail!");
@@ -88,8 +88,9 @@ void CustomMdSpi::OnRspUserLogin(
 				memset(contracts[i],0,m_insts[i].length()+1);
 				strcpy(contracts[i],m_insts[i].c_str());	
 			}	
-            int rt = m_api->SubscribeMarketData(contracts,m_insts.size());			
-			for(unsigned int i=0;i<m_insts.size();i++)
+                        int rt = m_api->SubscribeMarketData(contracts,m_insts.size());			
+			
+                        for(unsigned int i=0;i<m_insts.size();i++)
 			{
 				delete [] contracts[i];   
 			}
@@ -272,7 +273,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	}
 	pb::dms::L2 l2_info;
 
-       l2_info.set_contract(pMarketData->InstrumentID);
+        l2_info.set_contract(pMarketData->InstrumentID);
 
 	   
 	pb::dms::DataPoint *bid;// = l2_info.add_bid();
@@ -285,7 +286,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	else
 	{
 	    bid = l2_info.add_bid();
-        bid->set_price(pMarketData->BidPrice1);
+            bid->set_price(pMarketData->BidPrice1);
 	    bid->set_size(pMarketData->BidVolume1);	   
 	}	
 		
@@ -296,7 +297,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	else
 	{
 	    ask = l2_info.add_offer();
-        ask->set_price(pMarketData->AskPrice1);
+            ask->set_price(pMarketData->AskPrice1);
 	    ask->set_size(pMarketData->AskVolume1);	   
 	}
 	
@@ -308,7 +309,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	else
 	{
 	    bid = l2_info.add_bid();
-        bid->set_price(pMarketData->BidPrice2);
+            bid->set_price(pMarketData->BidPrice2);
 	    bid->set_size(pMarketData->BidVolume2);	   
 	}	
 	
@@ -320,7 +321,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	else
 	{
 	    ask = l2_info.add_offer();
-        ask->set_price(pMarketData->AskPrice2);
+            ask->set_price(pMarketData->AskPrice2);
 	    ask->set_size(pMarketData->AskVolume2);	   
 	}
 	
@@ -331,7 +332,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	else
 	{
 	    bid = l2_info.add_bid();
-        bid->set_price(pMarketData->BidPrice3);
+            bid->set_price(pMarketData->BidPrice3);
 	    bid->set_size(pMarketData->BidVolume3);	   
 	}	
 	
@@ -343,7 +344,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	else
 	{
 	    ask = l2_info.add_offer();
-        ask->set_price(pMarketData->AskPrice3);
+            ask->set_price(pMarketData->AskPrice3);
 	    ask->set_size(pMarketData->AskVolume3);	   
 	}
 	
@@ -354,7 +355,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	else
 	{
 	    bid = l2_info.add_bid();
-        bid->set_price(pMarketData->BidPrice4);
+            bid->set_price(pMarketData->BidPrice4);
 	    bid->set_size(pMarketData->BidVolume4);	   
 	}	
 	
@@ -366,7 +367,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	else
 	{
 	    ask = l2_info.add_offer();
-        ask->set_price(pMarketData->AskPrice4);
+            ask->set_price(pMarketData->AskPrice4);
 	    ask->set_size(pMarketData->AskVolume4);	   
 	}
 	
@@ -377,7 +378,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	else
 	{
 	    bid = l2_info.add_bid();
-        bid->set_price(pMarketData->BidPrice5);
+            bid->set_price(pMarketData->BidPrice5);
 	    bid->set_size(pMarketData->BidVolume5);	   
 	}	
 	
@@ -389,7 +390,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	else
 	{
 	    ask = l2_info.add_offer();
-        ask->set_price(pMarketData->AskPrice5);
+            ask->set_price(pMarketData->AskPrice5);
 	    ask->set_size(pMarketData->AskVolume5);	   
 	}
 	
@@ -405,7 +406,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	else
 	if(pMarketData->BidPrice1 == DBL_MAX || pMarketData->BidVolume1 <= 0)	
 	{
-        pb::dms::Offer offer_info;
+            pb::dms::Offer offer_info;
 	    offer_info.set_contract(pMarketData->InstrumentID);	   
 	    pb::dms::DataPoint *offer = offer_info.mutable_offer();
 	    offer->set_price(pMarketData->AskPrice1);
@@ -415,7 +416,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	else
 	if(pMarketData->AskPrice1 == DBL_MAX || pMarketData->AskVolume1 <= 0)	
 	{
-        pb::dms::Bid bid_info;
+            pb::dms::Bid bid_info;
 	    bid_info.set_contract(pMarketData->InstrumentID);	   
 	    pb::dms::DataPoint *bid = bid_info.mutable_bid();
 	    bid->set_price(pMarketData->BidPrice1);
@@ -424,16 +425,15 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	}	
 	else
 	{
-        pb::dms::BBO bbo_info;
+            pb::dms::BBO bbo_info;
 	    bbo_info.set_contract(pMarketData->InstrumentID);		
-        pb::dms::DataPoint *bid = bbo_info.mutable_bid();
+            pb::dms::DataPoint *bid = bbo_info.mutable_bid();
 	    bid->set_price(pMarketData->BidPrice1);
 	    bid->set_size(pMarketData->BidVolume1);	
-        pb::dms::DataPoint *ask = bbo_info.mutable_offer();
-        ask->set_price(pMarketData->AskPrice1);
-        ask->set_size(pMarketData->AskVolume1);	   
-        m_book_sender->OnBBO(bbo_info);
-		
+            pb::dms::DataPoint *ask = bbo_info.mutable_offer();
+            ask->set_price(pMarketData->AskPrice1);
+            ask->set_size(pMarketData->AskVolume1);	   
+            m_book_sender->OnBBO(bbo_info);	
 	}
 
 	//发送teade行情
@@ -441,7 +441,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	LOG_INFO("CFemasBookManager::MakePriceVolume = ",tmpvolume); 
 	if(tmpvolume > 0)
 	{
-         pb::dms::Trade trade_info;
+             pb::dms::Trade trade_info;
 	     trade_info.set_contract(pMarketData->InstrumentID);	
 	     pb::dms::DataPoint *trade_id = trade_info.mutable_last();	
 	     trade_id->set_price(pMarketData->LastPrice);
@@ -449,8 +449,8 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	     m_book_sender->OnTrade(trade_info);	 
 	}
 
-    pb::dms::Turnover Turnoverinfo;
-    Turnoverinfo.set_contract(pMarketData->InstrumentID);
+        pb::dms::Turnover Turnoverinfo;
+        Turnoverinfo.set_contract(pMarketData->InstrumentID);
 	Turnoverinfo.set_total_volume(pMarketData->Volume);
 	Turnoverinfo.set_turnover(pMarketData->Turnover);
 	m_book_sender->OnTurnover(Turnoverinfo);
@@ -469,7 +469,7 @@ void CustomMdSpi::CheckTime(CThostFtdcDepthMarketDataField *pMarketData)
     {
         LOG_INFO("CtpBookConvert::clear  Instrument map");
         m_trademap[pMarketData->InstrumentID]->mvolume=pMarketData->Volume;
-	    m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;	
+        m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;	
     }
 }
 
@@ -485,18 +485,18 @@ int CustomMdSpi::MakePriceVolume(CThostFtdcDepthMarketDataField *pMarketData)
     {
         LOG_INFO("CtpBookConvert::insert map InstrumentID = ",pMarketData->InstrumentID); 
         m_trademap[pMarketData->InstrumentID] = new mstrade();
-	 m_trademap[pMarketData->InstrumentID]->mvolume=pMarketData->Volume;
-	 m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;
+	m_trademap[pMarketData->InstrumentID]->mvolume=pMarketData->Volume;
+	m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;
         return 0;
     }
     else
     {
         CheckTime(pMarketData);
-		LOG_INFO("pMarketData->Volume =  ",pMarketData->Volume); 	
-		LOG_INFO("m_trademap->Volume =  ",m_trademap[pMarketData->InstrumentID]->mvolume); 
+        LOG_INFO("pMarketData->Volume =  ",pMarketData->Volume); 	
+        LOG_INFO("m_trademap->Volume =  ",m_trademap[pMarketData->InstrumentID]->mvolume); 
         int tmpVolume =  pMarketData->Volume - m_trademap[pMarketData->InstrumentID]->mvolume;
-	    m_trademap[pMarketData->InstrumentID]->mvolume=pMarketData->Volume;
-	    m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;	
+	m_trademap[pMarketData->InstrumentID]->mvolume=pMarketData->Volume;
+	m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;	
         return (tmpVolume > 0 ? tmpVolume : 0);     
     }		
 }
