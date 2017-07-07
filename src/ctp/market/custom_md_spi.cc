@@ -152,16 +152,16 @@ void CustomMdSpi::OnRspSubMarketData(
 		sprintf(filePath, "%s_market_data.csv", pSpecificInstrument->InstrumentID);
 		std::ofstream outFile;
 		outFile.open(filePath, std::ios::out); // 新开文件
-		outFile << "合约代码" << ","
-			<< "更新时间" << ","
-			<< "最新价" << ","
-			<< "成交量" << ","
-			<< "买价一" << ","
-			<< "买量一" << ","
-			<< "卖价一" << ","
-			<< "卖量一" << ","
-			<< "持仓量" << ","
-			<< "换手率"
+		outFile << "InstrumentID" << ","
+			<< "UpdateTime" << ","
+			<< "LastPrice" << ","
+			<< "Volume" << ","
+			<< "BidPrice1" << ","
+			<< "BidVolume1" << ","
+			<< "AskPrice1" << ","
+			<< "AskVolume1" << ","
+			<< "OpenInterest" << ","
+			<< "Turnover"
 			<< std::endl;
 		outFile.close();
 	}
