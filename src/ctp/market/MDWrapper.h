@@ -24,12 +24,14 @@ public:
 	//@remark 
 	int ReqSubscribeMarketData(char *ppInstrumentID[], int nCount);
     bool isMdable(){return spi->isMdable();}
+	void Initialize(std::vector<std::string> insts);
 	
 private:
 	CThostFtdcMdApi *api;
 	CustomMdSpi *spi;
 	//账户信息
 	std::shared_ptr<fh::ctp::market::MDAccountID> id;	
+	std::vector<std::string> m_insts;
 };
 }
 }

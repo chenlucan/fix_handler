@@ -43,6 +43,7 @@ class CustomMdSpi: public CThostFtdcMdSpi
 public:
 	CustomMdSpi(std::shared_ptr<fh::core::market::MarketListenerI> sender, std::shared_ptr<fh::ctp::market::MDAccountID> id, CThostFtdcMdApi *api):m_last_volume(0),conn(false),mdable(false),m_api(api)
     {
+		m_insts.clear();
 		m_trademap.clear();	
 		this->id = id;
 		m_book_sender = sender;
@@ -107,6 +108,7 @@ private:
 public:	
 	bool isMdable(){ return mdable; };
 	bool isConn(){ return conn; };
+	void Initialize(std::vector<std::string> insts);
 	
 private:
     TThostFtdcVolumeType m_last_volume;
@@ -119,6 +121,7 @@ private:
 	bool mdable;	
 	CThostFtdcMdApi *m_api;
 	TradeMap m_trademap;
+	std::vector<std::string> m_insts;
 };
 
 }

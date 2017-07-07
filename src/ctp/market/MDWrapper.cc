@@ -7,6 +7,7 @@ namespace market
 {
 // --
 MDWrapper::MDWrapper(std::shared_ptr<fh::core::market::MarketListenerI> sender, std::shared_ptr<fh::ctp::market::MDAccountID> id){
+	m_insts.clear();
 	this->id = id;
 	//初始化api和spi并尝试连接
 	api = CThostFtdcMdApi::CreateFtdcMdApi();
@@ -29,6 +30,13 @@ MDWrapper::~MDWrapper(){
 	//释放spi空间
 	delete spi;
 	spi = nullptr;
+}
+
+void MDWrapper::Initialize(std::vector<std::string> insts)
+{
+    m_insts = insts;
+    spi->Initialize(m_insts);	
+    return;	
 }
 
 //登陆

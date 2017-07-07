@@ -74,7 +74,8 @@ bool CustomManager::Start()
 void CustomManager::Initialize(std::vector<std::string> insts)
 {
      LOG_INFO("CustomManager::Initialize() ");
-     m_insts = insts;	      
+     m_insts = insts;
+     m_ctpmaket->Initialize(m_insts);	 
      return;	 
 }
 // implement of MarketI

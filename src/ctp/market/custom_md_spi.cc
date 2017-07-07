@@ -18,6 +18,13 @@ inline std::string T(const std::string &v){return fh::core::assist::utility::Tri
 inline std::string T(const char *v){return std::string(v);}
 inline std::string T(char *v){return std::string(v);}	
 	
+void CustomMdSpi::Initialize(std::vector<std::string> insts)
+{
+    LOG_INFO("CustomMdSpi::Initialize() ");
+    m_insts = insts;	      
+    return;	
+}
+	
 // ---- ctp_api回调函数 ---- //
 // 连接成功应答
 void CustomMdSpi::OnFrontConnected()
@@ -72,6 +79,31 @@ void CustomMdSpi::OnRspUserLogin(
 		"\nLogin Time: ", pRspUserLogin->LoginTime,
 		"\nBroker ID: ", pRspUserLogin->BrokerID,
 		"\nUser ID: ", pRspUserLogin->UserID);
+		if(mdable)
+		{
+			char **contracts = new char*[m_insts.size()];
+			for(unsigned int i=0;i<m_insts.size();i++)
+			{
+				contracts[i] = new char[m_insts[i].length()+1];
+				memset(contracts[i],0,m_insts[i].length()+1);
+				strcpy(contracts[i],m_insts[i].c_str());	
+			}	
+            int rt = m_api->SubscribeMarketData(contracts,m_insts.size());			
+			for(unsigned int i=0;i<m_insts.size();i++)
+			{
+				delete [] contracts[i];   
+			}
+			delete [] contracts;
+			
+			if (!rt)
+			{
+				LOG_INFO(">>>>>>由于网络原因断开连接重连后发送订阅行情请求成功");
+			}
+			else
+			{
+				LOG_INFO(">>>>>>由于网络原因断开连接重连后发送订阅行情请求失败");
+			}				
+		}
 		mdable = true;
 	}
 	else
@@ -437,7 +469,7 @@ void CustomMdSpi::CheckTime(CThostFtdcDepthMarketDataField *pMarketData)
     {
         LOG_INFO("CtpBookConvert::clear  Instrument map");
         m_trademap[pMarketData->InstrumentID]->mvolume=pMarketData->Volume;
-	 m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;	
+	    m_trademap[pMarketData->InstrumentID]->mtime=pMarketData->UpdateTime;	
     }
 }
 
