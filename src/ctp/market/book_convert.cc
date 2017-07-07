@@ -605,7 +605,7 @@ void CtpBookConvert::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarket
 
 	//发送teade行情
 	int tmpvolume = MakePriceVolume(pMarketData);
-	LOG_INFO("CFemasBookManager::MakePriceVolume = ",tmpvolume); 
+	LOG_INFO("CtpBookConvert::MakePriceVolume = ",tmpvolume); 
 	if(tmpvolume > 0)
 	{
             pb::dms::Trade trade_info;
