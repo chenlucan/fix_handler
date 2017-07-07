@@ -39,7 +39,7 @@ typedef struct strade
     strade()
     {
         mvolume = 0;
-	 mtime = "";	
+		mtime = "";	
     }
 } mstrade;
 
@@ -115,7 +115,7 @@ class CtpBookConvert : public fh::core::persist::Converter
 		virtual ~CtpBookConvert();
 	public:	
 		MessMap Convert(const std::string &message) override;
-		void CtpMarketData(const JSON_ELEMENT &message,int volumeMultiple=0);
+		void CtpMarketData(const JSON_ELEMENT &message);
 		bool MakeL2Json(bsoncxx::builder::basic::document& json);
 		bool MakeBidJson(bsoncxx::builder::basic::document& json);
 		bool MakeOfferJson(bsoncxx::builder::basic::document& json); 	 

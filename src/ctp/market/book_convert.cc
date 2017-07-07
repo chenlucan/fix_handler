@@ -115,6 +115,8 @@ void CtpBookConvert::CtpConvertListenerI::Reset()
     m_bid.Clear();
     m_offer.Clear();
     m_l2.Clear();
+    m_trade.Clear();	
+    m_turnover.Clear();	
 }
 
 //===================================================================================
@@ -149,71 +151,97 @@ MessMap CtpBookConvert::Convert(const std::string &message)
      auto json = doc.view();
      auto body = GET_SUB_FROM_JSON(json, "message");
      auto instrumentID = GET_STR_FROM_JSON(json, "InstrumentID");	
-     auto volumeMultiple = GET_INT_FROM_JSON(json, "VolumeMultiple");
      auto is = GET_STR_FROM_JSON(json, "insertTime");
      auto se = GET_STR_FROM_JSON(json, "sendingTime");	
      auto sestr = GET_STR_FROM_JSON(json, "sendingTimeStr");	 
-     CtpMarketData(body,volumeMultiple);
-     bsoncxx::builder::basic::document tmp_l2;
-     if(MakeL2Json(tmp_l2))
-     {
-         bsoncxx::builder::basic::document tmp_h;
-	  tmp_h.append(bsoncxx::builder::basic::kvp("market", T("ctp")));	
-	  tmp_h.append(bsoncxx::builder::basic::kvp("type", T("l2")));	 
-         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(is)));		
-         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
-         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
-	  tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_l2));	
-	  m_messagemap["l2"] =  bsoncxx::to_json(tmp_h.view());
-     }
+     CtpMarketData(body);
+	 
      bsoncxx::builder::basic::document tmp_bid;	 
      if(MakeBidJson(tmp_bid))
      {
-         bsoncxx::builder::basic::document tmp_h;
-	  tmp_h.append(bsoncxx::builder::basic::kvp("market", T("ctp")));	
-	  tmp_h.append(bsoncxx::builder::basic::kvp("type", T("bid")));	 
-         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(is)));		
-         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
-         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
-	  tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_bid));	
-	  m_messagemap["bid"] =  bsoncxx::to_json(tmp_h.view());
+        bsoncxx::builder::basic::document tmp_h;
+        tmp_h.append(bsoncxx::builder::basic::kvp("market", T("CTP")));	
+	    tmp_h.append(bsoncxx::builder::basic::kvp("type", T("bid")));	 
+        tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
+        tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
+        tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
+	    tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_bid));	
+	    m_messagemap["bid"] =  bsoncxx::to_json(tmp_h.view());
      }	 
      bsoncxx::builder::basic::document tmp_offer;		 
      if(MakeOfferJson(tmp_offer))
      {
-         bsoncxx::builder::basic::document tmp_h;
-	  tmp_h.append(bsoncxx::builder::basic::kvp("market", T("ctp")));	
-	  tmp_h.append(bsoncxx::builder::basic::kvp("type", T("offer")));	 
-         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(is)));		
-         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
-         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
-	  tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_offer));
-	  m_messagemap["offer"] =  bsoncxx::to_json(tmp_h.view());
+        bsoncxx::builder::basic::document tmp_h;
+	    tmp_h.append(bsoncxx::builder::basic::kvp("market", T("CTP")));	
+	    tmp_h.append(bsoncxx::builder::basic::kvp("type", T("offer")));	 
+        tmp_h.append(bsoncxx::builder::basic::kvp("insertTime",T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
+        tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
+        tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
+	    tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_offer));
+	    m_messagemap["offer"] =  bsoncxx::to_json(tmp_h.view());
      }	 
      bsoncxx::builder::basic::document tmp_bbo;		 
      if(MakeBboJson(tmp_bbo))
      {
-         bsoncxx::builder::basic::document tmp_h;
-	  tmp_h.append(bsoncxx::builder::basic::kvp("market", T("ctp")));	
-	  tmp_h.append(bsoncxx::builder::basic::kvp("type", T("bbo")));	 
-         tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(is)));		
-         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
-         tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
-	  tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_bbo));	
-	  m_messagemap["bbo"] =  bsoncxx::to_json(tmp_h.view());
+        bsoncxx::builder::basic::document tmp_h;
+	    tmp_h.append(bsoncxx::builder::basic::kvp("market", T("CTP")));	
+	    tmp_h.append(bsoncxx::builder::basic::kvp("type", T("bbo")));	 
+        tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
+        tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
+        tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
+	    tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_bbo));	
+	    m_messagemap["bbo"] =  bsoncxx::to_json(tmp_h.view());
+     }	 
+     bsoncxx::builder::basic::document tmp_trade;		 
+     if(MakeTradeJson(tmp_trade))
+     {
+        bsoncxx::builder::basic::document tmp_h;
+	    tmp_h.append(bsoncxx::builder::basic::kvp("market", T("CTP")));	
+	    tmp_h.append(bsoncxx::builder::basic::kvp("type", T("trade")));	 
+        tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
+        tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
+        tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
+	    tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_trade));	
+	    m_messagemap["trade"] =  bsoncxx::to_json(tmp_h.view());
+     }	 
+     bsoncxx::builder::basic::document tmp_turnover;		 
+     if(MakeTurnoverJson(tmp_turnover))
+     {
+        bsoncxx::builder::basic::document tmp_h;
+	    tmp_h.append(bsoncxx::builder::basic::kvp("market", T("CTP")));	
+	    tmp_h.append(bsoncxx::builder::basic::kvp("type", T("turnover")));	 
+        tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
+        tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
+        tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
+	    tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_turnover));	
+	    m_messagemap["turnover"] =  bsoncxx::to_json(tmp_h.view());
+     }	
+     bsoncxx::builder::basic::document tmp_l2;
+     if(MakeL2Json(tmp_l2))
+     {
+        bsoncxx::builder::basic::document tmp_h;
+	    tmp_h.append(bsoncxx::builder::basic::kvp("market", T("CTP")));	
+	    tmp_h.append(bsoncxx::builder::basic::kvp("type", T("l2")));	 
+        tmp_h.append(bsoncxx::builder::basic::kvp("insertTime", T(std::to_string(fh::core::assist::utility::Current_time_ns()))));		
+        tmp_h.append(bsoncxx::builder::basic::kvp("sendingTime", T(se)));	
+        tmp_h.append(bsoncxx::builder::basic::kvp("sendingTimeStr", T(sestr)));
+	    tmp_h.append(bsoncxx::builder::basic::kvp("message", tmp_l2));	
+	    m_messagemap["l2"] =  bsoncxx::to_json(tmp_h.view());
      }	 	 
    
 
      return m_messagemap;	 
 }
 
-void CtpBookConvert::CtpMarketData(const JSON_ELEMENT &message,int volumeMultiple)
+void CtpBookConvert::CtpMarketData(const JSON_ELEMENT &message)
 {
     LOG_INFO("CtpBookConvert::CtpMarketData");
     CThostFtdcDepthMarketDataField tmpMarketData;
     memset(&tmpMarketData,0,sizeof(CThostFtdcDepthMarketDataField));
     strcpy(tmpMarketData.InstrumentID,GET_STR_FROM_JSON(message, "InstrumentID").c_str());
     strcpy(tmpMarketData.TradingDay,GET_STR_FROM_JSON(message, "TradingDay").c_str());
+ //   strcpy(tmpMarketData.SettlementGroupID,GET_STR_FROM_JSON(message, "SettlementGroupID").c_str());	
+ //   tmpMarketData.SettlementID=GET_INT_FROM_JSON(message, "SettlementID");
     tmpMarketData.PreSettlementPrice=GET_DOUBLE_FROM_JSON(message, "PreSettlementPrice");	
     tmpMarketData.PreClosePrice=GET_DOUBLE_FROM_JSON(message, "PreClosePrice");
     tmpMarketData.PreOpenInterest=GET_DOUBLE_FROM_JSON(message, "PreOpenInterest");
@@ -252,43 +280,21 @@ void CtpBookConvert::CtpMarketData(const JSON_ELEMENT &message,int volumeMultipl
     tmpMarketData.AskVolume5=GET_INT_FROM_JSON(message, "AskVolume5");	
     strcpy(tmpMarketData.UpdateTime,GET_STR_FROM_JSON(message, "UpdateTime").c_str());	
     tmpMarketData.UpdateMillisec=GET_INT_FROM_JSON(message, "UpdateMillisec");	
-    strcpy(tmpMarketData.ActionDay,GET_STR_FROM_JSON(message, "ActionDay").c_str());	
- 
-    int BidVolume_x = 0;
-    try
-    {
-        if(volumeMultiple <= 0)
-	 {
-            BidVolume_x = 0;    
-	 }
-	 else
-	 {
-            BidVolume_x = (tmpMarketData.Turnover-tmpMarketData.BidPrice1*tmpMarketData.Volume*volumeMultiple)/((tmpMarketData.AskPrice1-tmpMarketData.BidPrice1)*volumeMultiple);
-	 }	                   
-    }
-    catch(...)
-    {
-        BidVolume_x = 0;
-    }		
-	
-    int AskVolume_y = tmpMarketData.Volume-BidVolume_x;
-    if(volumeMultiple <= 0)
-    {
-        AskVolume_y = 0;
-    }
-
-    if(BidVolume_x < 0)
-    {
-        BidVolume_x = 0;
-	 AskVolume_y = 0;	
-    }	
-    if(AskVolume_y < 0)
-    {
-        BidVolume_x = 0;
-        AskVolume_y = 0;
-    }
-    m_listener->bid_turnover = BidVolume_x;
-    m_listener->offer_turnover = AskVolume_y;	
+    strcpy(tmpMarketData.ActionDay,GET_STR_FROM_JSON(message, "ActionDay").c_str());
+//    tmpMarketData.HisHighestPrice=GET_DOUBLE_FROM_JSON(message, "HisHighestPrice");
+//    tmpMarketData.HisLowestPrice=GET_DOUBLE_FROM_JSON(message, "HisLowestPrice");
+//    tmpMarketData.LatestVolume=GET_INT_FROM_JSON(message, "LatestVolume");
+//    tmpMarketData.InitVolume=GET_INT_FROM_JSON(message, "InitVolume");
+//    tmpMarketData.ChangeVolume=GET_INT_FROM_JSON(message, "ChangeVolume");
+//    tmpMarketData.BidImplyVolume=GET_INT_FROM_JSON(message, "BidImplyVolume");
+//    tmpMarketData.AskImplyVolume=GET_INT_FROM_JSON(message, "AskImplyVolume");
+//    tmpMarketData.AvgPrice=GET_DOUBLE_FROM_JSON(message, "AvgPrice");
+//    tmpMarketData.ArbiType=GET_CHAR_FROM_JSON(message,"ArbiType");
+//    tmpMarketData.TotalBidVolume=GET_INT_FROM_JSON(message, "TotalBidVolume");
+//    tmpMarketData.TotalAskVolume=GET_INT_FROM_JSON(message, "TotalAskVolume");
+//    strcpy(tmpMarketData.InstrumentID_1,GET_STR_FROM_JSON(message, "InstrumentID_1").c_str());
+//    strcpy(tmpMarketData.InstrumentID_2,GET_STR_FROM_JSON(message, "InstrumentID_2").c_str());
+//    strcpy(tmpMarketData.InstrumentName,GET_STR_FROM_JSON(message, "InstrumentName").c_str());	
     SendDepthMarketData(&tmpMarketData);
 	
     return;	
@@ -425,8 +431,7 @@ bool CtpBookConvert::MakeTurnoverJson(bsoncxx::builder::basic::document& json)
 
 void CtpBookConvert::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketData)
 {
-	LOG_INFO("CCtpBookManager::SendCtpMarketData ");     
-    
+	LOG_INFO("CCtpBookManager::SendCtpmarketData ");     
 	if(NULL == pMarketData)
 	{
        	        LOG_INFO("Error pMarketData is NULL ");
@@ -617,9 +622,7 @@ void CtpBookConvert::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarket
 	Turnoverinfo.set_turnover(pMarketData->Turnover);
 	m_listener->OnTurnover(Turnoverinfo);
 	   
-
 	m_listener->OnL2(l2_info);
-	
 }
 
 void CtpBookConvert::CheckTime(CThostFtdcDepthMarketDataField *pMarketData)

@@ -23,12 +23,27 @@ namespace ctp
 {
 namespace market
 {
+	
+typedef struct strade
+{
+    int mvolume;
+    std::string mtime;
+    strade()
+    {
+        mvolume = 0;
+		mtime = "";	
+    }
+} mstrade;
+
+typedef std::map <std::string,mstrade*> TradeMap;	
+	
 // ---- 派生的行情类 ---- //
 class CustomMdSpi: public CThostFtdcMdSpi
 {
 public:
 	CustomMdSpi(std::shared_ptr<fh::core::market::MarketListenerI> sender, std::shared_ptr<fh::ctp::market::MDAccountID> id, CThostFtdcMdApi *api):m_last_volume(0),conn(false),mdable(false),m_api(api)
     {
+		m_trademap.clear();	
 		this->id = id;
 		m_book_sender = sender;
 	}	
@@ -85,7 +100,9 @@ private:
 	void StructToJSON(CThostFtdcDepthMarketDataField *pMarketData);
 	std::string GetUpdateTimeStr(CThostFtdcDepthMarketDataField *pMarketData);
 	ullong GetUpdateTimeInt(CThostFtdcDepthMarketDataField *pMarketData);
-        ullong str2stmp(const char *strTime);	
+    ullong str2stmp(const char *strTime);	
+	int MakePriceVolume(CThostFtdcDepthMarketDataField *pMarketData);
+	void CheckTime(CThostFtdcDepthMarketDataField *pMarketData);
 	
 public:	
 	bool isMdable(){ return mdable; };
@@ -101,6 +118,7 @@ private:
 	//是否可以进行订阅行情
 	bool mdable;	
 	CThostFtdcMdApi *m_api;
+	TradeMap m_trademap;
 };
 
 }
