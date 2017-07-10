@@ -582,13 +582,23 @@ std::string CustomMdSpi::GetUpdateTimeStr(CThostFtdcDepthMarketDataField *pMarke
     timestr+=pMarketData->UpdateTime;
     timestr+=".";	 
     std::string tmp = std::to_string(pMarketData->UpdateMillisec);
-    if(pMarketData->UpdateMillisec != 500)
+	
+	std::string tmpOne = "00";
+	std::string tmpTwo = "0";
+	if(pMarketData->UpdateMillisec < 10)
     {
-        tmp = "000";
-    }		
-    tmp += "000";
-    timestr += tmp;	
-    	
+        tmpOne += tmp;
+		tmpOne += "000";
+		timestr += tmpOne;	
+    }else if(pMarketData->UpdateMillisec < 100){
+        tmpTwo += tmp;
+		tmpTwo += "000";
+		timestr += tmpTwo;	
+    }else {
+		tmp += "000";
+		timestr += tmp;
+	}
+	
     return timestr;
 }
 
