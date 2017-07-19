@@ -86,11 +86,31 @@ void CCtpTraderSpi::reqOrderInsert(const ::pb::ems::Order& order)
 		orderField->Direction = THOST_FTDC_D_Sell; //卖
 	}
 	
+	if(order.order_flag() == ::pb::ems::OrderFlag::OF_Open)    //开仓
+	{
+	   orderField->CombOffsetFlag[0] = THOST_FTDC_OF_Open;
+	}	
+	else
+	if(order.order_flag() == ::pb::ems::OrderFlag::OF_Close)    //平仓	
+	{
+		orderField->CombOffsetFlag[0] = THOST_FTDC_OF_Close;		
+	}	
+	else
+	if(order.order_flag() == ::pb::ems::OrderFlag::OF_YClose)    //平昨	
+	{
+		orderField->CombOffsetFlag[0] = THOST_FTDC_OF_CloseYesterday;			
+	}
+	else
+	if(order.order_flag() == ::pb::ems::OrderFlag::OF_TClose)    //平今	
+	{
+		orderField->CombOffsetFlag[0] = THOST_FTDC_OF_CloseToday;			
+	}
+	
 //	if (order->getOpenCloseFlag() == '0'){ 此处应该在Order中增加字段
 //		orderField->CombOffsetFlag[0] = THOST_FTDC_OF_Open;				//开仓
 //	}
 //	else{
-		orderField->CombOffsetFlag[0] = THOST_FTDC_OF_CloseToday;		//测试环境都用平今
+	//	orderField->CombOffsetFlag[0] = THOST_FTDC_OF_CloseToday;		//测试环境都用平今
 //	}
 	//if (order->getOpenCloseFlag() == '1'){
 	//	orderField->CombOffsetFlag[0] = THOST_FTDC_OF_Close;				//平仓
@@ -101,7 +121,7 @@ void CCtpTraderSpi::reqOrderInsert(const ::pb::ems::Order& order)
 	//if (order->getOpenCloseFlag() == '4'){
 	//	orderField->CombOffsetFlag[0] = THOST_FTDC_OF_CloseYesterday;	//平昨
 	//}
-	//orderField->VolumeTotalOriginal = order.getOriginalVolume();		//数量
+	orderField->VolumeTotalOriginal = order.quantity();	//数量
 	//以下是固定的字段
 	orderField->CombHedgeFlag[0] = THOST_FTDC_HF_Speculation;		//投机 
 	orderField->TimeCondition = THOST_FTDC_TC_GFD;				//当日有效 '3'
@@ -109,7 +129,7 @@ void CCtpTraderSpi::reqOrderInsert(const ::pb::ems::Order& order)
 	orderField->MinVolume = 1;
 	orderField->ContingentCondition = THOST_FTDC_CC_Immediately;	//立即触发'1'
 	orderField->ForceCloseReason = THOST_FTDC_FCC_NotForceClose;	//非强平 '0'
-	orderField->IsAutoSuspend = 1;
+	orderField->IsAutoSuspend = 0;
 	orderField->UserForceClose = 0;
 	std::shared_ptr<fh::ctp::exchange::ApiCommand> command = std::make_shared<fh::ctp::exchange::InsertOrderCommand>(api, orderField, requestID);
 	commandQueue.addCommand(command);	
@@ -118,34 +138,34 @@ void CCtpTraderSpi::reqOrderInsert(const ::pb::ems::Order& order)
 //发送报单查询请求 Query
 void CCtpTraderSpi::reqQryOrder(const ::pb::ems::Order& order)
 {
-	LOG_INFO("CCtpTraderSpi::reqQryOrder");
+    LOG_INFO("CCtpTraderSpi::reqQryOrder");
 
-	std::string s = order.client_order_id();
+    std::string s = order.client_order_id();
     auto find_item = std::find_if(client_orders_index.begin(), client_orders_index.end(),
         [s](const std::map<int, std::string>::value_type item)
-    {
-        return item.second == s;
-    });
+        {
+            return item.second == s;
+        });
 
   //  int orderRef = 0;
     if (find_item!= client_orders_index.end())
     {
   //      orderRef = (*find_item).first;
-		CThostFtdcQryOrderField *orderField = new CThostFtdcQryOrderField();
+        CThostFtdcQryOrderField *orderField = new CThostFtdcQryOrderField();
 
-		strcpy(orderField->BrokerID, id->getBrokerID().c_str());
-		strcpy(orderField->InvestorID, id->getInvestorID().c_str());
-		strcpy(orderField->ExchangeID, id->getExchangeID().c_str());	//测试环境下全都是上期所
-		strcpy(orderField->InstrumentID , order.contract().c_str());  //合约代码
-		///报单编号orderField->OrderSysID需要赋值 目前order里面没有
-		std::shared_ptr<fh::ctp::exchange::ApiCommand> command = std::make_shared<fh::ctp::exchange::QueryOrderCommand>(api, orderField, requestID);
-		commandQueue.addCommand(command);
+        strcpy(orderField->BrokerID, id->getBrokerID().c_str());
+        strcpy(orderField->InvestorID, id->getInvestorID().c_str());
+        strcpy(orderField->ExchangeID, id->getExchangeID().c_str());	//测试环境下全都是上期所
+        strcpy(orderField->InstrumentID , order.contract().c_str());  //合约代码
+        ///报单编号orderField->OrderSysID需要赋值 目前order里面没有
+        std::shared_ptr<fh::ctp::exchange::ApiCommand> command = std::make_shared<fh::ctp::exchange::QueryOrderCommand>(api, orderField, requestID);
+        commandQueue.addCommand(command);
     }	
-	else
-	{
-		LOG_INFO("之前没有提交过此报单！！！");
-		return;
-	}	
+    else
+    {
+        LOG_INFO("之前没有提交过此报单！！！");
+        return;
+    }	
 
 
 }	
@@ -153,17 +173,17 @@ void CCtpTraderSpi::reqQryOrder(const ::pb::ems::Order& order)
 //撤单	cancle Order
 void CCtpTraderSpi::reqOrderAction(const ::pb::ems::Order& order, TThostFtdcActionFlagType ActionFlag)
 {    
-	//交易所代码
-	//const std::string &exchangeID = "SHFE";
-	//设置撤单信息
-	CThostFtdcInputOrderActionField *orderField = new CThostFtdcInputOrderActionField();
-	strcpy(orderField->BrokerID, id->getBrokerID().c_str());
-	strcpy(orderField->InvestorID, id->getInvestorID().c_str());
-	//strcpy(orderField->ExchangeID, exchangeID.c_str());
-	strcpy(orderField->ExchangeID, id->getExchangeID().c_str());	//测试环境下全都是上期所
+    //交易所代码
+    //const std::string &exchangeID = "SHFE";
+    //设置撤单信息
+    CThostFtdcInputOrderActionField *orderField = new CThostFtdcInputOrderActionField();
+    strcpy(orderField->BrokerID, id->getBrokerID().c_str());
+    strcpy(orderField->InvestorID, id->getInvestorID().c_str());
+    //strcpy(orderField->ExchangeID, exchangeID.c_str());
+    strcpy(orderField->ExchangeID, id->getExchangeID().c_str());	//测试环境下全都是上期所
 //	strcpy(orderField->OrderSysID, order.getSystemId().c_str());
 
-	std::string s = order.client_order_id();
+    std::string s = order.client_order_id();
     auto find_item = std::find_if(client_orders_index.begin(), client_orders_index.end(),
         [s](const std::map<int, std::string>::value_type item)
     {
@@ -175,16 +195,16 @@ void CCtpTraderSpi::reqOrderAction(const ::pb::ems::Order& order, TThostFtdcActi
     {
         orderRef = (*find_item).first;
     }	
-	else
-	{
-		LOG_INFO("之前没有提交过此报单！！！");
-		return;
-	}
+    else
+    {
+        LOG_INFO("之前没有提交过此报单！！！");
+        return;
+    }
 	
-	itoa(orderRef, orderField->OrderRef, 10);
-	orderField->ActionFlag = THOST_FTDC_AF_Delete;	//删除报单 '0'
-	std::shared_ptr<fh::ctp::exchange::ApiCommand> command = std::make_shared<fh::ctp::exchange::WithdrawOrderCommand>(api, orderField, requestID);
-	commandQueue.addCommand(command);
+    itoa(orderRef, orderField->OrderRef, 10);
+    orderField->ActionFlag = THOST_FTDC_AF_Delete;	//删除报单 '0'
+    std::shared_ptr<fh::ctp::exchange::ApiCommand> command = std::make_shared<fh::ctp::exchange::WithdrawOrderCommand>(api, orderField, requestID);
+    commandQueue.addCommand(command);
 }
 	
 //查询客户总体持仓情况 SendReqQryInvestorPosition
@@ -303,7 +323,7 @@ void CCtpTraderSpi::OnRtnOrder(CThostFtdcOrderField *pOrder)
 		" 合约代码:", pOrder->InstrumentID,
 		" 报单引用:", pOrder->OrderRef,
 		" 买卖方向:", pOrder->Direction,
-		" 组合开平标志:", pOrder->CombOffsetFlag,
+		" 组合开平标志:", pOrder->CombOffsetFlag[0],
 		" 价格:", pOrder->LimitPrice,
 		" 数量:", pOrder->VolumeTotalOriginal,
 		" 今成交数量:", pOrder->VolumeTraded,
@@ -440,7 +460,32 @@ void CCtpTraderSpi::OnInsertOrder(CThostFtdcInputOrderField  *pInputOrder, CThos
 		if(pRspInfo->ErrorID != 0)	
 		{
 			tmporder.set_status(pb::ems::OrderStatus::OS_Rejected);
-		}			
+		}				
+		
+        if(pInputOrder->CombOffsetFlag[0] == THOST_FTDC_OF_Open)    //开仓
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Open);
+        }	
+        else
+        if(pInputOrder->CombOffsetFlag[0] == THOST_FTDC_OF_Close)    //平仓	
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Close);		
+        }	
+        else
+        if(pInputOrder->CombOffsetFlag[0] == THOST_FTDC_OF_CloseYesterday)    //平昨	
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
+        }
+        else
+        if(pInputOrder->CombOffsetFlag[0] == THOST_FTDC_OF_CloseToday)    //平今	
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
+        }
+        else
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_None);		
+        }	
+		
 		m_strategy->OnOrder(tmporder);
 	}	
 }	
@@ -550,6 +595,30 @@ void CCtpTraderSpi::OnOrder(CThostFtdcOrderField  *pOrder)
 		std::string tmpalltime = tmpActionDay + "-" + tmpActiontime + ".000";
 		fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpalltime);	
 
+        if(pOrder->CombOffsetFlag[0] == THOST_FTDC_OF_Open)    //开仓
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Open);
+        }	
+        else
+        if(pOrder->CombOffsetFlag[0] == THOST_FTDC_OF_Close)    //平仓	
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Close);		
+        }	
+        else
+        if(pOrder->CombOffsetFlag[0] == THOST_FTDC_OF_CloseYesterday)    //平昨	
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
+        }
+        else
+        if(pOrder->CombOffsetFlag[0] == THOST_FTDC_OF_CloseToday)    //平今	
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
+        }
+        else
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_None);		
+        }			
+		
 	    m_strategy->OnOrder(tmporder);
     }
 }
@@ -603,6 +672,30 @@ void CCtpTraderSpi::OnFill(CThostFtdcTradeField *pTrade)
 	std::string tmpTradeTime = pTrade->TradeTime;
 	std::string tmpalltime = tmpTradeDay + "-" + tmpTradeTime + ".000";
 	fh::core::assist::utility::To_pb_time(tmpfill.mutable_fill_time(), tmpalltime);
+
+    if(pTrade->OffsetFlag == THOST_FTDC_OF_Open)    //开仓
+    {
+        tmpfill.set_order_flag(::pb::ems::OrderFlag::OF_Open);
+    }	
+    else
+    if(pTrade->OffsetFlag == THOST_FTDC_OF_Close)    //平仓	
+    {
+        tmpfill.set_order_flag(::pb::ems::OrderFlag::OF_Close);		
+    }	
+    else
+    if(pTrade->OffsetFlag == THOST_FTDC_OF_CloseYesterday)    //平昨	
+    {
+        tmpfill.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
+    }
+    else
+    if(pTrade->OffsetFlag == THOST_FTDC_OF_CloseToday)    //平今	
+    {
+        tmpfill.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
+    }
+    else
+    {
+        tmpfill.set_order_flag(::pb::ems::OrderFlag::OF_None);		
+    }	
 	
 	m_strategy->OnFill(tmpfill);
 	
@@ -683,8 +776,32 @@ void CCtpTraderSpi::OnQryOrder(CThostFtdcOrderField *pOrder)
 		std::string tmpalltime = tmpActionDay + "-" + tmpActiontime + ".000";
 		fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpalltime);
 		
-		m_strategy->OnOrder(tmporder);		
-	}
+        if(pOrder->CombOffsetFlag[0] == THOST_FTDC_OF_Open)    //开仓
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Open);
+        }	
+        else
+        if(pOrder->CombOffsetFlag[0] == THOST_FTDC_OF_Close)    //平仓	
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Close);		
+        }	
+        else
+        if(pOrder->CombOffsetFlag[0] == THOST_FTDC_OF_CloseYesterday)    //平昨	
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
+        }
+        else
+        if(pOrder->CombOffsetFlag[0] == THOST_FTDC_OF_CloseToday)    //平今	
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
+        }
+        else
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_None);		
+        }		
+		
+        m_strategy->OnOrder(tmporder);		
+    }
 }	
 
 
@@ -744,6 +861,30 @@ void CCtpTraderSpi::OnQryTrade(CThostFtdcTradeField *pTrade, CThostFtdcRspInfoFi
 		std::string tmpalltime = tmpActionDay + "-" + tmpActiontime + ".000";
 		fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpalltime);
 
+        if(pTrade->OffsetFlag == THOST_FTDC_OF_Open)    //开仓
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Open);
+        }	
+        else
+        if(pTrade->OffsetFlag == THOST_FTDC_OF_Close)    //平仓	
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Close);		
+        }	
+        else
+        if(pTrade->OffsetFlag == THOST_FTDC_OF_CloseYesterday)    //平昨	
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
+        }
+        else
+        if(pTrade->OffsetFlag == THOST_FTDC_OF_CloseToday)    //平今	
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
+        }
+        else
+        {
+            tmporder.set_order_flag(::pb::ems::OrderFlag::OF_None);		
+        }			
+		
 		m_strategy->OnOrder(tmporder);	
 	}
 	return;	
