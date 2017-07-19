@@ -198,19 +198,49 @@ void CRemCommunicator::Add(const ::pb::ems::Order& order)
 	std::string ExchangeID = m_pFileConfig->Get("rem-exchange.ExchangeID");
 	temp.m_Exchange = std::atoi(ExchangeID.c_str());    
 
-       pb::ems::BuySell BuySellval = order.buy_sell();
+       pb::ems::BuySell BuySellval = order.buy_sell();   
 	if(BuySellval == 1)
 	{
-           temp.m_Side = EES_SideType_open_long;
+	    if(order.order_flag() == ::pb::ems::OrderFlag::OF_Open)
+	    {
+               temp.m_Side = EES_SideType_open_long;       
+	    }		
+	    if(order.order_flag() == ::pb::ems::OrderFlag::OF_Close)
+           {
+               temp.m_Side = EES_SideType_close_today_short;
+	    }
+	    if(order.order_flag() == ::pb::ems::OrderFlag::OF_YClose)
+           {
+               temp.m_Side = EES_SideType_close_ovn_short;
+	    }	
+	    if(order.order_flag() == ::pb::ems::OrderFlag::OF_TClose)
+           {
+               temp.m_Side = EES_SideType_close_today_short;
+	    }		
 	}
 	else
 	if(BuySellval == 2)	
 	{
-           temp.m_Side = EES_SideType_open_short;
+	    if(order.order_flag() == ::pb::ems::OrderFlag::OF_Open)
+	    {
+               temp.m_Side = EES_SideType_open_short;       
+	    }		
+	    if(order.order_flag() == ::pb::ems::OrderFlag::OF_Close)
+           {
+               temp.m_Side = EES_SideType_close_today_long;
+	    }
+	    if(order.order_flag() == ::pb::ems::OrderFlag::OF_YClose)
+           {
+               temp.m_Side = EES_SideType_close_ovn_long;
+	    }	
+	    if(order.order_flag() == ::pb::ems::OrderFlag::OF_TClose)
+           {
+               temp.m_Side = EES_SideType_close_today_long;
+	    }
 	}
 	else
 	{
-           temp.m_Side = EES_SideType_open_long;
+           //temp.m_Side = EES_SideType_open_long;
 	}
 	std::string UserID = order.account();
 	strncpy(temp.m_Account,UserID.c_str(),UserID.length());		

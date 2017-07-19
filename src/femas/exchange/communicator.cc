@@ -176,8 +176,31 @@ void CFemasCommunicator::Add(const ::pb::ems::Order& order)
 	 {
             //return;
 	 }
-	 std::string OffsetFlag = m_pFileConfig->Get("femas-exchange.OffsetFlag");
-	 SInputOrder.OffsetFlag = OffsetFlag.c_str()[0];
+	 //std::string OffsetFlag = m_pFileConfig->Get("femas-exchange.OffsetFlag");
+	 if(order.order_flag() == ::pb::ems::OrderFlag::OF_Open)
+	 {
+            SInputOrder.OffsetFlag = USTP_FTDC_OF_Open;
+	 }	
+	 else
+	 if(order.order_flag() == ::pb::ems::OrderFlag::OF_Close)	
+	 {
+            SInputOrder.OffsetFlag = USTP_FTDC_OF_Close;
+	 }	
+	 else
+	 if(order.order_flag() == ::pb::ems::OrderFlag::OF_TClose)	
+	 {
+            SInputOrder.OffsetFlag = USTP_FTDC_OF_CloseYesterday;
+	 }
+	 else
+	 if(order.order_flag() == ::pb::ems::OrderFlag::OF_YClose)	
+	 {
+            SInputOrder.OffsetFlag = USTP_FTDC_OF_CloseToday;
+	 }
+	 else
+	 {
+            SInputOrder.OffsetFlag = USTP_FTDC_OF_ALL;
+	 }	
+	 //SInputOrder.OffsetFlag = OffsetFlag.c_str()[0];
 	 std::string HedgeFlag = m_pFileConfig->Get("femas-exchange.HedgeFlag");
         SInputOrder.HedgeFlag = HedgeFlag.c_str()[0];		
         SInputOrder.LimitPrice = atof(order.price().c_str());

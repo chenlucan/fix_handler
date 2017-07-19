@@ -287,7 +287,7 @@ void CEESTraderApiManger::SendOrderAccept(EES_OrderAcceptField* pAccept)
 	 }
         
 	 
-	 if(pAccept->m_Side == EES_SideType_open_long ||pAccept->m_Side == EES_SideType_close_today_short
+	 /*if(pAccept->m_Side == EES_SideType_open_long ||pAccept->m_Side == EES_SideType_close_today_short
 	      	||pAccept->m_Side == EES_SideType_close_ovn_short || pAccept->m_Side == EES_SideType_force_close_ovn_short
 	      	||pAccept->m_Side == EES_SideType_force_close_today_short)
 	 {
@@ -296,7 +296,39 @@ void CEESTraderApiManger::SendOrderAccept(EES_OrderAcceptField* pAccept)
 	 else
 	 {
             tmporder.set_buy_sell(pb::ems::BuySell::BS_Sell);
+	 }*/
+	 if(pAccept->m_Side == EES_SideType_open_long)
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Buy);
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Open);		
 	 }
+	 if(pAccept->m_Side == EES_SideType_close_today_short)
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Buy);
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Close);		
+	 }
+	 if(pAccept->m_Side == EES_SideType_close_ovn_short)
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Buy);
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);		
+	 }
+
+	 if(pAccept->m_Side == EES_SideType_open_short)
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Sell);
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Open);		
+	 }
+	 if(pAccept->m_Side == EES_SideType_close_today_long)
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Sell);
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Close);		
+	 }
+	 if(pAccept->m_Side == EES_SideType_close_ovn_long)
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Sell);
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);		
+	 }
+	 
 	 tmporder.set_contract(pAccept->m_Symbol);
 
 	 tmporder.set_price(std::to_string(pAccept->m_Price));
@@ -594,7 +626,7 @@ void CEESTraderApiManger::SendQueryTradeOrder(const char* pAccount, EES_QueryAcc
             tmporder.set_status(pb::ems::OrderStatus::OS_Cancelled);
 	 }
 	 
-	 if(pQueryOrder->m_SideType == EES_SideType_open_long)
+	 /*if(pQueryOrder->m_SideType == EES_SideType_open_long)
 	 {
             tmporder.set_buy_sell(pb::ems::BuySell::BS_Buy);
 	 }
@@ -602,7 +634,39 @@ void CEESTraderApiManger::SendQueryTradeOrder(const char* pAccount, EES_QueryAcc
 	 if(pQueryOrder->m_SideType == EES_SideType_open_short)	
 	 {
             tmporder.set_buy_sell(pb::ems::BuySell::BS_Sell);
+	 }*/
+        if(pQueryOrder->m_SideType == EES_SideType_open_long)
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Buy);
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Open);		
 	 }
+	 if(pQueryOrder->m_SideType == EES_SideType_close_today_short)
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Buy);
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Close);		
+	 }
+	 if(pQueryOrder->m_SideType == EES_SideType_close_ovn_short)
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Buy);
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);		
+	 }
+
+	 if(pQueryOrder->m_SideType == EES_SideType_open_short)
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Sell);
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Open);		
+	 }
+	 if(pQueryOrder->m_SideType == EES_SideType_close_today_long)
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Sell);
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Close);		
+	 }
+	 if(pQueryOrder->m_SideType == EES_SideType_close_ovn_long)
+	 {
+            tmporder.set_buy_sell(pb::ems::BuySell::BS_Sell);
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);		
+	 }
+	 
 	 tmporder.set_contract(pQueryOrder->m_symbol);
 
 	 tmporder.set_price(std::to_string(pQueryOrder->m_Price));

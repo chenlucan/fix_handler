@@ -272,6 +272,29 @@ void CUstpFtdcTraderManger::OnQryOrder(CUstpFtdcOrderField *pOrder)
 	 std::string tmpalltime = tmpActionDay + "-" + tmpActiontime + ".000";
         fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpalltime);
 	 //end	
+	 if(pOrder->OffsetFlag == USTP_FTDC_OF_Open)
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Open);
+	 }	
+	 else
+	 if(pOrder->OffsetFlag == USTP_FTDC_OF_Close)	
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Close);		
+	 }	
+	 else
+	 if(pOrder->OffsetFlag == USTP_FTDC_OF_CloseYesterday)	
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
+	 }
+	 else
+	 if(pOrder->OffsetFlag == USTP_FTDC_OF_CloseToday)	
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
+	 }
+	 else
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_None);		
+	 }
         //print message
         LOG_INFO("client_order_id:",pOrder->UserOrderLocalID);
 	 LOG_INFO("contract:",pOrder->InstrumentID);
@@ -392,7 +415,31 @@ void CUstpFtdcTraderManger::OnInsertOrder(CUstpFtdcInputOrderField  *pInputOrder
 	 std::string tmpActiontime = "00:00:00";
 	 std::string tmpalltime = tmpActionDay + "-" + tmpActiontime + ".000";
         fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpalltime);	
-        //end	
+
+        if(pInputOrder->OffsetFlag == USTP_FTDC_OF_Open)
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Open);
+	 }	
+	 else
+	 if(pInputOrder->OffsetFlag == USTP_FTDC_OF_Close)	
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Close);		
+	 }	
+	 else
+	 if(pInputOrder->OffsetFlag == USTP_FTDC_OF_CloseYesterday)	
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
+	 }
+	 else
+	 if(pInputOrder->OffsetFlag == USTP_FTDC_OF_CloseToday)	
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
+	 }
+	 else
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_None);		
+	 }
+	 //end	
         //print message
         LOG_INFO("UserOrderLocalID:",pInputOrder->UserOrderLocalID);
         LOG_INFO("client_order_id:",tmpc_OrderId);
@@ -466,6 +513,30 @@ void CUstpFtdcTraderManger::OnOrder(CUstpFtdcOrderField  *pOrder)
 	 std::string tmpActiontime = pOrder->InsertTime;
 	 std::string tmpalltime = tmpActionDay + "-" + tmpActiontime + ".000";
         fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpalltime);	
+
+	 if(pOrder->OffsetFlag == USTP_FTDC_OF_Open)
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Open);
+	 }	
+	 else
+	 if(pOrder->OffsetFlag == USTP_FTDC_OF_Close)	
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Close);		
+	 }	
+	 else
+	 if(pOrder->OffsetFlag == USTP_FTDC_OF_CloseYesterday)	
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
+	 }
+	 else
+	 if(pOrder->OffsetFlag == USTP_FTDC_OF_CloseToday)	
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
+	 }
+	 else
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_None);		
+	 }	
         //end	
         //print message
         LOG_INFO("client_order_id:",pOrder->OrderUserID);
@@ -524,6 +595,30 @@ void CUstpFtdcTraderManger::OnFill(CUstpFtdcTradeField *pTrade)
 	 std::string tmpActiontime = pTrade->TradeTime;
 	 std::string tmpalltime = tmpActionDay + "-" + tmpActiontime + ".000";
         fh::core::assist::utility::To_pb_time(tmpfill.mutable_fill_time(), tmpalltime);
+
+	 if(pTrade->OffsetFlag == USTP_FTDC_OF_Open)
+	 {
+	     tmpfill.set_order_flag(::pb::ems::OrderFlag::OF_Open);
+	 }	
+	 else
+	 if(pTrade->OffsetFlag == USTP_FTDC_OF_Close)	
+	 {
+	     tmpfill.set_order_flag(::pb::ems::OrderFlag::OF_Close);		
+	 }	
+	 else
+	 if(pTrade->OffsetFlag == USTP_FTDC_OF_CloseYesterday)	
+	 {
+	     tmpfill.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
+	 }
+	 else
+	 if(pTrade->OffsetFlag == USTP_FTDC_OF_CloseToday)	
+	 {
+	     tmpfill.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
+	 }
+	 else
+	 {
+	     tmpfill.set_order_flag(::pb::ems::OrderFlag::OF_None);		
+	 }	
         //end	
         //print message
         LOG_INFO("fill_id:",pTrade->TradeID);
@@ -587,6 +682,29 @@ void CUstpFtdcTraderManger::OnQryTrade(CUstpFtdcTradeField *pTrade, CUstpFtdcRsp
 	 std::string tmpActiontime = pTrade->TradeTime;
 	 std::string tmpalltime = tmpActionDay + "-" + tmpActiontime + ".000";
         fh::core::assist::utility::To_pb_time(tmporder.mutable_submit_time(), tmpalltime);
+	 if(pTrade->OffsetFlag == USTP_FTDC_OF_Open)
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Open);
+	 }	
+	 else
+	 if(pTrade->OffsetFlag == USTP_FTDC_OF_Close)	
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_Close);		
+	 }	
+	 else
+	 if(pTrade->OffsetFlag == USTP_FTDC_OF_CloseYesterday)	
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
+	 }
+	 else
+	 if(pTrade->OffsetFlag == USTP_FTDC_OF_CloseToday)	
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
+	 }
+	 else
+	 {
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_None);		
+	 }	
 
 	 m_strategy->OnOrder(tmporder);	
     }
