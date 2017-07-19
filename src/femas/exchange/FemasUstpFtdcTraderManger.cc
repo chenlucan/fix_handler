@@ -284,12 +284,12 @@ void CUstpFtdcTraderManger::OnQryOrder(CUstpFtdcOrderField *pOrder)
 	 else
 	 if(pOrder->OffsetFlag == USTP_FTDC_OF_CloseYesterday)	
 	 {
-	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
 	 }
 	 else
 	 if(pOrder->OffsetFlag == USTP_FTDC_OF_CloseToday)	
 	 {
-	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
 	 }
 	 else
 	 {
@@ -526,12 +526,12 @@ void CUstpFtdcTraderManger::OnOrder(CUstpFtdcOrderField  *pOrder)
 	 else
 	 if(pOrder->OffsetFlag == USTP_FTDC_OF_CloseYesterday)	
 	 {
-	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
 	 }
 	 else
 	 if(pOrder->OffsetFlag == USTP_FTDC_OF_CloseToday)	
 	 {
-	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
 	 }
 	 else
 	 {
@@ -608,12 +608,12 @@ void CUstpFtdcTraderManger::OnFill(CUstpFtdcTradeField *pTrade)
 	 else
 	 if(pTrade->OffsetFlag == USTP_FTDC_OF_CloseYesterday)	
 	 {
-	     tmpfill.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
+	     tmpfill.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
 	 }
 	 else
 	 if(pTrade->OffsetFlag == USTP_FTDC_OF_CloseToday)	
 	 {
-	     tmpfill.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
+	     tmpfill.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
 	 }
 	 else
 	 {
@@ -694,12 +694,12 @@ void CUstpFtdcTraderManger::OnQryTrade(CUstpFtdcTradeField *pTrade, CUstpFtdcRsp
 	 else
 	 if(pTrade->OffsetFlag == USTP_FTDC_OF_CloseYesterday)	
 	 {
-	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
 	 }
 	 else
 	 if(pTrade->OffsetFlag == USTP_FTDC_OF_CloseToday)	
 	 {
-	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_YClose);			
+	     tmporder.set_order_flag(::pb::ems::OrderFlag::OF_TClose);			
 	 }
 	 else
 	 {

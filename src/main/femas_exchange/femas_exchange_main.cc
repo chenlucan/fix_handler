@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
      pFileConfig = new fh::core::assist::Settings(FileConfigstr);
 
 
-           LOG_INFO("exchange order begin");
+ /*           LOG_INFO("exchange order begin");
 	    LOG_INFO("InstrumentID:");
 	    char userInstrumentID[100]={0};	
 	    scanf("%s", userInstrumentID);	
@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 		   
 
 	    pFemasExchangeApp->Add(morder);
-
+*/
 
 		 
      main_loop();

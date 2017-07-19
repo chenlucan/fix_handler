@@ -189,12 +189,12 @@ void CFemasCommunicator::Add(const ::pb::ems::Order& order)
 	 else
 	 if(order.order_flag() == ::pb::ems::OrderFlag::OF_TClose)	
 	 {
-            SInputOrder.OffsetFlag = USTP_FTDC_OF_CloseYesterday;
+            SInputOrder.OffsetFlag = USTP_FTDC_OF_CloseToday;
 	 }
 	 else
 	 if(order.order_flag() == ::pb::ems::OrderFlag::OF_YClose)	
 	 {
-            SInputOrder.OffsetFlag = USTP_FTDC_OF_CloseToday;
+            SInputOrder.OffsetFlag = USTP_FTDC_OF_CloseYesterday;
 	 }
 	 else
 	 {
