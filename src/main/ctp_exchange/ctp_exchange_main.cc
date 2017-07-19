@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
            morder.set_order_type(pb::ems::OrderType::OT_Limit);
 		   
 
-	    pCtpExchangeApp->Add(morder);
+      //    pCtpExchangeApp->Add(morder);
 
 
 		 
