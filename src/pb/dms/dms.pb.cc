@@ -73,9 +73,10 @@ void protobuf_AssignDesc_dms_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(DataPoint));
   Trade_descriptor_ = file->message_type(1);
-  static const int Trade_offsets_[2] = {
+  static const int Trade_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Trade, contract_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Trade, last_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Trade, time_),
   };
   Trade_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -138,10 +139,11 @@ void protobuf_AssignDesc_dms_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Offer));
   L2_descriptor_ = file->message_type(5);
-  static const int L2_offsets_[3] = {
+  static const int L2_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(L2, contract_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(L2, bid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(L2, offer_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(L2, time_),
   };
   L2_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -254,25 +256,25 @@ void protobuf_AddDesc_dms_2eproto() {
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\tdms.proto\022\006pb.dms\"(\n\tDataPoint\022\r\n\005pric"
-    "e\030\001 \001(\001\022\014\n\004size\030\002 \001(\004\":\n\005Trade\022\020\n\010contra"
+    "e\030\001 \001(\001\022\014\n\004size\030\002 \001(\004\"H\n\005Trade\022\020\n\010contra"
     "ct\030\001 \001(\t\022\037\n\004last\030\002 \001(\0132\021.pb.dms.DataPoin"
-    "t\"Y\n\003BBO\022\020\n\010contract\030\001 \001(\t\022\036\n\003bid\030\002 \001(\0132"
-    "\021.pb.dms.DataPoint\022 \n\005offer\030\003 \001(\0132\021.pb.d"
-    "ms.DataPoint\"7\n\003Bid\022\020\n\010contract\030\001 \001(\t\022\036\n"
-    "\003bid\030\002 \001(\0132\021.pb.dms.DataPoint\";\n\005Offer\022\020"
-    "\n\010contract\030\001 \001(\t\022 \n\005offer\030\002 \001(\0132\021.pb.dms"
-    ".DataPoint\"X\n\002L2\022\020\n\010contract\030\001 \001(\t\022\036\n\003bi"
-    "d\030\002 \003(\0132\021.pb.dms.DataPoint\022 \n\005offer\030\003 \003("
-    "\0132\021.pb.dms.DataPoint\"\321\001\n\010Contract\022\014\n\004nam"
-    "e\030\001 \002(\t\022\021\n\ttick_size\030\002 \002(\t\022\022\n\ntick_value"
-    "\030\003 \001(\t\022\035\n\025yesterday_close_price\030\004 \001(\t\022\023\n"
-    "\013upper_limit\030\005 \001(\t\022\023\n\013lower_limit\030\006 \001(\t\022"
-    "+\n\rcontract_type\030\007 \001(\0162\024.pb.dms.Contract"
-    "Type\022\014\n\004legA\030\010 \001(\t\022\014\n\004legB\030\t \001(\t\"D\n\010Turn"
-    "over\022\020\n\010contract\030\001 \001(\t\022\024\n\014total_volume\030\002"
-    " \001(\004\022\020\n\010turnover\030\003 \001(\001*:\n\014ContractType\022\013"
-    "\n\007CT_None\020\000\022\016\n\nCT_Futures\020\001\022\r\n\tCT_Spread"
-    "\020\002", 762);
+    "t\022\014\n\004time\030\003 \001(\t\"Y\n\003BBO\022\020\n\010contract\030\001 \001(\t"
+    "\022\036\n\003bid\030\002 \001(\0132\021.pb.dms.DataPoint\022 \n\005offe"
+    "r\030\003 \001(\0132\021.pb.dms.DataPoint\"7\n\003Bid\022\020\n\010con"
+    "tract\030\001 \001(\t\022\036\n\003bid\030\002 \001(\0132\021.pb.dms.DataPo"
+    "int\";\n\005Offer\022\020\n\010contract\030\001 \001(\t\022 \n\005offer\030"
+    "\002 \001(\0132\021.pb.dms.DataPoint\"f\n\002L2\022\020\n\010contra"
+    "ct\030\001 \001(\t\022\036\n\003bid\030\002 \003(\0132\021.pb.dms.DataPoint"
+    "\022 \n\005offer\030\003 \003(\0132\021.pb.dms.DataPoint\022\014\n\004ti"
+    "me\030\004 \001(\t\"\321\001\n\010Contract\022\014\n\004name\030\001 \002(\t\022\021\n\tt"
+    "ick_size\030\002 \002(\t\022\022\n\ntick_value\030\003 \001(\t\022\035\n\025ye"
+    "sterday_close_price\030\004 \001(\t\022\023\n\013upper_limit"
+    "\030\005 \001(\t\022\023\n\013lower_limit\030\006 \001(\t\022+\n\rcontract_"
+    "type\030\007 \001(\0162\024.pb.dms.ContractType\022\014\n\004legA"
+    "\030\010 \001(\t\022\014\n\004legB\030\t \001(\t\"D\n\010Turnover\022\020\n\010cont"
+    "ract\030\001 \001(\t\022\024\n\014total_volume\030\002 \001(\004\022\020\n\010turn"
+    "over\030\003 \001(\001*:\n\014ContractType\022\013\n\007CT_None\020\000\022"
+    "\016\n\nCT_Futures\020\001\022\r\n\tCT_Spread\020\002", 790);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "dms.proto", &protobuf_RegisterTypes);
   DataPoint::default_instance_ = new DataPoint();
@@ -593,6 +595,7 @@ void DataPoint::Swap(DataPoint* other) {
 #ifndef _MSC_VER
 const int Trade::kContractFieldNumber;
 const int Trade::kLastFieldNumber;
+const int Trade::kTimeFieldNumber;
 #endif  // !_MSC_VER
 
 Trade::Trade()
@@ -617,6 +620,7 @@ void Trade::SharedCtor() {
   _cached_size_ = 0;
   contract_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   last_ = NULL;
+  time_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -628,6 +632,9 @@ Trade::~Trade() {
 void Trade::SharedDtor() {
   if (contract_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     delete contract_;
+  }
+  if (time_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete time_;
   }
   if (this != default_instance_) {
     delete last_;
@@ -656,7 +663,7 @@ Trade* Trade::New() const {
 }
 
 void Trade::Clear() {
-  if (_has_bits_[0 / 32] & 3) {
+  if (_has_bits_[0 / 32] & 7) {
     if (has_contract()) {
       if (contract_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
         contract_->clear();
@@ -664,6 +671,11 @@ void Trade::Clear() {
     }
     if (has_last()) {
       if (last_ != NULL) last_->::pb::dms::DataPoint::Clear();
+    }
+    if (has_time()) {
+      if (time_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        time_->clear();
+      }
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -702,6 +714,23 @@ bool Trade::MergePartialFromCodedStream(
          parse_last:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_last()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(26)) goto parse_time;
+        break;
+      }
+
+      // optional string time = 3;
+      case 3: {
+        if (tag == 26) {
+         parse_time:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_time()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->time().data(), this->time().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "time");
         } else {
           goto handle_unusual;
         }
@@ -750,6 +779,16 @@ void Trade::SerializeWithCachedSizes(
       2, this->last(), output);
   }
 
+  // optional string time = 3;
+  if (has_time()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->time().data(), this->time().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "time");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      3, this->time(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -778,6 +817,17 @@ void Trade::SerializeWithCachedSizes(
         2, this->last(), target);
   }
 
+  // optional string time = 3;
+  if (has_time()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->time().data(), this->time().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "time");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->time(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -802,6 +852,13 @@ int Trade::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->last());
+    }
+
+    // optional string time = 3;
+    if (has_time()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->time());
     }
 
   }
@@ -837,6 +894,9 @@ void Trade::MergeFrom(const Trade& from) {
     if (from.has_last()) {
       mutable_last()->::pb::dms::DataPoint::MergeFrom(from.last());
     }
+    if (from.has_time()) {
+      set_time(from.time());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -862,6 +922,7 @@ void Trade::Swap(Trade* other) {
   if (other != this) {
     std::swap(contract_, other->contract_);
     std::swap(last_, other->last_);
+    std::swap(time_, other->time_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -1794,6 +1855,7 @@ void Offer::Swap(Offer* other) {
 const int L2::kContractFieldNumber;
 const int L2::kBidFieldNumber;
 const int L2::kOfferFieldNumber;
+const int L2::kTimeFieldNumber;
 #endif  // !_MSC_VER
 
 L2::L2()
@@ -1816,6 +1878,7 @@ void L2::SharedCtor() {
   ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
   contract_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  time_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -1827,6 +1890,9 @@ L2::~L2() {
 void L2::SharedDtor() {
   if (contract_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
     delete contract_;
+  }
+  if (time_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete time_;
   }
   if (this != default_instance_) {
   }
@@ -1854,9 +1920,16 @@ L2* L2::New() const {
 }
 
 void L2::Clear() {
-  if (has_contract()) {
-    if (contract_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-      contract_->clear();
+  if (_has_bits_[0 / 32] & 9) {
+    if (has_contract()) {
+      if (contract_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        contract_->clear();
+      }
+    }
+    if (has_time()) {
+      if (time_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        time_->clear();
+      }
     }
   }
   bid_.Clear();
@@ -1915,6 +1988,23 @@ bool L2::MergePartialFromCodedStream(
           goto handle_unusual;
         }
         if (input->ExpectTag(26)) goto parse_offer;
+        if (input->ExpectTag(34)) goto parse_time;
+        break;
+      }
+
+      // optional string time = 4;
+      case 4: {
+        if (tag == 34) {
+         parse_time:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_time()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->time().data(), this->time().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "time");
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -1966,6 +2056,16 @@ void L2::SerializeWithCachedSizes(
       3, this->offer(i), output);
   }
 
+  // optional string time = 4;
+  if (has_time()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->time().data(), this->time().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "time");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      4, this->time(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -2001,6 +2101,17 @@ void L2::SerializeWithCachedSizes(
         3, this->offer(i), target);
   }
 
+  // optional string time = 4;
+  if (has_time()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->time().data(), this->time().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "time");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        4, this->time(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -2018,6 +2129,13 @@ int L2::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->contract());
+    }
+
+    // optional string time = 4;
+    if (has_time()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->time());
     }
 
   }
@@ -2068,6 +2186,9 @@ void L2::MergeFrom(const L2& from) {
     if (from.has_contract()) {
       set_contract(from.contract());
     }
+    if (from.has_time()) {
+      set_time(from.time());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -2094,6 +2215,7 @@ void L2::Swap(L2* other) {
     std::swap(contract_, other->contract_);
     bid_.Swap(&other->bid_);
     offer_.Swap(&other->offer_);
+    std::swap(time_, other->time_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

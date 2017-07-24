@@ -229,12 +229,26 @@ class Trade : public ::google::protobuf::Message {
   inline ::pb::dms::DataPoint* release_last();
   inline void set_allocated_last(::pb::dms::DataPoint* last);
 
+  // optional string time = 3;
+  inline bool has_time() const;
+  inline void clear_time();
+  static const int kTimeFieldNumber = 3;
+  inline const ::std::string& time() const;
+  inline void set_time(const ::std::string& value);
+  inline void set_time(const char* value);
+  inline void set_time(const char* value, size_t size);
+  inline ::std::string* mutable_time();
+  inline ::std::string* release_time();
+  inline void set_allocated_time(::std::string* time);
+
   // @@protoc_insertion_point(class_scope:pb.dms.Trade)
  private:
   inline void set_has_contract();
   inline void clear_has_contract();
   inline void set_has_last();
   inline void clear_has_last();
+  inline void set_has_time();
+  inline void clear_has_time();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -242,6 +256,7 @@ class Trade : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::std::string* contract_;
   ::pb::dms::DataPoint* last_;
+  ::std::string* time_;
   friend void  protobuf_AddDesc_dms_2eproto();
   friend void protobuf_AssignDesc_dms_2eproto();
   friend void protobuf_ShutdownFile_dms_2eproto();
@@ -640,10 +655,24 @@ class L2 : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::pb::dms::DataPoint >*
       mutable_offer();
 
+  // optional string time = 4;
+  inline bool has_time() const;
+  inline void clear_time();
+  static const int kTimeFieldNumber = 4;
+  inline const ::std::string& time() const;
+  inline void set_time(const ::std::string& value);
+  inline void set_time(const char* value);
+  inline void set_time(const char* value, size_t size);
+  inline ::std::string* mutable_time();
+  inline ::std::string* release_time();
+  inline void set_allocated_time(::std::string* time);
+
   // @@protoc_insertion_point(class_scope:pb.dms.L2)
  private:
   inline void set_has_contract();
   inline void clear_has_contract();
+  inline void set_has_time();
+  inline void clear_has_time();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -652,6 +681,7 @@ class L2 : public ::google::protobuf::Message {
   ::std::string* contract_;
   ::google::protobuf::RepeatedPtrField< ::pb::dms::DataPoint > bid_;
   ::google::protobuf::RepeatedPtrField< ::pb::dms::DataPoint > offer_;
+  ::std::string* time_;
   friend void  protobuf_AddDesc_dms_2eproto();
   friend void protobuf_AssignDesc_dms_2eproto();
   friend void protobuf_ShutdownFile_dms_2eproto();
@@ -1136,6 +1166,82 @@ inline void Trade::set_allocated_last(::pb::dms::DataPoint* last) {
     clear_has_last();
   }
   // @@protoc_insertion_point(field_set_allocated:pb.dms.Trade.last)
+}
+
+// optional string time = 3;
+inline bool Trade::has_time() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void Trade::set_has_time() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void Trade::clear_has_time() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void Trade::clear_time() {
+  if (time_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    time_->clear();
+  }
+  clear_has_time();
+}
+inline const ::std::string& Trade::time() const {
+  // @@protoc_insertion_point(field_get:pb.dms.Trade.time)
+  return *time_;
+}
+inline void Trade::set_time(const ::std::string& value) {
+  set_has_time();
+  if (time_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    time_ = new ::std::string;
+  }
+  time_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.dms.Trade.time)
+}
+inline void Trade::set_time(const char* value) {
+  set_has_time();
+  if (time_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    time_ = new ::std::string;
+  }
+  time_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.dms.Trade.time)
+}
+inline void Trade::set_time(const char* value, size_t size) {
+  set_has_time();
+  if (time_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    time_ = new ::std::string;
+  }
+  time_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.dms.Trade.time)
+}
+inline ::std::string* Trade::mutable_time() {
+  set_has_time();
+  if (time_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    time_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.dms.Trade.time)
+  return time_;
+}
+inline ::std::string* Trade::release_time() {
+  clear_has_time();
+  if (time_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = time_;
+    time_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void Trade::set_allocated_time(::std::string* time) {
+  if (time_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete time_;
+  }
+  if (time) {
+    set_has_time();
+    time_ = time;
+  } else {
+    clear_has_time();
+    time_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.dms.Trade.time)
 }
 
 // -------------------------------------------------------------------
@@ -1680,6 +1786,82 @@ inline ::google::protobuf::RepeatedPtrField< ::pb::dms::DataPoint >*
 L2::mutable_offer() {
   // @@protoc_insertion_point(field_mutable_list:pb.dms.L2.offer)
   return &offer_;
+}
+
+// optional string time = 4;
+inline bool L2::has_time() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void L2::set_has_time() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void L2::clear_has_time() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void L2::clear_time() {
+  if (time_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    time_->clear();
+  }
+  clear_has_time();
+}
+inline const ::std::string& L2::time() const {
+  // @@protoc_insertion_point(field_get:pb.dms.L2.time)
+  return *time_;
+}
+inline void L2::set_time(const ::std::string& value) {
+  set_has_time();
+  if (time_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    time_ = new ::std::string;
+  }
+  time_->assign(value);
+  // @@protoc_insertion_point(field_set:pb.dms.L2.time)
+}
+inline void L2::set_time(const char* value) {
+  set_has_time();
+  if (time_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    time_ = new ::std::string;
+  }
+  time_->assign(value);
+  // @@protoc_insertion_point(field_set_char:pb.dms.L2.time)
+}
+inline void L2::set_time(const char* value, size_t size) {
+  set_has_time();
+  if (time_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    time_ = new ::std::string;
+  }
+  time_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:pb.dms.L2.time)
+}
+inline ::std::string* L2::mutable_time() {
+  set_has_time();
+  if (time_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    time_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:pb.dms.L2.time)
+  return time_;
+}
+inline ::std::string* L2::release_time() {
+  clear_has_time();
+  if (time_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = time_;
+    time_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void L2::set_allocated_time(::std::string* time) {
+  if (time_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete time_;
+  }
+  if (time) {
+    set_has_time();
+    time_ = time;
+  } else {
+    clear_has_time();
+    time_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:pb.dms.L2.time)
 }
 
 // -------------------------------------------------------------------

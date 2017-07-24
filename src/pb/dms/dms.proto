@@ -8,6 +8,7 @@ message DataPoint {
 message Trade {
   optional string    contract     = 1;
   optional DataPoint last         = 2;
+  optional string    time = 3;
 }
 
 message BBO {
@@ -30,6 +31,7 @@ message L2 {
   optional string    contract = 1;
   repeated DataPoint bid      = 2;
   repeated DataPoint offer    = 3;
+  optional string time = 4;
 }
 
 enum ContractType {
