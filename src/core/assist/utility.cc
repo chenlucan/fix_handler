@@ -258,7 +258,7 @@ namespace utility
 
         oss << "contract=" << trade.contract() << ", ";
         oss << "last=" << Format_pb_message(trade.last());
-
+        oss << ", time="<< trade.time();
         return oss.str();
     }
 
@@ -318,6 +318,7 @@ namespace utility
         std::for_each(l2.bid().begin(), l2.bid().end(), [&oss](const pb::dms::DataPoint &dp){ oss << Format_pb_message(dp); });
         oss << ", offer=";
         std::for_each(l2.offer().begin(), l2.offer().end(), [&oss](const pb::dms::DataPoint &dp){ oss << Format_pb_message(dp); });
+        oss << ", time="<< l2.time();
 
         return oss.str();
     }

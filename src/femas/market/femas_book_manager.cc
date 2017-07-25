@@ -24,7 +24,29 @@ CFemasBookManager::~CFemasBookManager()
 
 
 
-
+std::string CFemasBookManager::GetUpdateTimeStr(CUstpFtdcDepthMarketDataField *pMarketData)
+{
+    std::string timestr="";
+    char ctmp[20]={0};	
+    strncpy(ctmp,pMarketData->ActionDay,4);
+    ctmp[4] = '-';
+    strncpy(ctmp+5,pMarketData->ActionDay+4,2);	
+    ctmp[7] = '-';
+    strncpy(ctmp+8,pMarketData->ActionDay+6,2);	
+    ctmp[10] = ' ';
+    timestr = ctmp;	
+    timestr+=pMarketData->UpdateTime;
+    timestr+=".";	 
+    std::string tmp = std::to_string(pMarketData->UpdateMillisec);
+    if(pMarketData->UpdateMillisec != 500)
+    {
+        tmp = "000";
+    }		
+    tmp += "000";
+    timestr += tmp;	
+    	
+    return timestr;
+}
 void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMarketData)
 {
 	LOG_INFO("CFemasBookManager::SendFemasmarketData ");     
@@ -209,6 +231,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	     pb::dms::DataPoint *trade_id = trade_info.mutable_last();	
 	     trade_id->set_price(pMarketData->LastPrice);
 	     trade_id->set_size(tmpvolume);	
+            trade_info.set_time(GetUpdateTimeStr(pMarketData));   
 	     m_book_sender->OnTrade(trade_info);	 
 	}
 
@@ -217,7 +240,8 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	Turnoverinfo.set_total_volume(pMarketData->Volume);
 	Turnoverinfo.set_turnover(pMarketData->Turnover);
 	m_book_sender->OnTurnover(Turnoverinfo);
-	   
+    
+	l2_info.set_time(GetUpdateTimeStr(pMarketData));     
 
 	m_book_sender->OnL2(l2_info);
 	

@@ -42,7 +42,8 @@ namespace market
             void SendRemmarketData(EESMarketDepthQuoteData *pMarketData);
 	     void SendRemToDB(const std::string &message);
 	     int MakePriceVolume(EESMarketDepthQuoteData *pMarketData);	 
-	     void CheckTime(EESMarketDepthQuoteData *pMarketData);	 
+	     void CheckTime(EESMarketDepthQuoteData *pMarketData);
+	     std::string GetUpdateTimeStr(EESMarketDepthQuoteData *pMarketData);	 
 
 	  private:
 

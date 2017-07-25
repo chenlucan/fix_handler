@@ -42,7 +42,8 @@ namespace market
 	     void SendFemasToDB(const std::string &message);	
 	     int MakePriceVolume(CUstpFtdcDepthMarketDataField *pMarketData);	
 	     //void ClearMap();	
-	     void CheckTime(CUstpFtdcDepthMarketDataField *pMarketData);	 
+	     void CheckTime(CUstpFtdcDepthMarketDataField *pMarketData);	
+	     std::string GetUpdateTimeStr(CUstpFtdcDepthMarketDataField *pMarketData);	 
 
 	  private:
             
