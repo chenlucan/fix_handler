@@ -330,6 +330,7 @@ bool CtpBookConvert::MakeL2Json(bsoncxx::builder::basic::document& json)
     }
 	
     json.append(bsoncxx::builder::basic::kvp("offer", tmarray_a));	
+	json.append(bsoncxx::builder::basic::kvp("time", T(m_listener->m_l2.time())));
     json.append(bsoncxx::builder::basic::kvp("bid_turnover", T(std::to_string(m_listener->bid_turnover)))); 	
     json.append(bsoncxx::builder::basic::kvp("offer_turnover", T(std::to_string(m_listener->offer_turnover)))); 	
 	
@@ -411,7 +412,8 @@ bool CtpBookConvert::MakeTradeJson(bsoncxx::builder::basic::document& json)
     tmarray_b.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_trade.last().size())))); 
 
     json.append(bsoncxx::builder::basic::kvp("last", tmarray_b));
-
+    json.append(bsoncxx::builder::basic::kvp("time", T(m_listener->m_l2.time()))); 
+	
     return true;
 }
 
