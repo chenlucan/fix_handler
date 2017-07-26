@@ -446,6 +446,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	     pb::dms::DataPoint *trade_id = trade_info.mutable_last();	
 	     trade_id->set_price(pMarketData->LastPrice);
 	     trade_id->set_size(tmpvolume);	
+		 trade_info.set_time(GetUpdateTimeStr(pMarketData));
 	     m_book_sender->OnTrade(trade_info);	 
 	}
 
@@ -454,7 +455,8 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	Turnoverinfo.set_total_volume(pMarketData->Volume);
 	Turnoverinfo.set_turnover(pMarketData->Turnover);
 	m_book_sender->OnTurnover(Turnoverinfo);
-	   
+	 
+    l2_info.set_time(GetUpdateTimeStr(pMarketData)); 	 
 	m_book_sender->OnL2(l2_info);
 }
 
@@ -646,3 +648,4 @@ ullong CustomMdSpi::GetUpdateTimeInt(CThostFtdcDepthMarketDataField *pMarketData
 }
 }
 }
+
