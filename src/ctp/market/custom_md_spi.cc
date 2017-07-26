@@ -556,7 +556,7 @@ void CustomMdSpi::StructToJSON(CThostFtdcDepthMarketDataField *pMarketData)
     json.append(bsoncxx::builder::basic::kvp("InstrumentID", T(pMarketData->InstrumentID)));
     json.append(bsoncxx::builder::basic::kvp("UpdateTime", T(pMarketData->UpdateTime)));
     json.append(bsoncxx::builder::basic::kvp("UpdateMillisec", T(pMarketData->UpdateMillisec)));
-    json.append(bsoncxx::builder::basic::kvp("ActionDay", T(pMarketData->ActionDay)));
+    json.append(bsoncxx::builder::basic::kvp("ActionDay", T(pMarketData->ActionDay)));  //待确认问题：通过海通期货账户收SR807合约信息发现收到当前时刻之后的时刻的业务日期行情数据 
 	
     bsoncxx::builder::basic::document tmjson;
     tmjson.append(bsoncxx::builder::basic::kvp("market", T("CTP")));		  
