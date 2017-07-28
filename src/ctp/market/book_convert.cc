@@ -85,7 +85,8 @@ void CtpBookConvert::CtpConvertListenerI::OnL3()
 // implement of MarketListenerI
 void CtpBookConvert::CtpConvertListenerI::OnTrade(const pb::dms::Trade &trade)
 {
-
+    m_trade.Clear();
+    m_trade = trade;
 }
 // implement of MarketListenerI
 void CtpBookConvert::CtpConvertListenerI::OnContractAuctioning(const std::string &contract)
@@ -345,12 +346,10 @@ bool CtpBookConvert::MakeBidJson(bsoncxx::builder::basic::document& json)
     }		
     json.append(bsoncxx::builder::basic::kvp("contract", T(m_listener->m_bid.contract()))); 
 
-    bsoncxx::builder::basic::array tmarray_b;
-    bsoncxx::builder::basic::document tmjsona1;
-    tmjsona1.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_bid.bid().price())))); 	
-    tmjsona1.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_bid.bid().size())))); 
-    tmarray_b.append(tmjsona1);
-    json.append(bsoncxx::builder::basic::kvp("bid", tmarray_b));
+    bsoncxx::builder::basic::document tmarray_b;
+    tmarray_b.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_bid.bid().price())))); 	
+    tmarray_b.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_bid.bid().size())))); 
+    json.append(bsoncxx::builder::basic::kvp("bid", tmarray_b));	
 	
     return true;	
 }
@@ -362,13 +361,11 @@ bool CtpBookConvert::MakeOfferJson(bsoncxx::builder::basic::document& json)
         return false;
     }			
     json.append(bsoncxx::builder::basic::kvp("contract", T(m_listener->m_offer.contract()))); 
-
-    bsoncxx::builder::basic::array tmarray_a;
-    bsoncxx::builder::basic::document tmjsona2;
-    tmjsona2.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_offer.offer().price())))); 	
-    tmjsona2.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_offer.offer().size())))); 
-    tmarray_a.append(tmjsona2);
-    json.append(bsoncxx::builder::basic::kvp("offer", tmarray_a));   
+ 
+    bsoncxx::builder::basic::document tmarray_a;
+    tmarray_a.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_offer.offer().price())))); 	
+    tmarray_a.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_offer.offer().size())))); 
+    json.append(bsoncxx::builder::basic::kvp("offer", tmarray_a));   	
 
     return true;	
 }
@@ -381,19 +378,17 @@ bool CtpBookConvert::MakeBboJson(bsoncxx::builder::basic::document& json)
     } 	
     json.append(bsoncxx::builder::basic::kvp("contract", T(m_listener->m_bbo.contract()))); 
 
-    bsoncxx::builder::basic::array tmarray_b;
-    bsoncxx::builder::basic::document tmjsona1;
-    tmjsona1.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_bbo.bid().price())))); 	
-    tmjsona1.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_bbo.bid().size())))); 
-    tmarray_b.append(tmjsona1);
+    bsoncxx::builder::basic::document tmarray_b;
+    tmarray_b.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_bbo.bid().price())))); 	
+    tmarray_b.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_bbo.bid().size())))); 
+
     json.append(bsoncxx::builder::basic::kvp("bid", tmarray_b));
 
-    bsoncxx::builder::basic::array tmarray_a;
-    bsoncxx::builder::basic::document tmjsona2;
-    tmjsona2.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_bbo.offer().price())))); 	
-    tmjsona2.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_bbo.offer().size())))); 
-    tmarray_a.append(tmjsona2);
-    json.append(bsoncxx::builder::basic::kvp("offer", tmarray_a));
+    bsoncxx::builder::basic::document tmarray_a;
+    tmarray_a.append(bsoncxx::builder::basic::kvp("price", T(std::to_string(m_listener->m_bbo.offer().price())))); 	
+    tmarray_a.append(bsoncxx::builder::basic::kvp("size", T(std::to_string(m_listener->m_bbo.offer().size())))); 
+
+    json.append(bsoncxx::builder::basic::kvp("offer", tmarray_a));	
 
     return true;
 }
@@ -615,6 +610,7 @@ void CtpBookConvert::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarket
 	     pb::dms::DataPoint *trade_id = trade_info.mutable_last();	
 	     trade_id->set_price(pMarketData->LastPrice);
 	     trade_id->set_size(tmpvolume);	
+		 trade_info.set_time(GetUpdateTimeStr(pMarketData));   
 	     m_listener->OnTrade(trade_info);	 
 	}
 
