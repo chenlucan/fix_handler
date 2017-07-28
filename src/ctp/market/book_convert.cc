@@ -600,7 +600,7 @@ void CtpBookConvert::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarket
 		
 	}
 
-	//发送teade行情
+	//发送trade行情
 	int tmpvolume = MakePriceVolume(pMarketData);
 	LOG_INFO("CtpBookConvert::MakePriceVolume = ",tmpvolume); 
 	if(tmpvolume > 0)
@@ -610,7 +610,7 @@ void CtpBookConvert::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarket
 	     pb::dms::DataPoint *trade_id = trade_info.mutable_last();	
 	     trade_id->set_price(pMarketData->LastPrice);
 	     trade_id->set_size(tmpvolume);	
-		 trade_info.set_time(GetUpdateTimeStr(pMarketData));   
+		 trade_info.set_time(GetUpdateTimeStr(pMarketData));
 	     m_listener->OnTrade(trade_info);	 
 	}
 
@@ -621,6 +621,40 @@ void CtpBookConvert::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarket
 	m_listener->OnTurnover(Turnoverinfo);
 	   
 	m_listener->OnL2(l2_info);
+}
+
+std::string CtpBookConvert::GetUpdateTimeStr(CThostFtdcDepthMarketDataField *pMarketData)
+{
+    std::string timestr="";
+    char ctmp[20]={0};	
+    strncpy(ctmp,pMarketData->ActionDay,4);
+    ctmp[4] = '-';
+    strncpy(ctmp+5,pMarketData->ActionDay+4,2);	
+    ctmp[7] = '-';
+    strncpy(ctmp+8,pMarketData->ActionDay+6,2);	
+    ctmp[10] = ' ';
+    timestr = ctmp;	
+    timestr+=pMarketData->UpdateTime;
+    timestr+=".";	 
+    std::string tmp = std::to_string(pMarketData->UpdateMillisec);
+	
+	std::string tmpOne = "00";
+	std::string tmpTwo = "0";
+	if(pMarketData->UpdateMillisec < 10)
+    {
+        tmpOne += tmp;
+		tmpOne += "000";
+		timestr += tmpOne;	
+    }else if(pMarketData->UpdateMillisec < 100){
+        tmpTwo += tmp;
+		tmpTwo += "000";
+		timestr += tmpTwo;	
+    }else {
+		tmp += "000";
+		timestr += tmp;
+	}
+	
+    return timestr;
 }
 
 void CtpBookConvert::CheckTime(CThostFtdcDepthMarketDataField *pMarketData)

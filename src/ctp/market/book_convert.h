@@ -94,7 +94,7 @@ class CtpBookConvert : public fh::core::persist::Converter
 				// implement of MarketListenerI
                 void OnTurnover(const pb::dms::Turnover &turnover) override;
 				void Reset();
-
+			
 			public:
 				pb::dms::BBO m_bbo;
 				pb::dms::Bid m_bid;
@@ -125,7 +125,8 @@ class CtpBookConvert : public fh::core::persist::Converter
         void SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketData);
 		int  MakePriceVolume(CThostFtdcDepthMarketDataField *pMarketData);
 		void CheckTime(CThostFtdcDepthMarketDataField *pMarketData);
-		
+	private:
+		std::string GetUpdateTimeStr(CThostFtdcDepthMarketDataField *pMarketData);	
 	private:
 		CtpConvertListenerI* m_listener;	 	
 		MessMap m_messagemap;	
