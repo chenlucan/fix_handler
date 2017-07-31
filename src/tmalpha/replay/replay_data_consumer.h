@@ -78,13 +78,14 @@ namespace replay
                 auto size_dp = GET_SUB_FROM_JSON(body, "last");
                 double price = GET_DOUBLE_FROM_JSON(size_dp, "price");
                 std::uint64_t size = GET_INT_FROM_JSON(size_dp, "size");
+	         std::string time = GET_STR_FROM_JSON(body, "time");			
 
                 pb::dms::Trade trade;
                 trade.set_contract(contract);
                 pb::dms::DataPoint *last = trade.mutable_last();
                 last->set_price(price);
                 last->set_size(size);
-
+                trade.set_time(time);
                 m_listener->OnTrade(trade);
             }
 
@@ -160,7 +161,8 @@ namespace replay
                     offer_dp->set_price(GET_DOUBLE_FROM_JSON(offer, "price"));
                     offer_dp->set_size(GET_INT_FROM_JSON(offer, "size"));
                 }
-
+                std::string time = GET_STR_FROM_JSON(body, "time");	
+		  l2_info.set_time(time); 		
                 m_listener->OnL2(l2_info, volume_multiple);
             }
 
