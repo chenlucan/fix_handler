@@ -146,7 +146,7 @@ void CRemEfhMarkrtManager::SendRemmarketData(guava_udp_normal *pMarketData)
 	     pb::dms::DataPoint *trade_id = trade_info.mutable_last();	
 	     trade_id->set_price(pMarketData->m_last_px);
 	     trade_id->set_size(tmpvolume);
-            trade_info.set_time(GetUpdateTimeStr(pMarketData));
+            trade_info.set_time(std::to_string(GetUpdateTimeInt(pMarketData)));
 	     m_book_sender->OnTrade(trade_info);	 
 	}
 
@@ -156,7 +156,7 @@ void CRemEfhMarkrtManager::SendRemmarketData(guava_udp_normal *pMarketData)
 	Turnoverinfo.set_turnover(pMarketData->m_total_value);
 	m_book_sender->OnTurnover(Turnoverinfo);
 
-       l2_info.set_time(GetUpdateTimeStr(pMarketData));
+       l2_info.set_time(std::to_string(GetUpdateTimeInt(pMarketData)));
 	m_book_sender->OnL2(l2_info);
 }
 

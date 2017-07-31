@@ -201,7 +201,7 @@ void CRemBookManager::SendRemmarketData(EESMarketDepthQuoteData *pMarketData)
 	     pb::dms::DataPoint *trade_id = trade_info.mutable_last();	
 	     trade_id->set_price(pMarketData->LastPrice);
 	     trade_id->set_size(tmpvolume);	
-            trade_info.set_time(GetUpdateTimeStr(pMarketData)); 
+            trade_info.set_time(std::to_string(GetUpdateTimeInt(pMarketData))); 
 	     m_book_sender->OnTrade(trade_info);	 
 	}
 
@@ -212,10 +212,51 @@ void CRemBookManager::SendRemmarketData(EESMarketDepthQuoteData *pMarketData)
 	Turnoverinfo.set_turnover(pMarketData->Turnover);
 	m_book_sender->OnTurnover(Turnoverinfo);
 
-       l2_info.set_time(GetUpdateTimeStr(pMarketData));
+       l2_info.set_time(std::to_string(GetUpdateTimeInt(pMarketData)));
 
 	m_book_sender->OnL2(l2_info);
 	
+}
+
+ullong CRemBookManager::str2stmp(const char *strTime)
+{
+     if (strTime != NULL)
+     {
+         struct tm sTime;
+ #ifdef __GNUC__
+         strptime(strTime, "%Y-%m-%d %H:%M:%S", &sTime);
+ #else
+         sscanf(strTime, "%d-%d-%d %d:%d:%d", &sTime.tm_year, &sTime.tm_mon, &sTime.tm_mday, &sTime.tm_hour, &sTime.tm_min, &sTime.tm_sec);
+         sTime.tm_year -= 1900;
+         sTime.tm_mon -= 1;
+ #endif
+         ullong ft = mktime(&sTime);
+         return ft;
+     }
+     else {
+         return time(0);
+     }
+}
+
+ullong CRemBookManager::GetUpdateTimeInt(EESMarketDepthQuoteData *pMarketData)
+{
+    std::string timestr="";
+    char ctmp[20]={0};	
+    strncpy(ctmp,pMarketData->TradingDay,4);
+    ctmp[4] = '-';
+    strncpy(ctmp+5,pMarketData->TradingDay+4,2);	
+    ctmp[7] = '-';
+    strncpy(ctmp+8,pMarketData->TradingDay+6,2);
+    ctmp[10] = ' ';
+    timestr = ctmp;	
+    timestr+=pMarketData->UpdateTime;
+    ullong tmp_time = 0;
+    tmp_time = str2stmp(timestr.c_str());	
+    tmp_time *= 1000;
+    tmp_time += pMarketData->UpdateMillisec;
+    tmp_time *= 1000;
+    tmp_time *= 1000;	
+    return tmp_time;	
 }
 
 std::string CRemBookManager::GetUpdateTimeStr(EESMarketDepthQuoteData *pMarketData)
