@@ -47,6 +47,48 @@ std::string CFemasBookManager::GetUpdateTimeStr(CUstpFtdcDepthMarketDataField *p
     	
     return timestr;
 }
+
+ullong CFemasBookManager::GetUpdateTimeInt(CUstpFtdcDepthMarketDataField *pMarketData)
+{
+    std::string timestr="";
+    char ctmp[20]={0};	
+    strncpy(ctmp,pMarketData->ActionDay,4);
+    ctmp[4] = '-';
+    strncpy(ctmp+5,pMarketData->ActionDay+4,2);	
+    ctmp[7] = '-';
+    strncpy(ctmp+8,pMarketData->ActionDay+6,2);
+    ctmp[10] = ' ';
+    timestr = ctmp;	
+    timestr+=pMarketData->UpdateTime;
+    ullong tmp_time = 0;
+    tmp_time = str2stmp(timestr.c_str());	
+    tmp_time *= 1000;
+    tmp_time += pMarketData->UpdateMillisec;
+    tmp_time *= 1000;
+    tmp_time *= 1000;	
+    return tmp_time;	
+}
+
+ullong CFemasBookManager::str2stmp(const char *strTime)
+{
+     if (strTime != NULL)
+     {
+         struct tm sTime;
+ #ifdef __GNUC__
+         strptime(strTime, "%Y-%m-%d %H:%M:%S", &sTime);
+ #else
+         sscanf(strTime, "%d-%d-%d %d:%d:%d", &sTime.tm_year, &sTime.tm_mon, &sTime.tm_mday, &sTime.tm_hour, &sTime.tm_min, &sTime.tm_sec);
+         sTime.tm_year -= 1900;
+         sTime.tm_mon -= 1;
+ #endif
+         ullong ft = mktime(&sTime);
+         return ft;
+     }
+     else {
+         return time(0);
+     }
+}
+
 void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMarketData)
 {
 	LOG_INFO("CFemasBookManager::SendFemasmarketData ");     
@@ -231,7 +273,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	     pb::dms::DataPoint *trade_id = trade_info.mutable_last();	
 	     trade_id->set_price(pMarketData->LastPrice);
 	     trade_id->set_size(tmpvolume);	
-            trade_info.set_time(GetUpdateTimeStr(pMarketData));   
+            trade_info.set_time(std::to_string(GetUpdateTimeInt(pMarketData)));   
 	     m_book_sender->OnTrade(trade_info);	 
 	}
 
@@ -241,7 +283,7 @@ void CFemasBookManager::SendFemasmarketData(CUstpFtdcDepthMarketDataField *pMark
 	Turnoverinfo.set_turnover(pMarketData->Turnover);
 	m_book_sender->OnTurnover(Turnoverinfo);
     
-	l2_info.set_time(GetUpdateTimeStr(pMarketData));     
+	l2_info.set_time(std::to_string(GetUpdateTimeInt(pMarketData)));     
 
 	m_book_sender->OnL2(l2_info);
 	
