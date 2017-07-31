@@ -23,7 +23,7 @@ typedef struct strade
 } mstrade;
 
 typedef std::map <std::string,mstrade*> TradeMap;
-
+typedef unsigned long long  ullong;
 
 namespace fh
 {
@@ -44,6 +44,8 @@ namespace market
 	     //void ClearMap();	
 	     void CheckTime(CUstpFtdcDepthMarketDataField *pMarketData);	
 	     std::string GetUpdateTimeStr(CUstpFtdcDepthMarketDataField *pMarketData);	 
+	     ullong GetUpdateTimeInt(CUstpFtdcDepthMarketDataField *pMarketData);
+	     ullong str2stmp(const char *strTime);
 
 	  private:
             
