@@ -436,17 +436,17 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
             m_book_sender->OnBBO(bbo_info);	
 	}
 
-	//发送teade行情
+	//发送trade行情
 	int tmpvolume = MakePriceVolume(pMarketData);
-	LOG_INFO("CFemasBookManager::MakePriceVolume = ",tmpvolume); 
+	LOG_INFO("CCtpBookManager::MakePriceVolume = ",tmpvolume); 
 	if(tmpvolume > 0)
 	{
-             pb::dms::Trade trade_info;
+         pb::dms::Trade trade_info;
 	     trade_info.set_contract(pMarketData->InstrumentID);	
 	     pb::dms::DataPoint *trade_id = trade_info.mutable_last();	
 	     trade_id->set_price(pMarketData->LastPrice);
 	     trade_id->set_size(tmpvolume);	
-		 trade_info.set_time(GetUpdateTimeStr(pMarketData));
+		 trade_info.set_time(std::to_string(GetUpdateTimeInt(pMarketData)));
 	     m_book_sender->OnTrade(trade_info);	 
 	}
 
@@ -456,7 +456,7 @@ void CustomMdSpi::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarketDat
 	Turnoverinfo.set_turnover(pMarketData->Turnover);
 	m_book_sender->OnTurnover(Turnoverinfo);
 	 
-    l2_info.set_time(GetUpdateTimeStr(pMarketData)); 	 
+    l2_info.set_time(std::to_string(GetUpdateTimeInt(pMarketData))); 	 
 	m_book_sender->OnL2(l2_info);
 }
 

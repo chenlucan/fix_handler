@@ -332,9 +332,7 @@ bool CtpBookConvert::MakeL2Json(bsoncxx::builder::basic::document& json)
 	
     json.append(bsoncxx::builder::basic::kvp("offer", tmarray_a));	
 	json.append(bsoncxx::builder::basic::kvp("time", T(m_listener->m_l2.time())));
-    json.append(bsoncxx::builder::basic::kvp("bid_turnover", T(std::to_string(m_listener->bid_turnover)))); 	
-    json.append(bsoncxx::builder::basic::kvp("offer_turnover", T(std::to_string(m_listener->offer_turnover)))); 	
-	
+		
     return true;	
 }
 bool CtpBookConvert::MakeBidJson(bsoncxx::builder::basic::document& json)
@@ -610,7 +608,7 @@ void CtpBookConvert::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarket
 	     pb::dms::DataPoint *trade_id = trade_info.mutable_last();	
 	     trade_id->set_price(pMarketData->LastPrice);
 	     trade_id->set_size(tmpvolume);	
-		 trade_info.set_time(GetUpdateTimeStr(pMarketData));
+		 trade_info.set_time(std::to_string(GetUpdateTimeInt(pMarketData)));
 	     m_listener->OnTrade(trade_info);	 
 	}
 
@@ -620,6 +618,7 @@ void CtpBookConvert::SendDepthMarketData(CThostFtdcDepthMarketDataField *pMarket
 	Turnoverinfo.set_turnover(pMarketData->Turnover);
 	m_listener->OnTurnover(Turnoverinfo);
 	   
+l2_info.set_time(std::to_string(GetUpdateTimeInt(pMarketData))); 
 	m_listener->OnL2(l2_info);
 }
 
@@ -655,6 +654,47 @@ std::string CtpBookConvert::GetUpdateTimeStr(CThostFtdcDepthMarketDataField *pMa
 	}
 	
     return timestr;
+}	
+
+ullong CtpBookConvert::str2stmp(const char *strTime)
+{
+     if (strTime != NULL)
+     {
+         struct tm sTime;
+ #ifdef __GNUC__
+         strptime(strTime, "%Y-%m-%d %H:%M:%S", &sTime);
+ #else
+         sscanf(strTime, "%d-%d-%d %d:%d:%d", &sTime.tm_year, &sTime.tm_mon, &sTime.tm_mday, &sTime.tm_hour, &sTime.tm_min, &sTime.tm_sec);
+         sTime.tm_year -= 1900;
+         sTime.tm_mon -= 1;
+ #endif
+         ullong ft = mktime(&sTime);
+         return ft;
+     }
+     else {
+         return time(0);
+     }
+}
+
+ullong CtpBookConvert::GetUpdateTimeInt(CThostFtdcDepthMarketDataField *pMarketData)
+{
+    std::string timestr="";
+    char ctmp[20]={0};	
+    strncpy(ctmp,pMarketData->ActionDay,4);
+    ctmp[4] = '-';
+    strncpy(ctmp+5,pMarketData->ActionDay+4,2);	
+    ctmp[7] = '-';
+    strncpy(ctmp+8,pMarketData->ActionDay+6,2);
+    ctmp[10] = ' ';
+    timestr = ctmp;	
+    timestr+=pMarketData->UpdateTime;
+    ullong tmp_time = 0;
+    tmp_time = str2stmp(timestr.c_str());	
+    tmp_time *= 1000;
+    tmp_time += pMarketData->UpdateMillisec;
+    tmp_time *= 1000;
+    tmp_time *= 1000;	
+    return tmp_time;	
 }
 
 void CtpBookConvert::CheckTime(CThostFtdcDepthMarketDataField *pMarketData)

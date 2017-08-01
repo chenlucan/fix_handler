@@ -46,6 +46,8 @@ typedef struct strade
 typedef std::map <std::string,mstrade*> TradeMap;
 
 typedef std::map <std::string,std::string> MessMap;	
+
+typedef unsigned long long  ullong;
     
 template <typename IntType>
 inline std::string T(IntType v){return std::to_string(v);}
@@ -127,6 +129,9 @@ class CtpBookConvert : public fh::core::persist::Converter
 		void CheckTime(CThostFtdcDepthMarketDataField *pMarketData);
 	private:
 		std::string GetUpdateTimeStr(CThostFtdcDepthMarketDataField *pMarketData);	
+		ullong GetUpdateTimeInt(CThostFtdcDepthMarketDataField *pMarketData);
+		ullong str2stmp(const char *strTime);
+		
 	private:
 		CtpConvertListenerI* m_listener;	 	
 		MessMap m_messagemap;	
